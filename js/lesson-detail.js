@@ -3,6 +3,10 @@
 // File: js/lesson-detail.js
 // ============================================================
 
+let currentLessonData = null;
+let currentLessonExercises = [];
+let activeExerciseIndex = 0;
+
 document.addEventListener("DOMContentLoaded", () => {
     const currentUser = CppStorage.getCurrentUser();
 
@@ -42,11 +46,23 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
+    currentLessonData = lesson;
+    initLessonExercises(lesson);
+
     // --------------------------------------------------------
     // Hiển thị bài học
     // --------------------------------------------------------
 
     renderLesson(
+        lesson,
+        currentUser
+    );
+
+    // --------------------------------------------------------
+    // Thiết lập 3 tab bài tập & gợi ý AI
+    // --------------------------------------------------------
+
+    setupExerciseTabs(
         lesson,
         currentUser
     );
@@ -69,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     // --------------------------------------------------------
-    // Nút nộp bài
+    // Nút nộp bài (AI chấm & đánh giá)
     // --------------------------------------------------------
 
     setupSubmitButton(
@@ -203,65 +219,9 @@ int main() {
 
 
     // --------------------------------------------------------
-    // Tiêu đề bài tập
+    // Tiêu đề & Bài tập ban đầu sẽ do switchExercise phụ trách
     // --------------------------------------------------------
-
-    setText(
-        "exerciseTitle",
-        lesson.exerciseTitle ||
-        "Bài tập thực hành"
-    );
-
-
-    // --------------------------------------------------------
-    // Mô tả bài tập
-    // --------------------------------------------------------
-
-    const exerciseDescription =
-        document.getElementById(
-            "exerciseDescription"
-        );
-
-    if (exerciseDescription) {
-        exerciseDescription.innerHTML =
-            formatLessonContent(
-                lesson.exerciseDescription ||
-                "Hãy viết chương trình C++ theo yêu cầu."
-            );
-    }
-
-
-    // --------------------------------------------------------
-    // Code mẫu ban đầu
-    // --------------------------------------------------------
-
-    const codeEditor =
-        document.getElementById(
-            "codeEditor"
-        );
-
-    if (codeEditor) {
-        const savedCode =
-            CppStorage.getLessonCode(
-                user.id,
-                lesson.id
-            );
-
-        codeEditor.value =
-            savedCode ||
-            lesson.starterCode ||
-            `#include <iostream>
-
-using namespace std;
-
-int main() {
-
-    // Viết code của bạn ở đây
-
-    return 0;
-}`;
-    }
-
+    // (Được khởi tạo chi tiết trong setupExerciseTabs)
 
     // --------------------------------------------------------
     // Hiển thị trạng thái bài
@@ -278,6 +238,222 @@ int main() {
     updateLessonStatus(
         lessonProgress
     );
+}
+
+
+// ============================================================
+// KHỞI TẠO & QUẢN LÝ 3 BÀI TẬP (EXERCISES ENGINE)
+// ============================================================
+
+function initLessonExercises(lesson) {
+    if (window.getLessonExercises && typeof window.getLessonExercises === "function") {
+        currentLessonExercises = window.getLessonExercises(lesson);
+    } else if (window.CppExercisesData && window.CppExercisesData[lesson.id]) {
+        currentLessonExercises = window.CppExercisesData[lesson.id];
+    } else {
+        const starter = lesson.starterCode || `#include <iostream>\nusing namespace std;\n\nint main() {\n    // Viết code của bạn ở đây\n\n    return 0;\n}`;
+        currentLessonExercises = [
+            {
+                id: "ex-1",
+                title: lesson.exerciseTitle || "Cú pháp nền tảng",
+                level: "Cơ bản",
+                difficulty: "easy",
+                points: 100,
+                description: lesson.exerciseDescription || "Viết chương trình C++ theo yêu cầu cơ bản của bài học.",
+                starterCode: starter,
+                expectedOutput: "Thanh cong",
+                hint: "Áp dụng cú pháp lý thuyết đã học ở phần trên.",
+                testKeywords: ["cout", "main", "return 0", "#include"]
+            },
+            {
+                id: "ex-2",
+                title: "Vận dụng giải quyết vấn đề",
+                level: "Vận dụng",
+                difficulty: "medium",
+                points: 100,
+                description: `Vận dụng các câu lệnh đã học của chuyên đề <strong>${lesson.title || ""}</strong> để xử lý logic hoàn chỉnh.`,
+                starterCode: starter,
+                expectedOutput: "Ket qua hop le",
+                hint: "Sử dụng câu lệnh điều khiển hoặc biến để xử lý logic bài toán.",
+                testKeywords: ["cout", "cin", "main"]
+            },
+            {
+                id: "ex-3",
+                title: "Thử thách thuật toán nâng cao",
+                level: "Thử thách",
+                difficulty: "hard",
+                points: 100,
+                description: `Tối ưu hóa thuật toán và xử lý các trường hợp biên nâng cao cho bài <strong>${lesson.title || ""}</strong>.`,
+                starterCode: starter,
+                expectedOutput: "Chinh xac",
+                hint: "Kiểm tra kỹ các trường hợp biên và tối ưu mã nguồn để đạt điểm tuyệt đối.",
+                testKeywords: ["main", "return"]
+            }
+        ];
+    }
+}
+
+function getExerciseStorageKey(userId, lessonId, index) {
+    return `codelearn_code_${userId}_${lessonId}_ex_${index}`;
+}
+
+function getExerciseResultKey(userId, lessonId, index) {
+    return `codelearn_eval_${userId}_${lessonId}_ex_${index}`;
+}
+
+function updateExerciseTabStatuses(user, lesson) {
+    for (let i = 0; i < currentLessonExercises.length; i++) {
+        const statusIcon = document.getElementById(`tabStatus${i}`);
+        if (!statusIcon) continue;
+
+        const resKey = getExerciseResultKey(user.id, lesson.id, i);
+        let savedResult = null;
+        try {
+            const raw = localStorage.getItem(resKey);
+            if (raw) savedResult = JSON.parse(raw);
+        } catch (e) {}
+
+        if (savedResult && savedResult.score >= 60) {
+            statusIcon.textContent = "✅";
+            statusIcon.title = `Đã hoàn thành (${savedResult.score}/100)`;
+        } else if (savedResult && savedResult.score > 0) {
+            statusIcon.textContent = "📝";
+            statusIcon.title = `Đã làm (${savedResult.score}/100)`;
+        } else {
+            statusIcon.textContent = "⏳";
+            statusIcon.title = "Chưa làm";
+        }
+    }
+}
+
+function setupExerciseTabs(lesson, user) {
+    // Gắn sự kiện chuyển tab
+    const tabBtns = document.querySelectorAll(".exercise-tab-btn");
+    tabBtns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const targetIndex = parseInt(btn.getAttribute("data-index"), 10) || 0;
+            switchExercise(targetIndex, user, lesson);
+        });
+    });
+
+    // Gắn sự kiện nút Gợi ý AI
+    const btnHint = document.getElementById("btnHintToggle");
+    const hintBox = document.getElementById("exerciseAiHintBox");
+    if (btnHint && hintBox) {
+        btnHint.addEventListener("click", () => {
+            const isHidden = hintBox.hidden;
+            hintBox.hidden = !isHidden;
+            btnHint.textContent = isHidden ? "💡 Ẩn gợi ý" : "💡 Gợi ý AI";
+            btnHint.classList.toggle("active", isHidden);
+        });
+    }
+
+    // Mặc định hiển thị bài 1
+    switchExercise(0, user, lesson);
+}
+
+function switchExercise(index, user, lesson) {
+    const editor = document.getElementById("codeEditor");
+    if (editor) {
+        // Lưu code bài tập trước khi chuyển
+        const prevCode = editor.value;
+        const prevKey = getExerciseStorageKey(user.id, lesson.id, activeExerciseIndex);
+        localStorage.setItem(prevKey, prevCode);
+        if (activeExerciseIndex === 0 && window.CppStorage && typeof CppStorage.saveLessonCode === "function") {
+            CppStorage.saveLessonCode(user.id, lesson.id, prevCode);
+        }
+    }
+
+    activeExerciseIndex = index;
+
+    // Cập nhật trạng thái active của tab buttons
+    const tabBtns = document.querySelectorAll(".exercise-tab-btn");
+    tabBtns.forEach((btn, idx) => {
+        if (idx === index) {
+            btn.classList.add("active");
+            btn.setAttribute("aria-selected", "true");
+        } else {
+            btn.classList.remove("active");
+            btn.setAttribute("aria-selected", "false");
+        }
+    });
+
+    const ex = currentLessonExercises[index] || currentLessonExercises[0];
+    if (!ex) return;
+
+    // Cập nhật Badge độ khó
+    const levelTag = document.getElementById("exerciseLevelTag");
+    if (levelTag) {
+        levelTag.textContent = ex.level || "Cơ bản";
+        levelTag.className = "exercise-level-tag";
+        if (ex.difficulty === "easy" || ex.level === "Cơ bản") {
+            levelTag.classList.add("tag-easy");
+        } else if (ex.difficulty === "medium" || ex.level === "Vận dụng") {
+            levelTag.classList.add("tag-medium");
+        } else {
+            levelTag.classList.add("tag-hard");
+        }
+    }
+
+    // Cập nhật điểm
+    const pointsTag = document.getElementById("exercisePointsTag");
+    if (pointsTag) {
+        pointsTag.textContent = `⭐ ${ex.points || 100} điểm`;
+    }
+
+    // Cập nhật tiêu đề bài
+    setText("exerciseTitle", `Bài tập ${index + 1}: ${ex.title}`);
+
+    // Cập nhật mô tả đề bài
+    const descElem = document.getElementById("exerciseDescription");
+    if (descElem) {
+        descElem.innerHTML = formatLessonContent(ex.description || "");
+    }
+
+    // Reset khung gợi ý
+    const hintBox = document.getElementById("exerciseAiHintBox");
+    const hintText = document.getElementById("exerciseAiHintText");
+    const btnHint = document.getElementById("btnHintToggle");
+    if (hintBox) hintBox.hidden = true;
+    if (btnHint) {
+        btnHint.textContent = "💡 Gợi ý AI";
+        btnHint.classList.remove("active");
+    }
+    if (hintText) {
+        hintText.innerHTML = formatLessonContent(ex.hint || "Vận dụng lý thuyết đã học ở phía trên.");
+    }
+
+    // Reset console output
+    const outputElem = document.getElementById("outputData") || document.getElementById("codeOutput");
+    if (outputElem) {
+        outputElem.textContent = "Chưa có kết quả.";
+    }
+
+    // Nạp code của bài tập này
+    if (editor) {
+        const savedExCode = localStorage.getItem(getExerciseStorageKey(user.id, lesson.id, index));
+        const legacyCode = index === 0 ? CppStorage.getLessonCode(user.id, lesson.id) : null;
+        editor.value = savedExCode || legacyCode || ex.starterCode || "";
+    }
+
+    // Kiểm tra và hiển thị kết quả AI feedback đã lưu (nếu có)
+    const resKey = getExerciseResultKey(user.id, lesson.id, index);
+    let savedResult = null;
+    try {
+        const raw = localStorage.getItem(resKey);
+        if (raw) savedResult = JSON.parse(raw);
+    } catch (e) {}
+
+    const feedbackBox = document.getElementById("aiFeedback");
+    if (savedResult && feedbackBox) {
+        showGradingResult(savedResult);
+    } else if (feedbackBox) {
+        feedbackBox.hidden = true;
+        feedbackBox.setAttribute("hidden", "true");
+        feedbackBox.style.display = "none";
+    }
+
+    updateExerciseTabStatuses(user, lesson);
 }
 
 
@@ -300,17 +476,21 @@ function setupCodeEditor(
 
 
     // --------------------------------------------------------
-    // Lưu code tự động
+    // Lưu code tự động theo từng bài tập
     // --------------------------------------------------------
 
     editor.addEventListener(
         "input",
         () => {
-            if (window.CppStorage && typeof CppStorage.saveLessonCode === "function") {
+            const code = editor.value;
+            const codeKey = getExerciseStorageKey(user.id, lesson.id, activeExerciseIndex);
+            localStorage.setItem(codeKey, code);
+
+            if (activeExerciseIndex === 0 && window.CppStorage && typeof CppStorage.saveLessonCode === "function") {
                 CppStorage.saveLessonCode(
                     user.id,
                     lesson.id,
-                    editor.value
+                    code
                 );
             }
         }
@@ -318,18 +498,21 @@ function setupCodeEditor(
 
 
     // --------------------------------------------------------
-    // Nút Đặt lại code
+    // Nút Đặt lại code cho bài tập đang chọn
     // --------------------------------------------------------
 
     const resetBtn = document.getElementById("resetCodeButton");
     if (resetBtn) {
         resetBtn.addEventListener("click", () => {
+            const ex = currentLessonExercises[activeExerciseIndex] || currentLessonExercises[0];
             const confirmed = window.confirm(
-                "Bạn có chắc muốn đặt lại code về trạng thái ban đầu không?"
+                `Bạn có chắc muốn đặt lại code về trạng thái ban đầu của Bài tập ${activeExerciseIndex + 1} không?`
             );
             if (confirmed) {
-                editor.value = lesson.starterCode || "";
-                if (window.CppStorage && typeof CppStorage.saveLessonCode === "function") {
+                editor.value = (ex && ex.starterCode) || lesson.starterCode || "";
+                const codeKey = getExerciseStorageKey(user.id, lesson.id, activeExerciseIndex);
+                localStorage.setItem(codeKey, editor.value);
+                if (activeExerciseIndex === 0 && window.CppStorage && typeof CppStorage.saveLessonCode === "function") {
                     CppStorage.saveLessonCode(user.id, lesson.id, editor.value);
                 }
             }
@@ -627,11 +810,9 @@ function setupSubmitButton(
         return;
     }
 
-
     button.addEventListener(
         "click",
         () => {
-
             const editor =
                 document.getElementById(
                     "codeEditor"
@@ -644,332 +825,229 @@ function setupSubmitButton(
             const code =
                 editor.value.trim();
 
-
             if (!code) {
-                showMessage(
-                    "submitMessage",
-                    "⚠️ Bạn cần viết code trước khi nộp bài.",
-                    "error"
-                );
-
+                alert("⚠️ Bạn cần viết mã nguồn C++ trước khi nộp bài để AI chấm điểm!");
                 return;
             }
 
-
             button.disabled = true;
-
-            button.textContent =
-                "Đang chấm bài...";
-
+            const originalBtnHtml = button.innerHTML;
+            button.innerHTML = `<span>⏳</span> Đang phân tích & đánh giá...`;
 
             setTimeout(() => {
+                const ex = currentLessonExercises[activeExerciseIndex] || currentLessonExercises[0];
+                const result = gradeCode(
+                    code,
+                    lesson,
+                    activeExerciseIndex
+                );
 
-                const result =
-                    gradeCode(
-                        code,
-                        lesson
+                // --------------------------------------------
+                // 1. Lưu kết quả bài tập hiện tại
+                // --------------------------------------------
+                const resKey = getExerciseResultKey(user.id, lesson.id, activeExerciseIndex);
+                localStorage.setItem(resKey, JSON.stringify(result));
+
+                const codeKey = getExerciseStorageKey(user.id, lesson.id, activeExerciseIndex);
+                localStorage.setItem(codeKey, code);
+                if (activeExerciseIndex === 0 && window.CppStorage && typeof CppStorage.saveLessonCode === "function") {
+                    CppStorage.saveLessonCode(user.id, lesson.id, code);
+                }
+
+                // --------------------------------------------
+                // 2. Cập nhật tiến độ bài học tổng thể
+                // --------------------------------------------
+                if (window.CppStorage && typeof CppStorage.saveLessonProgress === "function") {
+                    CppStorage.saveLessonProgress(
+                        user.id,
+                        lesson.id,
+                        {
+                            completed: result.completed,
+                            score: result.score,
+                            submittedCode: code,
+                            feedback: [result.strengths, result.improvements],
+                            submittedAt: new Date().toISOString()
+                        }
                     );
-
-
-                // --------------------------------------------
-                // Lưu kết quả
-                // --------------------------------------------
-
-                CppStorage.saveLessonProgress(
-                    user.id,
-                    lesson.id,
-                    {
-                        completed:
-                            result.completed,
-
-                        score:
-                            result.score,
-
-                        submittedCode:
-                            code,
-
-                        feedback:
-                            result.feedback,
-
-                        submittedAt:
-                            new Date().toISOString()
-                    }
-                );
-
-
-                CppStorage.saveLessonCode(
-                    user.id,
-                    lesson.id,
-                    code
-                );
-
+                }
 
                 // --------------------------------------------
-                // Hiển thị kết quả
+                // 3. Cập nhật icon trên các tab bài tập
                 // --------------------------------------------
-
-                showGradingResult(
-                    result
-                );
-
+                updateExerciseTabStatuses(user, lesson);
 
                 // --------------------------------------------
-                // Cập nhật trạng thái
+                // 4. Hiển thị bảng đánh giá AI
                 // --------------------------------------------
+                showGradingResult(result);
 
+                // --------------------------------------------
+                // 5. Cập nhật trạng thái bài học chung
+                // --------------------------------------------
                 updateLessonStatus({
-                    completed:
-                        result.completed,
-
-                    score:
-                        result.score
+                    completed: result.completed,
+                    score: result.score
                 });
 
-
                 button.disabled = false;
+                button.innerHTML = originalBtnHtml;
 
-                button.textContent =
-                    "Nộp bài";
-
-
-            }, 900);
+                // Cuộn mượt xuống bảng đánh giá
+                const feedbackBox = document.getElementById("aiFeedback");
+                if (feedbackBox) {
+                    feedbackBox.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start"
+                    });
+                }
+            }, 850);
         }
     );
 }
 
 
 // ============================================================
-// CHẤM CODE
-// ============================================================
-//
-// Đây là AI feedback giả lập.
-// Không phải AI thật.
-// Có thể thay bằng API/backend AI sau này.
+// CHẤM CODE & ĐÁNH GIÁ MỨC ĐỘ HIỂU BÀI (AI EVALUATOR ENGINE)
 // ============================================================
 
 function gradeCode(
     code,
-    lesson
+    lesson,
+    exerciseIndex = activeExerciseIndex
 ) {
+    const ex = currentLessonExercises[exerciseIndex] || currentLessonExercises[0] || {};
+    const normalized = code.toLowerCase();
     let score = 0;
-
-    const feedback = [];
-
-    const normalized =
-        code.toLowerCase();
-
+    const strengths = [];
+    const improvements = [];
 
     // --------------------------------------------------------
-    // Có main()
+    // 1. Khai báo thư viện & Không gian tên (20 điểm)
     // --------------------------------------------------------
-
-    if (
-        normalized.includes("int main") ||
-        normalized.includes("main()")
-    ) {
-        score += 20;
-
-        feedback.push(
-            "✓ Bạn đã tạo hàm main()."
-        );
-    } else {
-        feedback.push(
-            "⚠️ Bạn nên kiểm tra lại hàm main()."
-        );
-    }
-
-
-    // --------------------------------------------------------
-    // Có include
-    // --------------------------------------------------------
-
-    if (
-        normalized.includes("#include")
-    ) {
+    if (normalized.includes("#include") && normalized.includes("iostream")) {
         score += 15;
-
-        feedback.push(
-            "✓ Bạn đã sử dụng thư viện."
-        );
-    }
-
-
-    // --------------------------------------------------------
-    // Có cout / cin
-    // --------------------------------------------------------
-
-    if (
-        normalized.includes("cout")
-    ) {
-        score += 15;
-
-        feedback.push(
-            "✓ Bạn đã sử dụng cout để xuất dữ liệu."
-        );
-    }
-
-    if (
-        normalized.includes("cin")
-    ) {
-        score += 10;
-
-        feedback.push(
-            "✓ Bạn đã sử dụng cin để nhập dữ liệu."
-        );
-    }
-
-
-    // --------------------------------------------------------
-    // Biến
-    // --------------------------------------------------------
-
-    const hasVariable =
-        /\b(int|float|double|char|string|bool)\s+\w+/.test(
-            code
-        );
-
-    if (hasVariable) {
-        score += 10;
-
-        feedback.push(
-            "✓ Bạn đã khai báo biến."
-        );
-    }
-
-
-    // --------------------------------------------------------
-    // if
-    // --------------------------------------------------------
-
-    if (
-        normalized.includes("if")
-    ) {
-        score += 10;
-
-        feedback.push(
-            "✓ Bạn đã sử dụng câu điều kiện."
-        );
-    }
-
-
-    // --------------------------------------------------------
-    // vòng lặp
-    // --------------------------------------------------------
-
-    if (
-        normalized.includes("for") ||
-        normalized.includes("while")
-    ) {
-        score += 10;
-
-        feedback.push(
-            "✓ Bạn đã sử dụng vòng lặp."
-        );
-    }
-
-
-    // --------------------------------------------------------
-    // return
-    // --------------------------------------------------------
-
-    if (
-        normalized.includes("return")
-    ) {
-        score += 5;
-
-        feedback.push(
-            "✓ Chương trình có return."
-        );
-    }
-
-
-    // --------------------------------------------------------
-    // Dấu ;
-    // --------------------------------------------------------
-
-    if (
-        code.includes(";")
-    ) {
-        score += 5;
-    }
-
-
-    // --------------------------------------------------------
-    // Giới hạn điểm
-    // --------------------------------------------------------
-
-    score =
-        Math.min(
-            score,
-            100
-        );
-
-
-    // --------------------------------------------------------
-    // Đánh giá
-    // --------------------------------------------------------
-
-    let level;
-    let advice;
-
-    if (score >= 80) {
-
-        level =
-            "Xuất sắc";
-
-        advice =
-            "Bạn đã nắm khá tốt kiến thức của bài học. " +
-            "Hãy thử làm thêm các bài tập nâng cao để củng cố kiến thức.";
-
-    } else if (score >= 60) {
-
-        level =
-            "Khá";
-
-        advice =
-            "Bạn đã hiểu được phần lớn nội dung. " +
-            "Hãy xem lại những phần còn thiếu và thử viết lại chương trình.";
-
-    } else if (score >= 40) {
-
-        level =
-            "Trung bình";
-
-        advice =
-            "Bạn đã có nền tảng nhưng cần luyện tập thêm. " +
-            "Hãy đọc lại phần lý thuyết rồi thử làm lại bài.";
-
+        strengths.push("Đã khai báo thư viện `<iostream>` chuẩn mực.");
     } else {
-
-        level =
-            "Cần luyện tập thêm";
-
-        advice =
-            "Bạn nên học lại phần lý thuyết và xem code mẫu " +
-            "trước khi thử lại bài tập.";
+        improvements.push("Thiếu khai báo thư viện `#include <iostream>` ở đầu file.");
     }
 
+    if (normalized.includes("using namespace std")) {
+        score += 5;
+        strengths.push("Sử dụng không gian tên `using namespace std;` giúp cú pháp gọn gàng.");
+    }
 
     // --------------------------------------------------------
-    // Hoàn thành
+    // 2. Cấu trúc hàm main() & Khối lệnh (25 điểm)
     // --------------------------------------------------------
+    if (/\bint\s+main\s*\(/.test(code)) {
+        score += 15;
+        strengths.push("Khai báo hàm `int main()` chính xác theo chuẩn C++ hiện đại.");
+    } else {
+        improvements.push("Chương trình cần có hàm `int main()` làm điểm khởi đầu thực thi.");
+    }
 
-    const completed =
-        score >= 60;
+    const openBraces = (code.match(/\{/g) || []).length;
+    const closeBraces = (code.match(/\}/g) || []).length;
+    if (openBraces > 0 && openBraces === closeBraces) {
+        score += 5;
+        strengths.push("Cấu trúc khối lệnh `{ }` đóng mở cân đối, chuẩn xác.");
+    } else if (openBraces !== closeBraces) {
+        improvements.push(`Số lượng ngoặc nhọn mở '{' (${openBraces}) không khớp với đóng '}' (${closeBraces}).`);
+    }
 
+    if (normalized.includes("return 0")) {
+        score += 5;
+        strengths.push("Có câu lệnh `return 0;` kết thúc chương trình an toàn.");
+    } else {
+        improvements.push("Nên bổ sung câu lệnh `return 0;` trước dấu đóng ngoặc của main().");
+    }
+
+    // --------------------------------------------------------
+    // 3. Phù hợp yêu cầu đề bài & Từ khóa cốt lõi (40 điểm)
+    // --------------------------------------------------------
+    const testKeywords = ex.testKeywords || [];
+    if (testKeywords.length > 0) {
+        let matchedCount = 0;
+        testKeywords.forEach(kw => {
+            if (normalized.includes(kw.toLowerCase())) {
+                matchedCount++;
+            }
+        });
+
+        const kwPoints = Math.round((matchedCount / testKeywords.length) * 40);
+        score += kwPoints;
+
+        if (matchedCount === testKeywords.length) {
+            strengths.push(`Áp dụng hoàn hảo tất cả các kỹ thuật và từ khóa trọng tâm: [${testKeywords.join(", ")}].`);
+        } else if (matchedCount > 0) {
+            strengths.push(`Đã vận dụng được một số yêu cầu cốt lõi của bài toán (${matchedCount}/${testKeywords.length} từ khóa).`);
+            const missing = testKeywords.filter(k => !normalized.includes(k.toLowerCase()));
+            improvements.push(`Cần bổ sung thêm các yếu tố logic chuyên đề: [${missing.join(", ")}].`);
+        } else {
+            improvements.push(`Chưa tìm thấy các từ khóa hoặc câu lệnh yêu cầu của bài tập: [${testKeywords.join(", ")}].`);
+        }
+    } else {
+        if (normalized.includes("cout")) score += 20;
+        if (normalized.includes("cin")) score += 15;
+        if (code.includes(";")) score += 5;
+    }
+
+    // --------------------------------------------------------
+    // 4. Mô phỏng chạy code & Kiểm tra kết quả (15 điểm)
+    // --------------------------------------------------------
+    const sim = simulateCppExecution(code, lesson);
+    if (sim && sim.success) {
+        score += 15;
+        strengths.push("Mã nguồn biên dịch thành công, dòng lệnh xuất kết quả rõ ràng.");
+    } else {
+        improvements.push("Kiểm tra lại cú pháp dấu chấm phẩy ';' hoặc toán tử xuất << để chạy trơn tru.");
+    }
+
+    // Giới hạn điểm 0 - 100
+    score = Math.max(10, Math.min(100, score));
+
+    // --------------------------------------------------------
+    // 5. Đánh giá Mức độ hiểu bài (Comprehension Evaluation)
+    // --------------------------------------------------------
+    let comprehensionLevel = "";
+    let advice = "";
+
+    if (score >= 90) {
+        comprehensionLevel = "Thấu hiểu xuất sắc";
+        advice = `Học viên làm chủ tuyệt đối kiến thức chuyên đề "${lesson.title}". Cú pháp gãy gọn, tư duy giải quyết vấn đề mạch lạc. Bạn đã sẵn sàng chinh phục các bài tập thử thách cao hơn!`;
+    } else if (score >= 75) {
+        comprehensionLevel = "Nắm chắc kiến thức";
+        advice = `Học viên hiểu rõ bản chất bài học và áp dụng tốt vào code thực tế. Chỉ cần chú ý thêm chi tiết định dạng xuất hoặc các trường hợp biên nhỏ để đạt 100 điểm tuyệt đối.`;
+    } else if (score >= 50) {
+        comprehensionLevel = "Mức độ cơ bản";
+        advice = `Học viên đã nắm được khung cơ bản của bài tập. Hãy bấm nút "💡 Gợi ý AI" ở phía trên và rà soát lại các điểm cần cải thiện để nâng cao điểm số nhé.`;
+    } else {
+        comprehensionLevel = "Cần ôn luyện thêm";
+        advice = `Bạn đang còn đôi chút bỡ ngỡ với bài toán này. Hãy kéo lên xem lại phần lý thuyết ở Mục 01 và tham khảo Code mẫu ở Mục 02, sau đó bấm "↻ Đặt lại" để thực hành lại nhé!`;
+    }
+
+    if (strengths.length === 0) {
+        strengths.push("Đã chủ động viết code C++ và nộp bài kiểm tra kiến thức.");
+    }
+    if (improvements.length === 0) {
+        improvements.push("Code sạch đẹp, chuẩn quy ước C++. Tiếp tục phát huy!");
+    }
 
     return {
         score,
-        completed,
-        level,
+        completed: score >= 60,
+        comprehensionLevel,
+        comprehensionPercent: score,
+        strengths: strengths.join(" "),
+        improvements: improvements.join(" "),
         advice,
-        feedback
+        summary: `Hệ thống AI đánh giá học viên đạt ${score}/100 điểm với mức độ "${comprehensionLevel}" cho bài tập này.`
     };
 }
 
 
 // ============================================================
-// HIỂN THỊ KẾT QUẢ CHẤM
+// HIỂN THỊ BẢNG ĐÁNH GIÁ MỨC ĐỘ HIỂU BÀI
 // ============================================================
 
 function showGradingResult(
@@ -984,90 +1062,79 @@ function showGradingResult(
         return;
     }
 
-
     feedbackBox.hidden = false;
     feedbackBox.removeAttribute("hidden");
-    feedbackBox.style.display =
-        "block";
+    feedbackBox.style.display = "block";
 
+    // Điểm số
+    const scoreElem = document.getElementById("aiScore");
+    if (scoreElem) {
+        scoreElem.textContent = result.score;
+    }
 
-    feedbackBox.innerHTML = `
-        <div class="ai-feedback-header">
-
-            <div>
-                <span class="ai-badge">
-                    🤖 AI Feedback
-                </span>
-
-                <h3>
-                    Kết quả bài làm
-                </h3>
-            </div>
-
-            <div class="ai-score">
-                ${result.score}/100
-            </div>
-
-        </div>
-
-
-        <div class="ai-feedback-level">
-            <strong>
-                Mức độ:
-            </strong>
-
-            ${escapeHtml(
-                result.level
-            )}
-        </div>
-
-
-        <div class="ai-feedback-advice">
-            <strong>
-                Nhận xét:
-            </strong>
-
-            <p>
-                ${escapeHtml(
-                    result.advice
-                )}
-            </p>
-        </div>
-
-
-        <div class="ai-feedback-details">
-
-            <strong>
-                Phân tích:
-            </strong>
-
-            <ul>
-                ${result.feedback
-                    .map(
-                        item =>
-                            `<li>${escapeHtml(item)}</li>`
-                    )
-                    .join("")
-                }
-            </ul>
-
-        </div>
-
-
-        ${
-            result.completed
-                ? `
-                    <div class="ai-success">
-                        🎉 Chúc mừng! Bạn đã hoàn thành bài học.
-                    </div>
-                `
-                : `
-                    <div class="ai-warning">
-                        💡 Hãy thử lại để đạt ít nhất 60 điểm.
-                    </div>
-                `
+    // Mức độ hiểu bài & màu sắc
+    const resultElem = document.getElementById("aiResult");
+    if (resultElem) {
+        resultElem.textContent = result.comprehensionLevel || (result.score >= 60 ? "Đạt yêu cầu" : "Cần ôn luyện");
+        if (result.score >= 90) {
+            resultElem.style.color = "#10b981"; // xanh ngọc
+        } else if (result.score >= 75) {
+            resultElem.style.color = "#8b5cf6"; // tím OPPO
+        } else if (result.score >= 50) {
+            resultElem.style.color = "#f59e0b"; // cam
+        } else {
+            resultElem.style.color = "#ef4444"; // đỏ
         }
-    `;
+    }
+
+    // Thanh tiến độ Mức độ hiểu bài (Animated Meter Fill)
+    const meterFill = document.getElementById("aiComprehensionFill");
+    if (meterFill) {
+        meterFill.style.width = "0%";
+        if (result.score >= 90) {
+            meterFill.style.background = "linear-gradient(90deg, #10b981, #059669)";
+        } else if (result.score >= 75) {
+            meterFill.style.background = "linear-gradient(90deg, #8b5cf6, #7c3aed)";
+        } else if (result.score >= 50) {
+            meterFill.style.background = "linear-gradient(90deg, #f59e0b, #d97706)";
+        } else {
+            meterFill.style.background = "linear-gradient(90deg, #ef4444, #dc2626)";
+        }
+
+        setTimeout(() => {
+            meterFill.style.width = `${result.comprehensionPercent || result.score}%`;
+        }, 80);
+    }
+
+    // Phần trăm
+    const percentElem = document.getElementById("aiComprehensionPercent");
+    if (percentElem) {
+        percentElem.textContent = `${result.comprehensionPercent || result.score}%`;
+    }
+
+    // Tóm tắt
+    const summaryElem = document.getElementById("aiSummary");
+    if (summaryElem) {
+        summaryElem.textContent = result.summary || "Đã phân tích xong bài làm của bạn.";
+    }
+
+    // Điểm làm tốt
+    const strengthElem = document.getElementById("aiStrength");
+    if (strengthElem) {
+        strengthElem.innerHTML = formatLessonContent(result.strengths || "Mã nguồn rõ ràng, cấu trúc hợp lệ.");
+    }
+
+    // Cần cải thiện
+    const improvElem = document.getElementById("aiImprovement");
+    if (improvElem) {
+        improvElem.innerHTML = formatLessonContent(result.improvements || "Không có lỗi cú pháp nghiêm trọng.");
+    }
+
+    // Lời khuyên
+    const adviceElem = document.getElementById("aiAdvice");
+    if (adviceElem) {
+        adviceElem.innerHTML = formatLessonContent(result.advice || "Hãy tiếp tục thử sức với các bài tập tiếp theo!");
+    }
 }
 
 

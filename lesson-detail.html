@@ -421,23 +421,57 @@
                             </div>
 
 
+                            <!-- 3 Exercises Navigation Tabs -->
+                            <div class="exercise-tabs-container">
+                                <div class="exercise-tabs-bar" id="exerciseTabsBar" role="tablist">
+                                    <button type="button" class="exercise-tab-btn active" data-index="0" role="tab" id="tabEx0">
+                                        <span class="tab-badge">Bài 1</span>
+                                        <span class="tab-label">Cơ bản</span>
+                                        <span class="tab-status-icon" id="tabStatus0">⏳</span>
+                                    </button>
+                                    <button type="button" class="exercise-tab-btn" data-index="1" role="tab" id="tabEx1">
+                                        <span class="tab-badge">Bài 2</span>
+                                        <span class="tab-label">Vận dụng</span>
+                                        <span class="tab-status-icon" id="tabStatus1">⏳</span>
+                                    </button>
+                                    <button type="button" class="exercise-tab-btn" data-index="2" role="tab" id="tabEx2">
+                                        <span class="tab-badge">Bài 3</span>
+                                        <span class="tab-label">Thử thách</span>
+                                        <span class="tab-status-icon" id="tabStatus2">⏳</span>
+                                    </button>
+                                </div>
+                            </div>
+
                             <!-- Exercise description -->
 
                             <div class="exercise-description">
 
                                 <div class="exercise-icon">
-                                    ?
+                                    💻
                                 </div>
 
-                                <div>
+                                <div style="flex: 1;">
+
+                                    <div class="exercise-header-meta">
+                                        <span class="exercise-level-tag tag-easy" id="exerciseLevelTag">Cơ bản</span>
+                                        <span class="exercise-points-tag" id="exercisePointsTag">⭐ 100 điểm</span>
+                                        <button type="button" class="btn-hint-toggle" id="btnHintToggle">
+                                            💡 Gợi ý AI
+                                        </button>
+                                    </div>
 
                                     <h3 id="exerciseTitle">
-                                        Bài tập
+                                        Bài tập 1: Cơ bản
                                     </h3>
 
                                     <p id="exerciseDescription">
                                         Đang tải đề bài...
                                     </p>
+
+                                    <div class="exercise-ai-hint-box" id="exerciseAiHintBox" hidden>
+                                        <strong>💡 Gợi ý từ AI:</strong>
+                                        <span id="exerciseAiHintText"></span>
+                                    </div>
 
                                 </div>
 
@@ -589,13 +623,13 @@
                                 <button
                                     type="button"
                                     id="submitCodeButton"
-                                    class="btn btn-primary"
+                                    class="btn btn-primary btn-ai-evaluate"
                                 >
                                     <span>
-                                        ✓
+                                        🤖
                                     </span>
 
-                                    Nộp bài
+                                    AI Chấm & Đánh giá
                                 </button>
 
                             </div>
@@ -625,17 +659,17 @@
                                 <div class="ai-feedback-header">
 
                                     <div class="ai-icon">
-                                        AI
+                                        🤖
                                     </div>
 
                                     <div>
 
-                                        <span>
-                                            C++ BASIC AI
+                                        <span class="ai-badge">
+                                            AI CODE EVALUATOR
                                         </span>
 
                                         <h3>
-                                            Đánh giá bài làm
+                                            Đánh giá mức độ hiểu bài
                                         </h3>
 
                                     </div>
@@ -643,7 +677,7 @@
                                 </div>
 
 
-                                <!-- Score -->
+                                <!-- Score & Comprehension meter -->
 
                                 <div class="ai-score-section">
 
@@ -663,12 +697,20 @@
                                     <div class="ai-score-info">
 
                                         <span>
-                                            KẾT QUẢ
+                                            MỨC ĐỘ HIỂU BÀI
                                         </span>
 
                                         <strong id="aiResult">
                                             Chưa đánh giá
                                         </strong>
+
+                                        <!-- Comprehension Meter -->
+                                        <div class="comprehension-meter-wrapper">
+                                            <div class="comprehension-meter-bar">
+                                                <div class="comprehension-meter-fill" id="aiComprehensionFill" style="width: 0%;"></div>
+                                            </div>
+                                            <span class="comprehension-percent" id="aiComprehensionPercent">0%</span>
+                                        </div>
 
                                         <p id="aiSummary">
                                             Hệ thống đang phân tích bài làm.
@@ -692,7 +734,7 @@
                                         <div>
 
                                             <strong>
-                                                Điểm tốt
+                                                Điểm làm tốt
                                             </strong>
 
                                             <p id="aiStrength">
@@ -728,13 +770,13 @@
                                     <div class="feedback-item">
 
                                         <div class="feedback-item-icon">
-                                            →
+                                            💡
                                         </div>
 
                                         <div>
 
                                             <strong>
-                                                Gợi ý tiếp theo
+                                                Lời khuyên & Định hướng
                                             </strong>
 
                                             <p id="aiAdvice">
@@ -968,6 +1010,7 @@
 
     <script src="js/storage.js"></script>
     <script src="js/layout.js"></script>
+    <script src="js/exercises-data.js"></script>
     <script src="js/lesson-detail.js"></script>
 
 </body>
