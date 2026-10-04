@@ -166,106 +166,180 @@
 
                 <div class="hero-grid">
 
-                    <!-- Nội dung -->
+                    <!-- Nội dung bên trái -->
 
                     <div class="hero-content">
 
-                        <span class="hero-badge">
-                            CODELEARN C++
-                        </span>
+                        <div class="hero-badge">
+                            <span class="hero-badge-sparkle">✨</span>
+                            <span id="homeGreeting">Chào mừng</span>
+                            <span id="welcomeUsername"> bạn đến với CodeLearn C++</span>
+                        </div>
 
-
-                        <h1>
-                            Chào mừng bạn
-                            <span id="welcomeUsername">
-                                trở lại
-                            </span>
+                        <h1 class="hero-title">
+                            Chinh Phục Lập Trình C++ <br>
+                            <span class="hero-gradient-text">Từ Con Số 0 Đến Thực Chiến</span>
                         </h1>
 
-
-                        <p>
-                            Tiếp tục hành trình học C++ của bạn.
-                            Học lý thuyết, thực hành code và
-                            kiểm tra kiến thức sau mỗi bài học.
+                        <p class="hero-description">
+                            Nền tảng học C++ trực quan &amp; tương tác số 1 dành cho người mới bắt đầu.
+                            Học lý thuyết cô đọng, viết code trực tiếp trên trình duyệt và tự động kiểm tra bài tập ngay sau mỗi bài học.
                         </p>
-
 
                         <div class="hero-actions">
 
                             <a
                                 href="lessons.html"
                                 id="continueLearningButton"
-                                class="btn btn-primary"
+                                class="btn btn-primary btn-lg"
                             >
-                                Tiếp tục học
+                                🚀 Bắt đầu học ngay
                                 <span>→</span>
                             </a>
 
                             <a
-                                href="#lessons"
-                                class="btn btn-secondary"
+                                href="#roadmap"
+                                class="btn btn-secondary btn-lg"
                             >
-                                Xem bài học
+                                🧭 Xem lộ trình 4 chặng
                             </a>
+
+                        </div>
+
+                        <div class="hero-perks">
+
+                            <span class="perk-item">
+                                <span class="perk-icon">✓</span> 100% Miễn phí
+                            </span>
+
+                            <span class="perk-item">
+                                <span class="perk-icon">✓</span> Trình biên dịch C++ trực tiếp
+                            </span>
+
+                            <span class="perk-item">
+                                <span class="perk-icon">✓</span> Chấm điểm tự động
+                            </span>
 
                         </div>
 
                     </div>
 
 
-                    <!-- Card tiến độ -->
+                    <!-- Cột bên phải: C++ Code Window + Tiến độ -->
 
-                    <div class="hero-progress-card">
+                    <div class="hero-visual-wrapper">
 
-                        <div class="progress-card-top">
+                        <!-- Mockup C++ IDE Window -->
 
-                            <div>
+                        <div class="hero-code-window">
 
-                                <span class="small-label">
-                                    TIẾN ĐỘ CỦA BẠN
-                                </span>
+                            <div class="code-window-header">
 
-                                <h2 id="progressPercent">
-                                    0%
-                                </h2>
+                                <div class="code-window-dots">
+                                    <span class="dot dot-red"></span>
+                                    <span class="dot dot-yellow"></span>
+                                    <span class="dot dot-green"></span>
+                                </div>
+
+                                <div class="code-window-tab">
+                                    <span class="tab-icon">⚡</span>
+                                    <span class="tab-title">main.cpp</span>
+                                </div>
+
+                                <div class="code-window-action">
+                                    <span class="run-badge">▶ Đã biên dịch</span>
+                                </div>
 
                             </div>
 
-                            <div class="progress-circle">
-                                <span id="progressCircleText">
-                                    0%
-                                </span>
+                            <div class="code-window-body">
+
+                                <pre class="code-pre"><code><span class="c-comment">// 🚀 Chương trình C++ đầu tiên của bạn</span>
+<span class="c-keyword">#include</span> <span class="c-string">&lt;iostream&gt;</span>
+<span class="c-keyword">#include</span> <span class="c-string">&lt;string&gt;</span>
+<span class="c-keyword">using namespace</span> <span class="c-type">std</span>;
+
+<span class="c-type">int</span> <span class="c-func">main</span>() {
+    <span class="c-type">string</span> student = <span class="c-string">"Học viên CodeLearn"</span>;
+    <span class="c-func">cout</span> &lt;&lt; <span class="c-string">"Xin chào, "</span> &lt;&lt; student &lt;&lt; <span class="c-string">"!"</span> &lt;&lt; <span class="c-func">endl</span>;
+    <span class="c-func">cout</span> &lt;&lt; <span class="c-string">"Bắt đầu học C++ thật dễ dàng ✨"</span> &lt;&lt; <span class="c-func">endl</span>;
+    <span class="c-keyword">return</span> <span class="c-num">0</span>;
+}</code></pre>
+
+                                <div class="code-output-preview">
+
+                                    <div class="output-header">
+                                        <span class="output-dot"></span>
+                                        <span>Terminal / Console Output</span>
+                                    </div>
+
+                                    <div class="output-body">
+                                        <div class="output-line">Xin chào, Học viên CodeLearn!</div>
+                                        <div class="output-line output-success">Bắt đầu học C++ thật dễ dàng ✨</div>
+                                    </div>
+
+                                </div>
+
                             </div>
 
                         </div>
 
 
-                        <div class="progress-bar">
+                        <!-- Card tiến độ học tập (giữ nguyên các ID cho JS) -->
 
-                            <div
-                                id="progressBar"
-                                class="progress-bar-fill"
-                                style="width: 0%"
-                            ></div>
+                        <div class="hero-progress-card">
 
-                        </div>
+                            <div class="progress-card-top">
+
+                                <div>
+
+                                    <span class="small-label">
+                                        TIẾN ĐỘ HỌC TẬP
+                                    </span>
+
+                                    <h2 id="progressPercent">
+                                        0%
+                                    </h2>
+
+                                </div>
+
+                                <div class="progress-circle">
+                                    <span id="progressCircleText">
+                                        0%
+                                    </span>
+                                </div>
+
+                            </div>
 
 
-                        <div class="progress-card-footer">
+                            <div class="progress-bar">
 
-                            <span>
-                                <strong id="completedLessons">
-                                    0
-                                </strong>
-                                bài đã hoàn thành
-                            </span>
+                                <div
+                                    id="progressBar"
+                                    class="progress-bar-fill"
+                                    style="width: 0%"
+                                ></div>
 
-                            <span>
-                                <strong id="totalLessons">
-                                    0
-                                </strong>
-                                bài học
-                            </span>
+                            </div>
+
+
+                            <div class="progress-card-footer">
+
+                                <span>
+                                    <strong id="completedLessons">
+                                        0
+                                    </strong>
+                                    bài đã hoàn thành
+                                </span>
+
+                                <span>
+                                    <strong id="totalLessons">
+                                        0
+                                    </strong>
+                                    bài học
+                                </span>
+
+                            </div>
 
                         </div>
 
@@ -276,6 +350,7 @@
             </div>
 
         </section>
+
 
 
         <!-- =====================================
@@ -379,7 +454,133 @@
 
 
         <!-- =====================================
-             LESSONS
+             WHY CHOOSE CODELEARN
+        ====================================== -->
+
+        <section class="why-choose-section">
+
+            <div class="container">
+
+                <div class="section-heading-center">
+                    <span class="section-label">ƯU ĐIỂM NỔI BẬT</span>
+                    <h2>Tại Sao Nên Học C++ Tại CodeLearn?</h2>
+                    <p>Thiết kế tối ưu cho người mới bắt đầu, giúp bạn tiếp cận ngôn ngữ C++ một cách nhẹ nhàng và hiệu quả nhất.</p>
+                </div>
+
+                <div class="feature-grid">
+
+                    <div class="feature-card">
+                        <div class="feature-icon">💻</div>
+                        <h3>Trình Biên Dịch Trực Tiếp</h3>
+                        <p>Viết mã và chạy thử ngay trên trình duyệt mà không cần cài đặt phần mềm nặng như Visual Studio, Dev-C++ hay cấu hình compiler phức tạp.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">🧩</div>
+                        <h3>Bài Học Trực Quan &amp; Ngắn Gọn</h3>
+                        <p>Lý thuyết được chắt lọc theo từng bài ngắn gọn (Micro-learning) kèm code mẫu trực quan, giúp bạn nhanh chóng hiểu bản chất câu lệnh.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">🎯</div>
+                        <h3>Luyện Tập &amp; Chấm Điểm Tức Thì</h3>
+                        <p>Sau mỗi bài học đều có trắc nghiệm kiểm tra độ hiểu bài và bài tập lập trình thực hành, hệ thống chấm điểm tự động ngay khi nộp.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">📈</div>
+                        <h3>Tự Động Lưu Tiến Độ Học</h3>
+                        <p>Toàn bộ tiến độ học tập, bài đã hoàn thành và điểm số đều được lưu trữ an toàn trên tài khoản để bạn có thể tiếp tục bất kỳ lúc nào.</p>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             LEARNING ROADMAP (4 CHẶNG)
+        ====================================== -->
+
+        <section class="roadmap-section" id="roadmap">
+
+            <div class="container">
+
+                <div class="section-heading-center">
+                    <span class="section-label">LỘ TRÌNH 4 CHẶNG</span>
+                    <h2>Lộ Trình Chinh Phục C++ Từ Cơ Bản Đến Nâng Cao</h2>
+                    <p>Chương trình học bài bản từng bước, phù hợp cho học sinh, sinh viên và người chuyển ngành.</p>
+                </div>
+
+                <div class="roadmap-grid">
+
+                    <!-- Chặng 1 -->
+                    <div class="roadmap-card">
+                        <div class="roadmap-step-pill">Chặng 01</div>
+                        <h3>Nhập Môn &amp; Cú Pháp Cơ Bản</h3>
+                        <p class="roadmap-desc">Làm quen với cấu trúc một chương trình C++ và những khái niệm nền móng đầu tiên.</p>
+                        <ul class="roadmap-list">
+                            <li><span class="roadmap-check">✓</span> Cấu trúc file C++ &amp; hàm main()</li>
+                            <li><span class="roadmap-check">✓</span> Biến &amp; kiểu dữ liệu căn bản</li>
+                            <li><span class="roadmap-check">✓</span> Nhập xuất dữ liệu với cin, cout</li>
+                            <li><span class="roadmap-check">✓</span> Toán tử số học &amp; gán giá trị</li>
+                        </ul>
+                        <div class="roadmap-badge">🌱 Cấp độ: Khởi động</div>
+                    </div>
+
+                    <!-- Chặng 2 -->
+                    <div class="roadmap-card">
+                        <div class="roadmap-step-pill">Chặng 02</div>
+                        <h3>Cấu Trúc Rẽ Nhánh &amp; Vòng Lặp</h3>
+                        <p class="roadmap-desc">Hình thành tư duy logic và điều khiển luồng thực thi trong chương trình.</p>
+                        <ul class="roadmap-list">
+                            <li><span class="roadmap-check">✓</span> Câu lệnh điều kiện if - else</li>
+                            <li><span class="roadmap-check">✓</span> Cấu trúc rẽ nhánh switch - case</li>
+                            <li><span class="roadmap-check">✓</span> Vòng lặp for, while, do-while</li>
+                            <li><span class="roadmap-check">✓</span> Kỹ thuật break &amp; continue</li>
+                        </ul>
+                        <div class="roadmap-badge">⚡ Cấp độ: Xây dựng tư duy</div>
+                    </div>
+
+                    <!-- Chặng 3 -->
+                    <div class="roadmap-card">
+                        <div class="roadmap-step-pill">Chặng 03</div>
+                        <h3>Mảng, Chuỗi &amp; Xây Dựng Hàm</h3>
+                        <p class="roadmap-desc">Tổ chức mã nguồn sạch sẽ, tái sử dụng và xử lý các tập dữ liệu phức hợp.</p>
+                        <ul class="roadmap-list">
+                            <li><span class="roadmap-check">✓</span> Mảng 1 chiều &amp; mảng 2 chiều</li>
+                            <li><span class="roadmap-check">✓</span> Xử lý chuỗi ký tự std::string</li>
+                            <li><span class="roadmap-check">✓</span> Viết hàm (Functions) &amp; tham số</li>
+                            <li><span class="roadmap-check">✓</span> Phạm vi biến (Scope) toàn cục/cục bộ</li>
+                        </ul>
+                        <div class="roadmap-badge">🧩 Cấp độ: Kỹ năng thực chiến</div>
+                    </div>
+
+                    <!-- Chặng 4 -->
+                    <div class="roadmap-card">
+                        <div class="roadmap-step-pill">Chặng 04</div>
+                        <h3>Con Trỏ &amp; Quản Lý Bộ Nhớ</h3>
+                        <p class="roadmap-desc">Nắm vững vũ khí mạnh nhất của C++: Quản trị ô nhớ và tối ưu hiệu năng.</p>
+                        <ul class="roadmap-list">
+                            <li><span class="roadmap-check">✓</span> Khái niệm địa chỉ ô nhớ (&amp;)</li>
+                            <li><span class="roadmap-check">✓</span> Bản chất con trỏ Pointer (*)</li>
+                            <li><span class="roadmap-check">✓</span> Truyền tham chiếu (Pass by reference)</li>
+                            <li><span class="roadmap-check">✓</span> Cấp phát động new &amp; delete</li>
+                        </ul>
+                        <div class="roadmap-badge">🔥 Cấp độ: Nâng cao &amp; Cốt lõi</div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             LESSONS (LOADED DYNAMICALLY)
         ====================================== -->
 
         <section
@@ -394,7 +595,7 @@
                     <div>
 
                         <span class="section-label">
-                            LỘ TRÌNH HỌC
+                            BÀI HỌC TIÊU BIỂU
                         </span>
 
                         <h2>
@@ -413,14 +614,14 @@
                         href="lessons.html"
                         class="section-link"
                     >
-                        Xem tất cả
+                        Xem tất cả bài học
                         <span>→</span>
                     </a>
 
                 </div>
 
 
-                <!-- Danh sách bài học -->
+                <!-- Danh sách bài học được load qua JS -->
 
                 <div
                     id="homeLessons"
@@ -447,7 +648,115 @@
 
 
         <!-- =====================================
-             CTA
+             STUDENT TESTIMONIALS
+        ====================================== -->
+
+        <section class="testimonials-section">
+
+            <div class="container">
+
+                <div class="section-heading-center">
+                    <span class="section-label">ĐÁNH GIÁ TỪ HỌC VIÊN</span>
+                    <h2>Học Viên Nói Gì Về CodeLearn C++?</h2>
+                    <p>Hàng trăm học viên đã bắt đầu hành trình lập trình của mình tại đây.</p>
+                </div>
+
+                <div class="testimonial-grid">
+
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars">★★★★★</div>
+                        <p class="testimonial-text">
+                            "Trang web học C++ hay nhất mình từng học. Lý thuyết rất ngắn gọn, dễ hiểu, vừa học xong là gõ code trực tiếp trên web giúp mình hiểu bản chất rất nhanh và qua môn điểm A!"
+                        </p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">HN</div>
+                            <div class="author-info">
+                                <strong>Hoàng Minh Nam</strong>
+                                <span>Sinh viên năm 1, ĐH Công Nghệ</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars">★★★★★</div>
+                        <p class="testimonial-text">
+                            "Là người trái ngành muốn học lập trình, mình từng rất sợ C++ khó. Nhưng học ở đây theo lộ trình 4 chặng rất bài bản, giao diện màu tím pastel rất đẹp và dịu mắt khi học đêm."
+                        </p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">TT</div>
+                            <div class="author-info">
+                                <strong>Nguyễn Thùy Trang</strong>
+                                <span>Học viên chuyển ngành Lập trình</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="testimonial-card">
+                        <div class="testimonial-stars">★★★★★</div>
+                        <p class="testimonial-text">
+                            "Tính năng chạy code trực tiếp và trắc nghiệm sau bài học cực kỳ tiện lợi. Không cần mở IDE nặng nề, chỉ cần chiếc laptop là có thể học và ôn bài mọi lúc mọi nơi."
+                        </p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">QH</div>
+                            <div class="author-info">
+                                <strong>Trần Quang Huy</strong>
+                                <span>Học sinh Lớp 11 Chuyên Tin</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             FAQ SECTION
+        ====================================== -->
+
+        <section class="faq-section">
+
+            <div class="container">
+
+                <div class="section-heading-center">
+                    <span class="section-label">GIẢI ĐÁP THẮC MẮC</span>
+                    <h2>Câu Hỏi Thường Gặp</h2>
+                    <p>Những điều bạn có thể đang băn khoăn trước khi bắt đầu học.</p>
+                </div>
+
+                <div class="faq-grid">
+
+                    <div class="faq-card">
+                        <h3 class="faq-question">❓ Chưa biết gì về lập trình có học được không?</h3>
+                        <p class="faq-answer">Hoàn toàn được! Lộ trình được thiết kế bắt đầu từ con số 0, giải thích từng câu lệnh một cách trực quan, gần gũi nhất.</p>
+                    </div>
+
+                    <div class="faq-card">
+                        <h3 class="faq-question">💻 Có cần cài phần mềm lập trình trên máy tính không?</h3>
+                        <p class="faq-answer">Không cần! Bạn có thể gõ code và chạy thử trực tiếp ngay trên trình duyệt web của bất kỳ thiết bị nào.</p>
+                    </div>
+
+                    <div class="faq-card">
+                        <h3 class="faq-question">💰 Nền tảng học có mất phí không?</h3>
+                        <p class="faq-answer">Toàn bộ bài học C++ cơ bản, hệ thống bài tập thực hành và câu hỏi trắc nghiệm hiện tại đều được mở 100% miễn phí.</p>
+                    </div>
+
+                    <div class="faq-card">
+                        <h3 class="faq-question">📊 Tiến độ học tập của tôi có được lưu lại không?</h3>
+                        <p class="faq-answer">Có! Hệ thống tự động ghi nhận các bài học đã hoàn thành và điểm số vào tài khoản của bạn để bạn tiếp tục bất kỳ lúc nào.</p>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             CTA SECTION
         ====================================== -->
 
         <section class="home-cta">
@@ -459,28 +768,31 @@
                     <div class="cta-content">
 
                         <span class="section-label">
-                            SẴN SÀNG?
+                            BẮT ĐẦU NGAY HÔM NAY
                         </span>
 
                         <h2>
-                            Bắt đầu viết code C++
+                            Sẵn Sàng Trở Thành Lập Trình Viên C++?
                         </h2>
 
                         <p>
-                            Đừng chỉ học lý thuyết.
-                            Hãy bắt đầu thực hành ngay hôm nay.
+                            Đừng chỉ học lý thuyết. Hãy bắt đầu viết những dòng mã đầu tiên và xây dựng nền tảng vững chắc nhất của ngành công nghệ thông tin.
                         </p>
 
                     </div>
 
 
-                    <a
-                        href="lessons.html"
-                        class="btn btn-light"
-                    >
-                        Bắt đầu học
-                        <span>→</span>
-                    </a>
+                    <div class="cta-actions">
+
+                        <a
+                            href="lessons.html"
+                            class="btn btn-light btn-lg"
+                        >
+                            Bắt đầu học miễn phí
+                            <span>→</span>
+                        </a>
+
+                    </div>
 
                 </div>
 
