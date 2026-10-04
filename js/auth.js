@@ -115,44 +115,6 @@
             );
         }
 
-        const demoAdminBtn = getElement("demoAdminBtn");
-        const demoStudentBtn = getElement("demoStudentBtn");
-
-        if (demoAdminBtn && usernameInput && passwordInput) {
-            demoAdminBtn.addEventListener("click", () => {
-                usernameInput.value = "admin";
-                passwordInput.value = "123456";
-                hideMessage(message);
-            });
-        }
-
-        if (demoStudentBtn && usernameInput && passwordInput) {
-            demoStudentBtn.addEventListener("click", () => {
-                usernameInput.value = "letrunghau";
-                passwordInput.value = "123456";
-                hideMessage(message);
-            });
-        }
-
-        const quickEnterBtn = getElement("quickEnterBtn");
-        if (quickEnterBtn) {
-            quickEnterBtn.addEventListener("click", () => {
-                const student = (window.CppStorage && CppStorage.getUserByUsername("letrunghau")) || {
-                    id: "user-student",
-                    username: "letrunghau",
-                    fullName: "Lê Trung Hậu",
-                    email: "letrunghau@codelearn.vn",
-                    role: "student",
-                    createdAt: new Date().toISOString()
-                };
-                if (window.CppStorage) {
-                    CppStorage.setCurrentUser(student);
-                } else {
-                    localStorage.setItem("cpp_currentUser", JSON.stringify(student));
-                }
-                redirectTo("home.html");
-            });
-        }
 
 
         loginForm.addEventListener(
