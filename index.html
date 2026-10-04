@@ -105,12 +105,12 @@
 
         <h1>CodeLearn C++</h1>
 
-        <p>Đang chuyển hướng tới trang đăng nhập học viên...</p>
+        <p>Đang tải CodeLearn C++...</p>
 
         <div class="spinner"></div>
 
         <noscript>
-            <p><a href="login.html" style="color: #2563eb; text-decoration: underline;">Nhấn vào đây để đăng nhập vào học</a></p>
+            <p><a href="home.html" style="color: #2563eb; text-decoration: underline;">Nhấn vào đây để vào Trang chủ</a></p>
         </noscript>
 
     </main>
@@ -120,14 +120,9 @@
     <script>
         /*
          * Khởi động CodeLearn C++
-         * Nếu đã đăng nhập: vào thẳng Trang chủ (home.html)
-         * Nếu chưa đăng nhập: chuyển tới Đăng nhập (login.html)
+         * Chuyển hướng thẳng tới Trang chủ (home.html)
          */
-        const currentUser = window.CppStorage && CppStorage.getCurrentUser();
-        const targetPage = currentUser ? "home.html" : "login.html";
-        setTimeout(() => {
-            window.location.href = targetPage;
-        }, 200);
+        window.location.replace("home.html");
     </script>
 
 </body>

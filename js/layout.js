@@ -28,7 +28,9 @@ document.addEventListener("DOMContentLoaded", () => {
         "",
         "index.html",
         "login.html",
-        "register.html"
+        "register.html",
+        "home.html",
+        "lessons.html"
     ];
 
     if (!currentUser && !publicPages.includes(currentPage)) {
@@ -36,38 +38,27 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
+    // 4. Menu mobile
+    setupMobileMenu();
+
+    // 5. Active navigation
+    setActiveNavigation();
+
     if (!currentUser) {
+        updateGuestHeader();
         return;
     }
 
-    // --------------------------------------------------------
     // 2. Hiển thị thông tin người dùng trên Header
-    // --------------------------------------------------------
     updateHeaderUser(currentUser);
 
-    // --------------------------------------------------------
     // 3. Hiển thị / ẩn menu Admin
-    // --------------------------------------------------------
     updateAdminNavigation(currentUser);
 
-    // --------------------------------------------------------
-    // 4. Menu mobile
-    // --------------------------------------------------------
-    setupMobileMenu();
-
-    // --------------------------------------------------------
-    // 5. Active navigation
-    // --------------------------------------------------------
-    setActiveNavigation();
-
-    // --------------------------------------------------------
     // 6. Xử lý nút đăng xuất
-    // --------------------------------------------------------
     setupLogoutButtons();
 
-    // --------------------------------------------------------
     // 7. Nếu truy cập Admin mà không có quyền
-    // --------------------------------------------------------
     if (
         currentPage === "admin.html" &&
         currentUser.role !== "admin"
@@ -129,6 +120,22 @@ function updateHeaderUser(user) {
             element.textContent = "Học viên";
         }
     });
+}
+
+
+// ============================================================
+// GIAO DIỆN KHÁCH CHƯA ĐĂNG NHẬP
+// ============================================================
+
+function updateGuestHeader() {
+    const userContainer = document.querySelector(".header-user");
+    if (userContainer) {
+        userContainer.innerHTML = `
+            <a href="login.html" class="btn btn-primary" style="padding: 7px 18px; font-size: 13px; font-weight: 700; text-decoration: none; border-radius: 8px; white-space: nowrap;">
+                Đăng nhập
+            </a>
+        `;
+    }
 }
 
 

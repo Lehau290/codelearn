@@ -6,10 +6,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     const currentUser = CppStorage.getCurrentUser();
 
-    if (!currentUser) {
-        return;
-    }
-
     // Lấy các thành phần trên trang
     const searchInput = document.getElementById("lessonSearch");
     const chapterFilter = document.getElementById("chapterFilter");
@@ -21,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Lưu dữ liệu để sử dụng khi lọc
     let allLessons = CppStorage.getLessons();
-    const userProgress = CppStorage.getUserProgress(currentUser.id);
+    const userProgress = currentUser ? CppStorage.getUserProgress(currentUser.id) : {};
 
     // Hiển thị bộ lọc chương
     renderChapterFilter(allLessons, chapterFilter);

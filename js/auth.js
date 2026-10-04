@@ -102,6 +102,10 @@
         const passwordInput =
             getElement("loginPassword");
 
+        const rememberInput =
+            getElement("rememberMe") ||
+            getElement("loginRemember");
+
         const currentUser = (window.CppStorage && CppStorage.getCurrentUser());
         if (currentUser && message) {
             showMessage(

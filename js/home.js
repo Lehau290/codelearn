@@ -4,31 +4,19 @@
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Lấy người dùng hiện tại
+    // Lấy người dùng hiện tại (nếu có)
     const currentUser = CppStorage.getCurrentUser();
 
-    if (!currentUser) {
-        return;
-    }
-
-    // --------------------------------------------------------
     // 1. Hiển thị lời chào
-    // --------------------------------------------------------
     updateGreeting(currentUser);
 
-    // --------------------------------------------------------
     // 2. Hiển thị thống kê học tập
-    // --------------------------------------------------------
     updateLearningStats(currentUser);
 
-    // --------------------------------------------------------
     // 3. Hiển thị danh sách bài học
-    // --------------------------------------------------------
     renderFeaturedLessons(currentUser);
 
-    // --------------------------------------------------------
     // 4. Nút tiếp tục học
-    // --------------------------------------------------------
     setupContinueLearning(currentUser);
 });
 
@@ -64,7 +52,7 @@ function updateGreeting(user) {
 
     if (nameElement) {
         nameElement.textContent =
-            user.username ? `, ${user.username}` : "trở lại";
+            user && user.username ? `, ${user.username}` : " bạn đến với CodeLearn C++";
     }
 }
 
@@ -75,9 +63,7 @@ function updateGreeting(user) {
 
 function updateLearningStats(user) {
     const lessons = CppStorage.getLessons();
-    const progress = CppStorage.getUserProgress(
-        user.id
-    );
+    const progress = user ? CppStorage.getUserProgress(user.id) : {};
 
     const totalLessons = lessons.length;
 
@@ -147,9 +133,7 @@ function renderFeaturedLessons(user) {
     }
 
     const lessons = CppStorage.getLessons();
-    const progress = CppStorage.getUserProgress(
-        user.id
-    );
+    const progress = user ? CppStorage.getUserProgress(user.id) : {};
 
     if (!lessons.length) {
         container.innerHTML = `
@@ -275,6 +259,12 @@ function setupContinueLearning(user) {
     }
 
     const lessons = CppStorage.getLessons();
+
+    if (!user) {
+        button.href = "lessons.html";
+        button.textContent = "Bắt đầu học ngay →";
+        return;
+    }
 
     const progress = CppStorage.getUserProgress(
         user.id
