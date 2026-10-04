@@ -179,26 +179,28 @@ function renderFeaturedLessons(user) {
                     
                     <div class="lesson-card-top">
                         <span class="lesson-number">
-                            ${String(index + 1).padStart(2, "0")}
+                            Bài ${String(index + 1).padStart(2, "0")}
                         </span>
 
-                        <span class="lesson-status">
-                            ${completed ? "✓" : "○"}
+                        <span class="lesson-status ${completed ? "completed" : ""}">
+                            ${completed ? "✓ Đã hoàn thành" : "○ Chưa học"}
                         </span>
                     </div>
 
-                    <div class="lesson-card-icon">
-                        ${getLessonIcon(index)}
-                    </div>
+                    <div class="lesson-card-header">
+                        <div class="lesson-card-icon">
+                            ${getLessonIcon(index)}
+                        </div>
 
-                    <div class="lesson-card-content">
                         <span class="lesson-chapter">
                             ${escapeHtml(
                                 lesson.chapter ||
                                 "C++ Cơ bản"
                             )}
                         </span>
+                    </div>
 
+                    <div class="lesson-card-content">
                         <h3>
                             ${escapeHtml(
                                 lesson.title
@@ -214,15 +216,15 @@ function renderFeaturedLessons(user) {
                     </div>
 
                     <div class="lesson-card-footer">
-                        <span>
-                            ${escapeHtml(
+                        <span class="lesson-duration">
+                            ⏱ ${escapeHtml(
                                 lesson.duration ||
                                 "15 phút"
                             )}
                         </span>
 
-                        <span class="lesson-status-text">
-                            ${statusText}
+                        <span class="lesson-action-pill ${completed ? "completed" : ""}">
+                            ${completed ? "Ôn lại bài →" : "Vào học ngay →"}
                         </span>
                     </div>
 
@@ -235,7 +237,7 @@ function renderFeaturedLessons(user) {
                             lesson.title
                         )}"
                     >
-                        Xem bài học →
+                        <span class="sr-only">Học bài ${escapeHtml(lesson.title)}</span>
                     </a>
 
                 </article>
