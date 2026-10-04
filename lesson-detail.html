@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Học bài C++ và thực hành lập trình trực tiếp - CodeLearn C++"
+    >
+
+    <title>Học bài | CodeLearn C++</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        (function() {
+            var t = localStorage.getItem("cpp_theme");
+            if (t === "dark" || (!t && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+                document.documentElement.classList.add("dark-theme");
+            }
+        })();
+    </script>
+</head>
+
+<body>
+
+    <!-- =========================================
+         HEADER
+    ========================================== -->
+
+    <header class="site-header">
+
+        <div class="container header-inner">
+
+            <!-- Logo -->
+
+            <a
+                href="home.html"
+                class="site-logo"
+            >
+
+                <div class="site-logo-mark">
+                    C++
+                </div>
+
+                <div class="site-logo-text">
+                    <strong>CodeLearn</strong>
+                    <span>C++</span>
+                </div>
+
+            </a>
+
+
+            <!-- Navigation -->
+
+            <nav
+                class="main-nav"
+                id="mainNav"
+                aria-label="Menu chính"
+            >
+
+                <a
+                    href="home.html"
+                    class="nav-link"
+                >
+                    Trang chủ
+                </a>
+
+                <a
+                    href="lessons.html"
+                    class="nav-link active"
+                >
+                    Bài học
+                </a>
+
+                <a
+                    href="profile.html"
+                    class="nav-link"
+                >
+                    Hồ sơ
+                </a>
+
+                <a
+                    href="admin.html"
+                    class="nav-link admin-nav-link"
+                    id="adminNavLink"
+                    hidden
+                >
+                    Quản trị
+                </a>
+
+            </nav>
+
+
+            <!-- Theme Toggle -->
+            <button
+                type="button"
+                class="theme-toggle-btn"
+                id="themeToggleBtn"
+                aria-label="Chuyển chế độ sáng/tối"
+                title="Chuyển chế độ sáng/tối"
+            >
+                <span class="theme-text-light">Chế độ tối</span>
+                <span class="theme-text-dark">Chế độ sáng</span>
+            </button>
+
+
+            <!-- User -->
+
+            <div class="header-user">
+
+                <a href="profile.html" class="header-user-link" title="Xem hồ sơ cá nhân">
+                    <div class="header-user-info">
+                        <span id="headerUsername" class="header-username">Người học</span>
+                        <span class="header-role">Học viên</span>
+                    </div>
+                    <div id="headerAvatar" class="header-avatar">U</div>
+                </a>
+
+                <button
+                    type="button"
+                    id="logoutButton"
+                    class="logout-button"
+                    title="Đăng xuất"
+                >
+                    ↪
+                </button>
+
+            </div>
+
+
+            <!-- Mobile menu -->
+
+            <button
+                type="button"
+                class="mobile-menu-button"
+                id="mobileMenuButton"
+                aria-label="Mở menu"
+                aria-expanded="false"
+            >
+                ☰
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- =========================================
+         MAIN
+    ========================================== -->
+
+    <main>
+
+        <!-- =====================================
+             BREADCRUMB
+        ====================================== -->
+
+        <section class="lesson-breadcrumb-section">
+
+            <div class="container">
+
+                <div class="breadcrumb">
+
+                    <a href="home.html">
+                        Trang chủ
+                    </a>
+
+                    <span>›</span>
+
+                    <a href="lessons.html">
+                        Bài học
+                    </a>
+
+                    <span>›</span>
+
+                    <span id="breadcrumbLesson">
+                        Đang tải...
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             LESSON HEADER
+        ====================================== -->
+
+        <section class="lesson-detail-header">
+
+            <div class="container">
+
+                <div class="lesson-detail-header-grid">
+
+                    <div>
+
+                        <span
+                            id="lessonChapter"
+                            class="lesson-chapter-badge"
+                        >
+                            CHƯƠNG 1
+                        </span>
+
+
+                        <h1 id="lessonTitle">
+                            Đang tải bài học...
+                        </h1>
+
+
+                        <p id="lessonDescription">
+                            Vui lòng chờ trong giây lát...
+                        </p>
+
+
+                        <div class="lesson-meta">
+
+                            <span>
+                                📖
+                                <strong id="lessonLevel">
+                                    Cơ bản
+                                </strong>
+                            </span>
+
+                            <span>
+                                ⏱
+                                <strong id="lessonDuration">
+                                    15 phút
+                                </strong>
+                            </span>
+
+                            <span>
+                                &lt;/&gt;
+                                <strong>
+                                    Thực hành
+                                </strong>
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Lesson status -->
+
+                    <div class="lesson-status-card">
+
+                        <div class="lesson-status-icon">
+                            ✓
+                        </div>
+
+                        <div>
+
+                            <span>
+                                TRẠNG THÁI
+                            </span>
+
+                            <strong id="lessonStatus">
+                                Chưa hoàn thành
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             LESSON CONTENT
+        ====================================== -->
+
+        <section class="lesson-content-section">
+
+            <div class="container">
+
+                <div class="lesson-layout">
+
+                    <!-- =================================
+                         LEFT CONTENT
+                    ================================== -->
+
+                    <article class="lesson-content">
+
+                        <!-- Introduction -->
+
+                        <section class="lesson-block">
+
+                            <div class="lesson-block-heading">
+
+                                <span class="block-number">
+                                    01
+                                </span>
+
+                                <div>
+
+                                    <span class="section-label">
+                                        LÝ THUYẾT
+                                    </span>
+
+                                    <h2>
+                                        Nội dung bài học
+                                    </h2>
+
+                                </div>
+
+                            </div>
+
+
+                            <div
+                                id="lessonContent"
+                                class="lesson-text"
+                            >
+
+                                <div class="loading-card">
+
+                                    <div class="loading-spinner"></div>
+
+                                    <p>
+                                        Đang tải nội dung...
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </section>
+
+
+                        <!-- Example code -->
+
+                        <section class="lesson-block">
+
+                            <div class="lesson-block-heading">
+
+                                <span class="block-number">
+                                    02
+                                </span>
+
+                                <div>
+
+                                    <span class="section-label">
+                                        VÍ DỤ
+                                    </span>
+
+                                    <h2>
+                                        Code mẫu
+                                    </h2>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="code-example">
+
+                                <div class="code-example-header">
+
+                                    <div class="code-language">
+
+                                        <span class="code-dot"></span>
+                                        <span class="code-dot"></span>
+                                        <span class="code-dot"></span>
+
+                                        <strong>
+                                            C++
+                                        </strong>
+
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        id="copyExampleButton"
+                                        class="code-copy-button"
+                                    >
+                                        Sao chép
+                                    </button>
+
+                                </div>
+
+
+                                <pre><code id="lessonExampleCode"></code></pre>
+
+                            </div>
+
+                        </section>
+
+
+                        <!-- Exercise -->
+
+                        <section class="lesson-block">
+
+                            <div class="lesson-block-heading">
+
+                                <span class="block-number">
+                                    03
+                                </span>
+
+                                <div>
+
+                                    <span class="section-label">
+                                        BÀI TẬP
+                                    </span>
+
+                                    <h2>
+                                        Thử sức với bài tập
+                                    </h2>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- Exercise description -->
+
+                            <div class="exercise-description">
+
+                                <div class="exercise-icon">
+                                    ?
+                                </div>
+
+                                <div>
+
+                                    <h3 id="exerciseTitle">
+                                        Bài tập
+                                    </h3>
+
+                                    <p id="exerciseDescription">
+                                        Đang tải đề bài...
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- =================================
+                                 CODE EDITOR
+                            ================================== -->
+
+                            <div class="code-editor-container">
+
+                                <div class="code-editor-header">
+
+                                    <div class="editor-title">
+
+                                        <span class="editor-dot"></span>
+
+                                        <strong>
+                                            main.cpp
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div class="editor-actions">
+
+                                        <button
+                                            type="button"
+                                            id="resetCodeButton"
+                                            class="editor-button"
+                                        >
+                                            ↻ Đặt lại
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            id="copyCodeButton"
+                                            class="editor-button"
+                                        >
+                                            Sao chép
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+
+                                <textarea
+                                    id="codeEditor"
+                                    class="code-editor"
+                                    spellcheck="false"
+                                    placeholder="// Viết code C++ của bạn ở đây..."
+                                ></textarea>
+
+                            </div>
+
+
+                            <!-- =================================
+                                 INPUT
+                            ================================== -->
+
+                            <div class="input-output-grid">
+
+                                <div class="io-box">
+
+                                    <div class="io-header">
+
+                                        <div>
+
+                                            <span class="io-icon">
+                                                ↓
+                                            </span>
+
+                                            <strong>
+                                                Input
+                                            </strong>
+
+                                        </div>
+
+                                        <span>
+                                            Dữ liệu đầu vào
+                                        </span>
+
+                                    </div>
+
+
+                                    <textarea
+                                        id="inputData"
+                                        class="io-textarea"
+                                        placeholder="Nhập dữ liệu đầu vào..."
+                                    ></textarea>
+
+                                </div>
+
+
+                                <div class="io-box">
+
+                                    <div class="io-header">
+
+                                        <div>
+
+                                            <span class="io-icon">
+                                                ↑
+                                            </span>
+
+                                            <strong>
+                                                Output
+                                            </strong>
+
+                                        </div>
+
+                                        <span>
+                                            Kết quả chương trình
+                                        </span>
+
+                                    </div>
+
+
+                                    <pre
+                                        id="outputData"
+                                        class="output-display"
+                                    >Chưa có kết quả.</pre>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- =================================
+                                 RUN / SUBMIT
+                            ================================== -->
+
+                            <div class="exercise-actions">
+
+                                <button
+                                    type="button"
+                                    id="runCodeButton"
+                                    class="btn btn-secondary"
+                                >
+                                    <span>
+                                        ▶
+                                    </span>
+
+                                    Chạy thử
+                                </button>
+
+
+                                <button
+                                    type="button"
+                                    id="submitCodeButton"
+                                    class="btn btn-primary"
+                                >
+                                    <span>
+                                        ✓
+                                    </span>
+
+                                    Nộp bài
+                                </button>
+
+                            </div>
+
+
+                            <!-- =================================
+                                 RUN STATUS
+                            ================================== -->
+
+                            <div
+                                id="codeStatus"
+                                class="code-status"
+                                hidden
+                            ></div>
+
+
+                            <!-- =================================
+                                 AI FEEDBACK
+                            ================================== -->
+
+                            <div
+                                id="aiFeedback"
+                                class="ai-feedback"
+                                hidden
+                            >
+
+                                <div class="ai-feedback-header">
+
+                                    <div class="ai-icon">
+                                        AI
+                                    </div>
+
+                                    <div>
+
+                                        <span>
+                                            C++ BASIC AI
+                                        </span>
+
+                                        <h3>
+                                            Đánh giá bài làm
+                                        </h3>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- Score -->
+
+                                <div class="ai-score-section">
+
+                                    <div class="ai-score-circle">
+
+                                        <strong id="aiScore">
+                                            0
+                                        </strong>
+
+                                        <span>
+                                            /100
+                                        </span>
+
+                                    </div>
+
+
+                                    <div class="ai-score-info">
+
+                                        <span>
+                                            KẾT QUẢ
+                                        </span>
+
+                                        <strong id="aiResult">
+                                            Chưa đánh giá
+                                        </strong>
+
+                                        <p id="aiSummary">
+                                            Hệ thống đang phân tích bài làm.
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- Feedback -->
+
+                                <div class="ai-feedback-grid">
+
+                                    <div class="feedback-item">
+
+                                        <div class="feedback-item-icon">
+                                            ✓
+                                        </div>
+
+                                        <div>
+
+                                            <strong>
+                                                Điểm tốt
+                                            </strong>
+
+                                            <p id="aiStrength">
+                                                —
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="feedback-item">
+
+                                        <div class="feedback-item-icon">
+                                            !
+                                        </div>
+
+                                        <div>
+
+                                            <strong>
+                                                Cần cải thiện
+                                            </strong>
+
+                                            <p id="aiImprovement">
+                                                —
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="feedback-item">
+
+                                        <div class="feedback-item-icon">
+                                            →
+                                        </div>
+
+                                        <div>
+
+                                            <strong>
+                                                Gợi ý tiếp theo
+                                            </strong>
+
+                                            <p id="aiAdvice">
+                                                —
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </section>
+
+
+                        <!-- =================================
+                             NAVIGATION
+                        ================================== -->
+
+                        <div class="lesson-navigation">
+
+                            <a
+                                href="#"
+                                id="previousLessonButton"
+                                class="lesson-nav-button"
+                                style="display: none;"
+                            >
+
+                                <span>
+                                    ←
+                                </span>
+
+                                Bài trước
+
+                            </a>
+
+                            <a
+                                href="lessons.html"
+                                id="backToLessons"
+                                class="lesson-nav-button"
+                            >
+
+                                📚 Danh sách bài học
+
+                            </a>
+
+
+                            <a
+                                href="#"
+                                id="nextLessonButton"
+                                class="lesson-nav-button next"
+                            >
+
+                                Bài tiếp theo
+
+                                <span>
+                                    →
+                                </span>
+
+                            </a>
+
+                        </div>
+
+                    </article>
+
+
+                    <!-- =================================
+                         RIGHT SIDEBAR
+                    ================================== -->
+
+                    <aside class="lesson-sidebar">
+
+                        <!-- Progress -->
+
+                        <div class="sidebar-card">
+
+                            <div class="sidebar-card-header">
+
+                                <span class="section-label">
+                                    TIẾN ĐỘ
+                                </span>
+
+                                <strong id="sidebarProgress">
+                                    0%
+                                </strong>
+
+                            </div>
+
+
+                            <div class="progress-bar">
+
+                                <div
+                                    id="sidebarProgressBar"
+                                    class="progress-bar-fill"
+                                    style="width: 0%"
+                                ></div>
+
+                            </div>
+
+
+                            <p>
+                                Hoàn thành bài tập để cập nhật
+                                tiến độ học tập.
+                            </p>
+
+                        </div>
+
+
+                        <!-- Course navigation -->
+
+                        <div class="sidebar-card">
+
+                            <div class="sidebar-card-title">
+
+                                <span>
+                                    📚
+                                </span>
+
+                                <strong>
+                                    Nội dung khóa học
+                                </strong>
+
+                            </div>
+
+
+                            <div
+                                id="courseSidebarLessons"
+                                class="sidebar-lessons"
+                            >
+
+                                <div class="sidebar-loading">
+                                    Đang tải...
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Tips -->
+
+                        <div class="sidebar-card sidebar-tip">
+
+                            <div class="sidebar-tip-icon">
+                                💡
+                            </div>
+
+                            <strong>
+                                Mẹo học tập
+                            </strong>
+
+                            <p>
+                                Hãy tự viết code trước khi xem
+                                đáp án. Sai cũng là một phần
+                                quan trọng của quá trình học.
+                            </p>
+
+                        </div>
+
+                    </aside>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================================
+         FOOTER
+    ========================================== -->
+
+    <footer class="site-footer">
+
+        <div class="container footer-inner">
+
+            <div class="footer-brand">
+
+                <div class="site-logo-mark">
+                    C++
+                </div>
+
+                <div>
+
+                    <strong>
+                        CodeLearn C++
+                    </strong>
+
+                    <p>
+                        Nền tảng học lập trình C++ thực chiến & trực quan.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="footer-links">
+
+                <a href="home.html">
+                    Trang chủ
+                </a>
+
+                <a href="lessons.html">
+                    Bài học
+                </a>
+
+                <a href="profile.html">
+                    Hồ sơ
+                </a>
+
+            </div>
+
+
+            <p class="copyright">
+                © 2026 CodeLearn C++. All rights reserved.
+            </p>
+
+        </div>
+
+    </footer>
+
+
+    <!-- =========================================
+         JAVASCRIPT
+    ========================================== -->
+
+    <script src="js/storage.js"></script>
+    <script src="js/layout.js"></script>
+    <script src="js/lesson-detail.js"></script>
+
+</body>
+</html>

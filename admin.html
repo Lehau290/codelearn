@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="Trang quản trị hệ thống - CodeLearn C++"
+    >
+
+    <title>Quản trị | CodeLearn C++</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        (function() {
+            var t = localStorage.getItem("cpp_theme");
+            if (t === "dark" || (!t && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+                document.documentElement.classList.add("dark-theme");
+            }
+        })();
+    </script>
+</head>
+
+<body>
+
+<!-- ================= HEADER ================= -->
+<header class="site-header">
+
+    <div class="container header-inner">
+
+        <!-- Logo -->
+        <a href="home.html" class="site-logo">
+
+            <div class="site-logo-mark">
+                C++
+            </div>
+
+            <div class="site-logo-text">
+                <strong>CodeLearn</strong>
+                <span>C++</span>
+            </div>
+
+        </a>
+
+
+        <!-- Navigation -->
+        <nav
+            class="main-nav"
+            id="mainNav"
+            aria-label="Menu chính"
+        >
+
+            <a href="home.html" class="nav-link">
+                Trang chủ
+            </a>
+
+            <a href="lessons.html" class="nav-link">
+                Bài học
+            </a>
+
+            <a href="profile.html" class="nav-link">
+                Hồ sơ
+            </a>
+
+            <a
+                href="admin.html"
+                class="nav-link active admin-nav-link"
+                id="adminNavLink"
+            >
+                Quản trị
+            </a>
+
+        </nav>
+
+
+        <!-- Theme Toggle -->
+        <button
+            type="button"
+            class="theme-toggle-btn"
+            id="themeToggleBtn"
+            aria-label="Chuyển chế độ sáng/tối"
+            title="Chuyển chế độ sáng/tối"
+        >
+            <span class="theme-text-light">Chế độ tối</span>
+            <span class="theme-text-dark">Chế độ sáng</span>
+        </button>
+
+
+        <!-- User -->
+        <div class="header-user">
+
+            <a href="profile.html" class="header-user-link" title="Xem hồ sơ cá nhân">
+                <div class="header-user-info">
+                    <span id="headerUsername" class="header-username">Admin</span>
+                    <span class="header-role">Quản trị viên</span>
+                </div>
+                <div id="headerAvatar" class="header-avatar">A</div>
+            </a>
+
+            <button
+                type="button"
+                id="logoutButton"
+                class="logout-button"
+                title="Đăng xuất"
+            >
+                ↪
+            </button>
+
+        </div>
+
+
+        <!-- Mobile menu -->
+        <button
+            type="button"
+            class="mobile-menu-button"
+            id="mobileMenuButton"
+            aria-label="Mở menu"
+            aria-expanded="false"
+        >
+            ☰
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- ================= MAIN ================= -->
+<main>
+
+    <!-- Hero -->
+    <section class="profile-hero">
+
+        <div class="container">
+
+            <div class="profile-hero-content">
+
+                <span class="hero-badge">
+                    ADMIN DASHBOARD
+                </span>
+
+                <h1>
+                    Quản trị khóa học
+                </h1>
+
+                <p>
+                    Quản lý bài học, nội dung lý thuyết,
+                    ví dụ và bài tập C++.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Admin content -->
+    <section class="profile-section">
+
+        <div class="container">
+
+            <!-- ================= STATS ================= -->
+            <div class="profile-stats">
+
+                <div class="profile-stat-card">
+
+                    <div class="profile-stat-icon">
+                        📚
+                    </div>
+
+                    <div>
+
+                        <strong id="adminTotalLessons">
+                            0
+                        </strong>
+
+                        <span>
+                            Tổng bài học
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="profile-stat-card">
+
+                    <div class="profile-stat-icon">
+                        ✓
+                    </div>
+
+                    <div>
+
+                        <strong id="adminPublishedLessons">
+                            0
+                        </strong>
+
+                        <span>
+                            Bài học đang có
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="profile-stat-card">
+
+                    <div class="profile-stat-icon">
+                        👥
+                    </div>
+
+                    <div>
+
+                        <strong id="adminTotalUsers">
+                            0
+                        </strong>
+
+                        <span>
+                            Người dùng
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="profile-stat-card">
+
+                    <div class="profile-stat-icon">
+                        ⚙
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Admin
+                        </strong>
+
+                        <span>
+                            Quyền truy cập
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= ADMIN GRID ================= -->
+            <div class="admin-layout">
+
+
+                <!-- ================= LESSON LIST ================= -->
+                <section class="profile-content-card admin-lessons-card">
+
+                    <div class="profile-content-header">
+
+                        <div>
+
+                            <span class="section-label">
+                                LESSON MANAGEMENT
+                            </span>
+
+                            <h2>
+                                Danh sách bài học
+                            </h2>
+
+                        </div>
+
+                        <button
+                            type="button"
+                            id="addNewLessonButton"
+                            class="btn btn-primary"
+                        >
+                            + Thêm bài học
+                        </button>
+
+                    </div>
+
+
+                    <!-- Search -->
+                    <div class="admin-search">
+
+                        <label
+                            for="adminLessonSearch"
+                            class="sr-only"
+                        >
+                            Tìm kiếm bài học
+                        </label>
+
+                        <input
+                            type="search"
+                            id="adminLessonSearch"
+                            class="profile-input"
+                            placeholder="Tìm kiếm bài học..."
+                        >
+
+                    </div>
+
+
+                    <!-- Message -->
+                    <div
+                        id="adminMessage"
+                        class="form-message"
+                        hidden
+                    ></div>
+
+
+                    <!-- Lesson list -->
+                    <div
+                        id="lessonsAdminList"
+                        class="admin-lessons-list"
+                    >
+
+                        <!-- JavaScript sẽ render danh sách tại đây -->
+
+                    </div>
+
+                </section>
+
+
+                <!-- ================= FORM ================= -->
+                <section
+                    class="profile-content-card admin-form-card"
+                    id="adminLessonFormSection"
+                >
+
+                    <div class="profile-content-header">
+
+                        <div>
+
+                            <span class="section-label">
+                                LESSON EDITOR
+                            </span>
+
+                            <h2 id="adminFormTitle">
+                                Thêm bài học
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+
+                    <form
+                        id="adminLessonForm"
+                        class="profile-form"
+                        novalidate
+                    >
+
+                        <!-- ID bài học -->
+                        <input
+                            type="hidden"
+                            id="editLessonId"
+                            value=""
+                        >
+
+
+                        <!-- ================= BASIC INFO ================= -->
+                        <div class="admin-form-section">
+
+                            <h3>
+                                1. Thông tin cơ bản
+                            </h3>
+
+
+                            <!-- Title -->
+                            <div class="form-group">
+
+                                <label for="lessonTitle">
+                                    Tên bài học
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="lessonTitle"
+                                    class="profile-input"
+                                    placeholder="Ví dụ: Biến và kiểu dữ liệu"
+                                    maxlength="150"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <!-- Chapter -->
+                            <div class="form-group">
+
+                                <label for="lessonChapter">
+                                    Chương
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="lessonChapter"
+                                    class="profile-input"
+                                    placeholder="Ví dụ: Chương 1"
+                                    maxlength="100"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <!-- Description -->
+                            <div class="form-group">
+
+                                <label for="lessonDescription">
+                                    Mô tả bài học
+                                </label>
+
+                                <textarea
+                                    id="lessonDescription"
+                                    class="profile-input"
+                                    rows="4"
+                                    maxlength="500"
+                                    placeholder="Nhập mô tả ngắn về bài học..."
+                                    required
+                                ></textarea>
+
+                            </div>
+
+
+                            <!-- Level + duration -->
+                            <div class="admin-form-row">
+
+                                <div class="form-group">
+
+                                    <label for="lessonLevel">
+                                        Độ khó
+                                    </label>
+
+                                    <select
+                                        id="lessonLevel"
+                                        class="profile-input"
+                                    >
+
+                                        <option value="Cơ bản">
+                                            Cơ bản
+                                        </option>
+
+                                        <option value="Trung bình">
+                                            Trung bình
+                                        </option>
+
+                                        <option value="Nâng cao">
+                                            Nâng cao
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+
+                                <div class="form-group">
+
+                                    <label for="lessonDuration">
+                                        Thời lượng
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        id="lessonDuration"
+                                        class="profile-input"
+                                        placeholder="Ví dụ: 20 phút"
+                                        maxlength="50"
+                                    >
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- ================= THEORY ================= -->
+                        <div class="admin-form-section">
+
+                            <h3>
+                                2. Nội dung lý thuyết
+                            </h3>
+
+                            <p class="input-help">
+                                Nhập kiến thức mà học viên cần học
+                                trong bài này.
+                            </p>
+
+
+                            <div class="form-group">
+
+                                <label for="lessonContent">
+                                    Nội dung bài học
+                                </label>
+
+                                <textarea
+                                    id="lessonContent"
+                                    class="profile-input admin-textarea-large"
+                                    rows="12"
+                                    placeholder="Nhập nội dung lý thuyết..."
+                                    required
+                                ></textarea>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- ================= EXAMPLE ================= -->
+                        <div class="admin-form-section">
+
+                            <h3>
+                                3. Ví dụ C++
+                            </h3>
+
+                            <div class="form-group">
+
+                                <label for="lessonExample">
+                                    Code ví dụ
+                                </label>
+
+                                <textarea
+                                    id="lessonExample"
+                                    class="profile-input code-textarea"
+                                    rows="12"
+                                    spellcheck="false"
+                                    placeholder="#include &lt;iostream&gt;
+
+using namespace std;
+
+int main() {
+    cout &lt;&lt; &quot;Hello C++&quot;;
+    return 0;
+}"
+                                ></textarea>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- ================= EXERCISE ================= -->
+                        <div class="admin-form-section">
+
+                            <h3>
+                                4. Bài tập thực hành
+                            </h3>
+
+
+                            <!-- Exercise title -->
+                            <div class="form-group">
+
+                                <label for="lessonExerciseTitle">
+                                    Tên bài tập
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="lessonExerciseTitle"
+                                    class="profile-input"
+                                    placeholder="Ví dụ: Tính tổng hai số"
+                                    maxlength="150"
+                                >
+
+                            </div>
+
+
+                            <!-- Exercise description -->
+                            <div class="form-group">
+
+                                <label for="lessonExerciseDescription">
+                                    Đề bài
+                                </label>
+
+                                <textarea
+                                    id="lessonExerciseDescription"
+                                    class="profile-input"
+                                    rows="7"
+                                    maxlength="2000"
+                                    placeholder="Nhập yêu cầu của bài tập..."
+                                ></textarea>
+
+                            </div>
+
+
+                            <!-- Starter code -->
+                            <div class="form-group">
+
+                                <label for="lessonStarterCode">
+                                    Code khởi đầu
+                                </label>
+
+                                <textarea
+                                    id="lessonStarterCode"
+                                    class="profile-input code-textarea"
+                                    rows="12"
+                                    spellcheck="false"
+                                    placeholder="#include &lt;iostream&gt;
+
+using namespace std;
+
+int main() {
+
+    // Viết code tại đây
+
+    return 0;
+}"
+                                ></textarea>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- ================= FORM ACTIONS ================= -->
+                        <div class="profile-form-actions">
+
+                            <button
+                                type="submit"
+                                id="saveLessonButton"
+                                class="btn btn-primary"
+                            >
+                                Lưu bài học
+                            </button>
+
+
+                            <button
+                                type="button"
+                                id="cancelEdit"
+                                class="btn btn-secondary"
+                            >
+                                Hủy
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </section>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- ================= FOOTER ================= -->
+<footer class="site-footer">
+
+    <div class="container footer-inner">
+
+        <div class="footer-brand">
+
+            <div class="site-logo-mark">
+                C++
+            </div>
+
+            <div>
+
+                <strong>
+                    CodeLearn C++
+                </strong>
+
+                <p>
+                    Nền tảng học lập trình C++ thực chiến & trực quan.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="footer-links">
+
+            <a href="home.html">
+                Trang chủ
+            </a>
+
+            <a href="lessons.html">
+                Bài học
+            </a>
+
+            <a href="profile.html">
+                Hồ sơ
+            </a>
+
+            <a href="admin.html">
+                Quản trị
+            </a>
+
+        </div>
+
+
+        <p class="copyright">
+            © 2026 CodeLearn C++. All rights reserved.
+        </p>
+
+    </div>
+
+</footer>
+
+
+<!-- ================= JAVASCRIPT ================= -->
+
+<script src="js/storage.js"></script>
+<script src="js/layout.js"></script>
+<script src="js/admin.js"></script>
+
+</body>
+</html>

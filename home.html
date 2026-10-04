@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Trang chủ CodeLearn C++ - Học lập trình C++ từ cơ bản đến thực hành"
+    >
+
+    <title>Trang chủ | CodeLearn C++</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        (function() {
+            var t = localStorage.getItem("cpp_theme");
+            if (t === "dark" || (!t && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+                document.documentElement.classList.add("dark-theme");
+            }
+        })();
+    </script>
+</head>
+
+<body>
+
+    <!-- =========================================
+         HEADER
+    ========================================== -->
+
+    <header class="site-header">
+
+        <div class="container header-inner">
+
+            <!-- Logo -->
+
+            <a
+                href="home.html"
+                class="site-logo"
+            >
+
+                <div class="site-logo-mark">
+                    C++
+                </div>
+
+                <div class="site-logo-text">
+                    <strong>CodeLearn</strong>
+                    <span>C++</span>
+                </div>
+
+            </a>
+
+
+            <!-- Navigation -->
+
+            <nav
+                class="main-nav"
+                id="mainNav"
+                aria-label="Menu chính"
+            >
+
+                <a
+                    href="home.html"
+                    class="nav-link active"
+                >
+                    Trang chủ
+                </a>
+
+                <a
+                    href="lessons.html"
+                    class="nav-link"
+                >
+                    Bài học
+                </a>
+
+                <a
+                    href="profile.html"
+                    class="nav-link"
+                >
+                    Hồ sơ
+                </a>
+
+                <a
+                    href="admin.html"
+                    class="nav-link admin-nav-link"
+                    id="adminNavLink"
+                    hidden
+                >
+                    Quản trị
+                </a>
+
+            </nav>
+
+
+            <!-- Theme Toggle -->
+            <button
+                type="button"
+                class="theme-toggle-btn"
+                id="themeToggleBtn"
+                aria-label="Chuyển chế độ sáng/tối"
+                title="Chuyển chế độ sáng/tối"
+            >
+                <span class="theme-text-light">Chế độ tối</span>
+                <span class="theme-text-dark">Chế độ sáng</span>
+            </button>
+
+
+            <!-- User -->
+
+            <div class="header-user">
+
+                <a href="profile.html" class="header-user-link" title="Xem hồ sơ cá nhân">
+                    <div class="header-user-info">
+                        <span id="headerUsername" class="header-username">Người học</span>
+                        <span class="header-role">Học viên</span>
+                    </div>
+                    <div id="headerAvatar" class="header-avatar">U</div>
+                </a>
+
+                <button
+                    type="button"
+                    id="logoutButton"
+                    class="logout-button"
+                    title="Đăng xuất"
+                >
+                    ↪
+                </button>
+
+            </div>
+
+
+            <!-- Mobile menu -->
+
+            <button
+                type="button"
+                class="mobile-menu-button"
+                id="mobileMenuButton"
+                aria-label="Mở menu"
+                aria-expanded="false"
+            >
+                ☰
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- =========================================
+         MAIN
+    ========================================== -->
+
+    <main>
+
+        <!-- =====================================
+             HERO
+        ====================================== -->
+
+        <section class="home-hero">
+
+            <div class="container">
+
+                <div class="hero-grid">
+
+                    <!-- Nội dung -->
+
+                    <div class="hero-content">
+
+                        <span class="hero-badge">
+                            CODELEARN C++
+                        </span>
+
+
+                        <h1>
+                            Chào mừng bạn
+                            <span id="welcomeUsername">
+                                trở lại
+                            </span>
+                        </h1>
+
+
+                        <p>
+                            Tiếp tục hành trình học C++ của bạn.
+                            Học lý thuyết, thực hành code và
+                            kiểm tra kiến thức sau mỗi bài học.
+                        </p>
+
+
+                        <div class="hero-actions">
+
+                            <a
+                                href="lessons.html"
+                                id="continueLearningButton"
+                                class="btn btn-primary"
+                            >
+                                Tiếp tục học
+                                <span>→</span>
+                            </a>
+
+                            <a
+                                href="#lessons"
+                                class="btn btn-secondary"
+                            >
+                                Xem bài học
+                            </a>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Card tiến độ -->
+
+                    <div class="hero-progress-card">
+
+                        <div class="progress-card-top">
+
+                            <div>
+
+                                <span class="small-label">
+                                    TIẾN ĐỘ CỦA BẠN
+                                </span>
+
+                                <h2 id="progressPercent">
+                                    0%
+                                </h2>
+
+                            </div>
+
+                            <div class="progress-circle">
+                                <span id="progressCircleText">
+                                    0%
+                                </span>
+                            </div>
+
+                        </div>
+
+
+                        <div class="progress-bar">
+
+                            <div
+                                id="progressBar"
+                                class="progress-bar-fill"
+                                style="width: 0%"
+                            ></div>
+
+                        </div>
+
+
+                        <div class="progress-card-footer">
+
+                            <span>
+                                <strong id="completedLessons">
+                                    0
+                                </strong>
+                                bài đã hoàn thành
+                            </span>
+
+                            <span>
+                                <strong id="totalLessons">
+                                    0
+                                </strong>
+                                bài học
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             STATISTICS
+        ====================================== -->
+
+        <section class="stats-section">
+
+            <div class="container">
+
+                <div class="stats-grid">
+
+                    <div class="stat-card">
+
+                        <div class="stat-icon">
+                            📚
+                        </div>
+
+                        <div>
+
+                            <strong id="statLessons">
+                                0
+                            </strong>
+
+                            <span>
+                                Bài học
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <div class="stat-icon">
+                            ✓
+                        </div>
+
+                        <div>
+
+                            <strong id="statCompleted">
+                                0
+                            </strong>
+
+                            <span>
+                                Đã hoàn thành
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <div class="stat-icon">
+                            &lt;/&gt;
+                        </div>
+
+                        <div>
+
+                            <strong id="statExercises">
+                                0
+                            </strong>
+
+                            <span>
+                                Bài tập
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <div class="stat-icon">
+                            ★
+                        </div>
+
+                        <div>
+
+                            <strong id="statScore">
+                                0
+                            </strong>
+
+                            <span>
+                                Điểm trung bình
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             LESSONS
+        ====================================== -->
+
+        <section
+            class="lessons-section"
+            id="lessons"
+        >
+
+            <div class="container">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <span class="section-label">
+                            LỘ TRÌNH HỌC
+                        </span>
+
+                        <h2>
+                            Bắt đầu với C++ cơ bản
+                        </h2>
+
+                        <p>
+                            Học từng bước từ kiến thức nền tảng
+                            đến lập trình thực tế.
+                        </p>
+
+                    </div>
+
+
+                    <a
+                        href="lessons.html"
+                        class="section-link"
+                    >
+                        Xem tất cả
+                        <span>→</span>
+                    </a>
+
+                </div>
+
+
+                <!-- Danh sách bài học -->
+
+                <div
+                    id="homeLessons"
+                    class="lesson-grid"
+                >
+
+                    <!-- JavaScript sẽ tạo bài học -->
+
+                    <div class="loading-card">
+
+                        <div class="loading-spinner"></div>
+
+                        <p>
+                            Đang tải bài học...
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             CTA
+        ====================================== -->
+
+        <section class="home-cta">
+
+            <div class="container">
+
+                <div class="cta-card">
+
+                    <div class="cta-content">
+
+                        <span class="section-label">
+                            SẴN SÀNG?
+                        </span>
+
+                        <h2>
+                            Bắt đầu viết code C++
+                        </h2>
+
+                        <p>
+                            Đừng chỉ học lý thuyết.
+                            Hãy bắt đầu thực hành ngay hôm nay.
+                        </p>
+
+                    </div>
+
+
+                    <a
+                        href="lessons.html"
+                        class="btn btn-light"
+                    >
+                        Bắt đầu học
+                        <span>→</span>
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================================
+         FOOTER
+    ========================================== -->
+
+    <footer class="site-footer">
+
+        <div class="container footer-inner">
+
+            <div class="footer-brand">
+
+                <div class="site-logo-mark">
+                    C++
+                </div>
+
+                <div>
+
+                    <strong>
+                        CodeLearn C++
+                    </strong>
+
+                    <p>
+                        Nền tảng học lập trình C++ thực chiến & trực quan.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="footer-links">
+
+                <a href="home.html">
+                    Trang chủ
+                </a>
+
+                <a href="lessons.html">
+                    Bài học
+                </a>
+
+                <a href="profile.html">
+                    Hồ sơ
+                </a>
+
+            </div>
+
+
+            <p class="copyright">
+                © 2026 CodeLearn C++. All rights reserved.
+            </p>
+
+        </div>
+
+    </footer>
+
+
+    <!-- =========================================
+         JAVASCRIPT
+    ========================================== -->
+
+    <script src="js/storage.js"></script>
+    <script src="js/layout.js"></script>
+    <script src="js/home.js"></script>
+
+</body>
+</html>

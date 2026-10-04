@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CodeLearn C++ - Học lập trình C++ trực tuyến</title>
+
+    <meta
+        name="description"
+        content="CodeLearn C++ - Nền tảng học lập trình C++ trực tuyến từ cơ bản đến thực hành"
+    >
+
+    <meta
+        name="keywords"
+        content="C++, học C++, lập trình C++, CodeLearn C++"
+    >
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=JetBrains+Mono:wght@700&display=swap">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background:
+                radial-gradient(circle at 15% 20%, rgba(37, 99, 235, 0.22) 0%, transparent 45%),
+                radial-gradient(circle at 85% 80%, rgba(124, 58, 237, 0.18) 0%, transparent 45%),
+                #090e1a;
+            color: #ffffff;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .loading {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+        }
+
+        .logo {
+            width: 76px;
+            height: 76px;
+            border-radius: 22px;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 28px;
+            font-weight: 800;
+            box-shadow: 0 20px 45px rgba(37, 99, 235, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.04); box-shadow: 0 25px 50px rgba(124, 58, 237, 0.45); }
+        }
+
+        h1 {
+            color: #ffffff;
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        p {
+            color: #94a3b8;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid rgba(255, 255, 255, 0.12);
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="loading">
+
+        <div class="logo">
+            C++
+        </div>
+
+        <h1>CodeLearn C++</h1>
+
+        <p>Đang chuyển hướng tới trang đăng nhập học viên...</p>
+
+        <div class="spinner"></div>
+
+        <noscript>
+            <p><a href="login.html" style="color: #2563eb; text-decoration: underline;">Nhấn vào đây để đăng nhập vào học</a></p>
+        </noscript>
+
+    </main>
+
+    <!-- Storage script initializes default lessons and accounts -->
+    <script src="js/storage.js"></script>
+    <script>
+        /*
+         * Khởi động CodeLearn C++
+         * Nếu đã đăng nhập: vào thẳng Trang chủ (home.html)
+         * Nếu chưa đăng nhập: chuyển tới Đăng nhập (login.html)
+         */
+        const currentUser = window.CppStorage && CppStorage.getCurrentUser();
+        const targetPage = currentUser ? "home.html" : "login.html";
+        setTimeout(() => {
+            window.location.href = targetPage;
+        }, 200);
+    </script>
+
+</body>
+</html>

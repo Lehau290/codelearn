@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Đăng nhập học viên - CodeLearn C++"
+    >
+
+    <title>Đăng nhập | CodeLearn C++</title>
+
+   <link rel="stylesheet" href="css/style.css">
+   <script>
+       (function() {
+           var t = localStorage.getItem("cpp_theme");
+           if (t === "dark" || (!t && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+               document.documentElement.classList.add("dark-theme");
+           }
+       })();
+   </script>
+</head>
+
+<body>
+
+    <div class="auth-theme-toggle">
+        <button
+            type="button"
+            class="theme-toggle-btn"
+            id="themeToggleBtn"
+            aria-label="Chuyển chế độ sáng/tối"
+            title="Chuyển chế độ sáng/tối"
+        >
+            <span class="theme-text-light">Chế độ tối</span>
+            <span class="theme-text-dark">Chế độ sáng</span>
+        </button>
+    </div>
+
+    <main class="auth-page">
+
+        <!-- ================================
+             KHU VỰC GIỚI THIỆU
+        ================================= -->
+
+        <section class="auth-intro">
+
+            <div class="auth-brand">
+
+                <div class="brand-logo">
+                    C++
+                </div>
+
+                <div>
+                    <h1>CodeLearn C++</h1>
+                    <p>Nền tảng học lập trình C++ thực chiến & trực quan</p>
+                </div>
+
+            </div>
+
+
+            <div class="intro-content">
+
+                <span class="intro-badge">
+                    LEARN • CODE • GROW
+                </span>
+
+                <h2>
+                    Bắt đầu hành trình
+                    <span>chinh phục C++</span>
+                </h2>
+
+                <p>
+                    Học lập trình C++ theo từng bài học,
+                    thực hành trực tiếp và kiểm tra kiến thức
+                    ngay trên hệ thống.
+                </p>
+
+
+                <div class="intro-features">
+
+                    <div class="intro-feature">
+
+                        <div class="feature-icon">
+                            ✓
+                        </div>
+
+                        <div>
+                            <strong>
+                                Bài học trực quan
+                            </strong>
+
+                            <p>
+                                Nội dung được chia thành
+                                từng bài học dễ theo dõi.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="intro-feature">
+
+                        <div class="feature-icon">
+                            &lt;/&gt;
+                        </div>
+
+                        <div>
+                            <strong>
+                                Thực hành C++
+                            </strong>
+
+                            <p>
+                                Viết và kiểm tra code
+                                trực tiếp trên website.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="intro-feature">
+
+                        <div class="feature-icon">
+                            AI
+                        </div>
+
+                        <div>
+                            <strong>
+                                Đánh giá kết quả
+                            </strong>
+
+                            <p>
+                                Nhận phản hồi và gợi ý
+                                sau khi hoàn thành bài.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="auth-intro-footer">
+                © 2026 CodeLearn C++
+            </div>
+
+        </section>
+
+
+        <!-- ================================
+             FORM ĐĂNG NHẬP
+        ================================= -->
+
+        <section class="auth-form-section">
+
+            <div class="auth-card">
+
+                <div class="mobile-brand">
+
+                    <div class="brand-logo">
+                        C++
+                    </div>
+
+                    <span>
+                        CodeLearn C++
+                    </span>
+
+                </div>
+
+
+                <div class="auth-header">
+
+                    <span class="welcome-text">
+                        CỔNG ĐĂNG NHẬP HỌC VIÊN
+                    </span>
+
+                    <h2>
+                        Đăng nhập vào học
+                    </h2>
+
+                    <p>
+                        Đăng nhập tài khoản để vào học và thực hành lập trình C++.
+                    </p>
+
+                </div>
+
+
+                <!-- Thông báo lỗi/thành công -->
+
+                <div
+                    id="loginMessage"
+                    class="form-message"
+                    hidden
+                ></div>
+
+
+                <!-- FORM -->
+
+                <form
+                    id="loginForm"
+                    class="auth-form"
+                    novalidate
+                >
+
+                    <!-- Username / Email -->
+
+                    <div class="form-group">
+
+                        <label for="loginUsername">
+                            Email hoặc tên tài khoản
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <span class="input-icon">
+                                @
+                            </span>
+
+                            <input
+                                type="text"
+                                id="loginUsername"
+                                name="username"
+                                placeholder="Nhập email hoặc username"
+                                autocomplete="username"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Password -->
+
+                    <div class="form-group">
+
+                        <div class="label-row">
+
+                            <label for="loginPassword">
+                                Mật khẩu
+                            </label>
+
+                            <a
+                                href="#"
+                                id="forgotPassword"
+                                class="forgot-link"
+                            >
+                                Quên mật khẩu?
+                            </a>
+
+                        </div>
+
+
+                        <div class="input-wrapper">
+
+                            <span class="input-icon">
+                                •••
+                            </span>
+
+                            <input
+                                type="password"
+                                id="loginPassword"
+                                name="password"
+                                placeholder="Nhập mật khẩu"
+                                autocomplete="current-password"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                id="togglePassword"
+                                class="password-toggle"
+                                data-password-toggle="loginPassword"
+                                aria-label="Hiển thị mật khẩu"
+                            >
+                                Hiện
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Remember -->
+
+                    <div class="remember-row">
+
+                        <label class="checkbox-label">
+
+                            <input
+                                type="checkbox"
+                                id="rememberMe"
+                            >
+
+                            <span>
+                                Ghi nhớ đăng nhập
+                            </span>
+
+                        </label>
+
+                    </div>
+
+
+                    <!-- Submit -->
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary auth-submit"
+                    >
+
+                        <span>
+                            Đăng nhập vào học
+                        </span>
+
+                        <span class="btn-arrow">
+                            →
+                        </span>
+
+                    </button>
+
+                </form>
+
+                <!-- Demo accounts hint -->
+                <div class="demo-accounts-box">
+                    <span class="demo-title">💡 Chọn nhanh tài khoản để kiểm tra hoặc học thử:</span>
+                    <div class="demo-buttons">
+                        <button type="button" class="btn-demo" id="demoStudentBtn">🎓 Học viên: letrunghau / 123456</button>
+                        <button type="button" class="btn-demo" id="demoAdminBtn">⚙️ Quản trị viên: admin / 123456</button>
+                    </div>
+                    <button type="button" class="btn btn-secondary w-full" id="quickEnterBtn" style="margin-top: 10px; font-weight: 700; width: 100%; justify-content: center;">🚀 Vào học ngay với tài khoản letrunghau</button>
+                </div>
+
+
+                <!-- Register -->
+
+                <div class="auth-divider">
+
+                    <span>
+                        hoặc
+                    </span>
+
+                </div>
+
+
+                <p class="register-text">
+
+                    Chưa có tài khoản?
+
+                    <a href="register.html">
+                        Đăng ký ngay
+                    </a>
+
+                </p>
+
+
+                <!-- Footer -->
+
+                <div class="auth-security">
+
+                    <span class="security-icon">
+                        🔒
+                    </span>
+
+                    <span>
+                        Thông tin tài khoản của bạn được bảo vệ
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ================================
+         JAVASCRIPT
+    ================================= -->
+
+    <script src="js/storage.js"></script>
+    <script src="js/layout.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>

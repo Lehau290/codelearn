@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Danh sách bài học lập trình C++ - CodeLearn C++"
+    >
+
+    <title>Bài học C++ | CodeLearn C++</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        (function() {
+            var t = localStorage.getItem("cpp_theme");
+            if (t === "dark" || (!t && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+                document.documentElement.classList.add("dark-theme");
+            }
+        })();
+    </script>
+</head>
+
+<body>
+
+    <!-- =========================================
+         HEADER
+    ========================================== -->
+
+    <header class="site-header">
+
+        <div class="container header-inner">
+
+            <!-- Logo -->
+
+            <a
+                href="home.html"
+                class="site-logo"
+            >
+
+                <div class="site-logo-mark">
+                    C++
+                </div>
+
+                <div class="site-logo-text">
+                    <strong>CodeLearn</strong>
+                    <span>C++</span>
+                </div>
+
+            </a>
+
+
+            <!-- Navigation -->
+
+            <nav
+                class="main-nav"
+                id="mainNav"
+                aria-label="Menu chính"
+            >
+
+                <a
+                    href="home.html"
+                    class="nav-link"
+                >
+                    Trang chủ
+                </a>
+
+                <a
+                    href="lessons.html"
+                    class="nav-link active"
+                >
+                    Bài học
+                </a>
+
+                <a
+                    href="profile.html"
+                    class="nav-link"
+                >
+                    Hồ sơ
+                </a>
+
+                <a
+                    href="admin.html"
+                    class="nav-link admin-nav-link"
+                    id="adminNavLink"
+                    hidden
+                >
+                    Quản trị
+                </a>
+
+            </nav>
+
+
+            <!-- Theme Toggle -->
+            <button
+                type="button"
+                class="theme-toggle-btn"
+                id="themeToggleBtn"
+                aria-label="Chuyển chế độ sáng/tối"
+                title="Chuyển chế độ sáng/tối"
+            >
+                <span class="theme-text-light">Chế độ tối</span>
+                <span class="theme-text-dark">Chế độ sáng</span>
+            </button>
+
+
+            <!-- User -->
+
+            <div class="header-user">
+
+                <a href="profile.html" class="header-user-link" title="Xem hồ sơ cá nhân">
+                    <div class="header-user-info">
+                        <span id="headerUsername" class="header-username">Người học</span>
+                        <span class="header-role">Học viên</span>
+                    </div>
+                    <div id="headerAvatar" class="header-avatar">U</div>
+                </a>
+
+                <button
+                    type="button"
+                    id="logoutButton"
+                    class="logout-button"
+                    title="Đăng xuất"
+                >
+                    ↪
+                </button>
+
+            </div>
+
+
+            <!-- Mobile menu -->
+
+            <button
+                type="button"
+                class="mobile-menu-button"
+                id="mobileMenuButton"
+                aria-label="Mở menu"
+                aria-expanded="false"
+            >
+                ☰
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- =========================================
+         MAIN
+    ========================================== -->
+
+    <main>
+
+        <!-- =====================================
+             PAGE HERO
+        ====================================== -->
+
+        <section class="page-hero">
+
+            <div class="container">
+
+                <span class="hero-badge">
+                    C++ LEARNING PATH
+                </span>
+
+                <h1>
+                    Lộ trình học C++
+                </h1>
+
+                <p>
+                    Học từng bước từ kiến thức nền tảng
+                    đến lập trình C++ thực hành.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             FILTER + SEARCH
+        ====================================== -->
+
+        <section class="lesson-controls-section">
+
+            <div class="container">
+
+                <div class="lesson-controls">
+
+                    <!-- Search -->
+
+                    <div class="lesson-search">
+
+                        <span class="search-icon">
+                            ⌕
+                        </span>
+
+                        <input
+                            type="search"
+                            id="lessonSearch"
+                            placeholder="Tìm kiếm bài học..."
+                            autocomplete="off"
+                        >
+
+                    </div>
+
+
+                    <!-- Chapter filter -->
+
+                    <div class="lesson-filter">
+
+                        <label
+                            for="chapterFilter"
+                            class="sr-only"
+                        >
+                            Chọn chương
+                        </label>
+
+                        <select id="chapterFilter">
+
+                            <option value="all">
+                                Tất cả chương
+                            </option>
+
+                            <option value="chapter-1">
+                                Chương 1 — Nhập môn C++
+                            </option>
+
+                            <option value="chapter-2">
+                                Chương 2 — Biến và kiểu dữ liệu
+                            </option>
+
+                            <option value="chapter-3">
+                                Chương 3 — Toán tử
+                            </option>
+
+                            <option value="chapter-4">
+                                Chương 4 — Câu điều kiện
+                            </option>
+
+                            <option value="chapter-5">
+                                Chương 5 — Vòng lặp
+                            </option>
+
+                            <option value="chapter-6">
+                                Chương 6 — Hàm
+                            </option>
+
+                            <option value="chapter-7">
+                                Chương 7 — Mảng
+                            </option>
+
+                            <option value="chapter-8">
+                                Chương 8 — Chuỗi
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Status filter -->
+
+                    <div class="lesson-filter">
+
+                        <label
+                            for="statusFilter"
+                            class="sr-only"
+                        >
+                            Trạng thái bài học
+                        </label>
+
+                        <select id="statusFilter">
+
+                            <option value="all">
+                                Tất cả trạng thái
+                            </option>
+
+                            <option value="completed">
+                                Đã hoàn thành
+                            </option>
+
+                            <option value="not-completed">
+                                Chưa hoàn thành
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             LESSON CONTENT
+        ====================================== -->
+
+        <section class="all-lessons-section">
+
+            <div class="container">
+
+                <!-- Summary -->
+
+                <div class="lessons-summary">
+
+                    <div>
+
+                        <span class="section-label">
+                            DANH SÁCH BÀI HỌC
+                        </span>
+
+                        <h2>
+                            Chương trình học
+                        </h2>
+
+                    </div>
+
+
+                    <div class="lesson-count">
+
+                        <strong id="lessonCount">
+                            0
+                        </strong>
+
+                        <span>
+                            bài học
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Progress -->
+
+                <div class="course-progress">
+
+                    <div class="course-progress-header">
+
+                        <span>
+                            Tiến độ tổng thể
+                        </span>
+
+                        <strong id="courseProgressText">
+                            0%
+                        </strong>
+
+                    </div>
+
+                    <div class="progress-bar">
+
+                        <div
+                            id="courseProgressBar"
+                            class="progress-bar-fill"
+                            style="width: 0%"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Dynamic lessons -->
+
+                <div
+                    id="lessonsContainer"
+                    class="lessons-list"
+                >
+
+                    <div class="loading-card">
+
+                        <div class="loading-spinner"></div>
+
+                        <p>
+                            Đang tải danh sách bài học...
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- No result -->
+
+                <div
+                    id="noLessons"
+                    class="empty-state"
+                    hidden
+                >
+
+                    <div class="empty-icon">
+                        🔍
+                    </div>
+
+                    <h3>
+                        Không tìm thấy bài học
+                    </h3>
+
+                    <p>
+                        Hãy thử thay đổi từ khóa tìm kiếm
+                        hoặc bộ lọc.
+                    </p>
+
+                    <button
+                        type="button"
+                        id="clearFiltersButton"
+                        class="btn btn-primary"
+                    >
+                        Xóa bộ lọc
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             LEARNING TIPS
+        ====================================== -->
+
+        <section class="learning-tips-section">
+
+            <div class="container">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <span class="section-label">
+                            GỢI Ý HỌC TẬP
+                        </span>
+
+                        <h2>
+                            Học C++ hiệu quả hơn
+                        </h2>
+
+                    </div>
+
+                </div>
+
+
+                <div class="tips-grid">
+
+                    <!-- Tip 1 -->
+
+                    <article class="tip-card">
+
+                        <div class="tip-number">
+                            01
+                        </div>
+
+                        <h3>
+                            Học lý thuyết
+                        </h3>
+
+                        <p>
+                            Đọc kỹ nội dung và ví dụ trước
+                            khi bắt đầu làm bài tập.
+                        </p>
+
+                    </article>
+
+
+                    <!-- Tip 2 -->
+
+                    <article class="tip-card">
+
+                        <div class="tip-number">
+                            02
+                        </div>
+
+                        <h3>
+                            Tự viết code
+                        </h3>
+
+                        <p>
+                            Hãy tự gõ lại code thay vì chỉ
+                            sao chép ví dụ có sẵn.
+                        </p>
+
+                    </article>
+
+
+                    <!-- Tip 3 -->
+
+                    <article class="tip-card">
+
+                        <div class="tip-number">
+                            03
+                        </div>
+
+                        <h3>
+                            Làm bài tập
+                        </h3>
+
+                        <p>
+                            Sau mỗi bài học, hãy hoàn thành
+                            bài tập để củng cố kiến thức.
+                        </p>
+
+                    </article>
+
+
+                    <!-- Tip 4 -->
+
+                    <article class="tip-card">
+
+                        <div class="tip-number">
+                            04
+                        </div>
+
+                        <h3>
+                            Ôn lại kiến thức
+                        </h3>
+
+                        <p>
+                            Quay lại các bài chưa chắc chắn
+                            và luyện tập thêm.
+                        </p>
+
+                    </article>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================================
+         FOOTER
+    ========================================== -->
+
+    <footer class="site-footer">
+
+        <div class="container footer-inner">
+
+            <div class="footer-brand">
+
+                <div class="site-logo-mark">
+                    C++
+                </div>
+
+                <div>
+
+                    <strong>
+                        CodeLearn C++
+                    </strong>
+
+                    <p>
+                        Nền tảng học lập trình C++ thực chiến & trực quan.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="footer-links">
+
+                <a href="home.html">
+                    Trang chủ
+                </a>
+
+                <a href="lessons.html">
+                    Bài học
+                </a>
+
+                <a href="profile.html">
+                    Hồ sơ
+                </a>
+
+            </div>
+
+
+            <p class="copyright">
+                © 2026 CodeLearn C++. All rights reserved.
+            </p>
+
+        </div>
+
+    </footer>
+
+
+    <!-- =========================================
+         JAVASCRIPT
+    ========================================== -->
+
+    <script src="js/storage.js"></script>
+    <script src="js/layout.js"></script>
+    <script src="js/lessons.js"></script>
+
+</body>
+</html>
