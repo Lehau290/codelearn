@@ -1287,6 +1287,10 @@ int main() {
 
         saveUsers(users);
 
+        if (window.CodeLearnApi && typeof CodeLearnApi.user?.updateProfile === "function") {
+            CodeLearnApi.user.updateProfile(changes).catch(() => {});
+        }
+
         return users[index];
     }
 
@@ -1543,6 +1547,10 @@ int main() {
 
         saveLessons(lessons);
 
+        if (window.CodeLearnApi && typeof CodeLearnApi.lessons?.create === "function") {
+            CodeLearnApi.lessons.create(lesson).catch(() => {});
+        }
+
         return lesson;
     }
 
@@ -1579,6 +1587,10 @@ int main() {
 
         saveLessons(lessons);
 
+        if (window.CodeLearnApi && typeof CodeLearnApi.lessons?.update === "function") {
+            CodeLearnApi.lessons.update(id, merged).catch(() => {});
+        }
+
         return lessons[index];
     }
 
@@ -1604,6 +1616,10 @@ int main() {
         );
 
         saveLessons(filtered);
+
+        if (window.CodeLearnApi && typeof CodeLearnApi.lessons?.delete === "function") {
+            CodeLearnApi.lessons.delete(id).catch(() => {});
+        }
 
         return filtered.length !== lessons.length;
     }
@@ -1731,6 +1747,16 @@ int main() {
             userId,
             userProgress
         );
+
+        if (window.CodeLearnApi && typeof CodeLearnApi.progress?.save === "function") {
+            const p = userProgress[lessonId];
+            CodeLearnApi.progress.save(
+                lessonId,
+                p.savedCode || p.submittedCode || "",
+                p.completed ? "completed" : "in_progress",
+                p.score || 0
+            ).catch(() => {});
+        }
 
         return userProgress[lessonId];
     }
@@ -2103,6 +2129,22 @@ int main() {
                 STORAGE_KEYS.SETTINGS,
                 DEFAULT_SETTINGS
             );
+        }
+
+        // Tự động đồng bộ với Backend API nếu có kết nối
+        if (window.CodeLearnApi && typeof CodeLearnApi.checkHealth === "function") {
+            CodeLearnApi.checkHealth().then(online => {
+                if (online) {
+                    CodeLearnApi.lessons.getAll().then(res => {
+                        if (res && Array.isArray(res.lessons) && res.lessons.length > 0) {
+                            const cur = getLessons();
+                            if (cur.length < res.lessons.length) {
+                                saveLessons(res.lessons);
+                            }
+                        }
+                    }).catch(() => {});
+                }
+            });
         }
     }
 

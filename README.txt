@@ -8,39 +8,65 @@ CẤU TRÚC DỰ ÁN
 
 cpp-basic-academy/
 │
-├── index.html
-├── login.html
-├── register.html
-├── home.html
-├── lessons.html
-├── lesson-detail.html
-├── profile.html
-├── admin.html
+├── index.html              (Trang khởi động kiểm tra phiên)
+├── login.html              (Trang đăng nhập)
+├── register.html           (Trang đăng ký tài khoản)
+├── home.html               (Trang chủ & Thống kê học viên)
+├── lessons.html            (Danh sách lộ trình 20 bài học C++)
+├── lesson-detail.html      (Trình biên dịch C++ trực tiếp & 3 bài tập AI)
+├── profile.html            (Hồ sơ cá nhân, đổi mật khẩu & đổi Avatar)
+├── admin.html              (Quản trị hệ thống, thêm/sửa/xóa bài học)
+│
+├── start_server.bat        (Nhấp đúp chuột để chạy Backend & mở web)
+├── run_server.py           (Script khởi chạy Python Backend Server)
+│
+├── backend/
+│   ├── server.py           (REST API Server & Static File Server đa luồng)
+│   ├── database.py         (SQLite ORM, quản lý bảng users, lessons, exercises)
+│   ├── database.db         (Cơ sở dữ liệu SQLite)
+│   ├── auth.py             (Mã hóa SHA-256, xác thực và quản lý token phiên)
+│   └── compiler.py         (Trình biên dịch Sandbox g++ 13.2.0 & Chấm điểm AI)
 │
 ├── css/
-│   └── style.css
+│   └── style.css           (Bộ giao diện tím mộng mơ Starry Lilac cao cấp)
+│
+├── images/
+│   └── hero-star-bg.png    (Hình nền dải ngân hà ngàn sao)
 │
 └── js/
-    ├── storage.js
-    ├── auth.js
-    ├── layout.js
-    ├── home.js
-    ├── lessons.js
-    ├── lesson-detail.js
-    ├── profile.js
-    └── admin.js
+    ├── api.js              (SDK giao tiếp với Backend REST API & Compiler)
+    ├── storage.js          (Quản lý dữ liệu LocalStorage & Đồng bộ Backend)
+    ├── exercises-data.js   (Kho dữ liệu 3 bài tập thực chiến mỗi bài học)
+    ├── auth.js             (Xử lý logic đăng nhập, đăng ký)
+    ├── layout.js           (Điều hướng menu, avatar, dark mode)
+    ├── home.js             (Hiển thị tiến độ, lời chào học viên trang chủ)
+    ├── lessons.js          (Bộ lọc, tìm kiếm và hiển thị 20 bài học)
+    ├── lesson-detail.js    (Biên dịch code g++, nộp bài và AI đánh giá)
+    ├── profile.js          (Cài đặt thông tin cá nhân và upload avatar)
+    └── admin.js            (Bảng điều khiển quản trị viên)
 
 
-CÁCH CHẠY WEBSITE
-==================
+CÁCH CHẠY WEBSITE & BACKEND
+===========================
 
-Cách 1: Sử dụng VS Code + Live Server
--------------------------------------
+Cách 1: Chạy bằng 1 cú nhấp chuột (Khuyên dùng - Full tính năng Backend)
+------------------------------------------------------------------------
+Nhấp đúp chuột vào file:
+    start_server.bat
+Hoặc mở Terminal gõ lệnh:
+    python run_server.py
 
-Bước 1:
-Mở thư mục:
+Hệ thống sẽ:
+✓ Khởi động máy chủ Python REST API & Static Server (Port 5000)
+✓ Tự động kết nối cơ sở dữ liệu SQLite (backend/database.db)
+✓ Kích hoạt Trình biên dịch C++ Sandbox (g++ 13.2.0)
+✓ Tự động mở trình duyệt web tại địa chỉ: http://localhost:5000/home.html
 
-cpp-basic-academy
+Cách 2: Chạy độc lập Frontend với Live Server
+---------------------------------------------
+Mở index.html và bấm chuột phải chọn "Open with Live Server".
+Hệ thống sẽ tự động chạy chế độ Offline-First (localStorage). Khi bật
+Backend Server, frontend sẽ tự động nhận diện và kết nối!
 
 bằng Visual Studio Code.
 

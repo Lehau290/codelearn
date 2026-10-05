@@ -657,36 +657,46 @@ function setupRunButton(
 
 
             // ------------------------------------------------
-            // Demo kiểm tra code
+            // Biên dịch và chạy mã nguồn C++
             // ------------------------------------------------
 
             button.disabled = true;
+            button.textContent = "Đang biên dịch C++...";
+            output.textContent = "⏳ Đang kết nối trình biên dịch g++ và chạy chương trình...";
 
-            button.textContent =
-                "Đang kiểm tra...";
+            // Kiểm tra Backend API trước
+            if (window.CodeLearnApi && typeof CodeLearnApi.compiler?.compile === "function") {
+                CodeLearnApi.compiler.compile(code, inputVal)
+                    .then(res => {
+                        button.disabled = false;
+                        button.textContent = "▶ Chạy thử";
 
-            output.textContent =
-                "Đang biên dịch và chạy chương trình...";
-
-
-            setTimeout(() => {
-
-                const result =
-                    simulateCppExecution(
-                        code,
-                        lesson,
-                        inputVal
-                    );
-
-                output.textContent =
-                    result.output;
-
-                button.disabled = false;
-
-                button.textContent =
-                    "▶ Chạy thử";
-
-            }, 600);
+                        if (res.success) {
+                            const outText = res.output ? res.output : "(Chương trình chạy thành công không có output)";
+                            const footer = `\n\n--------------------------------\n[Biên dịch thành công với ${res.compiler || 'g++ 13.2.0'} - Thời gian: ${res.execution_time_ms}ms]`;
+                            output.textContent = outText + footer;
+                        } else {
+                            const errText = res.error || res.output || "Lỗi thực thi không xác định.";
+                            const stageName = res.stage === "compile" ? "Lỗi biên dịch (Compile Error)" : "Lỗi thực thi (Runtime Error)";
+                            const footer = `\n\n--------------------------------\n[${stageName} - ${res.compiler || 'g++'}]`;
+                            output.textContent = errText + footer;
+                        }
+                    })
+                    .catch(() => {
+                        // Fallback sang mô phỏng nếu máy chủ chưa bật
+                        const result = simulateCppExecution(code, lesson, inputVal);
+                        output.textContent = result.output;
+                        button.disabled = false;
+                        button.textContent = "▶ Chạy thử";
+                    });
+            } else {
+                setTimeout(() => {
+                    const result = simulateCppExecution(code, lesson, inputVal);
+                    output.textContent = result.output;
+                    button.disabled = false;
+                    button.textContent = "▶ Chạy thử";
+                }, 400);
+            }
         }
     );
 }
@@ -832,19 +842,12 @@ function setupSubmitButton(
 
             button.disabled = true;
             const originalBtnHtml = button.innerHTML;
-            button.innerHTML = `<span>⏳</span> Đang phân tích & đánh giá...`;
+            button.innerHTML = `<span>⏳</span> Đang chấm code & AI đánh giá...`;
 
-            setTimeout(() => {
-                const ex = currentLessonExercises[activeExerciseIndex] || currentLessonExercises[0];
-                const result = gradeCode(
-                    code,
-                    lesson,
-                    activeExerciseIndex
-                );
+            const ex = currentLessonExercises[activeExerciseIndex] || currentLessonExercises[0] || {};
 
-                // --------------------------------------------
+            const processGrading = (result) => {
                 // 1. Lưu kết quả bài tập hiện tại
-                // --------------------------------------------
                 const resKey = getExerciseResultKey(user.id, lesson.id, activeExerciseIndex);
                 localStorage.setItem(resKey, JSON.stringify(result));
 
@@ -854,9 +857,7 @@ function setupSubmitButton(
                     CppStorage.saveLessonCode(user.id, lesson.id, code);
                 }
 
-                // --------------------------------------------
                 // 2. Cập nhật tiến độ bài học tổng thể
-                // --------------------------------------------
                 if (window.CppStorage && typeof CppStorage.saveLessonProgress === "function") {
                     CppStorage.saveLessonProgress(
                         user.id,
@@ -871,19 +872,13 @@ function setupSubmitButton(
                     );
                 }
 
-                // --------------------------------------------
                 // 3. Cập nhật icon trên các tab bài tập
-                // --------------------------------------------
                 updateExerciseTabStatuses(user, lesson);
 
-                // --------------------------------------------
                 // 4. Hiển thị bảng đánh giá AI
-                // --------------------------------------------
                 showGradingResult(result);
 
-                // --------------------------------------------
                 // 5. Cập nhật trạng thái bài học chung
-                // --------------------------------------------
                 updateLessonStatus({
                     completed: result.completed,
                     score: result.score
@@ -900,7 +895,35 @@ function setupSubmitButton(
                         block: "start"
                     });
                 }
-            }, 850);
+            };
+
+            // Thử gọi backend AI evaluator trước
+            if (window.CodeLearnApi && typeof CodeLearnApi.compiler?.submitExercise === "function") {
+                const inputElem = document.getElementById("inputData");
+                const inputVal = inputElem ? inputElem.value : "";
+                CodeLearnApi.compiler.submitExercise(lesson.id, ex.id, code, inputVal)
+                    .then(evalRes => {
+                        const adapted = {
+                            completed: evalRes.passed,
+                            score: evalRes.score,
+                            comprehensionLevel: evalRes.comprehensionLevel,
+                            comprehensionPercent: evalRes.comprehensionPercent,
+                            strengths: evalRes.strengths,
+                            improvements: evalRes.improvements
+                        };
+                        processGrading(adapted);
+                    })
+                    .catch(() => {
+                        // Fallback sang chấm client-side
+                        const result = gradeCode(code, lesson, activeExerciseIndex);
+                        processGrading(result);
+                    });
+            } else {
+                setTimeout(() => {
+                    const result = gradeCode(code, lesson, activeExerciseIndex);
+                    processGrading(result);
+                }, 500);
+            }
         }
     );
 }

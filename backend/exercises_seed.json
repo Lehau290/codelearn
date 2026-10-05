@@ -1,0 +1,162 @@
+{
+  "lesson-01": [
+    {
+      "id": "ex-1",
+      "lesson_id": "lesson-01",
+      "title": "In lời chào ra màn hình",
+      "level": "Cơ bản",
+      "difficulty": "easy",
+      "points": 100,
+      "description": "Viết chương trình C++ sử dụng đối tượng <code>cout</code> để in ra màn hình dòng chữ:<br><code>Hello C++ Academy!</code>",
+      "starter_code": "#include <iostream>\nusing namespace std;\n\nint main() {\n    // Viết code in ra màn hình tại đây\n\n    return 0;\n}",
+      "expected_output": "Hello C++ Academy!",
+      "hint": "Sử dụng lệnh cout << \\",
+      "test_keywords": "[]",
+      "order_num": 1
+    }
+  ],
+  "lesson-02": [
+    {
+      "id": "ex-1",
+      "lesson_id": "lesson-02",
+      "title": "Tính chu vi hình tròn",
+      "level": "Cơ bản",
+      "difficulty": "easy",
+      "points": 100,
+      "description": "",
+      "starter_code": "",
+      "expected_output": "",
+      "hint": "",
+      "test_keywords": "[]",
+      "order_num": 1
+    }
+  ],
+  "lesson-03": [
+    {
+      "id": "ex-1",
+      "lesson_id": "lesson-03",
+      "title": "Tính tổng 2 số từ bàn phím",
+      "level": "Cơ bản",
+      "difficulty": "easy",
+      "points": 100,
+      "description": "",
+      "starter_code": "",
+      "expected_output": "",
+      "hint": "",
+      "test_keywords": "[]",
+      "order_num": 1
+    }
+  ],
+  "lesson-04": [
+    {
+      "id": "ex-1",
+      "lesson_id": "lesson-04",
+      "title": "Kiểm tra số chẵn lẻ bằng toán tử dư",
+      "level": "Cơ bản",
+      "difficulty": "easy",
+      "points": 100,
+      "description": "Nhập vào số nguyên <code>n</code>. Sử dụng toán tử chia lấy phần dư <code>%</code> để kiểm tra. Nếu n chẵn in ra <code>Chan</code>, nếu lẻ in ra <code>Le</code>.",
+      "starter_code": "#include <iostream>\nusing namespace std;\n\nint main() {\n    int n;\n    // Nhập n và kiểm tra chẵn/lẻ bằng toán tử %\n\n    return 0;\n}",
+      "expected_output": "Chan",
+      "hint": "Dùng điều kiện n % 2 == 0 để kiểm tra chẵn lẻ.",
+      "test_keywords": "[]",
+      "order_num": 1
+    }
+  ],
+  "lesson-05": [
+    {
+      "id": "ex-1",
+      "lesson_id": "lesson-05",
+      "title": "Tìm số lớn nhất trong 2 số",
+      "level": "Cơ bản",
+      "difficulty": "easy",
+      "points": 100,
+      "description": "Nhập vào 2 số nguyên <code>a</code> và <code>b</code>. Dùng cấu trúc <code>if - else</code> để tìm và in ra số lớn hơn.",
+      "starter_code": "#include <iostream>\nusing namespace std;\n\nint main() {\n    int a, b;\n    // Nhập a, b và dùng if-else tìm số lớn hơn\n\n    return 0;\n}",
+      "expected_output": "So lon nhat: 25",
+      "hint": "if (a > b) cout << \\",
+      "test_keywords": "[]",
+      "order_num": 1
+    }
+  ],
+  "lesson-06": [
+    {
+      "id": "ex-1",
+      "lesson_id": "lesson-06",
+      "title": "Đọc thứ trong tuần",
+      "level": "Cơ bản",
+      "difficulty": "easy",
+      "points": 100,
+      "description": "Nhập vào số nguyên từ 2 đến 8. Sử dụng <code>switch - case</code> để in ra: 2: <code>Thu hai</code>, 3: <code>Thu ba</code>, ..., 8: <code>Chu nhat</code>. Nếu ngoài phạm vi in <code>Khong hop le</code>.",
+      "starter_code": "#include <iostream>\nusing namespace std;\n\nint main() {\n    int day;\n    // Nhập day và dùng switch-case để in thứ\n\n    return 0;\n}",
+      "expected_output": "Thu hai",
+      "hint": "Dùng switch(day) với các case 2, 3, 4, 5, 6, 7, 8 và default.",
+      "test_keywords": "[]",
+      "order_num": 1
+    }
+  ],
+  "lesson-07": [
+    {
+      "id": "ex-1",
+      "lesson_id": "lesson-07",
+      "title": "Tính tổng dãy số 1 đến N",
+      "level": "Cơ bản",
+      "difficulty": "easy",
+      "points": 100,
+      "description": "",
+      "starter_code": "",
+      "expected_output": "",
+      "hint": "",
+      "test_keywords": "[]",
+      "order_num": 1
+    }
+  ],
+  "lesson-08": [
+    {
+      "id": "ex-1",
+      "lesson_id": "lesson-08",
+      "title": "Đảo ngược số nguyên dương",
+      "level": "Cơ bản",
+      "difficulty": "easy",
+      "points": 100,
+      "description": "Nhập vào số nguyên dương <code>n</code>. Sử dụng vòng lặp <code>while</code> để in ra các chữ số của n theo thứ tự đảo ngược (ví dụ n = 123 in ra <code>321</code>).",
+      "starter_code": "#include <iostream>\nusing namespace std;\n\nint main() {\n    int n;\n    // Nhập n và dùng while in đảo ngược\n\n    return 0;\n}",
+      "expected_output": "321",
+      "hint": "while (n > 0) { cout << n % 10; n /= 10; }",
+      "test_keywords": "[]",
+      "order_num": 1
+    }
+  ],
+  "lesson-09": [
+    {
+      "id": "ex-1",
+      "lesson_id": "lesson-09",
+      "title": "In các số chẵn dùng lệnh continue",
+      "level": "Cơ bản",
+      "difficulty": "easy",
+      "points": 100,
+      "description": "Duyệt vòng lặp for từ 1 đến 20. Nếu gặp số lẻ, hãy dùng lệnh <code>continue</code> để bỏ qua. Chỉ in ra các số chẵn cách nhau bởi dấu cách.",
+      "starter_code": "#include <iostream>\nusing namespace std;\n\nint main() {\n    // Duyệt từ 1 đến 20, dùng continue bỏ qua số lẻ\n\n    return 0;\n}",
+      "expected_output": "2 4 6 8 10 12 14 16 18 20",
+      "hint": "if (i % 2 != 0) continue; cout << i << \\",
+      "test_keywords": "[]",
+      "order_num": 1
+    }
+  ],
+  "lesson-10": [
+    {
+      "id": "ex-1",
+      "lesson_id": "lesson-10",
+      "title": "Viết hàm tính lũy thừa",
+      "level": "Cơ bản",
+      "difficulty": "easy",
+      "points": 100,
+      "description": "Viết hàm <code>long long luyThua(int coSo, int soMu)</code> trả về giá trị coSo mũ soMu. Trong hàm <code>main()</code>, nhập <code>a, b</code> và gọi hàm để in kết quả.",
+      "starter_code": "#include <iostream>\nusing namespace std;\n\n// Định nghĩa hàm luyThua tại đây\n\nint main() {\n    int a, b;\n    cin >> a >> b;\n    // Gọi hàm luyThua và in kết quả\n\n    return 0;\n}",
+      "expected_output": "32",
+      "hint": "Duyệt vòng lặp nhân soMu lần giá trị coSo và return kết quả.",
+      "test_keywords": "[]",
+      "order_num": 1
+    }
+  ]
+}
