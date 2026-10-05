@@ -15,7 +15,10 @@
 
     <title>Hồ sơ | CodeLearn C++</title>
 
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cinzel:wght@600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css?v=2.2.0">
     <script>
         (function() {
             var t = localStorage.getItem("cpp_theme");
@@ -861,57 +864,115 @@
         <canvas id="certConfettiCanvas"></canvas>
 
         <!-- =========================================
-             ROYAL CERTIFICATE MODAL POPUP
+             ROYAL ACADEMIC DIPLOMA MODAL POPUP
         ========================================== -->
         <div id="certificateModal" class="cert-modal-backdrop" hidden>
             <div class="cert-card-container">
-                <!-- 4 Corner Filigrees -->
+                <!-- 4 Corner Victorian Filigrees -->
                 <div class="cert-corner cert-corner-tl"></div>
                 <div class="cert-corner cert-corner-tr"></div>
                 <div class="cert-corner cert-corner-bl"></div>
                 <div class="cert-corner cert-corner-br"></div>
 
-                <button type="button" id="btnCloseCertModal" style="position: absolute; top: 18px; right: 20px; background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #94a3b8; z-index: 10;" title="Đóng">✕</button>
+                <button type="button" id="btnCloseCertModal" class="cert-close-btn" title="Đóng">✕</button>
 
-                <!-- Certificate Header -->
+                <!-- 1. Header & Heraldic Crest -->
                 <div class="cert-header">
-                    <div class="cert-crest">
-                        ★
+                    <div class="cert-crest-emblem">
+                        <svg width="68" height="68" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Outer Heraldic Shield -->
+                            <path d="M50 4 L86 16 V50 C86 72 50 94 50 94 C50 94 14 72 14 50 V16 L50 4 Z" fill="url(#crestGrad)" stroke="#78350f" stroke-width="2.5"/>
+                            <!-- Inner Border Shield -->
+                            <path d="M50 10 L80 20 V49 C80 67 50 86 50 86 C50 86 20 67 20 49 V20 L50 10 Z" fill="#0f172a" stroke="#d4af37" stroke-width="1.8"/>
+                            <!-- Open Book & Academic Iconography -->
+                            <path d="M50 32 L34 40 V62 L50 54 L66 62 V40 L50 32 Z" fill="#fef08a" stroke="#d4af37" stroke-width="1.2"/>
+                            <path d="M50 32 V54" stroke="#78350f" stroke-width="1.5"/>
+                            <!-- Academic Star -->
+                            <polygon points="50,18 53,24 60,25 55,30 56,37 50,33 44,37 45,30 40,25 47,24" fill="#fbbf24"/>
+                            <!-- Latin Motto Ribbon Banner -->
+                            <path d="M22 82 Q50 92 78 82 L75 75 Q50 84 25 75 Z" fill="#d4af37"/>
+                            <defs>
+                                <linearGradient id="crestGrad" x1="14" y1="4" x2="86" y2="94" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#fef08a"/>
+                                    <stop offset="50%" stop-color="#d4af37"/>
+                                    <stop offset="100%" stop-color="#92400e"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
                     </div>
-                    <div class="cert-logo">
-                        CODELEARN ACADEMY
-                    </div>
-                    <div class="cert-tagline">
-                        HỌC VIỆN ĐÀO TẠO LẬP TRÌNH C++ CHUẨN QUỐC TẾ
-                    </div>
-                    <h1 class="cert-title">CHỨNG CHỈ TỐT NGHIỆP</h1>
-                    <span class="cert-subtitle">CERTIFICATE OF EXCELLENCE IN C++ PROGRAMMING</span>
+                    <div class="cert-university-name">CODELEARN INSTITUTE OF COMPUTER SCIENCE</div>
+                    <div class="cert-university-sub">ACADEMY OF ADVANCED TECHNOLOGY &amp; SYSTEMS PROGRAMMING</div>
+                    <div class="cert-latin-citation">EXCELLENTIA ET VIRTUS • AUCTORITATE ACADEMICA</div>
                 </div>
 
-                <!-- Certificate Body -->
+                <!-- 2. Recipient & Degree Details -->
                 <div class="cert-body">
-                    <p class="cert-intro-text">Trân trọng chứng nhận học viên:</p>
+                    <p class="cert-intro-text">By virtue of the authority vested in them, the Academic Council confers upon</p>
                     <div class="cert-recipient-name" id="certRecipientName">Lê Trung Hậu</div>
                     <div class="cert-name-underline">✦</div>
+                    <div class="cert-degree-title">THE DIPLOMA OF EXCELLENCE IN ADVANCED C++ SYSTEMS</div>
+                    <div class="cert-degree-title-vi">VĂN BẰNG TỐT NGHIỆP CHUYÊN SÂU LẬP TRÌNH HỆ THỐNG C++</div>
                     <p class="cert-desc">
-                        Đã hoàn thành xuất sắc toàn bộ 20 Chuyên đề chuẩn hóa &amp; 60 Bài tập thực hành của chương trình đào tạo <strong>"Lập Trình C++ Nền Tảng Đến Thực Chiến"</strong> (Cấu trúc dữ liệu, Thuật toán tối ưu, Lập trình hướng đối tượng OOP và Quản lý bộ nhớ nâng cao).
+                        Đã hoàn thành xuất sắc toàn bộ 20 Chuyên đề chuẩn hóa &amp; 60 Bài tập thực hành của chương trình đào tạo chuyên sâu chuẩn Quốc Tế (Cấu trúc dữ liệu, Thuật toán tối ưu, Lập trình hướng đối tượng OOP và Quản lý bộ nhớ nâng cao).
                     </p>
-                    <div class="cert-distinction-badge">
-                        <span>★</span> XẾP LOẠI: XUẤT SẮC • ĐIỂM TỔNG KẾT: <strong id="certFinalScore">100/100</strong>
+                    <div class="cert-honors-ribbon">
+                        <span class="ribbon-star">★</span> SUMMA CUM LAUDE • XUẤT SẮC (ĐIỂM: <strong id="certFinalScore">100/100</strong>) <span class="ribbon-star">★</span>
                     </div>
                 </div>
 
-                <!-- Certificate Footer -->
+                <!-- 3. Dual Signatures & 3D Gold Seal -->
                 <div class="cert-footer-row">
-                    <!-- Left: Verification Credentials & QR -->
-                    <div class="cert-left-meta">
+                    <!-- Left Officer -->
+                    <div class="cert-officer cert-officer-left">
+                        <div class="cert-officer-sig-wrapper">
+                            <div class="cert-officer-sig">Prof. Arthur Vance</div>
+                        </div>
+                        <div class="cert-officer-line"></div>
+                        <div class="cert-officer-name">Arthur Vance, Ph.D.</div>
+                        <div class="cert-officer-title">Dean of Computer Science</div>
+                    </div>
+
+                    <!-- Center: 3D Gold University Corporate Seal -->
+                    <div class="cert-seal-wrapper">
+                        <div class="cert-seal-badge">
+                            <div class="cert-seal-inner">
+                                <span>★ ★ ★</span>
+                                <span class="seal-degree">C++ MASTER</span>
+                                <span>HONORS</span>
+                            </div>
+                        </div>
+                        <div class="cert-seal-ribbons">
+                            <div class="cert-seal-ribbon ribbon-left"></div>
+                            <div class="cert-seal-ribbon ribbon-right"></div>
+                        </div>
+                    </div>
+
+                    <!-- Right Officer & Official Stamp -->
+                    <div class="cert-officer cert-officer-right">
+                        <div class="cert-officer-sig-wrapper">
+                            <div class="cert-officer-sig">Dr. Elena Rostova</div>
+                            <div class="cert-red-stamp" title="Official Seal of the Registrar">
+                                <span class="stamp-org">CODELEARN</span>
+                                <strong class="stamp-status">ACCREDITED</strong>
+                                <span class="stamp-sub">SIGILLUM 2026</span>
+                            </div>
+                        </div>
+                        <div class="cert-officer-line"></div>
+                        <div class="cert-officer-name">Elena Rostova, Sc.D.</div>
+                        <div class="cert-officer-title">President of Academic Senate</div>
+                    </div>
+                </div>
+
+                <!-- 4. Security Accreditation Strip (Fixed QR box, no overflow) -->
+                <div class="cert-security-strip">
+                    <div class="cert-qr-container">
                         <div class="cert-qr-box" title="Quét mã xác thực chứng chỉ điện tử">
-                            <svg viewBox="0 0 100 100" fill="#1e1b4b">
-                                <rect x="5" y="5" width="28" height="28" rx="2" fill="none" stroke="#1e1b4b" stroke-width="6"/>
+                            <svg viewBox="0 0 100 100" fill="#0f172a" width="44" height="44">
+                                <rect x="5" y="5" width="28" height="28" rx="2" fill="none" stroke="#0f172a" stroke-width="6"/>
                                 <rect x="13" y="13" width="12" height="12"/>
-                                <rect x="67" y="5" width="28" height="28" rx="2" fill="none" stroke="#1e1b4b" stroke-width="6"/>
+                                <rect x="67" y="5" width="28" height="28" rx="2" fill="none" stroke="#0f172a" stroke-width="6"/>
                                 <rect x="75" y="13" width="12" height="12"/>
-                                <rect x="5" y="67" width="28" height="28" rx="2" fill="none" stroke="#1e1b4b" stroke-width="6"/>
+                                <rect x="5" y="67" width="28" height="28" rx="2" fill="none" stroke="#0f172a" stroke-width="6"/>
                                 <rect x="13" y="75" width="12" height="12"/>
                                 <rect x="42" y="10" width="8" height="8"/>
                                 <rect x="52" y="20" width="8" height="8"/>
@@ -924,48 +985,28 @@
                                 <rect x="84" y="82" width="8" height="10"/>
                             </svg>
                         </div>
-                        <div class="cert-meta-info">
-                            <div>MÃ CHỨNG CHỈ:</div>
-                            <strong id="certSerialCode">CERT-CPP-2026-XXXXXX</strong>
-                            <div style="margin-top: 3px;">MÃ BĂM XÁC THỰC (SHA-256):</div>
-                            <div class="cert-hash-snippet" id="certVerifyHash">000000000000...</div>
-                            <div style="margin-top: 3px;">NGÀY CẤP: <span id="certIssueDate">05/10/2026</span></div>
+                        <div class="cert-qr-hint">
+                            <strong>VERIFIED CREDENTIAL</strong>
+                            <span>Quét mã xác thực số</span>
                         </div>
                     </div>
 
-                    <!-- Center: 3D Royal Gold Seal Medallion -->
-                    <div class="cert-seal-wrapper">
-                        <div class="cert-seal-badge">
-                            <span class="seal-star">★ ★ ★</span>
-                            <span>VERIFIED</span>
-                            <strong>MASTER</strong>
-                            <span>C++</span>
-                        </div>
-                        <div class="cert-seal-ribbons">
-                            <div class="cert-seal-ribbon ribbon-left"></div>
-                            <div class="cert-seal-ribbon ribbon-right"></div>
-                        </div>
+                    <div class="cert-meta-center">
+                        <div>SERIES / MÃ VĂN BẰNG:</div>
+                        <strong id="certSerialCode">CERT-CPP-2026-XXXXXX</strong>
+                        <div style="margin-top: 2px;">NGÀY CẤP: <span id="certIssueDate">05/10/2026</span></div>
                     </div>
 
-                    <!-- Right: Signature & Official Red Stamp -->
-                    <div class="cert-right-sig">
-                        <div class="cert-sig-container">
-                            <div class="cert-signature-art">CodeLearn Academic Council</div>
-                            <div class="cert-red-stamp" title="Dấu chứng nhận đào tạo chính thức">
-                                <span>CODELEARN</span>
-                                <strong>CHỨNG NHẬN</strong>
-                                <span>C++ ĐẠT CHUẨN</span>
-                            </div>
-                        </div>
-                        <div class="cert-sig-line"></div>
-                        <div class="cert-sig-title">Hội Đồng Đào Tạo CodeLearn C++</div>
+                    <div class="cert-hash-box">
+                        <div>SHA-256 DIGITAL FINGERPRINT:</div>
+                        <div class="cert-hash-snippet" id="certVerifyHash">000000000000...</div>
                     </div>
                 </div>
 
-                <!-- Actions Bar -->
+                <!-- 5. Actions Bar -->
                 <div class="cert-actions-bar">
-                    <button type="button" class="btn btn-primary" id="btnPrintCert" style="background: linear-gradient(135deg, #4f46e5, #4338ca); color: #fff;">
-                        🖨️ In / Tải PDF Chứng chỉ
+                    <button type="button" class="btn btn-primary" id="btnPrintCert" style="background: linear-gradient(135deg, #0f172a, #1e293b); color: #f8fafc; border: 1px solid #d4af37;">
+                        🖨️ In / Tải PDF Văn Bằng
                     </button>
                     <button type="button" class="btn btn-secondary" id="btnCopyVerifyLink">
                         🔗 Sao chép liên kết xác thực
