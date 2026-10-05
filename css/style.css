@@ -90,19 +90,19 @@ ol {
 
 :root {
     /* Dreamy Pastel Lavender & Lilac Glow Theme */
-    --primary: #7c5cfc;
+    --primary: #847de8;
     --primary-dark: #6340d8;
-    --primary-light: #f1edfe;
-    --primary-gradient: linear-gradient(135deg, #8e6dff 0%, #6842ed 100%);
-    --primary-glow: rgba(124, 92, 252, 0.35);
+    --primary-light: #f0eefa;
+    --primary-gradient: linear-gradient(135deg, #a49ef2 0%, #6c64d8 100%);
+    --primary-glow: rgba(132, 125, 232, 0.35);
 
-    --secondary: #a78bfa;
-    --secondary-dark: #8b5cf6;
+    --secondary: #b5aff8;
+    --secondary-dark: #928ae8;
     --secondary-light: #f5f3ff;
-    --secondary-gradient: linear-gradient(135deg, #a78bfa 0%, #7c5cfc 100%);
+    --secondary-gradient: linear-gradient(135deg, #b5aff8 0%, #847de8 100%);
 
-    --accent-emerald: #7c5cfc;
-    --accent-emerald-light: #f1edfe;
+    --accent-emerald: #847de8;
+    --accent-emerald-light: #f0eefa;
 
     --success: #10b981;
     --success-light: #ecfdf5;
@@ -115,17 +115,17 @@ ol {
     --text-secondary: #5e577c;
     --text-light: #8e88aa;
 
-    --background: #f4f3fb;
-    --background-alt: #ebe9f8;
+    --background: #f8f7fd;
+    --background-alt: #edeaf8;
     --white: #ffffff;
 
-    --border: #ddd8f5;
-    --border-light: #ebe7fa;
-    --border-focus: #7c5cfc;
+    --border: #ded8f5;
+    --border-light: #ede9f8;
+    --border-focus: #847de8;
 
-    --card-shadow: 0 4px 16px rgba(124, 92, 252, 0.05), 0 1px 3px rgba(26, 22, 43, 0.02);
-    --card-shadow-hover: 0 16px 36px rgba(124, 92, 252, 0.16), 0 4px 12px rgba(26, 22, 43, 0.04);
-    --card-shadow-elevated: 0 24px 48px rgba(124, 92, 252, 0.14);
+    --card-shadow: 0 4px 16px rgba(132, 125, 232, 0.05), 0 1px 3px rgba(26, 22, 43, 0.02);
+    --card-shadow-hover: 0 16px 36px rgba(132, 125, 232, 0.16), 0 4px 12px rgba(26, 22, 43, 0.04);
+    --card-shadow-elevated: 0 24px 48px rgba(132, 125, 232, 0.14);
 
     --radius-sm: 12px;
     --radius-md: 18px;
@@ -230,13 +230,13 @@ main {
     border-radius: 14px;
 
     color: #ffffff;
-    background: linear-gradient(135deg, #8e6dff, #6842ed);
+    background: linear-gradient(135deg, #a49ef2, #6c64d8);
 
     font-family: var(--font-mono);
     font-size: 0.95rem;
     font-weight: 800;
 
-    box-shadow: 0 8px 22px rgba(124, 92, 252, 0.35);
+    box-shadow: 0 8px 22px rgba(132, 125, 232, 0.35);
 }
 
 .site-logo-text {
@@ -298,7 +298,7 @@ main {
 .nav-link.active {
     color: #ffffff;
     background: var(--primary-gradient);
-    box-shadow: 0 4px 14px rgba(124, 92, 252, 0.32);
+    box-shadow: 0 4px 14px rgba(132, 125, 232, 0.32);
 }
 
 .admin-nav-link {
@@ -369,7 +369,7 @@ main {
         linear-gradient(
             135deg,
             #2563eb,
-            #7c3aed
+            #847de8
         );
 
     font-weight: 800;
@@ -448,12 +448,12 @@ main {
 .btn-primary {
     color: #ffffff;
     background: var(--primary-gradient);
-    box-shadow: 0 4px 16px 0 rgba(124, 92, 252, 0.35);
+    box-shadow: 0 4px 16px 0 rgba(132, 125, 232, 0.35);
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, #9c7dff 0%, #5b35e3 100%);
-    box-shadow: 0 8px 25px 0 rgba(124, 92, 252, 0.45);
+    background: linear-gradient(135deg, #a49ef2 0%, #6c64d8 100%);
+    box-shadow: 0 8px 25px 0 rgba(132, 125, 232, 0.45);
 }
 
 .btn-secondary {
@@ -506,19 +506,20 @@ main {
     background:
         radial-gradient(
             circle at 15% 20%,
-            rgba(96, 165, 250, 0.28),
-            transparent 32%
+            rgba(164, 158, 242, 0.3),
+            transparent 45%
         ),
         radial-gradient(
             circle at 85% 10%,
-            rgba(167, 139, 250, 0.28),
-            transparent 30%
+            rgba(199, 194, 250, 0.25),
+            transparent 45%
         ),
         linear-gradient(
-            135deg,
-            #0f172a,
-            #1e3a8a
-        );
+            180deg,
+            rgba(15, 12, 28, 0.76) 0%,
+            rgba(15, 12, 28, 0.88) 100%
+        ),
+        url('../images/hero-star-bg.png') center/cover no-repeat;
 }
 
 .profile-hero::after {
@@ -554,12 +555,12 @@ main {
     border: 1px solid rgba(167, 139, 250, 0.35);
     border-radius: 999px;
     color: #c4b5fd;
-    background: rgba(124, 92, 252, 0.16);
+    background: rgba(132, 125, 232, 0.16);
     font-size: 0.74rem;
     font-weight: 800;
     letter-spacing: 0.1em;
     backdrop-filter: blur(8px);
-    box-shadow: 0 0 20px rgba(124, 92, 252, 0.25);
+    box-shadow: 0 0 20px rgba(132, 125, 232, 0.25);
 }
 
 .profile-hero h1 {
@@ -615,7 +616,7 @@ main {
 .profile-tab-pill.active {
     background: var(--primary-gradient);
     color: #ffffff;
-    box-shadow: 0 6px 18px rgba(124, 92, 252, 0.4);
+    box-shadow: 0 6px 18px rgba(132, 125, 232, 0.4);
 }
 
 
@@ -675,10 +676,10 @@ main {
     place-items: center;
     border-radius: 50%;
     color: #ffffff;
-    background: linear-gradient(135deg, #7c5cfc, #3b82f6);
+    background: linear-gradient(135deg, #847de8, #3b82f6);
     font-size: 2.2rem;
     font-weight: 900;
-    box-shadow: 0 10px 24px rgba(124, 92, 252, 0.28);
+    box-shadow: 0 10px 24px rgba(132, 125, 232, 0.28);
     border: 3px solid #ffffff;
     overflow: hidden;
     transition: transform 0.25s ease;
@@ -774,7 +775,7 @@ main {
 }
 
 .profile-rank.rank-master {
-    color: #6d28d9;
+    color: #6c64d8;
     background: #ede9fe;
     border-color: #ddd6fe;
 }
@@ -843,7 +844,7 @@ main {
 .profile-action.active {
     background: var(--primary-gradient);
     color: #ffffff;
-    box-shadow: 0 4px 14px rgba(124, 92, 252, 0.3);
+    box-shadow: 0 4px 14px rgba(132, 125, 232, 0.3);
 }
 
 .profile-action.active .action-arrow {
@@ -1026,7 +1027,7 @@ main {
 
 .recent-lesson-item:hover {
     background: #ffffff;
-    border-color: rgba(124, 92, 252, 0.3);
+    border-color: rgba(132, 125, 232, 0.3);
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
 }
 
@@ -1034,7 +1035,7 @@ main {
     width: 34px;
     height: 34px;
     border-radius: 50%;
-    background: rgba(124, 92, 252, 0.12);
+    background: rgba(132, 125, 232, 0.12);
     color: var(--primary);
     font-weight: 800;
     font-size: 0.85rem;
@@ -1068,7 +1069,7 @@ main {
 
 .recent-lesson-score.score-med {
     background: #f5f3ff;
-    color: #7c3aed;
+    color: #847de8;
 }
 
 .recent-lesson-score.score-low {
@@ -1102,8 +1103,8 @@ main {
     align-items: center;
     gap: 16px;
     padding: 18px 24px;
-    background: linear-gradient(135deg, rgba(124, 92, 252, 0.1) 0%, rgba(59, 130, 246, 0.08) 100%);
-    border: 1px solid rgba(124, 92, 252, 0.2);
+    background: linear-gradient(135deg, rgba(132, 125, 232, 0.1) 0%, rgba(59, 130, 246, 0.08) 100%);
+    border: 1px solid rgba(132, 125, 232, 0.2);
     border-radius: var(--radius-lg);
 }
 
@@ -1146,7 +1147,7 @@ main {
     width: 110px;
     height: 110px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #7c5cfc, #3b82f6);
+    background: linear-gradient(135deg, #847de8, #3b82f6);
     color: #ffffff;
     font-size: 2.6rem;
     font-weight: 900;
@@ -1154,7 +1155,7 @@ main {
     place-items: center;
     overflow: hidden;
     border: 4px solid #ffffff;
-    box-shadow: 0 10px 28px rgba(124, 92, 252, 0.35);
+    box-shadow: 0 10px 28px rgba(132, 125, 232, 0.35);
 }
 
 .avatar-preview-frame.has-image img {
@@ -1236,12 +1237,12 @@ main {
 .preset-avatar-btn:hover {
     transform: scale(1.12);
     border-color: var(--primary);
-    box-shadow: 0 6px 14px rgba(124, 92, 252, 0.25);
+    box-shadow: 0 6px 14px rgba(132, 125, 232, 0.25);
 }
 
 .preset-avatar-btn.selected {
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(124, 92, 252, 0.35);
+    box-shadow: 0 0 0 3px rgba(132, 125, 232, 0.35);
     transform: scale(1.08);
 }
 
@@ -1324,8 +1325,8 @@ main {
 
 .theme-option-card.active {
     border-color: var(--primary);
-    background: rgba(124, 92, 252, 0.08);
-    box-shadow: 0 4px 14px rgba(124, 92, 252, 0.15);
+    background: rgba(132, 125, 232, 0.08);
+    box-shadow: 0 4px 14px rgba(132, 125, 232, 0.15);
 }
 
 .theme-option-icon {
@@ -1349,7 +1350,7 @@ main {
     font-size: 0.95rem;
     font-weight: 800;
     border-radius: var(--radius-pill);
-    box-shadow: 0 6px 18px rgba(124, 92, 252, 0.35);
+    box-shadow: 0 6px 18px rgba(132, 125, 232, 0.35);
 }
 
 
@@ -1390,7 +1391,7 @@ main {
 
 .profile-input:focus {
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(124, 92, 252, 0.15);
+    box-shadow: 0 0 0 3px rgba(132, 125, 232, 0.15);
 }
 
 .input-help {
@@ -1891,7 +1892,11 @@ main {
     align-items: center;
     justify-content: center;
     padding: 30px 20px;
-    background: linear-gradient(135deg, #090714 0%, #110e24 50%, #090714 100%);
+    background:
+        radial-gradient(circle at 15% 20%, rgba(164, 158, 242, 0.25) 0%, transparent 45%),
+        radial-gradient(circle at 85% 80%, rgba(199, 194, 250, 0.2) 0%, transparent 45%),
+        linear-gradient(180deg, rgba(9, 7, 20, 0.78) 0%, rgba(17, 14, 36, 0.9) 100%),
+        url('../images/hero-star-bg.png') center/cover no-repeat;
     position: relative;
     overflow-x: hidden;
     gap: 48px;
@@ -1903,7 +1908,7 @@ main {
     width: 600px;
     height: 600px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(142, 109, 255, 0.2) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(164, 158, 242, 0.2) 0%, transparent 70%);
     top: -150px;
     left: -150px;
     pointer-events: none;
@@ -1951,13 +1956,13 @@ main {
     width: 48px;
     height: 48px;
     border-radius: 14px;
-    background: linear-gradient(135deg, #8e6dff, #6842ed);
+    background: linear-gradient(135deg, #a49ef2, #6c64d8);
     display: grid;
     place-items: center;
     font-weight: 900;
     color: #ffffff;
     font-size: 1.2rem;
-    box-shadow: 0 10px 25px rgba(124, 92, 252, 0.35);
+    box-shadow: 0 10px 25px rgba(132, 125, 232, 0.35);
 }
 
 .auth-brand h1 {
@@ -1996,7 +2001,7 @@ main {
 }
 
 .intro-content h2 span {
-    background: linear-gradient(135deg, #a78bfa 0%, #c4b5fd 50%, #ddd6fe 100%);
+    background: linear-gradient(135deg, #b5aff8 0%, #c4b5fd 50%, #ddd6fe 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -2335,9 +2340,10 @@ main {
 .home-hero {
     padding: 70px 0 80px;
     background:
-        radial-gradient(circle at 12% 20%, rgba(142, 109, 255, 0.28) 0%, transparent 45%),
-        radial-gradient(circle at 88% 80%, rgba(192, 132, 252, 0.22) 0%, transparent 45%),
-        #0a0815;
+        radial-gradient(circle at 12% 20%, rgba(164, 158, 242, 0.28) 0%, transparent 45%),
+        radial-gradient(circle at 88% 80%, rgba(199, 194, 250, 0.22) 0%, transparent 45%),
+        linear-gradient(180deg, rgba(10, 8, 21, 0.72) 0%, rgba(10, 8, 21, 0.88) 100%),
+        url('../images/hero-star-bg.png') center/cover no-repeat;
     color: #ffffff;
     position: relative;
     overflow: hidden;
@@ -2366,8 +2372,8 @@ main {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: rgba(142, 109, 255, 0.16);
-    border: 1px solid rgba(142, 109, 255, 0.38);
+    background: rgba(164, 158, 242, 0.16);
+    border: 1px solid rgba(164, 158, 242, 0.38);
     color: #e2d9ff;
     padding: 7px 18px;
     border-radius: var(--radius-pill);
@@ -2376,7 +2382,7 @@ main {
     margin-bottom: 22px;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 4px 20px rgba(124, 92, 252, 0.25);
+    box-shadow: 0 4px 20px rgba(132, 125, 232, 0.25);
 }
 
 .hero-badge-sparkle {
@@ -2400,7 +2406,7 @@ main {
 }
 
 .hero-gradient-text {
-    background: linear-gradient(135deg, #a78bfa 0%, #c4b5fd 45%, #ffffff 85%);
+    background: linear-gradient(135deg, #b5aff8 0%, #c4b5fd 45%, #ffffff 85%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -2444,7 +2450,7 @@ main {
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    background: rgba(142, 109, 255, 0.28);
+    background: rgba(164, 158, 242, 0.28);
     color: #c4b5fd;
     font-size: 0.72rem;
     font-weight: 800;
@@ -2460,10 +2466,10 @@ main {
 /* C++ Code Window Mockup */
 .hero-code-window {
     background: #0d0a1d;
-    border: 1px solid rgba(142, 109, 255, 0.35);
+    border: 1px solid rgba(164, 158, 242, 0.35);
     border-radius: var(--radius-xl);
     overflow: hidden;
-    box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.75), 0 0 35px rgba(124, 92, 252, 0.2);
+    box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.75), 0 0 35px rgba(132, 125, 232, 0.2);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     transition: transform var(--transition), box-shadow var(--transition);
@@ -2471,7 +2477,7 @@ main {
 
 .hero-code-window:hover {
     transform: translateY(-3px);
-    box-shadow: 0 30px 70px -15px rgba(0, 0, 0, 0.85), 0 0 45px rgba(124, 92, 252, 0.3);
+    box-shadow: 0 30px 70px -15px rgba(0, 0, 0, 0.85), 0 0 45px rgba(132, 125, 232, 0.3);
 }
 
 .code-window-header {
@@ -2503,8 +2509,8 @@ main {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: rgba(142, 109, 255, 0.16);
-    border: 1px solid rgba(142, 109, 255, 0.32);
+    background: rgba(164, 158, 242, 0.16);
+    border: 1px solid rgba(164, 158, 242, 0.32);
     padding: 3px 12px;
     border-radius: 8px;
     font-family: var(--font-mono);
@@ -2554,7 +2560,7 @@ main {
 .code-output-preview {
     margin-top: 14px;
     background: rgba(0, 0, 0, 0.45);
-    border: 1px solid rgba(142, 109, 255, 0.22);
+    border: 1px solid rgba(164, 158, 242, 0.22);
     border-radius: 10px;
     padding: 10px 14px;
     font-size: 0.8rem;
@@ -2595,7 +2601,7 @@ main {
 /* Hero Progress Card */
 .hero-progress-card {
     background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(142, 109, 255, 0.28);
+    border: 1px solid rgba(164, 158, 242, 0.28);
     border-radius: var(--radius-lg);
     padding: 22px 26px;
     backdrop-filter: blur(16px);
@@ -2631,14 +2637,14 @@ main {
     width: 62px;
     height: 62px;
     border-radius: 50%;
-    border: 4px solid #8e6dff;
-    background: rgba(142, 109, 255, 0.2);
+    border: 4px solid #a49ef2;
+    background: rgba(164, 158, 242, 0.2);
     display: grid;
     place-items: center;
     font-size: 0.92rem;
     font-weight: 800;
     color: #ffffff;
-    box-shadow: 0 0 20px rgba(142, 109, 255, 0.45);
+    box-shadow: 0 0 20px rgba(164, 158, 242, 0.45);
 }
 
 .progress-card-footer {
@@ -2712,7 +2718,7 @@ main {
 
 .stats-grid .stat-card:nth-child(3) .stat-icon {
     background: #f5f3ff;
-    color: #7c3aed;
+    color: #847de8;
 }
 
 .stats-grid .stat-card:nth-child(4) .stat-icon {
@@ -2779,7 +2785,7 @@ main {
     padding: 10px 20px;
     border-radius: var(--radius-pill);
     background: var(--primary-light);
-    border: 1px solid rgba(142, 109, 255, 0.2);
+    border: 1px solid rgba(164, 158, 242, 0.2);
     transition: all var(--transition);
 }
 
@@ -2787,7 +2793,7 @@ main {
     gap: 12px;
     background: var(--primary-gradient);
     color: #ffffff;
-    box-shadow: 0 4px 16px rgba(124, 92, 252, 0.35);
+    box-shadow: 0 4px 16px rgba(132, 125, 232, 0.35);
 }
 
 
@@ -2826,8 +2832,8 @@ main {
 
 .lesson-card:hover {
     transform: translateY(-6px);
-    box-shadow: 0 20px 40px rgba(124, 92, 252, 0.16), 0 2px 8px rgba(124, 92, 252, 0.08);
-    border-color: #8e6dff;
+    box-shadow: 0 20px 40px rgba(132, 125, 232, 0.16), 0 2px 8px rgba(132, 125, 232, 0.08);
+    border-color: #a49ef2;
 }
 
 .lesson-card:hover::before {
@@ -2869,7 +2875,7 @@ main {
     font-size: 0.74rem;
     font-weight: 700;
     color: var(--text-light);
-    background: rgba(142, 109, 255, 0.08);
+    background: rgba(164, 158, 242, 0.08);
 }
 
 .lesson-status.completed {
@@ -2891,8 +2897,8 @@ main {
     width: 52px;
     height: 52px;
     border-radius: 16px;
-    background: linear-gradient(135deg, rgba(142, 109, 255, 0.14) 0%, rgba(124, 92, 252, 0.04) 100%);
-    border: 1px solid rgba(142, 109, 255, 0.22);
+    background: linear-gradient(135deg, rgba(164, 158, 242, 0.14) 0%, rgba(132, 125, 232, 0.04) 100%);
+    border: 1px solid rgba(164, 158, 242, 0.22);
     display: grid;
     place-items: center;
     flex-shrink: 0;
@@ -2907,8 +2913,8 @@ main {
     display: inline-block;
     padding: 4px 10px;
     border-radius: 8px;
-    background: rgba(142, 109, 255, 0.1);
-    border: 1px solid rgba(142, 109, 255, 0.18);
+    background: rgba(164, 158, 242, 0.1);
+    border: 1px solid rgba(164, 158, 242, 0.18);
     font-size: 0.72rem;
     font-weight: 800;
     color: var(--primary);
@@ -2980,7 +2986,7 @@ main {
 .lesson-card:hover .lesson-action-pill {
     background: var(--primary-gradient);
     color: #ffffff;
-    box-shadow: 0 4px 14px rgba(124, 92, 252, 0.35);
+    box-shadow: 0 4px 14px rgba(132, 125, 232, 0.35);
     transform: translateX(2px);
 }
 
@@ -3138,7 +3144,7 @@ main {
 .feature-card:hover {
     transform: translateY(-5px);
     box-shadow: var(--card-shadow-hover);
-    border-color: rgba(124, 92, 252, 0.4);
+    border-color: rgba(132, 125, 232, 0.4);
 }
 
 .feature-card:hover::before {
@@ -3174,7 +3180,7 @@ main {
 /* Learning Roadmap */
 .roadmap-section {
     padding: 64px 0 72px;
-    background: rgba(142, 109, 255, 0.03);
+    background: rgba(164, 158, 242, 0.03);
     border-top: 1px solid var(--border-light);
     border-bottom: 1px solid var(--border-light);
 }
@@ -3293,7 +3299,7 @@ main {
 .testimonial-card:hover {
     transform: translateY(-4px);
     box-shadow: var(--card-shadow-hover);
-    border-color: rgba(124, 92, 252, 0.4);
+    border-color: rgba(132, 125, 232, 0.4);
 }
 
 .testimonial-stars {
@@ -3331,7 +3337,7 @@ main {
     display: grid;
     place-items: center;
     flex-shrink: 0;
-    box-shadow: 0 4px 12px rgba(124, 92, 252, 0.3);
+    box-shadow: 0 4px 12px rgba(132, 125, 232, 0.3);
 }
 
 .author-info strong {
@@ -3352,7 +3358,7 @@ main {
 /* FAQ Section */
 .faq-section {
     padding: 56px 0 72px;
-    background: rgba(142, 109, 255, 0.03);
+    background: rgba(164, 158, 242, 0.03);
     border-top: 1px solid var(--border-light);
 }
 
@@ -3372,7 +3378,7 @@ main {
 }
 
 .faq-card:hover {
-    border-color: rgba(124, 92, 252, 0.35);
+    border-color: rgba(132, 125, 232, 0.35);
     box-shadow: var(--card-shadow-hover);
 }
 
@@ -3396,7 +3402,7 @@ main {
 }
 
 .cta-card {
-    background: linear-gradient(135deg, #6842ed 0%, #8e6dff 50%, #a78bfa 100%);
+    background: linear-gradient(135deg, #6c64d8 0%, #a49ef2 50%, #b5aff8 100%);
     border-radius: var(--radius-xl);
     padding: 48px 44px;
     color: #ffffff;
@@ -3404,7 +3410,7 @@ main {
     justify-content: space-between;
     align-items: center;
     gap: 28px;
-    box-shadow: 0 25px 50px -12px rgba(124, 92, 252, 0.45);
+    box-shadow: 0 25px 50px -12px rgba(132, 125, 232, 0.45);
     position: relative;
     overflow: hidden;
 }
@@ -3446,9 +3452,10 @@ main {
 
 .page-hero {
     background:
-        radial-gradient(circle at 18% 25%, rgba(37, 99, 235, 0.28) 0%, transparent 45%),
-        radial-gradient(circle at 82% 75%, rgba(124, 58, 237, 0.22) 0%, transparent 45%),
-        #090e1a;
+        radial-gradient(circle at 18% 25%, rgba(164, 158, 242, 0.28) 0%, transparent 45%),
+        radial-gradient(circle at 82% 75%, rgba(199, 194, 250, 0.22) 0%, transparent 45%),
+        linear-gradient(180deg, rgba(10, 8, 21, 0.72) 0%, rgba(10, 8, 21, 0.88) 100%),
+        url('../images/hero-star-bg.png') center/cover no-repeat;
     color: #ffffff;
     padding: 64px 0 68px;
     text-align: center;
@@ -3923,15 +3930,15 @@ main {
 .exercise-tab-btn.active {
     background: #ffffff;
     color: var(--primary);
-    box-shadow: 0 4px 14px rgba(124, 92, 252, 0.16);
-    border: 1px solid rgba(124, 92, 252, 0.2);
+    box-shadow: 0 4px 14px rgba(132, 125, 232, 0.16);
+    border: 1px solid rgba(132, 125, 232, 0.2);
 }
 
 .exercise-tab-btn .tab-badge {
     font-size: 0.72rem;
     padding: 2px 8px;
     border-radius: 999px;
-    background: rgba(124, 92, 252, 0.1);
+    background: rgba(132, 125, 232, 0.1);
     color: var(--primary);
     font-weight: 800;
 }
@@ -3973,7 +3980,7 @@ main {
 
 .exercise-level-tag.tag-medium {
     background: #f5f3ff;
-    color: #7c3aed;
+    color: #847de8;
     border: 1px solid #ddd6fe;
 }
 
@@ -4257,7 +4264,7 @@ main {
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #2563eb, #7c3aed, #10b981);
+    background: linear-gradient(90deg, #2563eb, #847de8, #10b981);
 }
 
 .ai-feedback-header {
@@ -4319,7 +4326,7 @@ main {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    box-shadow: 0 0 20px rgba(124, 92, 252, 0.2);
+    box-shadow: 0 0 20px rgba(132, 125, 232, 0.2);
 }
 
 .ai-score-circle strong {
@@ -4420,7 +4427,7 @@ main {
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    background: rgba(124, 92, 252, 0.12);
+    background: rgba(132, 125, 232, 0.12);
     color: var(--primary);
     display: grid;
     place-items: center;
@@ -5180,9 +5187,9 @@ body.dark-theme {
 
     --border: #221a3b;
     --border-light: #19142e;
-    --border-focus: #8e6dff;
+    --border-focus: #a49ef2;
 
-    --primary-light: rgba(142, 109, 255, 0.16);
+    --primary-light: rgba(164, 158, 242, 0.16);
     --secondary-light: rgba(192, 132, 252, 0.16);
 
     --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 10px 15px -3px rgba(0, 0, 0, 0.4);
@@ -5216,13 +5223,13 @@ body.dark-theme .nav-link {
 
 body.dark-theme .nav-link:hover {
     color: #c4b5fd;
-    background: rgba(142, 109, 255, 0.15);
+    background: rgba(164, 158, 242, 0.15);
 }
 
 body.dark-theme .nav-link.active {
     color: #ffffff;
     background: var(--primary-gradient);
-    box-shadow: 0 4px 14px rgba(124, 92, 252, 0.35);
+    box-shadow: 0 4px 14px rgba(132, 125, 232, 0.35);
 }
 
 body.dark-theme .admin-nav-link {
@@ -5276,7 +5283,7 @@ body.dark-theme .btn-secondary {
 
 body.dark-theme .btn-secondary:hover {
     background: #1d1636;
-    border-color: #8e6dff;
+    border-color: #a49ef2;
     color: #c4b5fd;
 }
 
@@ -5314,8 +5321,8 @@ body.dark-theme .feature-card:hover,
 body.dark-theme .roadmap-card:hover,
 body.dark-theme .testimonial-card:hover,
 body.dark-theme .faq-card:hover {
-    border-color: #8e6dff;
-    box-shadow: 0 16px 36px rgba(124, 92, 252, 0.2);
+    border-color: #a49ef2;
+    box-shadow: 0 16px 36px rgba(132, 125, 232, 0.2);
 }
 
 body.dark-theme .stat-card strong,
@@ -5356,7 +5363,7 @@ body.dark-theme .muted {
 }
 
 body.dark-theme .roadmap-step-pill {
-    background: rgba(142, 109, 255, 0.2);
+    background: rgba(164, 158, 242, 0.2);
     color: #c4b5fd;
 }
 
@@ -5367,7 +5374,7 @@ body.dark-theme .testimonial-author {
 
 body.dark-theme .roadmap-section,
 body.dark-theme .faq-section {
-    background: rgba(142, 109, 255, 0.02);
+    background: rgba(164, 158, 242, 0.02);
     border-top-color: #241c40;
     border-bottom-color: #241c40;
 }
@@ -5415,9 +5422,9 @@ body.dark-theme .profile-input:focus,
 body.dark-theme .lesson-search input:focus,
 body.dark-theme .lesson-filter select:focus,
 body.dark-theme .input-wrapper input:focus {
-    border-color: #8e6dff;
+    border-color: #a49ef2;
     background: #0f0c1d;
-    box-shadow: 0 0 0 3px rgba(142, 109, 255, 0.25);
+    box-shadow: 0 0 0 3px rgba(164, 158, 242, 0.25);
 }
 
 body.dark-theme .auth-form label,
@@ -5454,12 +5461,12 @@ body.dark-theme .btn-demo:hover {
 
 /* Lesson Cards Specific */
 body.dark-theme .lesson-card-icon {
-    background: linear-gradient(135deg, rgba(142, 109, 255, 0.2) 0%, rgba(124, 92, 252, 0.05) 100%);
-    border-color: rgba(142, 109, 255, 0.28);
+    background: linear-gradient(135deg, rgba(164, 158, 242, 0.2) 0%, rgba(132, 125, 232, 0.05) 100%);
+    border-color: rgba(164, 158, 242, 0.28);
 }
 
 body.dark-theme .lesson-number {
-    background: rgba(142, 109, 255, 0.18);
+    background: rgba(164, 158, 242, 0.18);
     color: #c4b5fd;
 }
 
@@ -5475,8 +5482,8 @@ body.dark-theme .lesson-status.completed {
 }
 
 body.dark-theme .lesson-chapter {
-    background: rgba(142, 109, 255, 0.16);
-    border-color: rgba(142, 109, 255, 0.28);
+    background: rgba(164, 158, 242, 0.16);
+    border-color: rgba(164, 158, 242, 0.28);
     color: #c4b5fd;
 }
 
@@ -5493,7 +5500,7 @@ body.dark-theme .lesson-duration {
 }
 
 body.dark-theme .lesson-action-pill {
-    background: rgba(142, 109, 255, 0.18);
+    background: rgba(164, 158, 242, 0.18);
     color: #c4b5fd;
 }
 
@@ -5503,8 +5510,8 @@ body.dark-theme .lesson-action-pill.completed {
 }
 
 body.dark-theme .section-link {
-    background: rgba(142, 109, 255, 0.18);
-    border-color: rgba(142, 109, 255, 0.3);
+    background: rgba(164, 158, 242, 0.18);
+    border-color: rgba(164, 158, 242, 0.3);
     color: #c4b5fd;
 }
 
@@ -5634,8 +5641,8 @@ body.dark-theme .lesson-nav-button {
 }
 
 body.dark-theme .lesson-nav-button:hover {
-    background: rgba(142, 109, 255, 0.16);
-    border-color: #8e6dff;
+    background: rgba(164, 158, 242, 0.16);
+    border-color: #a49ef2;
     color: #c4b5fd;
 }
 
@@ -5643,11 +5650,11 @@ body.dark-theme .lesson-nav-button.next {
     background: var(--primary-gradient);
     border-color: transparent;
     color: #ffffff;
-    box-shadow: 0 4px 14px rgba(124, 92, 252, 0.35);
+    box-shadow: 0 4px 14px rgba(132, 125, 232, 0.35);
 }
 
 body.dark-theme .lesson-nav-button.next:hover {
-    background: linear-gradient(135deg, #9c7dff 0%, #5b35e3 100%);
+    background: linear-gradient(135deg, #a49ef2 0%, #6c64d8 100%);
 }
 
 /* Sidebar Lesson List */
@@ -5664,7 +5671,7 @@ body.dark-theme .course-nav-item:hover {
 
 body.dark-theme .sidebar-lesson-item.active,
 body.dark-theme .course-nav-item.active {
-    background: rgba(142, 109, 255, 0.2);
+    background: rgba(164, 158, 242, 0.2);
     color: #c4b5fd;
 }
 
@@ -5696,7 +5703,7 @@ body.dark-theme .exercise-tab-btn:hover {
 
 body.dark-theme .exercise-tab-btn.active {
     background: #1e293b;
-    color: #a78bfa;
+    color: #b5aff8;
     border-color: rgba(167, 139, 250, 0.4);
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
 }
@@ -5874,8 +5881,8 @@ body.dark-theme .copyright {
 
 /* Profile & Settings Dark Theme */
 body.dark-theme .settings-intro-box {
-    background: linear-gradient(135deg, rgba(124, 92, 252, 0.16) 0%, rgba(30, 27, 75, 0.4) 100%);
-    border-color: rgba(124, 92, 252, 0.35);
+    background: linear-gradient(135deg, rgba(132, 125, 232, 0.16) 0%, rgba(30, 27, 75, 0.4) 100%);
+    border-color: rgba(132, 125, 232, 0.35);
 }
 
 body.dark-theme .settings-intro-box h3 {
@@ -5926,7 +5933,7 @@ body.dark-theme .preset-avatar-btn:hover {
 }
 
 body.dark-theme .preset-avatar-btn.selected {
-    border-color: #a78bfa;
+    border-color: #b5aff8;
     box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.4);
 }
 
@@ -5941,8 +5948,8 @@ body.dark-theme .theme-option-card:hover {
 }
 
 body.dark-theme .theme-option-card.active {
-    border-color: #a78bfa;
-    background: rgba(124, 92, 252, 0.15);
+    border-color: #b5aff8;
+    background: rgba(132, 125, 232, 0.15);
 }
 
 body.dark-theme .theme-option-card strong {
