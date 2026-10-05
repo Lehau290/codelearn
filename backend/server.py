@@ -342,6 +342,15 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
             conn.close()
             return self.send_json(200, {"users": users_list})
 
+        # 9. Admin Database Stats (/api/admin/database/stats)
+        if path == "/api/admin/database/stats":
+            if not user or user["role"] != "admin":
+                return self.send_json(403, {"error": "Chỉ dành cho Quản trị viên."})
+            import backend.database_manager as dbm
+            stats = dbm.get_stats()
+            integ = dbm.check_integrity()
+            return self.send_json(200, {"stats": stats, "integrity": integ})
+
         return self.send_json(404, {"error": "Endpoint không tồn tại."})
 
     # ---------------------------------------------------------
@@ -351,6 +360,7 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
         parsed = urllib.parse.urlparse(self.path)
         path = parsed.path
         body = self.read_json_body()
+        user = self.get_auth_user()
 
         # 1. Register (/api/auth/register)
         if path == "/api/auth/register":
@@ -553,6 +563,27 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
             conn.commit()
             conn.close()
             return self.send_json(201, {"message": "Tạo bài học thành công!", "id": lid})
+
+        # 9. Admin Database Backup (/api/admin/database/backup)
+        if path == "/api/admin/database/backup":
+            if not user or user["role"] != "admin":
+                return self.send_json(403, {"error": "Chỉ dành cho Quản trị viên."})
+            import backend.database_manager as dbm
+            result = dbm.backup_database()
+            return self.send_json(200, result)
+
+        # 10. Admin Database Export (/api/admin/database/export)
+        if path == "/api/admin/database/export":
+            if not user or user["role"] != "admin":
+                return self.send_json(403, {"error": "Chỉ dành cho Quản trị viên."})
+            import backend.database_manager as dbm
+            sql_p = dbm.export_sql()
+            json_p = dbm.export_json()
+            return self.send_json(200, {
+                "message": "Xuất dữ liệu Database thành công!",
+                "sql": os.path.basename(sql_p),
+                "json": os.path.basename(json_p)
+            })
 
         return self.send_json(404, {"error": "Endpoint POST không tồn tại."})
 

@@ -240,6 +240,20 @@
 
             async getUsers() {
                 return request("/admin/users");
+            },
+
+            database: {
+                async getStats() {
+                    return request("/admin/database/stats");
+                },
+
+                async backup() {
+                    return request("/admin/database/backup", { method: "POST" });
+                },
+
+                async export() {
+                    return request("/admin/database/export", { method: "POST" });
+                }
             }
         }
     };

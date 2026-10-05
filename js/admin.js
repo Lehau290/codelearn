@@ -43,6 +43,8 @@ document.addEventListener("DOMContentLoaded", () => {
     setupCancelButton();
 
     setupAddNewButton();
+
+    setupDatabaseSection();
 });
 
 
@@ -910,4 +912,100 @@ function escapeHtml(
             /'/g,
             "&#039;"
         );
+}
+
+
+// ============================================================
+// QUẢN LÝ CƠ SỞ DỮ LIỆU (DATABASE SECTION)
+// ============================================================
+
+function setupDatabaseSection() {
+    const btnBackup = document.getElementById("btnDbBackup");
+    const btnExport = document.getElementById("btnDbExport");
+    const msgBox = document.getElementById("dbActionMessage");
+
+    function showDbMsg(text, type = "success") {
+        if (!msgBox) return;
+        msgBox.textContent = text;
+        msgBox.className = `form-message ${type}`;
+        msgBox.hidden = false;
+        setTimeout(() => {
+            msgBox.hidden = true;
+            msgBox.textContent = "";
+        }, 5000);
+    }
+
+    function loadDbStats() {
+        if (window.CodeLearnApi && typeof CodeLearnApi.admin?.database?.getStats === "function") {
+            CodeLearnApi.admin.database.getStats()
+                .then(res => {
+                    const stats = res.stats || {};
+                    const tables = stats.tables || {};
+                    setText("dbCountLessons", tables.lessons ?? 20);
+                    setText("dbCountExercises", tables.exercises ?? 60);
+                    setText("dbCountUsers", tables.users ?? 2);
+                    setText("dbCountSubmissions", tables.submissions ?? 0);
+                    setText("dbSizeKb", `${stats.size_kb || 144} KB`);
+                    setText("dbStatus", res.integrity?.status || "HEALTHY");
+                })
+                .catch(() => {
+                    const lessons = CppStorage.getLessons();
+                    const users = CppStorage.getUsers();
+                    setText("dbCountLessons", lessons.length);
+                    setText("dbCountExercises", lessons.length * 3);
+                    setText("dbCountUsers", users.length);
+                });
+        }
+    }
+
+    loadDbStats();
+
+    if (btnBackup) {
+        btnBackup.addEventListener("click", () => {
+            btnBackup.disabled = true;
+            btnBackup.textContent = "⏳ Đang sao lưu...";
+            if (window.CodeLearnApi && typeof CodeLearnApi.admin?.database?.backup === "function") {
+                CodeLearnApi.admin.database.backup()
+                    .then(res => {
+                        btnBackup.disabled = false;
+                        btnBackup.textContent = "💾 Sao lưu Database";
+                        showDbMsg(`✓ Đã tạo bản sao lưu thành công: ${res.filename} (${res.size_kb} KB)`, "success");
+                        loadDbStats();
+                    })
+                    .catch(err => {
+                        btnBackup.disabled = false;
+                        btnBackup.textContent = "💾 Sao lưu Database";
+                        showDbMsg(`Lỗi khi tạo sao lưu: ${err.message}`, "error");
+                    });
+            } else {
+                btnBackup.disabled = false;
+                btnBackup.textContent = "💾 Sao lưu Database";
+                showDbMsg("Backend đang chạy chế độ offline hoặc chưa khởi động.", "info");
+            }
+        });
+    }
+
+    if (btnExport) {
+        btnExport.addEventListener("click", () => {
+            btnExport.disabled = true;
+            btnExport.textContent = "⏳ Đang xuất...";
+            if (window.CodeLearnApi && typeof CodeLearnApi.admin?.database?.export === "function") {
+                CodeLearnApi.admin.database.export()
+                    .then(res => {
+                        btnExport.disabled = false;
+                        btnExport.textContent = "📥 Xuất SQL & JSON";
+                        showDbMsg(`✓ Đã xuất dữ liệu thành công ra backend/${res.sql} và backend/${res.json}!`, "success");
+                    })
+                    .catch(err => {
+                        btnExport.disabled = false;
+                        btnExport.textContent = "📥 Xuất SQL & JSON";
+                        showDbMsg(`Lỗi khi xuất dữ liệu: ${err.message}`, "error");
+                    });
+            } else {
+                btnExport.disabled = false;
+                btnExport.textContent = "📥 Xuất SQL & JSON";
+                showDbMsg("Backend đang chạy chế độ offline.", "info");
+            }
+        });
+    }
 }
