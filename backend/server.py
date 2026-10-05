@@ -570,27 +570,46 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
             if not user:
                 return self.send_json(401, {"error": "Cần đăng nhập."})
 
-            full_name = body.get("fullName", user["fullName"]).strip()
-            email = body.get("email", user["email"]).strip().lower()
-            avatar = body.get("avatar", user["avatar"])
+            username = body.get("username", user.get("username", "")).strip()
+            full_name = body.get("fullName", user.get("fullName", "")).strip() or username
+            email = body.get("email", user.get("email", "")).strip().lower()
+            avatar = body.get("avatar", user.get("avatar", ""))
+            password = body.get("password")
 
             conn = get_connection()
             cursor = conn.cursor()
             # Check duplicate email
-            cursor.execute("SELECT id FROM users WHERE email = ? AND id != ?", (email, user["id"]))
-            if cursor.fetchone():
-                conn.close()
-                return self.send_json(400, {"error": "Email này đã được sử dụng bởi tài khoản khác."})
+            if email:
+                cursor.execute("SELECT id FROM users WHERE email = ? AND id != ?", (email, user["id"]))
+                if cursor.fetchone():
+                    conn.close()
+                    return self.send_json(400, {"error": "Email này đã được sử dụng bởi tài khoản khác."})
+
+            # Check duplicate username
+            if username:
+                cursor.execute("SELECT id FROM users WHERE username = ? AND id != ?", (username, user["id"]))
+                if cursor.fetchone():
+                    conn.close()
+                    return self.send_json(400, {"error": "Tên người dùng này đã có người sử dụng."})
 
             now = datetime.now().isoformat()
-            cursor.execute("""
-                UPDATE users
-                SET full_name = ?, email = ?, avatar = ?, updated_at = ?
-                WHERE id = ?
-            """, (full_name, email, avatar, now, user["id"]))
+            if password and len(password) >= 6:
+                pwd_hash = hash_password(password)
+                cursor.execute("""
+                    UPDATE users
+                    SET username = ?, full_name = ?, email = ?, avatar = ?, password_hash = ?, updated_at = ?
+                    WHERE id = ?
+                """, (username, full_name, email, avatar, pwd_hash, now, user["id"]))
+            else:
+                cursor.execute("""
+                    UPDATE users
+                    SET username = ?, full_name = ?, email = ?, avatar = ?, updated_at = ?
+                    WHERE id = ?
+                """, (username, full_name, email, avatar, now, user["id"]))
             conn.commit()
             conn.close()
 
+            user["username"] = username
             user["fullName"] = full_name
             user["email"] = email
             user["avatar"] = avatar

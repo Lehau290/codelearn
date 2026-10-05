@@ -119,7 +119,7 @@
 
         loginForm.addEventListener(
             "submit",
-            function (event) {
+            async function (event) {
 
                 event.preventDefault();
 
@@ -168,9 +168,46 @@
                     return;
                 }
 
+                /* -------------------------
+                   Try Backend API Login First
+                   ------------------------- */
+                if (window.CodeLearnApi && typeof CodeLearnApi.auth?.login === "function") {
+                    try {
+                        const apiRes = await CodeLearnApi.auth.login(loginValue, password);
+                        if (apiRes && apiRes.user) {
+                            CppStorage.setCurrentUser(apiRes.user);
+                            const localUsers = CppStorage.getUsers();
+                            if (!localUsers.some(u => u.username.toLowerCase() === apiRes.user.username.toLowerCase())) {
+                                CppStorage.createUser(apiRes.user);
+                            }
+                            if (rememberInput) {
+                                localStorage.setItem(
+                                    "cpp_rememberLogin",
+                                    rememberInput.checked ? "true" : "false"
+                                );
+                            }
+                            showMessage(
+                                message,
+                                "Đăng nhập thành công! Đang chuyển đến Trang chủ...",
+                                "success"
+                            );
+                            setTimeout(function () {
+                                redirectTo("home.html");
+                            }, 250);
+                            return;
+                        }
+                    } catch (apiErr) {
+                        const errMsg = apiErr.message || "";
+                        if (errMsg.includes("chính xác") || errMsg.includes("không tìm thấy") || errMsg.includes("Mật khẩu")) {
+                            showMessage(message, errMsg, "error");
+                            return;
+                        }
+                        // Fall through to offline storage fallback
+                    }
+                }
 
                 /* -------------------------
-                   Find user
+                   Find user (Offline Fallback)
                    ------------------------- */
 
                 const users =
@@ -339,7 +376,7 @@
 
         registerForm.addEventListener(
             "submit",
-            function (event) {
+            async function (event) {
 
                 event.preventDefault();
 
@@ -543,7 +580,37 @@
 
 
                 /* -------------------------
-                   Check duplicate
+                   Try Backend API Register First
+                   ------------------------- */
+                if (window.CodeLearnApi && typeof CodeLearnApi.auth?.register === "function") {
+                    try {
+                        const apiRes = await CodeLearnApi.auth.register(username, email, password, username);
+                        if (apiRes && apiRes.user) {
+                            CppStorage.createUser(apiRes.user);
+                            CppStorage.setCurrentUser(apiRes.user);
+                            showMessage(
+                                message,
+                                "Đăng ký thành công! Đang chuyển đến Trang chủ...",
+                                "success"
+                            );
+                            registerForm.reset();
+                            setTimeout(function () {
+                                redirectTo("home.html");
+                            }, 400);
+                            return;
+                        }
+                    } catch (apiErr) {
+                        const errMsg = apiErr.message || "";
+                        if (errMsg.includes("tồn tại") || errMsg.includes("sử dụng") || errMsg.includes("Mật khẩu")) {
+                            showMessage(message, errMsg, "error");
+                            return;
+                        }
+                        // Fallback to offline storage
+                    }
+                }
+
+                /* -------------------------
+                   Check duplicate (Offline Fallback)
                    ------------------------- */
 
                 const existingUsername =
@@ -648,6 +715,10 @@
        ===================================================== */
 
     function logout() {
+
+        if (window.CodeLearnApi && typeof CodeLearnApi.auth?.logout === "function") {
+            CodeLearnApi.auth.logout().catch(() => {});
+        }
 
         CppStorage.clearCurrentUser();
 
