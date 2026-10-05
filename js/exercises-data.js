@@ -738,3 +738,4 @@ window.getLessonExercises = function(lesson) {
         }
     ];
 };
+

@@ -166,18 +166,40 @@
 
                 <div class="profile-hero-content">
 
-                    <span class="hero-badge">
-                        MY PROFILE
-                    </span>
+                    <div class="hero-badge">
+                        ✨ HỒ SƠ HỌC VIÊN • CODELEARN C++
+                    </div>
 
                     <h1>
-                        Hồ sơ cá nhân
+                        Hồ sơ cá nhân &amp; Cài đặt
                     </h1>
 
                     <p>
-                        Quản lý thông tin tài khoản và
-                        theo dõi quá trình học C++ của bạn.
+                        Theo dõi tiến độ học tập, quản lý huy hiệu và tùy chỉnh ảnh đại diện, thông tin tài khoản của bạn.
                     </p>
+
+                    <!-- Tab Switcher Navigation -->
+                    <div class="profile-hero-tabs" role="tablist">
+                        <button
+                            type="button"
+                            class="profile-tab-pill active"
+                            id="tabOverviewBtn"
+                            role="tab"
+                            aria-selected="true"
+                        >
+                            <span>📊</span> Tổng quan &amp; Tiến độ
+                        </button>
+
+                        <button
+                            type="button"
+                            class="profile-tab-pill"
+                            id="tabSettingsBtn"
+                            role="tab"
+                            aria-selected="false"
+                        >
+                            <span>⚙️</span> Cài đặt &amp; Ảnh đại diện
+                        </button>
+                    </div>
 
                 </div>
 
@@ -197,77 +219,113 @@
                 <div class="profile-layout">
 
                     <!-- =================================
-                         PROFILE CARD
+                         PROFILE SIDEBAR
                     ================================== -->
 
                     <aside class="profile-sidebar">
 
                         <div class="profile-card">
 
-                            <!-- Avatar -->
-
-                            <div
-                                id="profileAvatar"
-                                class="profile-avatar"
-                            >
-                                U
+                            <!-- Avatar with Camera edit button -->
+                            <div class="profile-avatar-wrapper">
+                                <div
+                                    id="profileAvatar"
+                                    class="profile-avatar"
+                                >
+                                    U
+                                </div>
+                                <button
+                                    type="button"
+                                    class="avatar-edit-badge"
+                                    id="btnAvatarEditShortcut"
+                                    title="Đổi ảnh đại diện trong Cài đặt"
+                                    aria-label="Đổi ảnh đại diện"
+                                >
+                                    📷
+                                </button>
+                                <span class="profile-status-dot" title="Đang hoạt động"></span>
                             </div>
-
 
                             <h2 id="profileUsername">
                                 Người học
                             </h2>
 
-
                             <p id="profileEmail">
                                 email@example.com
                             </p>
 
-
-                            <span class="profile-role" id="profileRole">
-                                Học viên
-                            </span>
-
+                            <div class="profile-badges-row">
+                                <span class="profile-role" id="profileRole">
+                                    Học viên
+                                </span>
+                                <span class="profile-rank" id="profileRankBadge">
+                                    ⭐ Học viên C++
+                                </span>
+                            </div>
 
                             <div class="profile-divider"></div>
 
-
                             <div class="profile-joined">
-
                                 <span>
                                     Thành viên từ
                                 </span>
-
                                 <strong id="profileJoinDate">
                                     2026
                                 </strong>
-
                             </div>
 
                         </div>
 
 
-                        <!-- Quick actions -->
+                        <!-- Quick Navigation actions -->
 
                         <div class="profile-actions-card">
+
+                            <button
+                                type="button"
+                                class="profile-action active"
+                                id="sideNavOverviewBtn"
+                            >
+                                <span class="profile-action-icon">
+                                    📊
+                                </span>
+                                <span>
+                                    Tổng quan học tập
+                                </span>
+                                <span class="action-arrow">
+                                    →
+                                </span>
+                            </button>
+
+                            <button
+                                type="button"
+                                class="profile-action"
+                                id="sideNavSettingsBtn"
+                            >
+                                <span class="profile-action-icon">
+                                    ⚙️
+                                </span>
+                                <span>
+                                    Cài đặt &amp; Avatar
+                                </span>
+                                <span class="action-arrow">
+                                    →
+                                </span>
+                            </button>
 
                             <a
                                 href="lessons.html"
                                 class="profile-action"
                             >
-
                                 <span class="profile-action-icon">
                                     📚
                                 </span>
-
                                 <span>
-                                    Tiếp tục học
+                                    Tiếp tục học C++
                                 </span>
-
-                                <span>
+                                <span class="action-arrow">
                                     →
                                 </span>
-
                             </a>
 
                             <a
@@ -276,40 +334,31 @@
                                 class="profile-action"
                                 style="display: none;"
                             >
-
                                 <span class="profile-action-icon">
-                                    ⚙️
+                                    🛡️
                                 </span>
-
                                 <span>
-                                    Trang Quản Trị
+                                    Bảng Quản trị
                                 </span>
-
-                                <span>
+                                <span class="action-arrow">
                                     →
                                 </span>
-
                             </a>
-
 
                             <button
                                 type="button"
                                 id="profileLogoutButton"
                                 class="profile-action logout-action"
                             >
-
                                 <span class="profile-action-icon">
                                     ↪
                                 </span>
-
                                 <span>
                                     Đăng xuất
                                 </span>
-
-                                <span>
+                                <span class="action-arrow">
                                     →
                                 </span>
-
                             </button>
 
                         </div>
@@ -318,171 +367,230 @@
 
 
                     <!-- =================================
-                         RIGHT CONTENT
+                         PROFILE MAIN PANELS
                     ================================== -->
 
                     <div class="profile-main">
 
                         <!-- =================================
-                             STATISTICS
+                             TAB PANEL 1: OVERVIEW & PROGRESS
                         ================================== -->
 
-                        <div class="profile-stats">
+                        <div id="panelOverview" class="profile-tab-panel active">
 
-                            <div class="profile-stat-card">
+                            <!-- STATISTICS -->
 
-                                <div class="profile-stat-icon">
-                                    📚
+                            <div class="profile-stats">
+
+                                <div class="profile-stat-card">
+                                    <div class="profile-stat-icon">
+                                        📚
+                                    </div>
+                                    <div>
+                                        <strong id="profileTotalLessons">
+                                            0
+                                        </strong>
+                                        <span>
+                                            Tổng bài học
+                                        </span>
+                                    </div>
                                 </div>
 
-                                <div>
+                                <div class="profile-stat-card">
+                                    <div class="profile-stat-icon">
+                                        ✓
+                                    </div>
+                                    <div>
+                                        <strong id="profileCompletedLessons">
+                                            0
+                                        </strong>
+                                        <span>
+                                            Đã hoàn thành
+                                        </span>
+                                    </div>
+                                </div>
 
-                                    <strong id="profileTotalLessons">
-                                        0
-                                    </strong>
+                                <div class="profile-stat-card">
+                                    <div class="profile-stat-icon">
+                                        ★
+                                    </div>
+                                    <div>
+                                        <strong id="profileAverageScore">
+                                            0/100
+                                        </strong>
+                                        <span>
+                                            Điểm trung bình
+                                        </span>
+                                    </div>
+                                </div>
 
-                                    <span>
-                                        Tổng bài học
-                                    </span>
-
+                                <div class="profile-stat-card">
+                                    <div class="profile-stat-icon">
+                                        ⚡
+                                    </div>
+                                    <div>
+                                        <strong id="profileProgress">
+                                            0%
+                                        </strong>
+                                        <span>
+                                            Tiến độ khóa học
+                                        </span>
+                                    </div>
                                 </div>
 
                             </div>
 
 
-                            <div class="profile-stat-card">
+                            <!-- PROGRESS CARD -->
 
-                                <div class="profile-stat-icon">
-                                    ✓
-                                </div>
+                            <section class="profile-content-card">
 
-                                <div>
+                                <div class="profile-content-header">
+                                    <div>
+                                        <span class="section-label">
+                                            LEARNING ROADMAP
+                                        </span>
+                                        <h2>
+                                            Tiến độ khóa học C++
+                                        </h2>
+                                    </div>
 
-                                    <strong id="profileCompletedLessons">
-                                        0
-                                    </strong>
-
-                                    <span>
-                                        Đã hoàn thành
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="profile-stat-card">
-
-                                <div class="profile-stat-icon">
-                                    ★
-                                </div>
-
-                                <div>
-
-                                    <strong id="profileAverageScore">
-                                        0
-                                    </strong>
-
-                                    <span>
-                                        Điểm trung bình
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="profile-stat-card">
-
-                                <div class="profile-stat-icon">
-                                    %
-                                </div>
-
-                                <div>
-
-                                    <strong id="profileProgress">
+                                    <strong id="profileProgressPercent">
                                         0%
                                     </strong>
+                                </div>
 
-                                    <span>
-                                        Tiến độ
-                                    </span>
+                                <div class="large-progress">
+                                    <div
+                                        id="profileProgressBar"
+                                        class="progress-bar-fill"
+                                        style="width: 0%"
+                                    ></div>
+                                </div>
+
+                                <div class="progress-details-bar">
+                                    <p class="progress-description" id="profileProgressDesc">
+                                        Hoàn thành các bài học và bài tập để mở khóa toàn bộ thành tích.
+                                    </p>
+
+                                    <a href="lessons.html" class="btn btn-sm btn-primary" id="btnResumeLearning">
+                                        Tiếp tục bài học →
+                                    </a>
+                                </div>
+
+                            </section>
+
+
+                            <!-- RECENT COMPLETED LESSONS -->
+
+                            <section class="profile-content-card">
+
+                                <div class="profile-content-header">
+                                    <div>
+                                        <span class="section-label">
+                                            RECENT ACTIVITY
+                                        </span>
+                                        <h2>
+                                            Bài học hoàn thành gần đây
+                                        </h2>
+                                    </div>
+
+                                    <a href="lessons.html" class="link-more">
+                                        Xem tất cả bài học →
+                                    </a>
+                                </div>
+
+                                <div class="recent-lessons-list" id="recentLessonsList">
+                                    <div class="empty-state">
+                                        <div class="empty-state-icon">📚</div>
+                                        <h3>Chưa có bài hoàn thành</h3>
+                                        <p>Hãy bắt đầu bài học đầu tiên để lưu lại lịch sử làm bài.</p>
+                                        <a href="lessons.html" class="btn btn-primary" style="margin-top: 10px;">Bắt đầu học →</a>
+                                    </div>
+                                </div>
+
+                            </section>
+
+
+                            <!-- ACHIEVEMENTS -->
+
+                            <section class="profile-content-card">
+
+                                <div class="profile-content-header">
+                                    <div>
+                                        <span class="section-label">
+                                            BADGES &amp; ACHIEVEMENTS
+                                        </span>
+                                        <h2>
+                                            Thành tích &amp; Huy hiệu học tập
+                                        </h2>
+                                    </div>
+                                </div>
+
+                                <div class="achievements-grid" id="achievementsList">
+
+                                    <div id="achievementFirstLesson" class="achievement-card">
+                                        <div class="achievement-icon">
+                                            🚀
+                                        </div>
+                                        <div>
+                                            <strong>
+                                                Bắt đầu hành trình
+                                            </strong>
+                                            <p>
+                                                Hoàn thành bài học đầu tiên.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div id="achievementFiveLessons" class="achievement-card locked">
+                                        <div class="achievement-icon">
+                                            🔥
+                                        </div>
+                                        <div>
+                                            <strong>
+                                                Chăm chỉ
+                                            </strong>
+                                            <p>
+                                                Hoàn thành 5 bài học.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div id="achievementAllLessons" class="achievement-card locked">
+                                        <div class="achievement-icon">
+                                            🏆
+                                        </div>
+                                        <div>
+                                            <strong>
+                                                C++ Master
+                                            </strong>
+                                            <p>
+                                                Hoàn thành toàn bộ khóa học.
+                                            </p>
+                                        </div>
+                                    </div>
 
                                 </div>
 
-                            </div>
+                            </section>
 
                         </div>
 
 
                         <!-- =================================
-                             PROGRESS
+                             TAB PANEL 2: SETTINGS (CÀI ĐẶT TÀI KHOẢN & AVATAR)
                         ================================== -->
 
-                        <section class="profile-content-card">
+                        <div id="panelSettings" class="profile-tab-panel" hidden>
 
-                            <div class="profile-content-header">
-
+                            <div class="settings-intro-box">
+                                <div class="settings-intro-icon">⚙️</div>
                                 <div>
-
-                                    <span class="section-label">
-                                        LEARNING PROGRESS
-                                    </span>
-
-                                    <h2>
-                                        Tiến độ học tập
-                                    </h2>
-
+                                    <h3>Cài đặt tài khoản &amp; Ảnh đại diện</h3>
+                                    <p>Tải ảnh đại diện từ máy tính hoặc chọn mẫu avatar C++, cập nhật thông tin cá nhân và bảo mật.</p>
                                 </div>
-
-                                <strong id="profileProgressPercent">
-                                    0%
-                                </strong>
-
                             </div>
-
-
-                            <div class="large-progress">
-
-                                <div
-                                    id="profileProgressBar"
-                                    class="progress-bar-fill"
-                                    style="width: 0%"
-                                ></div>
-
-                            </div>
-
-
-                            <p class="progress-description">
-                                Hoàn thành các bài học và bài tập
-                                để nâng cao tiến độ của bạn.
-                            </p>
-
-                        </section>
-
-
-                        <!-- =================================
-                             EDIT INFORMATION
-                        ================================== -->
-
-                        <section class="profile-content-card">
-
-                            <div class="profile-content-header">
-
-                                <div>
-
-                                    <span class="section-label">
-                                        ACCOUNT SETTINGS
-                                    </span>
-
-                                    <h2>
-                                        Thông tin tài khoản
-                                    </h2>
-
-                                </div>
-
-                            </div>
-
 
                             <div
                                 id="profileMessage"
@@ -491,205 +599,248 @@
                             ></div>
 
 
-                            <form
-                                id="profileForm"
-                                class="profile-form"
-                                novalidate
-                            >
+                            <!-- 1. AVATAR UPLOAD SECTION -->
 
-                                <!-- Username -->
+                            <section class="profile-content-card settings-card">
 
-                                <div class="form-group">
-
-                                    <label for="profileUsernameInput">
-                                        Tên tài khoản
-                                    </label>
-
-                                    <input
-                                        type="text"
-                                        id="profileUsernameInput"
-                                        class="profile-input"
-                                        minlength="3"
-                                        maxlength="30"
-                                        required
-                                    >
-
+                                <div class="profile-content-header">
+                                    <div>
+                                        <span class="section-label">
+                                            AVATAR MANAGEMENT
+                                        </span>
+                                        <h2>
+                                            Ảnh đại diện (Avatar)
+                                        </h2>
+                                    </div>
                                 </div>
 
+                                <div class="avatar-settings-layout">
 
-                                <!-- Email -->
-
-                                <div class="form-group">
-
-                                    <label for="profileEmailInput">
-                                        Email
-                                    </label>
-
-                                    <input
-                                        type="email"
-                                        id="profileEmailInput"
-                                        class="profile-input"
-                                        required
-                                    >
-
-                                </div>
-
-
-                                <!-- Password -->
-
-                                <div class="form-group">
-
-                                    <label for="profilePasswordInput">
-                                        Mật khẩu mới
-                                    </label>
-
-                                    <input
-                                        type="password"
-                                        id="profilePasswordInput"
-                                        class="profile-input"
-                                        minlength="6"
-                                        placeholder="Để trống nếu không muốn đổi"
-                                    >
-
-                                    <small class="input-help">
-                                        Để trống nếu bạn không muốn thay đổi
-                                        mật khẩu.
-                                    </small>
-
-                                </div>
-
-
-                                <!-- Buttons -->
-
-                                <div class="profile-form-actions">
-
-                                    <button
-                                        type="submit"
-                                        class="btn btn-primary"
-                                    >
-                                        Lưu thay đổi
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        id="cancelProfileEdit"
-                                        class="btn btn-secondary"
-                                    >
-                                        Hủy
-                                    </button>
-
-                                </div>
-
-                            </form>
-
-                        </section>
-
-
-                        <!-- =================================
-                             ACHIEVEMENTS
-                        ================================== -->
-
-                        <section class="profile-content-card">
-
-                            <div class="profile-content-header">
-
-                                <div>
-
-                                    <span class="section-label">
-                                        ACHIEVEMENTS
-                                    </span>
-
-                                    <h2>
-                                        Thành tích học tập
-                                    </h2>
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="achievements-grid" id="achievementsList">
-
-                                <!-- Achievement 1 -->
-
-                                <div
-                                    id="achievementFirstLesson"
-                                    class="achievement-card"
-                                >
-
-                                    <div class="achievement-icon">
-                                        🚀
+                                    <!-- Current Avatar Preview & Actions -->
+                                    <div class="avatar-preview-box">
+                                        <div class="avatar-preview-frame" id="settingsAvatarPreview">
+                                            U
+                                        </div>
+                                        <span class="avatar-preview-label">Xem trước ảnh đại diện</span>
                                     </div>
 
-                                    <div>
+                                    <!-- Upload & Actions -->
+                                    <div class="avatar-upload-controls">
 
-                                        <strong>
-                                            Bắt đầu hành trình
-                                        </strong>
-
-                                        <p>
-                                            Hoàn thành bài học đầu tiên.
+                                        <p class="avatar-hint-text">
+                                            Tải ảnh từ máy tính của bạn (hỗ trợ JPG, PNG, WebP, GIF) hoặc chọn nhanh một trong các mẫu avatar C++ bên dưới:
                                         </p>
 
+                                        <!-- Hidden file input -->
+                                        <input
+                                            type="file"
+                                            id="avatarFileInput"
+                                            accept="image/png, image/jpeg, image/webp, image/gif"
+                                            style="display: none;"
+                                        >
+
+                                        <div class="avatar-buttons-group">
+                                            <button
+                                                type="button"
+                                                id="btnTriggerUpload"
+                                                class="btn btn-primary"
+                                            >
+                                                <span>📁</span> Tải ảnh từ máy
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                id="btnRemoveAvatar"
+                                                class="btn btn-secondary"
+                                            >
+                                                <span>🗑️</span> Gỡ ảnh đại diện
+                                            </button>
+                                        </div>
+
+                                        <!-- Preset Avatars -->
+                                        <div class="preset-avatars-section">
+                                            <span class="preset-title">Hoặc chọn avatar C++ có sẵn:</span>
+                                            <div class="preset-avatars-grid" id="presetAvatarsGrid">
+                                                <!-- Dynamically rendered or static preset buttons -->
+                                            </div>
+                                        </div>
+
                                     </div>
 
                                 </div>
 
+                            </section>
 
-                                <!-- Achievement 2 -->
 
-                                <div
-                                    id="achievementFiveLessons"
-                                    class="achievement-card locked"
+                            <!-- 2. PERSONAL INFORMATION FORM -->
+
+                            <section class="profile-content-card settings-card">
+
+                                <div class="profile-content-header">
+                                    <div>
+                                        <span class="section-label">
+                                            PERSONAL INFORMATION
+                                        </span>
+                                        <h2>
+                                            Thông tin cá nhân
+                                        </h2>
+                                    </div>
+                                </div>
+
+                                <form
+                                    id="profileForm"
+                                    class="profile-form"
+                                    novalidate
                                 >
 
-                                    <div class="achievement-icon">
-                                        🔥
-                                    </div>
+                                    <div class="form-grid-2col">
 
-                                    <div>
+                                        <!-- Username -->
+                                        <div class="form-group">
+                                            <label for="profileUsernameInput">
+                                                Tên hiển thị / Tài khoản <span class="required-star">*</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="profileUsernameInput"
+                                                class="profile-input"
+                                                minlength="3"
+                                                maxlength="30"
+                                                required
+                                                placeholder="Nhập tên của bạn"
+                                            >
+                                            <small class="input-help">Tên sẽ hiển thị trên diễn đàn và hồ sơ học viên.</small>
+                                        </div>
 
-                                        <strong>
-                                            Chăm chỉ
-                                        </strong>
-
-                                        <p>
-                                            Hoàn thành 5 bài học.
-                                        </p>
-
-                                    </div>
-
-                                </div>
-
-
-                                <!-- Achievement 3 -->
-
-                                <div
-                                    id="achievementAllLessons"
-                                    class="achievement-card locked"
-                                >
-
-                                    <div class="achievement-icon">
-                                        🏆
-                                    </div>
-
-                                    <div>
-
-                                        <strong>
-                                            C++ Master
-                                        </strong>
-
-                                        <p>
-                                            Hoàn thành toàn bộ khóa học.
-                                        </p>
+                                        <!-- Email -->
+                                        <div class="form-group">
+                                            <label for="profileEmailInput">
+                                                Địa chỉ Email <span class="required-star">*</span>
+                                            </label>
+                                            <input
+                                                type="email"
+                                                id="profileEmailInput"
+                                                class="profile-input"
+                                                required
+                                                placeholder="email@example.com"
+                                            >
+                                            <small class="input-help">Dùng để nhận thông báo và khôi phục tài khoản.</small>
+                                        </div>
 
                                     </div>
 
-                                </div>
 
-                            </div>
+                                    <!-- 3. SECURITY & PASSWORD -->
 
-                        </section>
+                                    <div class="settings-subheading">
+                                        <h3>Bảo mật &amp; Mật khẩu</h3>
+                                        <p>Chỉ nhập nếu bạn muốn thay đổi mật khẩu hiện tại.</p>
+                                    </div>
+
+                                    <div class="form-grid-2col">
+
+                                        <div class="form-group">
+                                            <label for="profilePasswordInput">
+                                                Mật khẩu mới
+                                            </label>
+                                            <div class="input-password-wrapper">
+                                                <input
+                                                    type="password"
+                                                    id="profilePasswordInput"
+                                                    class="profile-input"
+                                                    minlength="6"
+                                                    placeholder="Để trống nếu không đổi"
+                                                >
+                                                <button
+                                                    type="button"
+                                                    class="btn-toggle-pwd"
+                                                    id="btnTogglePwd1"
+                                                    tabindex="-1"
+                                                    title="Ẩn/hiện mật khẩu"
+                                                >👁️</button>
+                                            </div>
+                                            <small class="input-help">Tối thiểu 6 ký tự.</small>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="profilePasswordConfirmInput">
+                                                Xác nhận mật khẩu mới
+                                            </label>
+                                            <div class="input-password-wrapper">
+                                                <input
+                                                    type="password"
+                                                    id="profilePasswordConfirmInput"
+                                                    class="profile-input"
+                                                    minlength="6"
+                                                    placeholder="Nhập lại mật khẩu mới"
+                                                >
+                                                <button
+                                                    type="button"
+                                                    class="btn-toggle-pwd"
+                                                    id="btnTogglePwd2"
+                                                    tabindex="-1"
+                                                    title="Ẩn/hiện mật khẩu"
+                                                >👁️</button>
+                                            </div>
+                                            <small class="input-help">Cần khớp với mật khẩu mới đã nhập.</small>
+                                        </div>
+
+                                    </div>
+
+
+                                    <!-- 4. THEME & PREFERENCES -->
+
+                                    <div class="settings-subheading">
+                                        <h3>Giao diện hiển thị</h3>
+                                        <p>Tùy chỉnh phong cách hiển thị màu sắc theo sở thích của bạn.</p>
+                                    </div>
+
+                                    <div class="theme-options-group">
+                                        <button type="button" class="theme-option-card" id="themeOptionLight">
+                                            <span class="theme-option-icon">☀️</span>
+                                            <div>
+                                                <strong>Giao diện Sáng (Light)</strong>
+                                                <small>Thanh lịch, rõ nét</small>
+                                            </div>
+                                        </button>
+
+                                        <button type="button" class="theme-option-card" id="themeOptionDark">
+                                            <span class="theme-option-icon">🌙</span>
+                                            <div>
+                                                <strong>Giao diện Tối (Dark)</strong>
+                                                <small>Dịu mắt ban đêm</small>
+                                            </div>
+                                        </button>
+                                    </div>
+
+
+                                    <!-- Buttons -->
+
+                                    <div class="profile-form-actions">
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-primary btn-save-settings"
+                                            id="btnSaveProfile"
+                                        >
+                                            <span>💾</span> Lưu toàn bộ thay đổi
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            id="cancelProfileEdit"
+                                            class="btn btn-secondary"
+                                        >
+                                            ↻ Hủy thay đổi
+                                        </button>
+
+                                    </div>
+
+                                </form>
+
+                            </section>
+
+                        </div>
 
                     </div>
 

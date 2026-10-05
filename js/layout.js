@@ -94,16 +94,19 @@ function updateHeaderUser(user) {
     ).charAt(0).toUpperCase();
 
     avatarElements.forEach(element => {
-        // Nếu là ảnh thì không thay src
         if (element.tagName === "IMG") {
             element.alt = `Ảnh đại diện ${user.username || "người học"}`;
-
-            // Nếu user có avatar thì sử dụng
             if (user.avatar) {
                 element.src = user.avatar;
             }
         } else {
-            element.textContent = firstLetter;
+            if (user.avatar) {
+                element.innerHTML = `<img src="${user.avatar}" alt="Avatar ${user.username || 'người học'}" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block;">`;
+                element.classList.add("has-avatar-img");
+            } else {
+                element.textContent = firstLetter;
+                element.classList.remove("has-avatar-img");
+            }
         }
     });
 

@@ -1,833 +1,753 @@
 // ============================================================
-// CODELEARN C++ - PROFILE PAGE
+// CODELEARN C++ - PROFILE & SETTINGS CONTROLLER (COLOROS STYLE)
 // File: js/profile.js
 // ============================================================
+
+// 6 Preset Developer Avatars (SVG Data URLs - Clean, Retina-Ready, Lightweight)
+const PRESET_AVATARS = [
+    {
+        id: "preset-coder-boy",
+        name: "Coder Nam",
+        icon: "👨‍💻",
+        svg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="50" fill="%238b5cf6"/><circle cx="50" cy="42" r="22" fill="%23fde047"/><rect x="32" y="38" width="14" height="8" rx="3" fill="%231e1b4b"/><rect x="54" y="38" width="14" height="8" rx="3" fill="%231e1b4b"/><rect x="46" y="41" width="8" height="2" fill="%231e1b4b"/><path d="M 24 95 Q 50 68 76 95 Z" fill="%236d28d9"/><path d="M 36 28 Q 50 14 64 28 Q 50 24 36 28 Z" fill="%23451a03"/></svg>`
+    },
+    {
+        id: "preset-coder-girl",
+        name: "Coder Nữ",
+        icon: "👩‍💻",
+        svg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="50" fill="%23ec4899"/><circle cx="50" cy="42" r="21" fill="%23fed7aa"/><circle cx="42" cy="40" r="3" fill="%231f2937"/><circle cx="58" cy="40" r="3" fill="%231f2937"/><path d="M 44 48 Q 50 54 56 48" stroke="%23e11d48" stroke-width="2" fill="none"/><path d="M 28 32 C 28 14 72 14 72 32 C 76 46 68 56 70 64 C 66 58 66 40 66 38 C 50 28 34 38 34 38 C 34 40 34 58 30 64 C 32 56 24 46 28 32 Z" fill="%2378350f"/><rect x="22" y="36" width="6" height="14" rx="3" fill="%233b82f6"/><rect x="72" y="36" width="6" height="14" rx="3" fill="%233b82f6"/><path d="M 25 36 A 25 25 0 0 1 75 36" stroke="%233b82f6" stroke-width="4" fill="none"/><path d="M 22 96 Q 50 70 78 96 Z" fill="%23be185d"/></svg>`
+    },
+    {
+        id: "preset-robot-ai",
+        name: "Robot AI",
+        icon: "🤖",
+        svg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="50" fill="%230f172a"/><circle cx="50" cy="18" r="4" fill="%2306b6d4"/><line x1="50" y1="22" x2="50" y2="30" stroke="%2306b6d4" stroke-width="3"/><rect x="26" y="30" width="48" height="38" rx="10" fill="%231e293b" stroke="%2306b6d4" stroke-width="2.5"/><rect x="33" y="38" width="13" height="10" rx="4" fill="%2306b6d4"/><rect x="54" y="38" width="13" height="10" rx="4" fill="%2306b6d4"/><circle cx="39" cy="43" r="2" fill="%23ffffff"/><circle cx="60" cy="43" r="2" fill="%23ffffff"/><line x1="38" y1="58" x2="62" y2="58" stroke="%2306b6d4" stroke-width="3" stroke-linecap="round"/><path d="M 24 95 Q 50 78 76 95 Z" fill="%23334155"/></svg>`
+    },
+    {
+        id: "preset-terminal",
+        name: "Terminal Guru",
+        icon: "💻",
+        svg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="50" fill="%23022c22"/><rect x="18" y="24" width="64" height="52" rx="8" fill="%23064e3b" stroke="%2310b981" stroke-width="2"/><circle cx="26" cy="32" r="2.5" fill="%23ef4444"/><circle cx="33" cy="32" r="2.5" fill="%23f59e0b"/><circle cx="40" cy="32" r="2.5" fill="%2310b981"/><path d="M 26 46 L 36 53 L 26 60" stroke="%2334d399" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/><line x1="42" y1="60" x2="56" y2="60" stroke="%2334d399" stroke-width="3" stroke-linecap="round"/><path d="M 64 42 L 72 42 M 68 38 L 68 46" stroke="%236ee7b7" stroke-width="1.8" stroke-linecap="round"/><path d="M 74 42 L 82 42 M 78 38 L 78 46" stroke="%236ee7b7" stroke-width="1.8" stroke-linecap="round"/></svg>`
+    },
+    {
+        id: "preset-ninja",
+        name: "C++ Ninja",
+        icon: "🥷",
+        svg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="50" fill="%2318181b"/><circle cx="50" cy="46" r="26" fill="%2327272a"/><rect x="30" y="32" width="40" height="10" fill="%23dc2626"/><circle cx="50" cy="37" r="3" fill="%23ffffff"/><rect x="32" y="44" width="36" height="12" rx="6" fill="%23fde047"/><circle cx="41" cy="50" r="2.5" fill="%23000000"/><circle cx="59" cy="50" r="2.5" fill="%23000000"/><path d="M 20 95 Q 50 74 80 95 Z" fill="%2309090b"/><path d="M 70 34 Q 82 30 86 38" stroke="%23dc2626" stroke-width="4" stroke-linecap="round" fill="none"/></svg>`
+    },
+    {
+        id: "preset-astronaut",
+        name: "Phi hành gia",
+        icon: "🚀",
+        svg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="50" fill="%231e1b4b"/><circle cx="50" cy="44" r="25" fill="%23e0e7ff" stroke="%23818cf8" stroke-width="2"/><rect x="33" y="35" width="34" height="20" rx="10" fill="%234338ca" stroke="%23c084fc" stroke-width="2"/><ellipse cx="44" cy="41" rx="4" ry="2" fill="%23a5b4fc" opacity="0.6"/><path d="M 20 95 Q 50 72 80 95 Z" fill="%23c7d2fe"/><circle cx="28" cy="22" r="1.5" fill="%23ffffff"/><circle cx="76" cy="20" r="1" fill="%23ffffff"/><circle cx="72" cy="74" r="1.5" fill="%23ffffff"/></svg>`
+    }
+];
+
+// Current avatar in draft state (prior to saving or immediately saved)
+let currentAvatarData = null;
 
 document.addEventListener("DOMContentLoaded", () => {
     const currentUser = CppStorage.getCurrentUser();
 
     if (!currentUser) {
+        window.location.href = "login.html";
         return;
     }
 
-    // Hiển thị thông tin cá nhân
+    currentAvatarData = currentUser.avatar || null;
+
+    // 1. Hiển thị thông tin tổng quan & hồ sơ
     renderProfile(currentUser);
 
-    // Hiển thị thống kê học tập
+    // 2. Thống kê & Tiến độ
     renderProfileStats(currentUser);
-
-    // Hiển thị tiến độ
     renderProfileProgress(currentUser);
 
-    // Hiển thị thành tích
+    // 3. Bài học gần đây & Thành tích
+    renderRecentLessons(currentUser);
     renderAchievements(currentUser);
 
-    // Xử lý form chỉnh sửa tài khoản
+    // 4. Tab Navigation (Tổng quan vs Cài đặt)
+    setupProfileTabs();
+
+    // 5. Cài đặt Avatar (Tải ảnh lên & Presets)
+    setupAvatarManagement(currentUser);
+
+    // 6. Form cập nhật thông tin & mật khẩu
     setupProfileForm(currentUser);
 
-    // Xử lý đăng xuất
+    // 7. Toggle hiển thị mật khẩu
+    setupPasswordToggles();
+
+    // 8. Tùy chọn giao diện (Light / Dark)
+    setupThemeSettings();
+
+    // 9. Đăng xuất
     setupProfileLogout();
+
+    // Check URL Hash (#settings)
+    if (window.location.hash === "#settings") {
+        switchTab("settings");
+    }
 });
 
 
 // ============================================================
-// HIỂN THỊ THÔNG TIN PROFILE
+// CHUYỂN TAB TỔNG QUAN / CÀI ĐẶT
+// ============================================================
+
+function setupProfileTabs() {
+    const tabOverviewBtn = document.getElementById("tabOverviewBtn");
+    const tabSettingsBtn = document.getElementById("tabSettingsBtn");
+    const sideNavOverviewBtn = document.getElementById("sideNavOverviewBtn");
+    const sideNavSettingsBtn = document.getElementById("sideNavSettingsBtn");
+    const btnAvatarEditShortcut = document.getElementById("btnAvatarEditShortcut");
+
+    if (tabOverviewBtn) {
+        tabOverviewBtn.addEventListener("click", () => switchTab("overview"));
+    }
+    if (tabSettingsBtn) {
+        tabSettingsBtn.addEventListener("click", () => switchTab("settings"));
+    }
+    if (sideNavOverviewBtn) {
+        sideNavOverviewBtn.addEventListener("click", () => switchTab("overview"));
+    }
+    if (sideNavSettingsBtn) {
+        sideNavSettingsBtn.addEventListener("click", () => switchTab("settings"));
+    }
+
+    if (btnAvatarEditShortcut) {
+        btnAvatarEditShortcut.addEventListener("click", () => {
+            switchTab("settings");
+            const avatarBox = document.querySelector(".avatar-settings-layout");
+            if (avatarBox) {
+                avatarBox.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+        });
+    }
+
+    // Lắng nghe thay đổi hash
+    window.addEventListener("hashchange", () => {
+        if (window.location.hash === "#settings") {
+            switchTab("settings");
+        } else if (window.location.hash === "#overview" || window.location.hash === "") {
+            switchTab("overview");
+        }
+    });
+}
+
+function switchTab(tabName) {
+    const panelOverview = document.getElementById("panelOverview");
+    const panelSettings = document.getElementById("panelSettings");
+
+    const tabOverviewBtn = document.getElementById("tabOverviewBtn");
+    const tabSettingsBtn = document.getElementById("tabSettingsBtn");
+    const sideNavOverviewBtn = document.getElementById("sideNavOverviewBtn");
+    const sideNavSettingsBtn = document.getElementById("sideNavSettingsBtn");
+
+    if (tabName === "settings") {
+        if (panelOverview) panelOverview.hidden = true;
+        if (panelSettings) panelSettings.hidden = false;
+
+        if (tabOverviewBtn) {
+            tabOverviewBtn.classList.remove("active");
+            tabOverviewBtn.setAttribute("aria-selected", "false");
+        }
+        if (tabSettingsBtn) {
+            tabSettingsBtn.classList.add("active");
+            tabSettingsBtn.setAttribute("aria-selected", "true");
+        }
+
+        if (sideNavOverviewBtn) sideNavOverviewBtn.classList.remove("active");
+        if (sideNavSettingsBtn) sideNavSettingsBtn.classList.add("active");
+
+        if (window.location.hash !== "#settings") {
+            history.replaceState(null, "", "#settings");
+        }
+    } else {
+        if (panelOverview) panelOverview.hidden = false;
+        if (panelSettings) panelSettings.hidden = true;
+
+        if (tabOverviewBtn) {
+            tabOverviewBtn.classList.add("active");
+            tabOverviewBtn.setAttribute("aria-selected", "true");
+        }
+        if (tabSettingsBtn) {
+            tabSettingsBtn.classList.remove("active");
+            tabSettingsBtn.setAttribute("aria-selected", "false");
+        }
+
+        if (sideNavOverviewBtn) sideNavOverviewBtn.classList.add("active");
+        if (sideNavSettingsBtn) sideNavSettingsBtn.classList.remove("active");
+
+        if (window.location.hash === "#settings") {
+            history.replaceState(null, "", "#overview");
+        }
+    }
+}
+
+
+// ============================================================
+// HIỂN THỊ THÔNG TIN HỒ SƠ
 // ============================================================
 
 function renderProfile(user) {
+    setText("profileUsername", user.username || "Người học");
+    setText("profileEmail", user.email || "Chưa cập nhật");
 
-    // Username
-    setText(
-        "profileUsername",
-        user.username || "Người học"
-    );
+    const usernameInput = document.getElementById("profileUsernameInput");
+    if (usernameInput) usernameInput.value = user.username || "";
 
-    // Email
-    setText(
-        "profileEmail",
-        user.email || "Chưa cập nhật"
-    );
+    const emailInput = document.getElementById("profileEmailInput");
+    if (emailInput) emailInput.value = user.email || "";
 
-    // Username trong form
-    const usernameInput =
-        document.getElementById("profileUsernameInput");
-
-    if (usernameInput) {
-        usernameInput.value =
-            user.username || "";
-    }
-
-    // Email trong form
-    const emailInput =
-        document.getElementById("profileEmailInput");
-
-    if (emailInput) {
-        emailInput.value =
-            user.email || "";
-    }
-
-    // Role
-    const roleElement =
-        document.getElementById("profileRole");
-
+    const roleElement = document.getElementById("profileRole");
     if (roleElement) {
-        roleElement.textContent =
-            user.role === "admin"
-                ? "Quản trị viên"
-                : "Học viên";
+        roleElement.textContent = user.role === "admin" ? "Quản trị viên" : "Học viên C++";
     }
 
-    const adminLink =
-        document.getElementById("profileAdminLink");
-
+    const adminLink = document.getElementById("profileAdminLink");
     if (adminLink) {
-        adminLink.style.display =
-            user.role === "admin"
-                ? "flex"
-                : "none";
+        adminLink.style.display = user.role === "admin" ? "flex" : "none";
     }
 
-    // Ngày tham gia
-    const joinDate =
-        document.getElementById("profileJoinDate");
-
+    const joinDate = document.getElementById("profileJoinDate");
     if (joinDate) {
-        joinDate.textContent =
-            formatDate(
-                user.createdAt
-            );
+        joinDate.textContent = formatDate(user.createdAt);
     }
 
-    // Avatar
-    updateProfileAvatar(user);
+    // Cập nhật Avatar toàn diện
+    updateAllAvatarsDisplay(user);
 }
 
 
 // ============================================================
-// AVATAR
+// QUẢN LÝ AVATAR (UP ẢNH & PRESETS)
 // ============================================================
 
-function updateProfileAvatar(user) {
+function setupAvatarManagement(user) {
+    const fileInput = document.getElementById("avatarFileInput");
+    const btnTriggerUpload = document.getElementById("btnTriggerUpload");
+    const btnRemoveAvatar = document.getElementById("btnRemoveAvatar");
+    const presetsContainer = document.getElementById("presetAvatarsGrid");
 
-    const avatar =
-        document.getElementById(
-            "profileAvatar"
-        );
+    // 1. Render Preset Avatars
+    if (presetsContainer) {
+        presetsContainer.innerHTML = PRESET_AVATARS.map(preset => {
+            const isSelected = user.avatar === preset.svg;
+            return `
+                <button
+                    type="button"
+                    class="preset-avatar-btn ${isSelected ? 'selected' : ''}"
+                    data-id="${preset.id}"
+                    title="${preset.name}"
+                >
+                    <img src="${preset.svg}" alt="${preset.name}">
+                    <span class="preset-name">${preset.name}</span>
+                </button>
+            `;
+        }).join("");
 
-    if (!avatar) {
-        return;
+        // Gắn sự kiện click chọn preset
+        presetsContainer.querySelectorAll(".preset-avatar-btn").forEach((btn, index) => {
+            btn.addEventListener("click", () => {
+                const preset = PRESET_AVATARS[index];
+                if (!preset) return;
+
+                // Đổi avatar
+                applyNewAvatar(preset.svg, user);
+
+                // Highlight nút được chọn
+                presetsContainer.querySelectorAll(".preset-avatar-btn").forEach(b => b.classList.remove("selected"));
+                btn.classList.add("selected");
+            });
+        });
     }
 
-    // Nếu có avatar
-    if (user.avatar) {
+    // 2. Kích hoạt mở file
+    if (btnTriggerUpload && fileInput) {
+        btnTriggerUpload.addEventListener("click", () => {
+            fileInput.click();
+        });
+    }
 
-        if (avatar.tagName === "IMG") {
-            avatar.src = user.avatar;
-            avatar.alt =
-                `Ảnh đại diện ${user.username}`;
+    // 3. Xử lý khi người dùng chọn file ảnh từ máy
+    if (fileInput) {
+        fileInput.addEventListener("change", async (e) => {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+
+            // Kiểm tra định dạng ảnh
+            if (!file.type.startsWith("image/")) {
+                showProfileMessage("Vui lòng chọn tệp hình ảnh hợp lệ (PNG, JPG, WebP, GIF).", "error");
+                fileInput.value = "";
+                return;
+            }
+
+            // Giới hạn kích thước tệp ban đầu (tối đa 8MB)
+            if (file.size > 8 * 1024 * 1024) {
+                showProfileMessage("Dung lượng ảnh vượt quá 8MB. Vui lòng chọn ảnh nhẹ hơn.", "error");
+                fileInput.value = "";
+                return;
+            }
+
+            try {
+                // Resize qua Canvas thành kích thước tối ưu (256x256), nhẹ & mượt
+                const base64Data = await resizeImageToBase64(file, 256, 0.88);
+                applyNewAvatar(base64Data, user);
+
+                // Bỏ chọn các nút preset
+                if (presetsContainer) {
+                    presetsContainer.querySelectorAll(".preset-avatar-btn").forEach(b => b.classList.remove("selected"));
+                }
+
+                showProfileMessage("✓ Đã tải ảnh đại diện thành công. Đừng quên bấm 'Lưu thay đổi'!", "success");
+            } catch (err) {
+                console.error("Lỗi đọc file ảnh:", err);
+                showProfileMessage("Không thể xử lý ảnh. Vui lòng thử lại với ảnh khác.", "error");
+            }
+
+            fileInput.value = "";
+        });
+    }
+
+    // 4. Gỡ bỏ ảnh đại diện
+    if (btnRemoveAvatar) {
+        btnRemoveAvatar.addEventListener("click", () => {
+            applyNewAvatar(null, user);
+            if (presetsContainer) {
+                presetsContainer.querySelectorAll(".preset-avatar-btn").forEach(b => b.classList.remove("selected"));
+            }
+            showProfileMessage("Đã gỡ ảnh đại diện. Hệ thống sẽ hiển thị chữ cái đầu mặc định.", "info");
+        });
+    }
+}
+
+// Áp dụng avatar mới vào bộ nhớ & giao diện
+function applyNewAvatar(avatarUrl, user) {
+    currentAvatarData = avatarUrl;
+
+    // Cập nhật người dùng hiện tại
+    const updatedUser = CppStorage.updateUser(user.id, {
+        avatar: avatarUrl
+    });
+
+    if (updatedUser) {
+        CppStorage.setCurrentUser(updatedUser);
+        updateAllAvatarsDisplay(updatedUser);
+    }
+}
+
+// Cập nhật hiển thị Avatar trên tất cả các vị trí
+function updateAllAvatarsDisplay(user) {
+    const firstLetter = (user.username || user.email || "U").charAt(0).toUpperCase();
+
+    // 1. Sidebar Avatar
+    const profileAvatar = document.getElementById("profileAvatar");
+    if (profileAvatar) {
+        if (user.avatar) {
+            profileAvatar.innerHTML = `<img src="${user.avatar}" alt="Avatar ${escapeHtml(user.username)}">`;
+            profileAvatar.classList.add("has-image");
+        } else {
+            profileAvatar.innerHTML = firstLetter;
+            profileAvatar.classList.remove("has-image");
         }
-
-        return;
     }
 
-    // Nếu không có avatar
-    const firstLetter =
-        (
-            user.username ||
-            user.email ||
-            "U"
-        )
-        .charAt(0)
-        .toUpperCase();
-
-    if (avatar.tagName === "IMG") {
-
-        avatar.style.display =
-            "none";
-
-        const parent =
-            avatar.parentElement;
-
-        if (parent) {
-            parent.setAttribute(
-                "data-avatar-letter",
-                firstLetter
-            );
+    // 2. Settings Avatar Preview
+    const settingsPreview = document.getElementById("settingsAvatarPreview");
+    if (settingsPreview) {
+        if (user.avatar) {
+            settingsPreview.innerHTML = `<img src="${user.avatar}" alt="Preview ${escapeHtml(user.username)}">`;
+            settingsPreview.classList.add("has-image");
+        } else {
+            settingsPreview.innerHTML = firstLetter;
+            settingsPreview.classList.remove("has-image");
         }
-
-    } else {
-
-        avatar.textContent =
-            firstLetter;
     }
+
+    // 3. Navbar Header Avatar
+    const headerAvatars = document.querySelectorAll("#headerAvatar, .header-avatar");
+    headerAvatars.forEach(el => {
+        if (user.avatar) {
+            el.innerHTML = `<img src="${user.avatar}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block;">`;
+            el.classList.add("has-avatar-img");
+        } else {
+            el.textContent = firstLetter;
+            el.classList.remove("has-avatar-img");
+        }
+    });
+}
+
+// Nén ảnh qua Canvas sang Base64
+function resizeImageToBase64(file, maxDimension = 256, quality = 0.88) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const img = new Image();
+            img.onload = () => {
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > maxDimension) {
+                        height = Math.round((height * maxDimension) / width);
+                        width = maxDimension;
+                    }
+                } else {
+                    if (height > maxDimension) {
+                        width = Math.round((width * maxDimension) / height);
+                        height = maxDimension;
+                    }
+                }
+
+                const canvas = document.createElement("canvas");
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, width, height);
+
+                const dataUrl = canvas.toDataURL("image/jpeg", quality);
+                resolve(dataUrl);
+            };
+            img.onerror = reject;
+            img.src = event.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
 }
 
 
 // ============================================================
-// THỐNG KÊ HỌC TẬP
+// THỐNG KÊ HỌC TẬP & XẾP HẠNG
 // ============================================================
 
 function renderProfileStats(user) {
+    const lessons = CppStorage.getLessons();
+    const progress = CppStorage.getUserProgress(user.id);
 
-    const lessons =
-        CppStorage.getLessons();
-
-    const progress =
-        CppStorage.getUserProgress(
-            user.id
-        );
-
-
-    const totalLessons =
-        lessons.length;
-
-
-    const completedLessons =
-        lessons.filter(
-            lesson =>
-                progress[
-                    lesson.id
-                ]?.completed === true
-        ).length;
-
-
-    const percent =
-        totalLessons > 0
-            ? Math.round(
-                completedLessons /
-                totalLessons *
-                100
-            )
-            : 0;
-
+    const totalLessons = lessons.length;
+    const completedLessons = lessons.filter(l => progress[l.id]?.completed === true).length;
+    const percent = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
 
     // Tổng bài học
-    setText(
-        "profileTotalLessons",
-        totalLessons
-    );
+    setText("profileTotalLessons", totalLessons);
 
-
-    // Bài hoàn thành
-    setText(
-        "profileCompletedLessons",
-        completedLessons
-    );
-
-
-    // Phần trăm
-    setText(
-        "profileProgress",
-        `${percent}%`
-    );
-
-    setText(
-        "profileProgressPercent",
-        `${percent}%`
-    );
-
+    // Đã hoàn thành
+    setText("profileCompletedLessons", completedLessons);
 
     // Điểm trung bình
-    const scores =
-        lessons
-            .map(
-                lesson =>
-                    progress[
-                        lesson.id
-                    ]?.score
-            )
-            .filter(
-                score =>
-                    typeof score === "number"
-            );
+    const scores = lessons
+        .map(l => progress[l.id]?.score)
+        .filter(score => typeof score === "number");
 
+    const averageScore = scores.length > 0
+        ? Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length)
+        : 0;
 
-    const averageScore =
-        scores.length > 0
-            ? Math.round(
-                scores.reduce(
-                    (sum, score) =>
-                        sum + score,
-                    0
-                ) / scores.length
-            )
-            : 0;
+    setText("profileAverageScore", `${averageScore}/100`);
 
+    // Tiến độ %
+    setText("profileProgress", `${percent}%`);
+    setText("profileProgressPercent", `${percent}%`);
 
-    setText(
-        "profileAverageScore",
-        `${averageScore}/100`
-    );
+    // Xếp cấp bậc học viên
+    const rankBadge = document.getElementById("profileRankBadge");
+    if (rankBadge) {
+        if (percent >= 80) {
+            rankBadge.textContent = "🏆 C++ Master";
+            rankBadge.className = "profile-rank rank-master";
+        } else if (percent >= 50) {
+            rankBadge.textContent = "⚡ Lập trình viên C++";
+            rankBadge.className = "profile-rank rank-coder";
+        } else if (percent >= 20) {
+            rankBadge.textContent = "🚀 Coder Tập sự";
+            rankBadge.className = "profile-rank rank-apprentice";
+        } else {
+            rankBadge.textContent = "🌱 Học viên Mới";
+            rankBadge.className = "profile-rank rank-beginner";
+        }
+    }
 }
 
 
 // ============================================================
-// TIẾN ĐỘ HỌC
+// TIẾN ĐỘ HỌC TẬP
 // ============================================================
 
 function renderProfileProgress(user) {
+    const lessons = CppStorage.getLessons();
+    const progress = CppStorage.getUserProgress(user.id);
 
-    const lessons =
-        CppStorage.getLessons();
+    const total = lessons.length;
+    const completed = lessons.filter(l => progress[l.id]?.completed === true).length;
+    const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
 
-    const progress =
-        CppStorage.getUserProgress(
-            user.id
-        );
-
-
-    const total =
-        lessons.length;
-
-
-    const completed =
-        lessons.filter(
-            lesson =>
-                progress[
-                    lesson.id
-                ]?.completed === true
-        ).length;
-
-
-    const percent =
-        total > 0
-            ? Math.round(
-                completed /
-                total *
-                100
-            )
-            : 0;
-
-
-    // Progress bar
-    const progressBar =
-        document.getElementById(
-            "profileProgressBar"
-        );
-
-    if (progressBar) {
-        progressBar.style.width =
-            `${percent}%`;
+    const bar = document.getElementById("profileProgressBar");
+    if (bar) {
+        bar.style.width = "0%";
+        setTimeout(() => {
+            bar.style.width = `${percent}%`;
+        }, 150);
     }
 
+    const descElem = document.getElementById("profileProgressDesc");
+    if (descElem) {
+        if (percent === 100) {
+            descElem.innerHTML = `🎉 Xuất sắc! Bạn đã hoàn thành toàn bộ <strong>${total}/${total}</strong> bài học C++!`;
+        } else if (completed > 0) {
+            descElem.innerHTML = `Bạn đã hoàn thành <strong>${completed}/${total}</strong> bài học (${percent}%). Còn <strong>${total - completed}</strong> bài học nữa, tiếp tục phát huy nhé!`;
+        } else {
+            descElem.innerHTML = `Bạn chưa hoàn thành bài học nào. Hãy bắt đầu hành trình lập trình C++ ngay hôm nay!`;
+        }
+    }
 
-    // Text
-    setText(
-        "profileProgressText",
-        `${completed}/${total} bài học`
-    );
-
-
-    // Phần trăm
-    setText(
-        "profileProgressValue",
-        `${percent}%`
-    );
-
-
-    // Danh sách bài học gần đây
-    renderRecentLessons(
-        lessons,
-        progress
-    );
+    // Nút tiếp tục bài học tiếp theo
+    const resumeBtn = document.getElementById("btnResumeLearning");
+    if (resumeBtn) {
+        const nextLesson = lessons.find(l => !progress[l.id]?.completed);
+        if (nextLesson) {
+            resumeBtn.href = `lesson-detail.html?id=${encodeURIComponent(nextLesson.id)}`;
+            resumeBtn.textContent = `Học tiếp: Bài ${nextLesson.order || 1} →`;
+        } else {
+            resumeBtn.href = "lessons.html";
+            resumeBtn.textContent = "Xem danh sách bài học →";
+        }
+    }
 }
 
 
 // ============================================================
-// BÀI HỌC GẦN ĐÂY
+// BÀI HỌC HOÀN THÀNH GẦN ĐÂY
 // ============================================================
 
-function renderRecentLessons(
-    lessons,
-    progress
-) {
+function renderRecentLessons(user) {
+    const container = document.getElementById("recentLessonsList");
+    if (!container) return;
 
-    const container =
-        document.getElementById(
-            "recentLessons"
-        );
+    const lessons = CppStorage.getLessons();
+    const progress = CppStorage.getUserProgress(user.id);
 
-    if (!container) {
-        return;
-    }
-
-
-    const completedLessons =
-        lessons
-            .filter(
-                lesson =>
-                    progress[
-                        lesson.id
-                    ]?.completed === true
-            )
-            .slice(-5)
-            .reverse();
-
+    // Lọc các bài học đã hoàn thành
+    const completedLessons = lessons
+        .filter(lesson => progress[lesson.id]?.completed === true)
+        .slice(-5)
+        .reverse();
 
     if (!completedLessons.length) {
-
         container.innerHTML = `
             <div class="empty-state">
-
-                <div class="empty-state-icon">
-                    📚
-                </div>
-
-                <h3>
-                    Chưa có bài hoàn thành
-                </h3>
-
-                <p>
-                    Hãy bắt đầu học bài đầu tiên
-                    để theo dõi tiến độ của bạn.
-                </p>
-
-                <a
-                    href="lessons.html"
-                    class="btn btn-primary"
-                >
-                    Bắt đầu học →
-                </a>
-
+                <div class="empty-state-icon">📚</div>
+                <h3>Chưa có bài hoàn thành</h3>
+                <p>Hãy bắt đầu học bài đầu tiên để lưu lại lịch sử làm bài và điểm số của bạn.</p>
+                <a href="lessons.html" class="btn btn-primary" style="margin-top: 12px;">Bắt đầu học ngay →</a>
             </div>
         `;
-
         return;
     }
 
+    container.innerHTML = completedLessons.map((lesson, idx) => {
+        const p = progress[lesson.id] || {};
+        const score = typeof p.score === "number" ? p.score : 100;
+        let scoreClass = "score-high";
+        if (score < 60) scoreClass = "score-low";
+        else if (score < 80) scoreClass = "score-med";
 
-    container.innerHTML =
-        completedLessons
-            .map(
-                (lesson, index) => {
-
-                    const lessonProgress =
-                        progress[
-                            lesson.id
-                        ] || {};
-
-
-                    return `
-                        <div class="recent-lesson-item">
-
-                            <div class="recent-lesson-number">
-                                ${index + 1}
-                            </div>
-
-                            <div class="recent-lesson-info">
-
-                                <h4>
-                                    ${escapeHtml(
-                                        lesson.title
-                                    )}
-                                </h4>
-
-                                <span>
-                                    ${escapeHtml(
-                                        lesson.chapter ||
-                                        "C++ Cơ bản"
-                                    )}
-                                </span>
-
-                            </div>
-
-                            <div class="recent-lesson-score">
-                                ${
-                                    lessonProgress.score !==
-                                    undefined
-                                        ? `${lessonProgress.score}/100`
-                                        : "✓"
-                                }
-                            </div>
-
-                            <a
-                                href="lesson-detail.html?id=${encodeURIComponent(
-                                    lesson.id
-                                )}"
-                                aria-label="Xem lại bài ${escapeHtml(
-                                    lesson.title
-                                )}"
-                            >
-                                →
-                            </a>
-
-                        </div>
-                    `;
-                }
-            )
-            .join("");
+        return `
+            <div class="recent-lesson-item">
+                <div class="recent-lesson-number">${idx + 1}</div>
+                <div class="recent-lesson-info">
+                    <h4>${escapeHtml(lesson.title)}</h4>
+                    <span>${escapeHtml(lesson.chapter || "Chương trình C++")}</span>
+                </div>
+                <div class="recent-lesson-score ${scoreClass}">
+                    ${score}/100
+                </div>
+                <a href="lesson-detail.html?id=${encodeURIComponent(lesson.id)}" class="btn-review-lesson" title="Xem lại bài học">
+                    Ôn lại →
+                </a>
+            </div>
+        `;
+    }).join("");
 }
 
 
 // ============================================================
-// THÀNH TÍCH
+// THÀNH TÍCH (ACHIEVEMENTS)
 // ============================================================
 
 function renderAchievements(user) {
+    const container = document.getElementById("achievementsList");
+    if (!container) return;
 
-    const container =
-        document.getElementById(
-            "achievementsList"
-        );
+    const lessons = CppStorage.getLessons();
+    const progress = CppStorage.getUserProgress(user.id);
 
-    if (!container) {
-        return;
-    }
+    const completed = lessons.filter(l => progress[l.id]?.completed === true).length;
+    const scores = lessons
+        .map(l => progress[l.id]?.score)
+        .filter(score => typeof score === "number");
 
-
-    const lessons =
-        CppStorage.getLessons();
-
-    const progress =
-        CppStorage.getUserProgress(
-            user.id
-        );
-
-
-    const completed =
-        lessons.filter(
-            lesson =>
-                progress[
-                    lesson.id
-                ]?.completed === true
-        ).length;
-
-
-    const scores =
-        lessons
-            .map(
-                lesson =>
-                    progress[
-                        lesson.id
-                    ]?.score
-            )
-            .filter(
-                score =>
-                    typeof score === "number"
-            );
-
-
-    const average =
-        scores.length
-            ? Math.round(
-                scores.reduce(
-                    (sum, score) =>
-                        sum + score,
-                    0
-                ) /
-                scores.length
-            )
-            : 0;
-
+    const hasHighScore = scores.some(s => s >= 90);
 
     const achievements = [
-
         {
-            icon: "🎯",
-            title: "Bắt đầu học",
-            description:
-                "Hoàn thành bài học đầu tiên.",
-            unlocked:
-                completed >= 1
-        },
-
-        {
-            icon: "🔥",
-            title: "Đang tiến bộ",
-            description:
-                "Hoàn thành 3 bài học.",
-            unlocked:
-                completed >= 3
-        },
-
-        {
-            icon: "🏆",
-            title: "Chinh phục C++",
-            description:
-                "Hoàn thành toàn bộ khóa học.",
-            unlocked:
-                lessons.length > 0 &&
-                completed >= lessons.length
-        },
-
-        {
-            icon: "⭐",
-            title: "Điểm cao",
-            description:
-                "Đạt điểm trung bình từ 80 trở lên.",
-            unlocked:
-                average >= 80
-        },
-
-        {
-            icon: "💻",
-            title: "Coder",
-            description:
-                "Hoàn thành ít nhất 5 bài.",
-            unlocked:
-                completed >= 5
-        },
-
-        {
+            id: "first-lesson",
+            title: "Bắt đầu hành trình",
+            description: "Hoàn thành bài học C++ đầu tiên.",
             icon: "🚀",
-            title: "C++ Master",
-            description:
-                "Hoàn thành khóa học với thành tích tốt.",
-            unlocked:
-                lessons.length > 0 &&
-                completed >= lessons.length &&
-                average >= 80
+            unlocked: completed >= 1
+        },
+        {
+            id: "three-lessons",
+            title: "Tăng tốc kiến thức",
+            description: "Hoàn thành 3 bài học C++.",
+            icon: "⚡",
+            unlocked: completed >= 3
+        },
+        {
+            id: "five-lessons",
+            title: "Chăm chỉ rèn luyện",
+            description: "Hoàn thành 5 bài học C++.",
+            icon: "🔥",
+            unlocked: completed >= 5
+        },
+        {
+            id: "high-score",
+            title: "Thiện xạ C++",
+            description: "Đạt từ 90 điểm trở lên trong một bài tập.",
+            icon: "⭐",
+            unlocked: hasHighScore
+        },
+        {
+            id: "half-way",
+            title: "Vượt qua nửa chặng",
+            description: `Hoàn thành ít nhất ${Math.ceil(lessons.length / 2)} bài học.`,
+            icon: "🎯",
+            unlocked: completed >= Math.ceil(lessons.length / 2) && lessons.length > 0
+        },
+        {
+            id: "all-lessons",
+            title: "C++ Master Tinh anh",
+            description: "Hoàn thành xuất sắc toàn bộ khóa học C++.",
+            icon: "🏆",
+            unlocked: completed >= lessons.length && lessons.length > 0
         }
-
     ];
 
-
-    container.innerHTML =
-        achievements
-            .map(
-                achievement => {
-
-                    return `
-                        <div class="
-                            achievement-card
-                            ${
-                                achievement.unlocked
-                                    ? "unlocked"
-                                    : "locked"
-                            }
-                        ">
-
-                            <div class="achievement-icon">
-                                ${achievement.icon}
-                            </div>
-
-                            <div class="achievement-info">
-
-                                <h3>
-                                    ${achievement.title}
-                                </h3>
-
-                                <p>
-                                    ${achievement.description}
-                                </p>
-
-                            </div>
-
-                            <div class="achievement-status">
-                                ${
-                                    achievement.unlocked
-                                        ? "✓"
-                                        : "🔒"
-                                }
-                            </div>
-
-                        </div>
-                    `;
-                }
-            )
-            .join("");
+    container.innerHTML = achievements.map(ach => `
+        <div class="achievement-card ${ach.unlocked ? '' : 'locked'}">
+            <div class="achievement-icon">${ach.icon}</div>
+            <div class="achievement-info">
+                <strong>${escapeHtml(ach.title)}</strong>
+                <p>${escapeHtml(ach.description)}</p>
+                <small>${ach.unlocked ? '✓ Đã mở khóa' : '🔒 Chưa mở khóa'}</small>
+            </div>
+        </div>
+    `).join("");
 }
 
 
 // ============================================================
-// FORM CHỈNH SỬA PROFILE
+// FORM CHỈNH SỬA TÀI KHOẢN (TRONG TAB SETTINGS)
 // ============================================================
 
-function setupProfileForm(
-    currentUser
-) {
+function setupProfileForm(currentUser) {
+    const form = document.getElementById("profileForm");
+    if (!form) return;
 
-    const form =
-        document.getElementById(
-            "profileForm"
+    form.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const usernameInput = document.getElementById("profileUsernameInput");
+        const emailInput = document.getElementById("profileEmailInput");
+        const passwordInput = document.getElementById("profilePasswordInput");
+        const passwordConfirmInput = document.getElementById("profilePasswordConfirmInput");
+
+        const newUsername = usernameInput ? usernameInput.value.trim() : currentUser.username;
+        const newEmail = emailInput ? emailInput.value.trim() : currentUser.email;
+        const newPassword = passwordInput ? passwordInput.value.trim() : "";
+        const confirmPassword = passwordConfirmInput ? passwordConfirmInput.value.trim() : "";
+
+        // 1. Kiểm tra username
+        if (newUsername.length < 3) {
+            showProfileMessage("Tên hiển thị phải có ít nhất 3 ký tự.", "error");
+            if (usernameInput) usernameInput.focus();
+            return;
+        }
+
+        // 2. Kiểm tra email
+        if (!isValidEmail(newEmail)) {
+            showProfileMessage("Địa chỉ Email không hợp lệ. Vui lòng kiểm tra lại.", "error");
+            if (emailInput) emailInput.focus();
+            return;
+        }
+
+        // 3. Kiểm tra username trùng
+        const users = CppStorage.getUsers();
+        const duplicateUsername = users.find(
+            u => u.id !== currentUser.id && u.username.toLowerCase() === newUsername.toLowerCase()
         );
 
-    if (!form) {
-        return;
-    }
-
-
-    form.addEventListener(
-        "submit",
-        event => {
-
-            event.preventDefault();
-
-
-            const usernameInput =
-                document.getElementById(
-                    "profileUsernameInput"
-                );
-
-            const emailInput =
-                document.getElementById(
-                    "profileEmailInput"
-                );
-
-
-            const newUsername =
-                usernameInput
-                    ? usernameInput.value.trim()
-                    : currentUser.username;
-
-
-            const newEmail =
-                emailInput
-                    ? emailInput.value.trim()
-                    : currentUser.email;
-
-
-            // --------------------------------------------
-            // Kiểm tra username
-            // --------------------------------------------
-
-            if (
-                newUsername.length < 3
-            ) {
-
-                showProfileMessage(
-                    "Tên người dùng phải có ít nhất 3 ký tự.",
-                    "error"
-                );
-
-                return;
-            }
-
-
-            // --------------------------------------------
-            // Kiểm tra email
-            // --------------------------------------------
-
-            if (
-                !isValidEmail(newEmail)
-            ) {
-
-                showProfileMessage(
-                    "Email không hợp lệ.",
-                    "error"
-                );
-
-                return;
-            }
-
-
-            // --------------------------------------------
-            // Kiểm tra username trùng
-            // --------------------------------------------
-
-            const users =
-                CppStorage.getUsers();
-
-
-            const duplicateUsername =
-                users.find(
-                    user =>
-                        user.id !== currentUser.id &&
-                        user.username.toLowerCase() ===
-                        newUsername.toLowerCase()
-                );
-
-
-            if (duplicateUsername) {
-
-                showProfileMessage(
-                    "Tên người dùng đã tồn tại.",
-                    "error"
-                );
-
-                return;
-            }
-
-
-            // --------------------------------------------
-            // Kiểm tra mật khẩu (nếu có nhập)
-            // --------------------------------------------
-
-            const passwordInput =
-                document.getElementById(
-                    "profilePasswordInput"
-                );
-
-            const newPassword =
-                passwordInput
-                    ? passwordInput.value.trim()
-                    : "";
-
-            if (newPassword && newPassword.length < 6) {
-                showProfileMessage(
-                    "Mật khẩu mới phải có ít nhất 6 ký tự.",
-                    "error"
-                );
-                return;
-            }
-
-
-            // --------------------------------------------
-            // Cập nhật
-            // --------------------------------------------
-
-            const updateData = {
-                username: newUsername,
-                email: newEmail
-            };
-
-            if (newPassword) {
-                updateData.password = newPassword;
-            }
-
-            const updatedUser =
-                CppStorage.updateUser(
-                    currentUser.id,
-                    updateData
-                );
-
-
-            if (!updatedUser) {
-
-                showProfileMessage(
-                    "Không thể cập nhật tài khoản.",
-                    "error"
-                );
-
-                return;
-            }
-
-
-            // --------------------------------------------
-            // Cập nhật current user
-            // --------------------------------------------
-
-            CppStorage.setCurrentUser(
-                updatedUser
-            );
-
-
-            // --------------------------------------------
-            // Xóa trường mật khẩu
-            // --------------------------------------------
-
-            if (passwordInput) {
-                passwordInput.value = "";
-            }
-
-
-            // --------------------------------------------
-            // Hiển thị lại dữ liệu
-            // --------------------------------------------
-
-            renderProfile(
-                updatedUser
-            );
-
-
-            showProfileMessage(
-                "✓ Cập nhật thông tin thành công.",
-                "success"
-            );
+        if (duplicateUsername) {
+            showProfileMessage("Tên người dùng này đã có người sử dụng. Vui lòng chọn tên khác.", "error");
+            if (usernameInput) usernameInput.focus();
+            return;
         }
-    );
 
-    // Xử lý nút Hủy
+        // 4. Kiểm tra mật khẩu mới (nếu có nhập)
+        if (newPassword) {
+            if (newPassword.length < 6) {
+                showProfileMessage("Mật khẩu mới phải có ít nhất 6 ký tự.", "error");
+                if (passwordInput) passwordInput.focus();
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                showProfileMessage("Xác nhận mật khẩu không khớp với mật khẩu mới.", "error");
+                if (passwordConfirmInput) passwordConfirmInput.focus();
+                return;
+            }
+        }
+
+        // 5. Cập nhật dữ liệu
+        const updateData = {
+            username: newUsername,
+            email: newEmail
+        };
+
+        if (newPassword) {
+            updateData.password = newPassword;
+        }
+
+        if (currentAvatarData !== undefined) {
+            updateData.avatar = currentAvatarData;
+        }
+
+        const updatedUser = CppStorage.updateUser(currentUser.id, updateData);
+
+        if (!updatedUser) {
+            showProfileMessage("Không thể lưu thay đổi vào hệ thống.", "error");
+            return;
+        }
+
+        // Cập nhật current user trong storage
+        CppStorage.setCurrentUser(updatedUser);
+
+        // Reset các trường mật khẩu
+        if (passwordInput) passwordInput.value = "";
+        if (passwordConfirmInput) passwordConfirmInput.value = "";
+
+        // Hiển thị lại toàn bộ thông tin
+        renderProfile(updatedUser);
+        renderProfileStats(updatedUser);
+
+        showProfileMessage("✓ Cập nhật hồ sơ & cài đặt thành công!", "success");
+    });
+
+    // Nút Hủy
     const cancelBtn = document.getElementById("cancelProfileEdit");
     if (cancelBtn) {
         cancelBtn.addEventListener("click", () => {
@@ -835,15 +755,87 @@ function setupProfileForm(
             const uInput = document.getElementById("profileUsernameInput");
             const eInput = document.getElementById("profileEmailInput");
             const pInput = document.getElementById("profilePasswordInput");
+            const cInput = document.getElementById("profilePasswordConfirmInput");
+
             if (uInput) uInput.value = user.username || "";
             if (eInput) eInput.value = user.email || "";
             if (pInput) pInput.value = "";
+            if (cInput) cInput.value = "";
+
+            currentAvatarData = user.avatar || null;
+            updateAllAvatarsDisplay(user);
+
             const msg = document.getElementById("profileMessage");
             if (msg) {
                 msg.textContent = "";
                 msg.className = "form-message";
                 msg.hidden = true;
             }
+
+            showProfileMessage("Đã hoàn tác các thay đổi chưa lưu.", "info");
+        });
+    }
+}
+
+
+// ============================================================
+// TOGGLE HIỂN THỊ MẬT KHẨU
+// ============================================================
+
+function setupPasswordToggles() {
+    const btn1 = document.getElementById("btnTogglePwd1");
+    const pwd1 = document.getElementById("profilePasswordInput");
+    if (btn1 && pwd1) {
+        btn1.addEventListener("click", () => {
+            const isPwd = pwd1.type === "password";
+            pwd1.type = isPwd ? "text" : "password";
+            btn1.textContent = isPwd ? "🙈" : "👁️";
+        });
+    }
+
+    const btn2 = document.getElementById("btnTogglePwd2");
+    const pwd2 = document.getElementById("profilePasswordConfirmInput");
+    if (btn2 && pwd2) {
+        btn2.addEventListener("click", () => {
+            const isPwd = pwd2.type === "password";
+            pwd2.type = isPwd ? "text" : "password";
+            btn2.textContent = isPwd ? "🙈" : "👁️";
+        });
+    }
+}
+
+
+// ============================================================
+// TÙY CHỌN GIAO DIỆN SÁNG / TỐI TRONG SETTINGS
+// ============================================================
+
+function setupThemeSettings() {
+    const lightBtn = document.getElementById("themeOptionLight");
+    const darkBtn = document.getElementById("themeOptionDark");
+
+    function updateActiveThemeBtn() {
+        const isDark = document.documentElement.classList.contains("dark-theme");
+        if (lightBtn) lightBtn.classList.toggle("active", !isDark);
+        if (darkBtn) darkBtn.classList.toggle("active", isDark);
+    }
+
+    updateActiveThemeBtn();
+
+    if (lightBtn) {
+        lightBtn.addEventListener("click", () => {
+            document.documentElement.classList.remove("dark-theme");
+            document.body.classList.remove("dark-theme");
+            localStorage.setItem("cpp_theme", "light");
+            updateActiveThemeBtn();
+        });
+    }
+
+    if (darkBtn) {
+        darkBtn.addEventListener("click", () => {
+            document.documentElement.classList.add("dark-theme");
+            document.body.classList.add("dark-theme");
+            localStorage.setItem("cpp_theme", "dark");
+            updateActiveThemeBtn();
         });
     }
 }
@@ -854,190 +846,70 @@ function setupProfileForm(
 // ============================================================
 
 function setupProfileLogout() {
+    const button = document.getElementById("profileLogoutButton");
+    if (!button) return;
 
-    const button =
-        document.getElementById(
-            "profileLogoutButton"
-        );
+    button.addEventListener("click", (event) => {
+        event.preventDefault();
+        const confirmLogout = confirm("Bạn có chắc chắn muốn đăng xuất khỏi CodeLearn C++ không?");
+        if (!confirmLogout) return;
 
-    if (!button) {
-        return;
-    }
-
-
-    button.addEventListener(
-        "click",
-        event => {
-
-            event.preventDefault();
-
-
-            const confirmLogout =
-                confirm(
-                    "Bạn có chắc chắn muốn đăng xuất không?"
-                );
-
-
-            if (!confirmLogout) {
-                return;
-            }
-
-
-            CppStorage.logout();
-
-            window.location.href =
-                "login.html";
-        }
-    );
+        CppStorage.logout();
+        window.location.href = "login.html";
+    });
 }
 
 
 // ============================================================
-// MESSAGE
+// TIỆN ÍCH & THÔNG BÁO
 // ============================================================
 
-function showProfileMessage(
-    message,
-    type
-) {
+function showProfileMessage(message, type = "info") {
+    const element = document.getElementById("profileMessage");
+    if (!element) return;
 
-    const element =
-        document.getElementById(
-            "profileMessage"
-        );
+    element.textContent = message;
+    element.className = `form-message ${type}`;
+    element.hidden = false;
 
-    if (!element) {
-        return;
-    }
+    element.scrollIntoView({ behavior: "smooth", block: "nearest" });
 
-
-    element.textContent =
-        message;
-
-
-    element.className =
-        `form-message ${type}`;
-
-
-    // Tự ẩn sau 4 giây
-    setTimeout(
-        () => {
-
-            element.textContent =
-                "";
-
-            element.className =
-                "form-message";
-
-        },
-        4000
-    );
+    setTimeout(() => {
+        element.textContent = "";
+        element.className = "form-message";
+        element.hidden = true;
+    }, 4500);
 }
 
-
-// ============================================================
-// VALIDATE EMAIL
-// ============================================================
-
-function isValidEmail(
-    email
-) {
-
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        .test(email);
+function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+function formatDate(value) {
+    if (!value) return "Chưa xác định";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "Chưa xác định";
 
-// ============================================================
-// FORMAT DATE
-// ============================================================
-
-function formatDate(
-    value
-) {
-
-    if (!value) {
-        return "Chưa xác định";
-    }
-
-
-    const date =
-        new Date(value);
-
-
-    if (Number.isNaN(
-        date.getTime()
-    )) {
-        return "Chưa xác định";
-    }
-
-
-    return date.toLocaleDateString(
-        "vi-VN",
-        {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric"
-        }
-    );
+    return date.toLocaleDateString("vi-VN", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
+    });
 }
 
-
-// ============================================================
-// SET TEXT
-// ============================================================
-
-function setText(
-    id,
-    value
-) {
-
-    const element =
-        document.getElementById(id);
-
-
+function setText(id, value) {
+    const element = document.getElementById(id);
     if (element) {
-        element.textContent =
-            value;
+        element.textContent = value;
     }
 }
 
-
-// ============================================================
-// ESCAPE HTML
-// ============================================================
-
-function escapeHtml(
-    value
-) {
-
-    if (
-        value === null ||
-        value === undefined
-    ) {
-        return "";
-    }
-
-
+function escapeHtml(value) {
+    if (value === null || value === undefined) return "";
     return String(value)
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
