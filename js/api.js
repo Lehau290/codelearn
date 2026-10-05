@@ -189,10 +189,20 @@
         // AI Mentor
         // -----------------------------------------------------
         ai: {
-            async ask(message, code = "", lessonId = "", history = []) {
+            async ask(message, code = "", lessonId = "", history = [], persona = "tutor") {
                 return request("/ai/ask", {
                     method: "POST",
-                    body: JSON.stringify({ message, code, lessonId, history })
+                    body: JSON.stringify({ message, code, lessonId, history, persona })
+                });
+            },
+            async getHistory(lessonId = "") {
+                const qs = lessonId ? `?lessonId=${encodeURIComponent(lessonId)}` : "";
+                return request(`/ai/history${qs}`);
+            },
+            async clearHistory(lessonId = "") {
+                const qs = lessonId ? `?lessonId=${encodeURIComponent(lessonId)}` : "";
+                return request(`/ai/history${qs}`, {
+                    method: "DELETE"
                 });
             },
             async getConfig() {

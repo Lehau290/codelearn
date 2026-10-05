@@ -1122,10 +1122,147 @@ CPP_KNOWLEDGE_BASE = [
             "```\n\n"
             "⚠️ **Lưu ý:** Không nên dùng đệ quy thuần túy `return fib(n-1) + fib(n-2)` vì độ phức tạp lên tới $O(2^N)$ sẽ gây tràn thời gian (Time Limit Exceeded) khi $N > 40$!"
         )
+    },
+    {
+        "keywords": ["bẫy lỗi", "pitfall", "lỗi thường gặp", "sai lầm"],
+        "title": "Các bẫy lỗi kinh điển trong C++ và cách phòng ngừa",
+        "reply": (
+            "### ⚠️ 5 Bẫy Lỗi Thường Gặp Nhất trong C++ và Cách Phòng Ngừa\n\n"
+            "1. **Bỏ sót `cin.ignore()` khi đọc chuỗi sau số:**\n"
+            "   - Khi nhập số qua `cin >> x`, ký tự xuống dòng `\\n` vẫn nằm trong bộ đệm. Nếu gọi `getline(cin, str)` ngay sau đó, chuỗi sẽ bị rỗng!\n"
+            "   - *Cách khắc phục:* Thêm `cin.ignore(numeric_limits<streamsize>::max(), '\\n');` trước `getline`.\n\n"
+            "2. **Nhầm lẫn giữa `delete` và `delete[]`:**\n"
+            "   - Biến đơn: `int* p = new int; delete p;`\n"
+            "   - Mảng động: `int* arr = new int[10]; delete[] arr;` (Dùng `delete` thường sẽ gây Undefined Behavior và rò rỉ bộ nhớ!).\n\n"
+            "3. **Tràn số nguyên (Integer Overflow):**\n"
+            "   - `int` chỉ chứa tối đa khoảng $2 \\times 10^9$. Khi tính giai thừa hoặc nhân hai số lớn (ví dụ $10^6 \\times 10^6$), kết quả bị tràn thành số âm!\n"
+            "   - *Cách khắc phục:* Sử dụng kiểu `long long` (lên tới $9 \\times 10^{18}$).\n\n"
+            "4. **So sánh bằng trên số thực (`float`/`double`):**\n"
+            "   - Không bao giờ viết `if (a == 0.3)` vì số thực có sai số làm tròn nhị phân.\n"
+            "   - *Cách khắc phục:* `if (abs(a - 0.3) < 1e-9)` (So sánh với sai số epsilon).\n\n"
+            "5. **Truyền đối tượng lớn theo giá trị (Pass-by-value):**\n"
+            "   - Viết `void process(vector<int> v)` sẽ sao chép toàn bộ hàng triệu phần tử mỗi lần gọi hàm!\n"
+            "   - *Cách khắc phục:* Dùng hằng tham chiếu `void process(const vector<int>& v)` (chi phí sao chép 0%)."
+        )
+    },
+    {
+        "keywords": ["tìm kiếm nhị phân", "binary search", "chặt nhị phân"],
+        "title": "Thuật toán Tìm kiếm Nhị phân (Binary Search)",
+        "reply": (
+            "### 🔍 Thuật toán Tìm kiếm Nhị phân (Binary Search)\n\n"
+            "**Tìm kiếm nhị phân** là thuật toán tìm kiếm tối ưu với độ phức tạp **$O(\\log N)$**, áp dụng cho danh sách **đã được sắp xếp**.\n\n"
+            "#### 💡 Tư tưởng:\n"
+            "Mỗi bước so sánh phần tử cần tìm với phần tử ở giữa (`mid`). Nếu nhỏ hơn, loại bỏ nửa bên phải; nếu lớn hơn, loại bỏ nửa bên trái. Không gian tìm kiếm giảm đi 1 nửa sau mỗi bước.\n\n"
+            "```cpp\n"
+            "#include <iostream>\n"
+            "#include <vector>\n"
+            "using namespace std;\n\n"
+            "int binarySearch(const vector<int>& arr, int target) {\n"
+            "    int left = 0, right = arr.size() - 1;\n"
+            "    while (left <= right) {\n"
+            "        // Tránh tràn số int khi left + right vượt quá INT_MAX\n"
+            "        int mid = left + (right - left) / 2;\n"
+            "        if (arr[mid] == target) return mid; // Tìm thấy tại chỉ số mid\n"
+            "        else if (arr[mid] < target) left = mid + 1;\n"
+            "        else right = mid - 1;\n"
+            "    }\n"
+            "    return -1; // Không tìm thấy\n"
+            "}\n\n"
+            "int main() {\n"
+            "    vector<int> nums = {2, 5, 8, 12, 16, 23, 38, 56, 72, 91};\n"
+            "    int target = 23;\n"
+            "    int idx = binarySearch(nums, target);\n"
+            "    cout << \"Tìm thấy \" << target << \" tại vị trí: \" << idx << endl;\n"
+            "    return 0;\n"
+            "}\n"
+            "```\n\n"
+            "💡 **Mẹo:** Trong C++, bạn có thể dùng sẵn `std::binary_search(begin, end, val)` hoặc `std::lower_bound(begin, end, val)`!"
+        )
+    },
+    {
+        "keywords": ["hai con trỏ", "two pointers", "cửa sổ trượt", "sliding window"],
+        "title": "Kỹ thuật Hai con trỏ (Two Pointers) & Cửa sổ trượt",
+        "reply": (
+            "### 🎯 Kỹ thuật Hai con trỏ (Two Pointers) & Cửa sổ trượt (Sliding Window)\n\n"
+            "Đây là 2 kỹ thuật kinh điển giúp giảm độ phức tạp thuật toán từ $O(N^2)$ xuống **$O(N)$** trong các bài toán mảng và chuỗi.\n\n"
+            "#### 1. Hai con trỏ hai đầu (Opposite Direction):\n"
+            "- Thường dùng cho bài toán mảng đã sắp xếp: Tìm cặp số có tổng bằng $S$ (Two Sum II), đảo ngược chuỗi, kiểm tra Palindrome.\n"
+            "```cpp\n"
+            "// Kiểm tra chuỗi đối xứng (Palindrome)\n"
+            "bool isPalindrome(const string& s) {\n"
+            "    int l = 0, r = s.length() - 1;\n"
+            "    while (l < r) {\n"
+            "        if (s[l++] != s[r--]) return false;\n"
+            "    }\n"
+            "    return true;\n"
+            "}\n"
+            "```\n\n"
+            "#### 2. Cửa sổ trượt (Sliding Window):\n"
+            "- Thường dùng cho bài toán tìm chuỗi con/mảng con liên tiếp thỏa mãn điều kiện (độ dài cố định $K$ hoặc độ dài biến thiên).\n"
+            "- Dùng 2 con trỏ `left` và `right` để mở rộng và thu hẹp cửa sổ khi duyệt qua mảng."
+        )
+    },
+    {
+        "keywords": ["quy hoạch động", "dynamic programming", "dp"],
+        "title": "Phương pháp Quy hoạch động (Dynamic Programming)",
+        "reply": (
+            "### 🧩 Phương pháp Quy hoạch động (Dynamic Programming - DP)\n\n"
+            "Quy hoạch động là kỹ thuật tối ưu hóa bài toán bằng cách chia bài toán lớn thành các **bài toán con gối nhau (Overlapping Subproblems)** và lưu lại kết quả (Memoization / Tabulation) để không phải tính lại.\n\n"
+            "#### 🌟 4 Bước tiếp cận chuẩn:\n"
+            "1. **Xác định trạng thái (State):** `dp[i]` có ý nghĩa gì?\n"
+            "2. **Công thức truy hồi (Transition):** Tính `dp[i]` từ các trạng thái trước như thế nào?\n"
+            "3. **Điều kiện cơ sở (Base Case):** `dp[0]` hoặc `dp[1]` có giá trị khởi đầu là bao nhiêu?\n"
+            "4. **Thứ tự tính toán:** Tính từ dưới lên (Bottom-up) hay Đệ quy nhớ (Top-down)?\n\n"
+            "#### 💻 Ví dụ bài toán Leo cầu thang (Climbing Stairs):\n"
+            "*Mỗi bước có thể bước 1 hoặc 2 bậc. Có bao nhiêu cách lên đỉnh n bậc?*\n"
+            "```cpp\n"
+            "int climbStairs(int n) {\n"
+            "    if (n <= 2) return n;\n"
+            "    int a = 1, b = 2;\n"
+            "    for (int i = 3; i <= n; i++) {\n"
+            "        int c = a + b;\n"
+            "        a = b;\n"
+            "        b = c;\n"
+            "    }\n"
+            "    return b; // O(N) thời gian, O(1) bộ nhớ\n"
+            "}\n"
+            "```"
+        )
+    },
+    {
+        "keywords": ["c++20", "modern c++", "ranges", "concepts", "format"],
+        "title": "Các tính năng mới nổi bật trong C++20",
+        "reply": (
+            "### 🚀 Những tính năng đột phá trong C++20\n\n"
+            "C++20 là một trong những bản cập nhật lớn nhất trong lịch sử C++, mang lại trải nghiệm lập trình hiện đại và an toàn hơn bao giờ hết:\n\n"
+            "1. **Concepts (`#include <concepts>`):**\n"
+            "   - Cho phép đặt ràng buộc rõ ràng cho Template, giúp thông báo lỗi dễ hiểu thay vì hàng trăm dòng lỗi compiler phức tạp.\n"
+            "   ```cpp\n"
+            "   template <std::integral T>\n"
+            "   T add(T a, T b) { return a + b; }\n"
+            "   ```\n\n"
+            "2. **Ranges & Views (`#include <ranges>`):**\n"
+            "   - Cho phép thao tác dữ liệu dạng đường ống (Pipe syntax `|`) như Python/C#.\n"
+            "   ```cpp\n"
+            "   auto even_squares = nums | views::filter([](int x) { return x % 2 == 0; })\n"
+            "                            | views::transform([](int x) { return x * x; });\n"
+            "   ```\n\n"
+            "3. **Toán tử phi thuyền Spaceship (`<=>`):**\n"
+            "   - Tự động sinh ra cả 6 toán tử so sánh (`<, <=, ==, !=, >=, >`) chỉ với một dòng code!\n\n"
+            "4. **`std::format` (Tương tự `f-string` của Python):**\n"
+            "   - Định dạng chuỗi nhanh chóng, an toàn và dễ đọc hơn `printf` và `cout`."
+        )
     }
 ]
 
-def generate_heuristic_response(message: str, code: str = "", lesson_info: dict = None, compile_error: str = "") -> dict:
+def generate_heuristic_response(
+    message: str, 
+    code: str = "", 
+    lesson_info: dict = None, 
+    compile_error: str = "",
+    persona: str = "tutor",
+    user_context: dict = None
+) -> dict:
     """
     Sinh câu trả lời thông minh dựa trên tri thức C++ chuyên sâu
     khi chạy ở chế độ offline / không có API Key ngoài.
@@ -1133,6 +1270,12 @@ def generate_heuristic_response(message: str, code: str = "", lesson_info: dict 
     msg_clean = (message or "").strip()
     msg_lower = msg_clean.lower()
     has_code = len((code or "").strip()) > 0
+
+    student_name = ""
+    if user_context:
+        student_name = user_context.get("full_name") or user_context.get("username") or ""
+
+    name_prefix = f"Chào **{student_name}**! " if student_name else ""
 
     # 1. Nếu có lỗi biên dịch thực tế từ g++
     if compile_error:
@@ -1154,6 +1297,12 @@ def generate_heuristic_response(message: str, code: str = "", lesson_info: dict 
             explanation.append(f"⚠️ **Thông báo lỗi từ trình biên dịch g++:**\n```text\n{compile_error}\n```")
 
         explanation.append("\n💡 **Gợi ý khắc phục:**\n1. Kiểm tra lại dòng lệnh được g++ chỉ định vị trí lỗi.\n2. Rà soát kiểu dữ liệu và thư viện `#include` tương ứng.\n3. Nhấn nút **'Chạy thử'** để biên dịch lại sau khi chỉnh sửa.")
+        
+        if persona == "professor":
+            explanation.append("\n🎓 *Lời khuyên từ Giáo sư: Hãy luôn bật cờ biên dịch `-Wall -Wextra` để phát hiện cảnh báo tiềm ẩn trước khi biến thành lỗi runtime.*")
+        elif persona == "interviewer":
+            explanation.append("\n💼 *Góc nhìn phỏng vấn: Khi gặp lỗi cú pháp trong phỏng vấn trực tiếp, hãy bình tĩnh đọc kỹ dòng báo lỗi của trình biên dịch và giải thích hướng sửa cho giám khảo.*")
+
         return {
             "reply": "\n\n".join(explanation),
             "has_error": True,
@@ -1166,7 +1315,7 @@ def generate_heuristic_response(message: str, code: str = "", lesson_info: dict 
         if run_res["success"]:
             quality = analyze_code_quality(code)
             reply = (
-                f"### ✅ Đánh giá Mã Nguồn C++ của bạn\n\n"
+                f"{name_prefix}### ✅ Đánh giá Mã Nguồn C++ của bạn\n\n"
                 f"- **Tình trạng biên dịch:** Thành công 100% với g++ 13.2.0.\n"
                 f"- **Thời gian thực thi:** {run_res.get('execution_time_ms', 0)}ms.\n"
                 f"- **Độ phức tạp ước tính:** {quality['timeComplexity']}.\n"
@@ -1174,53 +1323,89 @@ def generate_heuristic_response(message: str, code: str = "", lesson_info: dict 
                 f"#### 🌟 Điểm nổi bật:\n"
                 f"- Cấu trúc chương trình hợp lệ, không có lỗi rò rỉ bộ nhớ nghiêm trọng.\n"
                 f"- Đầu ra mẫu thực thi: `{run_res.get('output', '').strip() or '[Chương trình kết thúc thành công với mã 0]'}`.\n\n"
-                f"💡 Bạn có thể tự tin nhấn nút **'AI Chấm & Đánh giá'** để nộp bài kiểm thử tự động nhé!"
             )
+            if persona == "interviewer":
+                reply += "💼 *Nhận xét Phỏng vấn:* Thuật toán chạy mượt. Hãy chuẩn bị câu trả lời về trường hợp biên (Edge cases như mảng rỗng, giá trị âm hoặc tràn số `INT_MAX`)!\n\n"
+            elif persona == "professor":
+                reply += "🎓 *Nhận xét Học thuật:* Phong cách code tương đối chuẩn. Chú ý giữ thói quen giải phóng tài nguyên và đặt tên biến có ngữ nghĩa rõ ràng.\n\n"
+            reply += "💡 Bạn có thể tự tin nhấn nút **'AI Chấm & Đánh giá'** để nộp bài kiểm thử tự động nhé!"
             return {"reply": reply, "has_error": False, "status": "code_review"}
 
-    # 3. Tra cứu Knowledge Base chủ đề C++
-    for item in CPP_KNOWLEDGE_BASE:
-        for kw in item["keywords"]:
-            if kw in msg_lower:
-                return {
-                    "reply": item["reply"],
-                    "has_error": False,
-                    "status": "knowledge_hit"
-                }
+    # 3. Yêu cầu gợi ý làm bài tập hiện tại
+    if ("gợi ý" in msg_lower or "làm bài" in msg_lower or "hướng dẫn" in msg_lower or "giải bài" in msg_lower or "bài này" in msg_lower) and lesson_info:
+        lesson_title = lesson_info.get("title", "")
+        lesson_chap = lesson_info.get("chapter", "")
+        exercises = lesson_info.get("exercises", [])
+        ex_info = ""
+        if exercises:
+            ex = exercises[0]
+            ex_info = f"\n- **Mục tiêu bài tập:** {ex.get('title', '')}\n- **Mô tả:** {ex.get('description', '')[:120]}...\n- **Đầu ra mong đợi:** `{ex.get('expected_output', '')}`\n"
 
-    # 4. Yêu cầu gợi ý làm bài tập hiện tại
-    if "gợi ý" in msg_lower or "làm bài" in msg_lower or "hướng dẫn" in msg_lower or "giải bài" in msg_lower:
-        lesson_title = lesson_info.get("title", "") if lesson_info else "chuyên đề hiện tại"
-        lesson_chap = lesson_info.get("chapter", "") if lesson_info else ""
         return {
             "reply": (
-                f"### 💡 Gợi ý tư duy bài học: {lesson_title}\n\n"
-                f"Để hoàn thành tốt bài học này, bạn hãy làm theo 3 bước sau:\n\n"
+                f"{name_prefix}### 💡 Gợi ý tư duy bài học: {lesson_title} ({lesson_chap})\n\n"
+                f"{ex_info}\n"
+                f"#### 🎯 Các bước tư duy giải quyết:\n"
                 f"1. **Phân tích yêu cầu:** Đọc kỹ định dạng đầu vào (Input) và đầu ra (Output). Chú ý từng ký tự dấu cách và ký tự xuống dòng (`endl`).\n"
                 f"2. **Xác định kiểu dữ liệu:** Sử dụng `int` cho số nguyên, `double` cho số thực, `string` cho chuỗi văn bản, `vector` nếu cần lưu mảng kích thước động.\n"
                 f"3. **Kiểm tra biên (Edge Cases):** Thử nghiệm với các trường hợp số âm, số 0, hoặc giá trị lớn nhất/nhỏ nhất trước khi nộp bài.\n\n"
-                f"Nếu bạn đang gặp lỗi ở dòng code nào, hãy gửi code vào khung chat để mình gỡ lỗi giúp bạn nhé!"
+                f"Nếu bạn đang gặp lỗi ở dòng code nào, hãy nhấn nút 📎 để đính kèm code vào khung chat nhé!"
             ),
             "has_error": False,
             "status": "hint"
         }
 
+    # 4. Tra cứu Knowledge Base chủ đề C++
+    for item in CPP_KNOWLEDGE_BASE:
+        for kw in item["keywords"]:
+            if kw in msg_lower:
+                base_reply = item["reply"]
+                if persona == "interviewer":
+                    base_reply += "\n\n💼 *FAANG Tip: Khi được hỏi về chủ đề này trong phỏng vấn, hãy chủ động nêu ưu/nhược điểm và độ phức tạp thời gian $O(N)$ trước khi viết code!*"
+                elif persona == "professor":
+                    base_reply += "\n\n🎓 *Academic Note: Luôn đối chiếu với chuẩn C++ Core Guidelines để viết mã an toàn và tránh Undefined Behavior.*"
+                return {
+                    "reply": (f"{name_prefix}\n\n" if name_prefix else "") + base_reply,
+                    "has_error": False,
+                    "status": "knowledge_hit"
+                }
+
     # 5. Phản hồi tự nhiên thân thiện (Friendly conversational fallback)
+    context_note = ""
+    if user_context:
+        comp = user_context.get("completed_lessons", 0)
+        streak = user_context.get("current_streak", 0)
+        context_note = f"Bạn đang duy trì chuỗi học tập **{streak} ngày** và đã hoàn thành **{comp}/20 chuyên đề** C++! 🎉\n\n"
+
+    role_desc = "Gia sư kiên nhẫn"
+    if persona == "interviewer":
+        role_desc = "Chuyên gia Phỏng vấn FAANG"
+    elif persona == "professor":
+        role_desc = "Giáo sư C++ Khắt khe"
+
     return {
         "reply": (
-            f"👋 Chào bạn! Mình là **CodeLearn AI Assistant** — Trợ lý ảo chuyên sâu về Lập trình C++.\n\n"
-            f"Bạn có thể trò chuyện và hỏi mình bất kỳ câu hỏi nào như trên ChatGPT:\n\n"
-            f"- 🧠 **Lý thuyết & Khái niệm:** *OOP là gì?*, *Con trỏ thông minh unique_ptr vs shared_ptr?*, *Struct khác Class ở đâu?*, *Vector vs Mảng?*\n"
-            f"- 🛠️ **Gỡ lỗi (Debug):** *Tại sao bị Segmentation fault?*, *Sửa lỗi undefined reference to main giúp tôi*\n"
-            f"- 🚀 **Thuật toán:** *Giải thích thuật toán QuickSort*, *Cách tìm số nguyên tố tối ưu*, *Thuật toán tìm kiếm nhị phân*\n"
-            f"- 📝 **Đánh giá code:** Hãy viết code vào editor hoặc dán vào đây, mình sẽ biên dịch và review chất lượng code cho bạn!\n\n"
-            f"Bạn muốn cùng mình thảo luận hoặc giải bài tập nào hôm nay?"
+            f"👋 {name_prefix}Mình là **CodeLearn AI** (Chế độ: *{role_desc}*).\n\n"
+            f"{context_note}"
+            f"Bạn có thể hỏi mình bất kỳ điều gì như trên ChatGPT:\n\n"
+            f"- 🧠 **Lý thuyết & Khái niệm:** *OOP là gì?*, *Con trỏ thông minh unique_ptr vs shared_ptr?*, *Struct khác Class ở đâu?*, *Bẫy lỗi cin.ignore?*\n"
+            f"- 🛠️ **Gỡ lỗi (Debug):** *Tại sao bị Segmentation fault?*, *Sửa lỗi undefined reference to main*\n"
+            f"- 🚀 **Thuật toán:** *Thuật toán QuickSort*, *Tìm kiếm nhị phân*, *Kỹ thuật Hai con trỏ*, *Quy hoạch động*\n"
+            f"- 📝 **Đánh giá code:** Nhấn nút 📎 để đính kèm code trong editor, mình sẽ biên dịch và review chất lượng code cho bạn!\n\n"
+            f"Hôm nay bạn cần mình hỗ trợ chuyên đề nào?"
         ),
         "has_error": False,
         "status": "conversational"
     }
 
-def get_ai_mentor_reply(message: str, code: str = "", lesson_info: dict = None, history: list = None) -> dict:
+def get_ai_mentor_reply(
+    message: str, 
+    code: str = "", 
+    lesson_info: dict = None, 
+    history: list = None,
+    persona: str = "tutor",
+    user_context: dict = None
+) -> dict:
     """
     Điểm truy cập chính cho AI Trợ giảng C++:
     - Nếu có cấu hình API Key (Gemini / OpenAI / Groq): Sử dụng mô hình LLM tương tác đa lượt như ChatGPT thật.
@@ -1240,12 +1425,25 @@ def get_ai_mentor_reply(message: str, code: str = "", lesson_info: dict = None, 
     # 2. Thử gọi LLM nếu có API Key
     provider, api_key = get_api_key_from_env_or_config()
     if provider and api_key:
+        role_prompt = "Bạn là Gia sư C++ kiên nhẫn, ân cần, giải thích chi tiết, dễ hiểu cho người mới học."
+        if persona == "interviewer":
+            role_prompt = "Bạn là Chuyên gia Phỏng vấn Kỹ thuật tại các tập đoàn công nghệ lớn (FAANG). Hãy chú trọng độ phức tạp thuật toán O(N), không gian bộ nhớ O(1), các trường hợp biên (edge cases) và tối ưu hóa hiệu năng cao."
+        elif persona == "professor":
+            role_prompt = "Bạn là Giáo sư Khoa học Máy tính khắt khe. Hãy phân tích chuyên sâu chuẩn C++17/20, an toàn bộ nhớ (RAII), const correctness, quy chuẩn mã nguồn sạch và cảnh báo Undefined Behavior."
+
         prompt_parts = [
-            "Bạn là CodeLearn AI - Trợ lý AI và Gia sư Lập trình C++ thông minh, kiên nhẫn như ChatGPT của học viện CodeLearn.",
+            f"Bạn là CodeLearn AI - Trợ lý AI và Gia sư Lập trình C++ thông minh như ChatGPT của học viện CodeLearn. {role_prompt}",
             "Hãy trả lời bằng tiếng Việt, dùng Markdown định dạng rõ ràng, đẹp mắt, chia đề mục, code C++ chuẩn mực có chú thích dễ hiểu."
         ]
+        if user_context:
+            u_name = user_context.get("full_name") or user_context.get("username") or "học viên"
+            prompt_parts.append(f"Học viên: {u_name}, Đã học: {user_context.get('completed_lessons', 0)}/20 bài, Điểm TB: {round(user_context.get('avg_score', 0), 1)}/100, Streak: {user_context.get('current_streak', 0)} ngày.")
+
         if lesson_info:
             prompt_parts.append(f"Ngữ cảnh bài học: {lesson_info.get('title', '')} (Chương: {lesson_info.get('chapter', '')})")
+            if lesson_info.get("content"):
+                prompt_parts.append(f"Tóm tắt lý thuyết bài học: {lesson_info.get('content')[:800]}...")
+
         if has_code:
             prompt_parts.append(f"Mã nguồn C++ hiện tại của học viên:\n```cpp\n{code}\n```")
             if compile_error:
@@ -1268,4 +1466,12 @@ def get_ai_mentor_reply(message: str, code: str = "", lesson_info: dict = None, 
             }
 
     # 3. Kích hoạt Hệ thống Tri thức Nội bộ C++ (Heuristic & Sandbox Engine)
-    return generate_heuristic_response(message, code=code, lesson_info=lesson_info, compile_error=compile_error)
+    return generate_heuristic_response(
+        message, 
+        code=code, 
+        lesson_info=lesson_info, 
+        compile_error=compile_error,
+        persona=persona,
+        user_context=user_context
+    )
+

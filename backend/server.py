@@ -255,6 +255,23 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
                 "model": "Gemini 1.5/2.0 Flash" if provider == "gemini" else ("GPT-4o Mini / Llama" if provider in ("openai", "groq") else "CodeLearn C++ Neural Tutor")
             })
 
+        # 3c. Get AI Chat History (/api/ai/history)
+        if path == "/api/ai/history":
+            if not user_id:
+                return self.send_json(200, {"messages": []})
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT id, role, content, persona, code_snippet, lesson_id, created_at
+                FROM ai_chat_messages
+                WHERE user_id = ?
+                ORDER BY created_at ASC
+                LIMIT 50
+            """, (user_id,))
+            rows = [dict(r) for r in cursor.fetchall()]
+            conn.close()
+            return self.send_json(200, {"messages": rows})
+
         # 4. All lessons (/api/lessons)
         if path == "/api/lessons":
             conn = get_connection()
@@ -832,18 +849,76 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
             code = body.get("code", "")
             lesson_id = body.get("lessonId", "")
             history = body.get("history", [])
+            persona = body.get("persona", "tutor")
 
+            # 1. User Context (Tên, tiến độ, điểm số, streak)
+            user_context = None
+            if user:
+                conn = get_connection()
+                cursor = conn.cursor()
+                cursor.execute("""
+                    SELECT 
+                        u.full_name, u.username, u.current_streak,
+                        COUNT(CASE WHEN p.status = 'completed' THEN 1 END) as completed_lessons,
+                        COALESCE(AVG(p.score), 0) as avg_score
+                    FROM users u
+                    LEFT JOIN progress p ON u.id = p.user_id
+                    WHERE u.id = ?
+                    GROUP BY u.id
+                """, (user["id"],))
+                u_row = cursor.fetchone()
+                if u_row:
+                    user_context = dict(u_row)
+                conn.close()
+
+            # 2. Detailed Lesson Context (Nội dung lý thuyết, bài tập)
             lesson_info = None
             if lesson_id:
                 conn = get_connection()
                 cursor = conn.cursor()
-                cursor.execute("SELECT id, title, chapter FROM lessons WHERE id = ?", (lesson_id,))
+                cursor.execute("SELECT id, title, chapter, description, content, code_starter FROM lessons WHERE id = ?", (lesson_id,))
                 row = cursor.fetchone()
                 if row:
                     lesson_info = dict(row)
+                    cursor.execute("SELECT id, title, description, expected_output, test_keywords FROM exercises WHERE lesson_id = ?", (lesson_id,))
+                    lesson_info["exercises"] = [dict(ex) for ex in cursor.fetchall()]
                 conn.close()
 
-            ai_resp = get_ai_mentor_reply(message, code=code, lesson_info=lesson_info, history=history)
+            ai_resp = get_ai_mentor_reply(
+                message, 
+                code=code, 
+                lesson_info=lesson_info, 
+                history=history,
+                persona=persona,
+                user_context=user_context
+            )
+
+            # 3. Lưu tin nhắn vào Database (Persistent Chat History)
+            if user and user.get("id"):
+                now_str = datetime.now().isoformat()
+                conn = get_connection()
+                cursor = conn.cursor()
+                try:
+                    # Tin nhắn người dùng
+                    cursor.execute("""
+                        INSERT INTO ai_chat_messages (id, user_id, role, content, persona, code_snippet, lesson_id, created_at)
+                        VALUES (?, ?, 'user', ?, ?, ?, ?, ?)
+                    """, (
+                        str(uuid.uuid4()), user["id"], message, persona, code or '', lesson_id or '', now_str
+                    ))
+                    # Phản hồi của AI
+                    cursor.execute("""
+                        INSERT INTO ai_chat_messages (id, user_id, role, content, persona, code_snippet, lesson_id, created_at)
+                        VALUES (?, ?, 'assistant', ?, ?, '', ?, ?)
+                    """, (
+                        str(uuid.uuid4()), user["id"], ai_resp.get("reply", ""), persona, lesson_id or '', datetime.now().isoformat()
+                    ))
+                    conn.commit()
+                except Exception as ex:
+                    print(f"[AI Chat log] Lỗi lưu tin nhắn chat: {ex}")
+                finally:
+                    conn.close()
+
             return self.send_json(200, ai_resp)
 
         # 8b. Configure AI Key (/api/ai/config)
@@ -1227,6 +1302,17 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
         parsed = urllib.parse.urlparse(self.path)
         path = parsed.path
         user = self.get_auth_user()
+
+        # Clear AI Chat History (/api/ai/history)
+        if path == "/api/ai/history":
+            if not user:
+                return self.send_json(401, {"error": "Cần đăng nhập."})
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM ai_chat_messages WHERE user_id = ?", (user["id"],))
+            conn.commit()
+            conn.close()
+            return self.send_json(200, {"message": "Đã xóa toàn bộ lịch sử trò chuyện AI."})
 
         # Admin delete lesson (/api/lessons/<id>)
         if path.startswith("/api/lessons/"):

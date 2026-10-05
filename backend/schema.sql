@@ -232,3 +232,20 @@ CREATE TABLE IF NOT EXISTS activity_logs (
 
 CREATE INDEX IF NOT EXISTS idx_activity_logs_action ON activity_logs(action);
 CREATE INDEX IF NOT EXISTS idx_activity_logs_created_at ON activity_logs(created_at);
+
+-- ------------------------------------------------------------------------------
+-- 14. BẢNG AI_CHAT_MESSAGES (Lịch sử hội thoại với Trợ lý AI ChatGPT)
+-- ------------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS ai_chat_messages (
+    id            TEXT PRIMARY KEY,
+    user_id       TEXT NOT NULL,
+    role          TEXT NOT NULL,               -- 'user' | 'assistant'
+    content       TEXT NOT NULL,
+    persona       TEXT DEFAULT 'tutor',        -- 'tutor' | 'interviewer' | 'professor'
+    code_snippet  TEXT DEFAULT '',
+    lesson_id     TEXT DEFAULT '',
+    created_at    TEXT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_ai_chats_user ON ai_chat_messages(user_id, created_at);

@@ -45,9 +45,20 @@
                         </div>
                     </div>
                     <div style="display: flex; align-items: center; gap: 4px;">
+                        <button type="button" id="btnAiSettings" class="ai-reset-btn" title="Cài đặt AI & API Key" aria-label="Cài đặt AI">⚙️</button>
                         <button type="button" id="btnResetAiMentor" class="ai-reset-btn" title="Làm mới hội thoại" aria-label="Làm mới hội thoại">🔄</button>
                         <button type="button" id="btnCloseAiMentor" class="ai-close-btn" aria-label="Đóng Trợ lý AI">✕</button>
                     </div>
+                </div>
+
+                <!-- Persona / Role Selector -->
+                <div class="ai-persona-bar">
+                    <span style="color: var(--text-muted); font-size: 0.73rem;">🎭 Vai trò AI:</span>
+                    <select id="aiPersonaSelect" class="ai-persona-select" title="Chọn phong cách phản hồi của AI">
+                        <option value="tutor" selected>🧑‍🏫 Gia sư kiên nhẫn</option>
+                        <option value="interviewer">💼 Phỏng vấn FAANG</option>
+                        <option value="professor">🎓 Giáo sư Đại học</option>
+                    </select>
                 </div>
 
                 <div class="ai-mentor-body" id="aiMentorMessages">
@@ -68,10 +79,41 @@
                 </div>
 
                 <form id="aiMentorForm" class="ai-mentor-input-row">
+                    <div class="ai-input-tools">
+                        <button type="button" id="btnAiVoice" class="ai-tool-btn" title="Nhập liệu bằng giọng nói" aria-label="Nói vào micro">🎙️</button>
+                    </div>
                     <input type="text" id="aiMentorInput" placeholder="Hỏi AI về bất kỳ điều gì trong C++..." autocomplete="off">
                     <button type="submit" id="btnSendAiMentor" class="btn btn-primary" title="Gửi câu hỏi">Gửi</button>
                 </form>
             </aside>
+
+            <!-- AI API Settings Modal -->
+            <div id="aiSettingsModal" class="ai-settings-modal" hidden>
+                <div class="ai-settings-dialog">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h3 style="margin: 0; font-size: 1.15rem; font-weight: 700;">⚙️ Cấu hình Bộ não AI</h3>
+                        <button type="button" id="btnCloseAiSettings" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-muted);">✕</button>
+                    </div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px; line-height: 1.5;">
+                        Mặc định hệ thống dùng <strong>CodeLearn Neural Tutor</strong> (miễn phí, không cần cấu hình). Bạn có thể tích hợp API Key riêng của Gemini hoặc OpenAI để đạt độ thông minh cao nhất.
+                    </p>
+                    <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 18px;">
+                        <div>
+                            <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Google Gemini API Key (Khuyên dùng):</label>
+                            <input type="password" id="inputGeminiKey" placeholder="AIzaSy..." style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border, #cbd5e1); font-family: monospace; font-size: 0.82rem; background: transparent; color: inherit;">
+                            <span style="font-size: 0.72rem; color: var(--text-muted);">Lấy key miễn phí tại <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: var(--primary);">aistudio.google.com</a></span>
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">OpenAI API Key (Tùy chọn):</label>
+                            <input type="password" id="inputOpenAiKey" placeholder="sk-..." style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border, #cbd5e1); font-family: monospace; font-size: 0.82rem; background: transparent; color: inherit;">
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                        <button type="button" id="btnCancelAiSettings" class="btn btn-outline" style="padding: 7px 14px; font-size: 0.85rem;">Hủy</button>
+                        <button type="button" id="btnSaveAiSettings" class="btn btn-primary" style="padding: 7px 16px; font-size: 0.85rem;">Lưu Cấu hình</button>
+                    </div>
+                </div>
+            </div>
         `;
         document.body.appendChild(widget);
 
@@ -79,13 +121,56 @@
         const toggleBtn = widget.querySelector("#btnToggleAiMentor");
         const closeBtn = widget.querySelector("#btnCloseAiMentor");
         const resetBtn = widget.querySelector("#btnResetAiMentor");
+        const settingsBtn = widget.querySelector("#btnAiSettings");
         const panel = widget.querySelector("#aiMentorPanel");
         const form = widget.querySelector("#aiMentorForm");
         const input = widget.querySelector("#aiMentorInput");
         const msgContainer = widget.querySelector("#aiMentorMessages");
         const chips = widget.querySelectorAll(".ai-chip");
+        const personaSelect = widget.querySelector("#aiPersonaSelect");
+        const voiceBtn = widget.querySelector("#btnAiVoice");
+
+        // Settings modal
+        const settingsModal = widget.querySelector("#aiSettingsModal");
+        const closeSettingsBtn = widget.querySelector("#btnCloseAiSettings");
+        const cancelSettingsBtn = widget.querySelector("#btnCancelAiSettings");
+        const saveSettingsBtn = widget.querySelector("#btnSaveAiSettings");
+        const inputGeminiKey = widget.querySelector("#inputGeminiKey");
+        const inputOpenAiKey = widget.querySelector("#inputOpenAiKey");
 
         let chatHistory = [];
+        let lastUserQuery = "";
+        let recognition = null;
+        let isListening = false;
+
+        // Load preferred persona
+        const savedPersona = localStorage.getItem("ai_preferred_persona");
+        if (savedPersona && personaSelect) personaSelect.value = savedPersona;
+        if (personaSelect) {
+            personaSelect.addEventListener("change", () => {
+                localStorage.setItem("ai_preferred_persona", personaSelect.value);
+            });
+        }
+
+        // Load chat history from DB
+        async function loadChatHistory() {
+            if (!window.CodeLearnApi || typeof CodeLearnApi.ai?.getHistory !== "function") return;
+            try {
+                const res = await CodeLearnApi.ai.getHistory();
+                if (res && Array.isArray(res.messages) && res.messages.length > 0) {
+                    if (msgContainer) msgContainer.innerHTML = "";
+                    chatHistory = [];
+                    res.messages.forEach(item => {
+                        const isUser = item.role === "user";
+                        chatHistory.push({ role: item.role, content: item.content });
+                        appendMessage(item.content, isUser, false);
+                    });
+                }
+            } catch (e) {
+                console.warn("Could not load AI chat history:", e);
+            }
+        }
+        loadChatHistory();
 
         function openPanel() {
             panel.hidden = false;
@@ -106,16 +191,99 @@
         if (closeBtn) closeBtn.addEventListener("click", closePanel);
 
         if (resetBtn) {
-            resetBtn.addEventListener("click", () => {
-                chatHistory = [];
-                if (msgContainer) {
-                    msgContainer.innerHTML = `
-                        <div class="ai-msg ai-msg-bot">
-                            👋 Cuộc trò chuyện đã được làm mới! Hãy hỏi mình bất kỳ câu hỏi nào về C++ hoặc thuật toán nhé!
-                        </div>
-                    `;
+            resetBtn.addEventListener("click", async () => {
+                if (confirm("Bạn có chắc muốn xóa lịch sử trò chuyện với AI?")) {
+                    chatHistory = [];
+                    if (window.CodeLearnApi && typeof CodeLearnApi.ai?.clearHistory === "function") {
+                        try { await CodeLearnApi.ai.clearHistory(); } catch (_) {}
+                    }
+                    if (msgContainer) {
+                        msgContainer.innerHTML = `
+                            <div class="ai-msg ai-msg-bot">
+                                👋 Cuộc trò chuyện đã được làm mới! Hãy hỏi mình bất kỳ câu hỏi nào về C++ hoặc thuật toán nhé!
+                            </div>
+                        `;
+                    }
                 }
             });
+        }
+
+        // Voice recognition
+        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRec && voiceBtn) {
+            recognition = new SpeechRec();
+            recognition.lang = "vi-VN";
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            recognition.onstart = () => {
+                isListening = true;
+                voiceBtn.classList.add("listening");
+                voiceBtn.title = "Đang lắng nghe... Hãy nói!";
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                if (input && transcript) {
+                    input.value = (input.value ? input.value + " " : "") + transcript;
+                    input.focus();
+                }
+            };
+
+            recognition.onerror = () => {
+                isListening = false;
+                voiceBtn.classList.remove("listening");
+                voiceBtn.title = "Nhập liệu bằng giọng nói";
+            };
+
+            recognition.onend = () => {
+                isListening = false;
+                voiceBtn.classList.remove("listening");
+                voiceBtn.title = "Nhập liệu bằng giọng nói";
+            };
+
+            voiceBtn.addEventListener("click", () => {
+                if (!recognition) return;
+                if (isListening) {
+                    recognition.stop();
+                } else {
+                    try { recognition.start(); } catch (_) {}
+                }
+            });
+        } else if (voiceBtn) {
+            voiceBtn.title = "Trình duyệt không hỗ trợ Web Speech API";
+            voiceBtn.style.opacity = "0.5";
+        }
+
+        // Settings modal
+        if (settingsBtn && settingsModal) {
+            settingsBtn.addEventListener("click", () => {
+                settingsModal.hidden = false;
+            });
+            const closeSettings = () => { settingsModal.hidden = true; };
+            if (closeSettingsBtn) closeSettingsBtn.addEventListener("click", closeSettings);
+            if (cancelSettingsBtn) cancelSettingsBtn.addEventListener("click", closeSettings);
+
+            if (saveSettingsBtn) {
+                saveSettingsBtn.addEventListener("click", async () => {
+                    const geminiKey = inputGeminiKey ? inputGeminiKey.value.trim() : "";
+                    const openaiKey = inputOpenAiKey ? inputOpenAiKey.value.trim() : "";
+                    try {
+                        saveSettingsBtn.disabled = true;
+                        saveSettingsBtn.textContent = "Đang lưu...";
+                        if (window.CodeLearnApi && typeof CodeLearnApi.ai?.setConfig === "function") {
+                            await CodeLearnApi.ai.setConfig({ geminiKey, openaiKey });
+                        }
+                        alert("✓ Đã lưu cấu hình AI thành công!");
+                        closeSettings();
+                    } catch (err) {
+                        alert("Lỗi khi lưu cấu hình: " + (err.message || "Lỗi mạng"));
+                    } finally {
+                        saveSettingsBtn.disabled = false;
+                        saveSettingsBtn.textContent = "Lưu Cấu hình";
+                    }
+                });
+            }
         }
 
         function escapeHtml(text) {
@@ -186,14 +354,14 @@
             return formatted;
         }
 
-        function appendMessage(text, isUser = false) {
+        function appendMessage(text, isUser = false, addActions = true) {
             if (!msgContainer) return;
             const bubble = document.createElement("div");
             bubble.className = `ai-msg ${isUser ? "ai-msg-user" : "ai-msg-bot"}`;
             
             if (!isUser) {
                 bubble.innerHTML = formatMarkdown(text);
-                // Bind copy button
+                // Bind copy button inside code blocks
                 bubble.querySelectorAll(".btn-copy-code").forEach(btn => {
                     btn.addEventListener("click", () => {
                         const raw = decodeURIComponent(btn.getAttribute("data-code") || "");
@@ -210,6 +378,29 @@
                         }
                     });
                 });
+
+                if (addActions) {
+                    const actionsRow = document.createElement("div");
+                    actionsRow.className = "ai-msg-actions";
+                    actionsRow.innerHTML = `
+                        <button type="button" class="ai-msg-action-btn btn-copy-reply">📋 Sao chép</button>
+                        <button type="button" class="ai-msg-action-btn btn-regenerate-reply">🔄 Tạo lại</button>
+                    `;
+                    actionsRow.querySelector(".btn-copy-reply").addEventListener("click", () => {
+                        if (navigator.clipboard) {
+                            navigator.clipboard.writeText(text).then(() => {
+                                actionsRow.querySelector(".btn-copy-reply").textContent = "✓ Đã chép!";
+                                setTimeout(() => { actionsRow.querySelector(".btn-copy-reply").textContent = "📋 Sao chép"; }, 2000);
+                            });
+                        }
+                    });
+                    actionsRow.querySelector(".btn-regenerate-reply").addEventListener("click", () => {
+                        if (lastUserQuery) {
+                            sendPrompt(lastUserQuery, true);
+                        }
+                    });
+                    bubble.appendChild(actionsRow);
+                }
             } else {
                 bubble.textContent = text;
             }
@@ -219,30 +410,34 @@
             return bubble;
         }
 
-        async function sendPrompt(userMsg) {
+        async function sendPrompt(userMsg, isRegenerate = false) {
             if (!userMsg || !userMsg.trim()) return;
 
-            appendMessage(userMsg, true);
-            if (input) input.value = "";
+            lastUserQuery = userMsg;
 
-            chatHistory.push({ role: "user", content: userMsg });
+            if (!isRegenerate) {
+                appendMessage(userMsg, true);
+                if (input) input.value = "";
+                chatHistory.push({ role: "user", content: userMsg });
+            }
 
-            const typingElem = appendMessage("🤖 *AI đang suy nghĩ và tổng hợp kiến thức...*", false);
+            const typingElem = appendMessage("🤖 *AI đang suy nghĩ và tổng hợp kiến thức...*", false, false);
+            const persona = personaSelect ? personaSelect.value : "tutor";
 
             try {
                 if (window.CodeLearnApi && typeof CodeLearnApi.ai?.ask === "function") {
-                    const res = await CodeLearnApi.ai.ask(userMsg, "", "", chatHistory);
+                    const res = await CodeLearnApi.ai.ask(userMsg, "", "", chatHistory, persona);
                     if (typingElem) typingElem.remove();
                     const replyText = res.reply || "AI chưa có phản hồi phù hợp, bạn hãy thử diễn đạt lại nhé.";
-                    appendMessage(replyText);
+                    appendMessage(replyText, false, true);
                     chatHistory.push({ role: "assistant", content: replyText });
                 } else {
                     if (typingElem) typingElem.remove();
-                    appendMessage("💡 Hãy đặt câu hỏi về các chuyên đề C++ hoặc cấu trúc dữ liệu nhé!");
+                    appendMessage("💡 Hãy đặt câu hỏi về các chuyên đề C++ hoặc cấu trúc dữ liệu nhé!", false, true);
                 }
             } catch (err) {
                 if (typingElem) typingElem.remove();
-                appendMessage(`⚠️ Không thể kết nối với AI Trợ lý: ${err.message || "Lỗi mạng"}`);
+                appendMessage(`⚠️ Không thể kết nối với AI Trợ lý: ${err.message || "Lỗi mạng"}`, false, false);
             }
         }
 

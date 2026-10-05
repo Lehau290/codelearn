@@ -1002,9 +1002,20 @@
                         </div>
                     </div>
                     <div style="display: flex; align-items: center; gap: 4px;">
+                        <button type="button" id="btnAiSettings" class="ai-reset-btn" title="Cài đặt AI & API Key" aria-label="Cài đặt AI">⚙️</button>
                         <button type="button" id="btnResetAiMentor" class="ai-reset-btn" title="Làm mới hội thoại" aria-label="Làm mới hội thoại">🔄</button>
                         <button type="button" id="btnCloseAiMentor" class="ai-close-btn" aria-label="Đóng Trợ lý AI">✕</button>
                     </div>
+                </div>
+
+                <!-- Persona / Role Selector -->
+                <div class="ai-persona-bar">
+                    <span style="color: var(--text-muted); font-size: 0.73rem;">🎭 Vai trò AI:</span>
+                    <select id="aiPersonaSelect" class="ai-persona-select" title="Chọn phong cách phản hồi của AI">
+                        <option value="tutor" selected>🧑‍🏫 Gia sư kiên nhẫn</option>
+                        <option value="interviewer">💼 Phỏng vấn FAANG</option>
+                        <option value="professor">🎓 Giáo sư Đại học</option>
+                    </select>
                 </div>
 
                 <div class="ai-mentor-body" id="aiMentorMessages">
@@ -1024,11 +1035,49 @@
                     <button type="button" class="ai-chip" data-prompt="Viết code mẫu kiểm tra số nguyên tố tối ưu">📝 Viết code mẫu</button>
                 </div>
 
+                <!-- Attached code indicator -->
+                <div id="aiAttachedSnippet" class="ai-attached-snippet" hidden>
+                    <span>📎 Đang đính kèm code từ Editor</span>
+                    <button type="button" class="snippet-close" id="btnRemoveAttachedCode" title="Bỏ đính kèm">✕</button>
+                </div>
+
                 <form id="aiMentorForm" class="ai-mentor-input-row">
+                    <div class="ai-input-tools">
+                        <button type="button" id="btnAiAttachCode" class="ai-tool-btn" title="Đính kèm code từ Editor" aria-label="Đính kèm code">📎</button>
+                        <button type="button" id="btnAiVoice" class="ai-tool-btn" title="Nhập liệu bằng giọng nói" aria-label="Nói vào micro">🎙️</button>
+                    </div>
                     <input type="text" id="aiMentorInput" placeholder="Hỏi AI về code hoặc cú pháp C++..." autocomplete="off">
                     <button type="submit" id="btnSendAiMentor" class="btn btn-primary" title="Gửi câu hỏi">Gửi</button>
                 </form>
             </aside>
+        </div>
+
+        <!-- AI API Settings Modal -->
+        <div id="aiSettingsModal" class="ai-settings-modal" hidden>
+            <div class="ai-settings-dialog">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h3 style="margin: 0; font-size: 1.15rem; font-weight: 700;">⚙️ Cấu hình Bộ não AI</h3>
+                    <button type="button" id="btnCloseAiSettings" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-muted);">✕</button>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px; line-height: 1.5;">
+                    Mặc định hệ thống dùng <strong>CodeLearn Neural Tutor</strong> (miễn phí, không cần cấu hình). Bạn có thể tích hợp API Key riêng của Gemini hoặc OpenAI để đạt độ thông minh cao nhất.
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 18px;">
+                    <div>
+                        <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">Google Gemini API Key (Khuyên dùng):</label>
+                        <input type="password" id="inputGeminiKey" placeholder="AIzaSy..." style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border, #cbd5e1); font-family: monospace; font-size: 0.82rem; background: transparent; color: inherit;">
+                        <span style="font-size: 0.72rem; color: var(--text-muted);">Lấy key miễn phí tại <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: var(--primary);">aistudio.google.com</a></span>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;">OpenAI API Key (Tùy chọn):</label>
+                        <input type="password" id="inputOpenAiKey" placeholder="sk-..." style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border, #cbd5e1); font-family: monospace; font-size: 0.82rem; background: transparent; color: inherit;">
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                    <button type="button" id="btnCancelAiSettings" class="btn btn-outline" style="padding: 7px 14px; font-size: 0.85rem;">Hủy</button>
+                    <button type="button" id="btnSaveAiSettings" class="btn btn-primary" style="padding: 7px 16px; font-size: 0.85rem;">Lưu Cấu hình</button>
+                </div>
+            </div>
         </div>
 
     </main>
