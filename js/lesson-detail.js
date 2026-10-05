@@ -1079,7 +1079,7 @@ function showGradingResult(
         if (result.score >= 90) {
             resultElem.style.color = "#10b981"; // xanh ngọc
         } else if (result.score >= 75) {
-            resultElem.style.color = "#847de8"; // tím pastel starry lilac
+            resultElem.style.color = "#7364f2"; // tím jewel starry lilac
         } else if (result.score >= 50) {
             resultElem.style.color = "#f59e0b"; // cam
         } else {
@@ -1094,7 +1094,7 @@ function showGradingResult(
         if (result.score >= 90) {
             meterFill.style.background = "linear-gradient(90deg, #10b981, #059669)";
         } else if (result.score >= 75) {
-            meterFill.style.background = "linear-gradient(90deg, #b5aff8, #847de8)";
+            meterFill.style.background = "linear-gradient(90deg, #b3a8f8, #7364f2)";
         } else if (result.score >= 50) {
             meterFill.style.background = "linear-gradient(90deg, #f59e0b, #d97706)";
         } else {

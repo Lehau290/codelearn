@@ -89,20 +89,23 @@ ol {
    ========================================================= */
 
 :root {
-    /* Dreamy Pastel Lavender & Lilac Glow Theme */
-    --primary: #847de8;
-    --primary-dark: #6340d8;
-    --primary-light: #f0eefa;
-    --primary-gradient: linear-gradient(135deg, #a49ef2 0%, #6c64d8 100%);
-    --primary-glow: rgba(132, 125, 232, 0.35);
+    /* Dreamy Pastel Lavender & Starry Lilac Theme */
+    --primary: #7364f2;
+    --primary-dark: #5d4de4;
+    --primary-light: #f2f0fe;
+    --primary-gradient: linear-gradient(135deg, #8b7cf8 0%, #6351e8 100%);
+    --primary-glow: rgba(115, 100, 242, 0.35);
 
-    --secondary: #b5aff8;
-    --secondary-dark: #928ae8;
-    --secondary-light: #f5f3ff;
-    --secondary-gradient: linear-gradient(135deg, #b5aff8 0%, #847de8 100%);
+    --secondary: #b3a8f8;
+    --secondary-dark: #9688f2;
+    --secondary-light: #f8f6fe;
+    --secondary-gradient: linear-gradient(135deg, #cfc6fd 0%, #9e91f5 100%);
 
-    --accent-emerald: #847de8;
-    --accent-emerald-light: #f0eefa;
+    --accent-orchid: #cb8ef8;
+    --accent-orchid-light: #faf4ff;
+
+    --accent-emerald: #7364f2;
+    --accent-emerald-light: #f2f0fe;
 
     --success: #10b981;
     --success-light: #ecfdf5;
@@ -111,21 +114,21 @@ ol {
     --danger: #ef4444;
     --danger-light: #fef2f2;
 
-    --text: #1a162b;
-    --text-secondary: #5e577c;
-    --text-light: #8e88aa;
+    --text: #19162e;
+    --text-secondary: #58537a;
+    --text-light: #8a84a6;
 
     --background: #f8f7fd;
-    --background-alt: #edeaf8;
+    --background-alt: #eeeaf8;
     --white: #ffffff;
 
-    --border: #ded8f5;
-    --border-light: #ede9f8;
-    --border-focus: #847de8;
+    --border: #ded7f6;
+    --border-light: #ebe6f8;
+    --border-focus: #7364f2;
 
-    --card-shadow: 0 4px 16px rgba(132, 125, 232, 0.05), 0 1px 3px rgba(26, 22, 43, 0.02);
-    --card-shadow-hover: 0 16px 36px rgba(132, 125, 232, 0.16), 0 4px 12px rgba(26, 22, 43, 0.04);
-    --card-shadow-elevated: 0 24px 48px rgba(132, 125, 232, 0.14);
+    --card-shadow: 0 6px 20px -3px rgba(115, 100, 242, 0.08), 0 2px 6px -1px rgba(25, 22, 46, 0.03);
+    --card-shadow-hover: 0 16px 36px -4px rgba(115, 100, 242, 0.2), 0 4px 12px rgba(25, 22, 46, 0.04);
+    --card-shadow-elevated: 0 24px 48px -6px rgba(115, 100, 242, 0.22);
 
     --radius-sm: 12px;
     --radius-md: 18px;
@@ -230,13 +233,13 @@ main {
     border-radius: 14px;
 
     color: #ffffff;
-    background: linear-gradient(135deg, #a49ef2, #6c64d8);
+    background: var(--primary-gradient);
 
     font-family: var(--font-mono);
     font-size: 0.95rem;
     font-weight: 800;
 
-    box-shadow: 0 8px 22px rgba(132, 125, 232, 0.35);
+    box-shadow: 0 8px 22px rgba(115, 100, 242, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 .site-logo-text {
@@ -298,7 +301,7 @@ main {
 .nav-link.active {
     color: #ffffff;
     background: var(--primary-gradient);
-    box-shadow: 0 4px 14px rgba(132, 125, 232, 0.32);
+    box-shadow: 0 4px 16px rgba(115, 100, 242, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .admin-nav-link {
@@ -448,12 +451,14 @@ main {
 .btn-primary {
     color: #ffffff;
     background: var(--primary-gradient);
-    box-shadow: 0 4px 16px 0 rgba(132, 125, 232, 0.35);
+    box-shadow: 0 6px 20px -2px rgba(115, 100, 242, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+    transition: all var(--transition);
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, #a49ef2 0%, #6c64d8 100%);
-    box-shadow: 0 8px 25px 0 rgba(132, 125, 232, 0.45);
+    background: linear-gradient(135deg, #8a7cf8 0%, #5d4de4 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px -2px rgba(115, 100, 242, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.38);
 }
 
 .btn-secondary {
@@ -506,18 +511,18 @@ main {
     background:
         radial-gradient(
             circle at 15% 20%,
-            rgba(164, 158, 242, 0.3),
-            transparent 45%
+            rgba(160, 145, 255, 0.42),
+            transparent 50%
         ),
         radial-gradient(
             circle at 85% 10%,
-            rgba(199, 194, 250, 0.25),
-            transparent 45%
+            rgba(215, 165, 255, 0.32),
+            transparent 50%
         ),
         linear-gradient(
             180deg,
-            rgba(15, 12, 28, 0.76) 0%,
-            rgba(15, 12, 28, 0.88) 100%
+            rgba(13, 10, 26, 0.58) 0%,
+            rgba(17, 13, 34, 0.78) 100%
         ),
         url('../images/hero-star-bg.png') center/cover no-repeat;
 }
@@ -1893,9 +1898,9 @@ main {
     justify-content: center;
     padding: 30px 20px;
     background:
-        radial-gradient(circle at 15% 20%, rgba(164, 158, 242, 0.25) 0%, transparent 45%),
-        radial-gradient(circle at 85% 80%, rgba(199, 194, 250, 0.2) 0%, transparent 45%),
-        linear-gradient(180deg, rgba(9, 7, 20, 0.78) 0%, rgba(17, 14, 36, 0.9) 100%),
+        radial-gradient(circle at 15% 20%, rgba(160, 145, 255, 0.4) 0%, transparent 50%),
+        radial-gradient(circle at 85% 80%, rgba(215, 165, 255, 0.3) 0%, transparent 50%),
+        linear-gradient(180deg, rgba(11, 8, 22, 0.6) 0%, rgba(16, 12, 34, 0.8) 100%),
         url('../images/hero-star-bg.png') center/cover no-repeat;
     position: relative;
     overflow-x: hidden;
@@ -2338,11 +2343,12 @@ main {
    ========================================================= */
 
 .home-hero {
-    padding: 70px 0 80px;
+    padding: 72px 0 84px;
     background:
-        radial-gradient(circle at 12% 20%, rgba(164, 158, 242, 0.28) 0%, transparent 45%),
-        radial-gradient(circle at 88% 80%, rgba(199, 194, 250, 0.22) 0%, transparent 45%),
-        linear-gradient(180deg, rgba(10, 8, 21, 0.72) 0%, rgba(10, 8, 21, 0.88) 100%),
+        radial-gradient(circle at 15% 15%, rgba(160, 145, 255, 0.42) 0%, transparent 50%),
+        radial-gradient(circle at 85% 85%, rgba(215, 165, 255, 0.35) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(115, 100, 242, 0.22) 0%, transparent 65%),
+        linear-gradient(180deg, rgba(12, 10, 26, 0.58) 0%, rgba(16, 12, 34, 0.8) 100%),
         url('../images/hero-star-bg.png') center/cover no-repeat;
     color: #ffffff;
     position: relative;
@@ -2372,17 +2378,17 @@ main {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: rgba(164, 158, 242, 0.16);
-    border: 1px solid rgba(164, 158, 242, 0.38);
-    color: #e2d9ff;
+    background: linear-gradient(135deg, rgba(175, 160, 250, 0.24) 0%, rgba(215, 175, 250, 0.18) 100%);
+    border: 1px solid rgba(195, 180, 255, 0.45);
+    color: #f3eeff;
     padding: 7px 18px;
     border-radius: var(--radius-pill);
     font-size: 0.88rem;
     font-weight: 700;
     margin-bottom: 22px;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 4px 20px rgba(132, 125, 232, 0.25);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 4px 22px rgba(115, 100, 242, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .hero-badge-sparkle {
@@ -2406,9 +2412,10 @@ main {
 }
 
 .hero-gradient-text {
-    background: linear-gradient(135deg, #b5aff8 0%, #c4b5fd 45%, #ffffff 85%);
+    background: linear-gradient(135deg, #d8ceff 0%, #ebd6ff 45%, #ffffff 85%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 18px rgba(180, 150, 255, 0.4));
 }
 
 .hero-description {
@@ -2465,19 +2472,19 @@ main {
 
 /* C++ Code Window Mockup */
 .hero-code-window {
-    background: #0d0a1d;
-    border: 1px solid rgba(164, 158, 242, 0.35);
+    background: rgba(14, 11, 29, 0.88);
+    border: 1px solid rgba(180, 165, 255, 0.35);
     border-radius: var(--radius-xl);
     overflow: hidden;
-    box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.75), 0 0 35px rgba(132, 125, 232, 0.2);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.75), 0 0 35px rgba(115, 100, 242, 0.25);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     transition: transform var(--transition), box-shadow var(--transition);
 }
 
 .hero-code-window:hover {
     transform: translateY(-3px);
-    box-shadow: 0 30px 70px -15px rgba(0, 0, 0, 0.85), 0 0 45px rgba(132, 125, 232, 0.3);
+    box-shadow: 0 30px 70px -15px rgba(0, 0, 0, 0.85), 0 0 45px rgba(115, 100, 242, 0.38);
 }
 
 .code-window-header {
@@ -2594,19 +2601,19 @@ main {
 }
 
 .output-line.output-success {
-    color: #c4b5fd;
+    color: #d8ceff;
     font-weight: 600;
 }
 
 /* Hero Progress Card */
 .hero-progress-card {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(164, 158, 242, 0.28);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(185, 170, 255, 0.35);
     border-radius: var(--radius-lg);
     padding: 22px 26px;
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.16);
 }
 
 .progress-card-top {
@@ -2622,7 +2629,7 @@ main {
     font-weight: 800;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: #c4b5fd;
+    color: #d8ceff;
     margin-bottom: 4px;
 }
 
@@ -2637,14 +2644,14 @@ main {
     width: 62px;
     height: 62px;
     border-radius: 50%;
-    border: 4px solid #a49ef2;
-    background: rgba(164, 158, 242, 0.2);
+    border: 4px solid #b3a8f8;
+    background: rgba(179, 168, 248, 0.22);
     display: grid;
     place-items: center;
     font-size: 0.92rem;
     font-weight: 800;
     color: #ffffff;
-    box-shadow: 0 0 20px rgba(164, 158, 242, 0.45);
+    box-shadow: 0 0 22px rgba(179, 168, 248, 0.5);
 }
 
 .progress-card-footer {
@@ -3402,7 +3409,12 @@ main {
 }
 
 .cta-card {
-    background: linear-gradient(135deg, #6c64d8 0%, #a49ef2 50%, #b5aff8 100%);
+    background:
+        radial-gradient(circle at 10% 20%, rgba(185, 170, 255, 0.4) 0%, transparent 45%),
+        radial-gradient(circle at 90% 80%, rgba(215, 175, 255, 0.35) 0%, transparent 45%),
+        linear-gradient(135deg, rgba(93, 77, 228, 0.92) 0%, rgba(125, 105, 245, 0.88) 50%, rgba(179, 150, 250, 0.84) 100%),
+        url('../images/hero-star-bg.png') center/cover no-repeat;
+    border: 1px solid rgba(210, 195, 255, 0.35);
     border-radius: var(--radius-xl);
     padding: 48px 44px;
     color: #ffffff;
@@ -3410,7 +3422,7 @@ main {
     justify-content: space-between;
     align-items: center;
     gap: 28px;
-    box-shadow: 0 25px 50px -12px rgba(132, 125, 232, 0.45);
+    box-shadow: 0 25px 50px -12px rgba(115, 100, 242, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25);
     position: relative;
     overflow: hidden;
 }
@@ -3452,9 +3464,9 @@ main {
 
 .page-hero {
     background:
-        radial-gradient(circle at 18% 25%, rgba(164, 158, 242, 0.28) 0%, transparent 45%),
-        radial-gradient(circle at 82% 75%, rgba(199, 194, 250, 0.22) 0%, transparent 45%),
-        linear-gradient(180deg, rgba(10, 8, 21, 0.72) 0%, rgba(10, 8, 21, 0.88) 100%),
+        radial-gradient(circle at 18% 25%, rgba(160, 145, 255, 0.4) 0%, transparent 50%),
+        radial-gradient(circle at 82% 75%, rgba(215, 165, 255, 0.32) 0%, transparent 50%),
+        linear-gradient(180deg, rgba(12, 10, 26, 0.58) 0%, rgba(16, 12, 34, 0.8) 100%),
         url('../images/hero-star-bg.png') center/cover no-repeat;
     color: #ffffff;
     padding: 64px 0 68px;
