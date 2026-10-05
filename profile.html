@@ -438,6 +438,20 @@
                                     </div>
                                 </div>
 
+                                <div class="profile-stat-card profile-stat-streak">
+                                    <div class="profile-stat-icon" style="background: rgba(249, 115, 22, 0.15); color: #f97316;">
+                                        🔥
+                                    </div>
+                                    <div>
+                                        <strong id="profileLearningStreak" style="color: #ea580c;">
+                                            3 ngày
+                                        </strong>
+                                        <span>
+                                            Chuỗi học tập (Streak)
+                                        </span>
+                                    </div>
+                                </div>
+
                             </div>
 
 
@@ -478,6 +492,29 @@
                                     </a>
                                 </div>
 
+                            </section>
+
+                            <!-- =====================================
+                                 CERTIFICATE OF COMPLETION CARD
+                            ====================================== -->
+                            <section class="profile-content-card cert-promo-card" id="certificatePromoCard" style="background: linear-gradient(135deg, rgba(212, 175, 55, 0.08), rgba(132, 125, 232, 0.06)); border: 1px solid rgba(212, 175, 55, 0.3);">
+                                <div class="profile-content-header" style="border: none; padding-bottom: 0;">
+                                    <div style="display: flex; align-items: center; gap: 14px;">
+                                        <div style="width: 50px; height: 50px; border-radius: 14px; background: linear-gradient(135deg, #fde047, #d4af37); display: flex; align-items: center; justify-content: center; font-size: 1.7rem; box-shadow: 0 6px 16px rgba(212, 175, 55, 0.35);">
+                                            🎓
+                                        </div>
+                                        <div>
+                                            <span class="section-label" style="color: #b45309;">OFFICIAL CERTIFICATE</span>
+                                            <h2>Chứng chỉ Tốt nghiệp C++ Master</h2>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-primary" id="btnOpenCertificate" style="background: linear-gradient(135deg, #d4af37, #b45309); border: none; color: #fff; font-weight: 700; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);">
+                                        📜 Xem &amp; Nhận Chứng chỉ
+                                    </button>
+                                </div>
+                                <p style="color: var(--text-secondary); margin-top: 14px; font-size: 0.95rem; line-height: 1.6;">
+                                    Sau khi hoàn thành các chặng học C++, bạn sẽ nhận được Chứng chỉ Tốt nghiệp chính thức có mã số xác thực điện tử và con dấu danh dự từ CodeLearn Academy để ghi nhận kỹ năng lập trình thực chiến.
+                                </p>
                             </section>
 
 
@@ -849,6 +886,55 @@
             </div>
 
         </section>
+
+        <!-- =========================================
+             CERTIFICATE MODAL POPUP
+        ========================================== -->
+        <div id="certificateModal" class="cert-modal-backdrop" hidden>
+            <div class="cert-card-container">
+                <button type="button" id="btnCloseCertModal" style="position: absolute; top: 16px; right: 18px; background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #94a3b8;" title="Đóng">✕</button>
+
+                <div class="cert-header">
+                    <div class="cert-logo">
+                        <span>⚡</span> CODELEARN ACADEMY
+                    </div>
+                    <h1 class="cert-title">CHỨNG CHỈ TỐT NGHIỆP</h1>
+                    <span class="cert-subtitle">CERTIFICATE OF EXCELLENCE IN C++ PROGRAMMING</span>
+                </div>
+
+                <div class="cert-body">
+                    <p style="color: #64748b; font-size: 1rem; margin: 0;">Chứng nhận học viên:</p>
+                    <div class="cert-recipient-name" id="certRecipientName">Lê Trung Hậu</div>
+                    <p class="cert-desc">
+                        Đã hoàn thành xuất sắc chương trình đào tạo <strong>"Lập Trình C++ Nền Tảng Đến Thực Chiến"</strong> (20 Chuyên đề chuẩn hóa &amp; 60 Bài tập thực hành, cấu trúc dữ liệu, giải thuật, hướng đối tượng OOP và quản lý bộ nhớ).
+                    </p>
+                </div>
+
+                <div class="cert-footer-row">
+                    <div>
+                        <div style="font-size: 0.8rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Mã chứng chỉ:</div>
+                        <strong id="certSerialCode" style="font-family: monospace; color: #4338ca; font-size: 0.95rem;">CERT-CPP-2026-8942</strong>
+                        <div style="font-size: 0.8rem; color: #64748b; margin-top: 4px;">Ngày cấp: <span id="certIssueDate">05/10/2026</span></div>
+                    </div>
+
+                    <div class="cert-seal-badge">
+                        <span>VERIFIED</span>
+                        <strong>MASTER</strong>
+                        <span>C++</span>
+                    </div>
+
+                    <div style="text-align: right;">
+                        <div style="font-family: Georgia, serif; font-size: 1.3rem; font-style: italic; color: #1e1b4b; border-bottom: 1px solid #94a3b8; padding-bottom: 2px;">CodeLearn Team</div>
+                        <div style="font-size: 0.8rem; color: #64748b; margin-top: 4px;">Hội Đồng Đào Tạo CodeLearn C++</div>
+                    </div>
+                </div>
+
+                <div class="cert-actions-bar">
+                    <button type="button" class="btn btn-primary" id="btnPrintCert">🖨️ In / Tải PDF Chứng chỉ</button>
+                    <button type="button" class="btn btn-secondary" id="btnCloseCertAction">Đóng</button>
+                </div>
+            </div>
+        </div>
 
     </main>
 

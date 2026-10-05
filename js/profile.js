@@ -85,6 +85,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // 9. Đăng xuất
     setupProfileLogout();
 
+    // 10. Chứng chỉ Tốt nghiệp C++ Master
+    setupCertificateModal(currentUser);
+
+    // 11. Chuỗi học tập (Streak)
+    renderProfileStreak(currentUser);
+
     // Check URL Hash (#settings)
     if (window.location.hash === "#settings") {
         switchTab("settings");
@@ -912,4 +918,122 @@ function escapeHtml(value) {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+}
+
+
+// ============================================================
+// CHỨNG CHỈ TỐT NGHIỆP C++ MASTER (CERTIFICATE OF EXCELLENCE)
+// ============================================================
+
+function setupCertificateModal(user) {
+    const btnOpen = document.getElementById("btnOpenCertificate");
+    const modal = document.getElementById("certificateModal");
+    const btnClose = document.getElementById("btnCloseCertModal");
+    const btnCloseAction = document.getElementById("btnCloseCertAction");
+    const btnPrint = document.getElementById("btnPrintCert");
+    const recipientName = document.getElementById("certRecipientName");
+    const serialCode = document.getElementById("certSerialCode");
+    const issueDate = document.getElementById("certIssueDate");
+
+    if (!modal) return;
+
+    function openModal() {
+        if (recipientName) {
+            recipientName.textContent = user.fullName || user.username || "Học viên CodeLearn";
+        }
+        if (serialCode) {
+            const rawHash = (user.id || "STUDENT").replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
+            serialCode.textContent = `CERT-CPP-2026-${rawHash.slice(0, 6) || "9882"}`;
+        }
+        if (issueDate) {
+            const now = new Date();
+            issueDate.textContent = now.toLocaleDateString("vi-VN", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric"
+            });
+        }
+        modal.hidden = false;
+        modal.classList.add("open");
+        document.body.style.overflow = "hidden";
+    }
+
+    function closeModal() {
+        modal.hidden = true;
+        modal.classList.remove("open");
+        document.body.style.overflow = "";
+    }
+
+    if (btnOpen) {
+        btnOpen.addEventListener("click", openModal);
+    }
+    if (btnClose) {
+        btnClose.addEventListener("click", closeModal);
+    }
+    if (btnCloseAction) {
+        btnCloseAction.addEventListener("click", closeModal);
+    }
+
+    modal.addEventListener("click", (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && !modal.hidden) {
+            closeModal();
+        }
+    });
+
+    if (btnPrint) {
+        btnPrint.addEventListener("click", () => {
+            window.print();
+        });
+    }
+}
+
+
+// ============================================================
+// CHUỖI HỌC TẬP (STREAK)
+// ============================================================
+
+function getOrUpdateLearningStreak(user) {
+    if (!user || !user.id) return { streak: 1, lastActive: new Date().toISOString() };
+    const streakKey = `cpp_streak_${user.id}`;
+    const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+    let data = null;
+    try {
+        data = JSON.parse(localStorage.getItem(streakKey));
+    } catch (e) {}
+
+    if (!data || !data.lastActive) {
+        const initial = { streak: 3, lastActive: today }; // Khởi tạo 3 ngày streak khích lệ
+        localStorage.setItem(streakKey, JSON.stringify(initial));
+        return initial;
+    }
+
+    const lastDate = data.lastActive.split("T")[0];
+    if (lastDate === today) {
+        return data;
+    }
+
+    const diffDays = Math.floor((new Date(today) - new Date(lastDate)) / (1000 * 60 * 60 * 24));
+    if (diffDays === 1) {
+        data.streak = (data.streak || 1) + 1;
+        data.lastActive = today;
+    } else if (diffDays > 1) {
+        data.streak = 1;
+        data.lastActive = today;
+    }
+    localStorage.setItem(streakKey, JSON.stringify(data));
+    return data;
+}
+
+function renderProfileStreak(user) {
+    const streakData = getOrUpdateLearningStreak(user);
+    const streakEl = document.getElementById("profileLearningStreak");
+    if (streakEl) {
+        streakEl.textContent = `${streakData.streak} ngày`;
+    }
 }

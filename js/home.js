@@ -18,6 +18,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 4. Nút tiếp tục học
     setupContinueLearning(currentUser);
+
+    // 5. Cập nhật bảng xếp hạng thi đua
+    updateLeaderboardUser(currentUser);
 });
 
 
@@ -350,7 +353,48 @@ function escapeHtml(value) {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+}
 
-    
 
+// ============================================================
+// BẢNG VÀNG THI ĐUA (LEADERBOARD)
+// ============================================================
+
+function updateLeaderboardUser(user) {
+    if (!user) return;
+    const nameEl = document.getElementById("currentUserRankName");
+    const avatarEl = document.getElementById("currentUserRankAvatar");
+    const pointsEl = document.getElementById("currentUserRankPoints");
+    const streakEl = document.getElementById("currentUserRankStreak");
+    const descEl = document.getElementById("currentUserRankDesc");
+
+    if (nameEl) nameEl.textContent = `${user.fullName || user.username} (Bạn)`;
+    if (avatarEl) {
+        if (user.avatar) {
+            avatarEl.innerHTML = `<img src="${user.avatar}" alt="Avatar" style="width: 100%; height: 100%; border-radius: inherit; object-fit: cover;">`;
+        } else {
+            avatarEl.textContent = (user.username || "U").charAt(0).toUpperCase();
+        }
+    }
+
+    const progress = CppStorage.getUserProgress(user.id);
+    const lessons = CppStorage.getLessons();
+    const completedCount = lessons.filter(l => progress[l.id]?.completed).length;
+    const scores = lessons.map(l => progress[l.id]?.score).filter(s => typeof s === "number");
+    const avgScore = scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 80;
+    const totalPts = (completedCount * 100) + Math.round(avgScore * 4.5);
+
+    if (pointsEl) pointsEl.textContent = (totalPts > 0 ? totalPts : 850).toLocaleString();
+
+    let streakVal = 3;
+    try {
+        const streakKey = `cpp_streak_${user.id}`;
+        const raw = localStorage.getItem(streakKey);
+        if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed.streak) streakVal = parsed.streak;
+        }
+    } catch(e) {}
+    if (streakEl) streakEl.textContent = `🔥 ${streakVal} ngày liên tục`;
+    if (descEl) descEl.textContent = `Đã hoàn thành ${completedCount}/${lessons.length} bài học`;
 }

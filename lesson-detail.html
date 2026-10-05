@@ -494,10 +494,23 @@
                                             main.cpp
                                         </strong>
 
+                                        <span class="editor-lang-badge">C++17</span>
+
+                                        <span class="editor-shortcut-hint" title="Phím tắt: Ctrl + Enter để chạy code">Ctrl+Enter: Chạy</span>
+
                                     </div>
 
 
                                     <div class="editor-actions">
+
+                                        <button
+                                            type="button"
+                                            id="formatCodeButton"
+                                            class="editor-button"
+                                            title="Tự động căn lề và định dạng code C++"
+                                        >
+                                            📐 Format
+                                        </button>
 
                                         <button
                                             type="button"
@@ -519,13 +532,15 @@
 
                                 </div>
 
-
-                                <textarea
-                                    id="codeEditor"
-                                    class="code-editor"
-                                    spellcheck="false"
-                                    placeholder="// Viết code C++ của bạn ở đây..."
-                                ></textarea>
+                                <div class="editor-wrapper-layout">
+                                    <div id="editorLineNumbers" class="editor-line-numbers" aria-hidden="true">1</div>
+                                    <textarea
+                                        id="codeEditor"
+                                        class="code-editor"
+                                        spellcheck="false"
+                                        placeholder="// Viết code C++ của bạn ở đây..."
+                                    ></textarea>
+                                </div>
 
                             </div>
 
@@ -945,6 +960,50 @@
             </div>
 
         </section>
+
+        <!-- =====================================
+             AI TUTOR MENTOR FLOATING WIDGET
+        ====================================== -->
+        <div id="aiMentorWidget" class="ai-mentor-widget">
+            <!-- Floating toggle button -->
+            <button type="button" id="btnToggleAiMentor" class="ai-mentor-toggle-btn" title="Trợ lý AI Trợ Giảng C++" aria-label="Mở Trợ lý AI Trợ Giảng">
+                <span class="ai-icon-bubble">🤖</span>
+                <span class="ai-toggle-text">AI Trợ giảng</span>
+                <span class="ai-pulse-dot"></span>
+            </button>
+
+            <!-- Chat Drawer Panel -->
+            <aside id="aiMentorPanel" class="ai-mentor-panel" hidden>
+                <div class="ai-mentor-header">
+                    <div class="ai-mentor-brand">
+                        <div class="ai-avatar-circle">🤖</div>
+                        <div>
+                            <strong>CodeLearn AI Tutor</strong>
+                            <span>Trợ giảng C++ thông minh 24/7</span>
+                        </div>
+                    </div>
+                    <button type="button" id="btnCloseAiMentor" class="ai-close-btn" aria-label="Đóng Trợ lý AI">✕</button>
+                </div>
+
+                <div class="ai-mentor-body" id="aiMentorMessages">
+                    <div class="ai-msg ai-msg-bot">
+                        👋 Chào bạn! Mình là <strong>AI Trợ giảng CodeLearn C++</strong>. Mình có thể giải thích lý thuyết, phân tích lỗi biên dịch hoặc gợi ý tư duy làm bài tập. Hãy chọn câu hỏi nhanh bên dưới hoặc nhập câu hỏi nhé!
+                    </div>
+                </div>
+
+                <!-- Quick prompt chips -->
+                <div class="ai-quick-chips">
+                    <button type="button" class="ai-chip" data-prompt="Gợi ý cách giải bài tập hiện tại">💡 Gợi ý làm bài</button>
+                    <button type="button" class="ai-chip" data-prompt="Kiểm tra xem code trong editor có lỗi gì không">🔍 Kiểm tra lỗi code</button>
+                    <button type="button" class="ai-chip" data-prompt="Giải thích ngắn gọn lý thuyết bài học này">📖 Tóm tắt bài học</button>
+                </div>
+
+                <form id="aiMentorForm" class="ai-mentor-input-row">
+                    <input type="text" id="aiMentorInput" placeholder="Hỏi AI về code hoặc cú pháp C++..." autocomplete="off">
+                    <button type="submit" id="btnSendAiMentor" class="btn btn-primary" title="Gửi câu hỏi">Gửi</button>
+                </form>
+            </aside>
+        </div>
 
     </main>
 

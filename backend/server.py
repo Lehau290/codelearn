@@ -523,6 +523,26 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
             conn.close()
             return self.send_json(200, {"message": "Đã đặt lại toàn bộ tiến độ học tập."})
 
+        # 8. AI Mentor Ask (/api/ai/ask)
+        if path == "/api/ai/ask":
+            from backend.compiler import get_ai_mentor_reply
+            message = body.get("message", "")
+            code = body.get("code", "")
+            lesson_id = body.get("lessonId", "")
+
+            lesson_info = None
+            if lesson_id:
+                conn = get_connection()
+                cursor = conn.cursor()
+                cursor.execute("SELECT id, title, chapter FROM lessons WHERE id = ?", (lesson_id,))
+                row = cursor.fetchone()
+                if row:
+                    lesson_info = dict(row)
+                conn.close()
+
+            ai_resp = get_ai_mentor_reply(message, code=code, lesson_info=lesson_info)
+            return self.send_json(200, ai_resp)
+
         # 8. Admin Create Lesson (/api/lessons)
         if path == "/api/lessons":
             user = self.get_auth_user()

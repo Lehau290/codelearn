@@ -110,6 +110,14 @@ document.addEventListener("DOMContentLoaded", () => {
         currentUser,
         lessons
     );
+
+    // --------------------------------------------------------
+    // Trợ lý AI Trợ Giảng C++ 24/7
+    // --------------------------------------------------------
+    setupAiMentorWidget(
+        lesson,
+        currentUser
+    );
 });
 
 
@@ -474,6 +482,103 @@ function setupCodeEditor(
         return;
     }
 
+    // --------------------------------------------------------
+    // Đánh số dòng (Line Numbers Gutter)
+    // --------------------------------------------------------
+    const lineNumbersElem = document.getElementById("editorLineNumbers");
+    function updateLineNumbers() {
+        if (!lineNumbersElem) return;
+        const lineCount = (editor.value || "").split("\n").length;
+        const numbers = [];
+        for (let i = 1; i <= Math.max(1, lineCount); i++) {
+            numbers.push(i);
+        }
+        lineNumbersElem.textContent = numbers.join("\n");
+    }
+    window.updateEditorLineNumbers = updateLineNumbers;
+    updateLineNumbers();
+
+    editor.addEventListener("scroll", () => {
+        if (lineNumbersElem) {
+            lineNumbersElem.scrollTop = editor.scrollTop;
+        }
+    });
+
+    // --------------------------------------------------------
+    // Phím tắt Tab (4 spaces), Auto-close Brackets, Ctrl+Enter (Run)
+    // --------------------------------------------------------
+    editor.addEventListener("keydown", (e) => {
+        // Ctrl + Enter hoặc Cmd + Enter -> Chạy thử code
+        if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+            e.preventDefault();
+            const runBtn = document.getElementById("runCodeButton");
+            if (runBtn && !runBtn.disabled) runBtn.click();
+            return;
+        }
+
+        // Tab -> Thụt lề 4 space chuẩn C++
+        if (e.key === "Tab") {
+            e.preventDefault();
+            const start = editor.selectionStart;
+            const end = editor.selectionEnd;
+            const val = editor.value;
+            editor.value = val.substring(0, start) + "    " + val.substring(end);
+            editor.selectionStart = editor.selectionEnd = start + 4;
+            updateLineNumbers();
+            editor.dispatchEvent(new Event("input"));
+            return;
+        }
+
+        // Tự động đóng cặp ngoặc và dấu nháy
+        const pairs = {
+            "{": "}",
+            "(": ")",
+            "[": "]",
+            "\"": "\"",
+            "'": "'"
+        };
+        if (pairs[e.key] && editor.selectionStart === editor.selectionEnd) {
+            const openChar = e.key;
+            const closeChar = pairs[e.key];
+            const start = editor.selectionStart;
+            const val = editor.value;
+            e.preventDefault();
+            editor.value = val.substring(0, start) + openChar + closeChar + val.substring(start);
+            editor.selectionStart = editor.selectionEnd = start + 1;
+            updateLineNumbers();
+            editor.dispatchEvent(new Event("input"));
+            return;
+        }
+    });
+
+    // --------------------------------------------------------
+    // Nút Tự động Căn lề & Format Code (Format Code Button)
+    // --------------------------------------------------------
+    const formatBtn = document.getElementById("formatCodeButton");
+    if (formatBtn) {
+        formatBtn.addEventListener("click", () => {
+            const lines = (editor.value || "").split("\n");
+            let indentLevel = 0;
+            const formatted = [];
+            for (let rawLine of lines) {
+                let line = rawLine.trim();
+                if (line.startsWith("}") || line.startsWith("};")) {
+                    indentLevel = Math.max(0, indentLevel - 1);
+                }
+                const indentStr = "    ".repeat(indentLevel);
+                formatted.push(line.length ? indentStr + line : "");
+                if (line.endsWith("{")) {
+                    indentLevel++;
+                }
+            }
+            editor.value = formatted.join("\n");
+            updateLineNumbers();
+            editor.dispatchEvent(new Event("input"));
+            const orig = formatBtn.textContent;
+            formatBtn.textContent = "✓ Đã Format!";
+            setTimeout(() => { formatBtn.textContent = orig; }, 1500);
+        });
+    }
 
     // --------------------------------------------------------
     // Lưu code tự động theo từng bài tập
@@ -482,6 +587,7 @@ function setupCodeEditor(
     editor.addEventListener(
         "input",
         () => {
+            updateLineNumbers();
             const code = editor.value;
             const codeKey = getExerciseStorageKey(user.id, lesson.id, activeExerciseIndex);
             localStorage.setItem(codeKey, code);
@@ -510,6 +616,7 @@ function setupCodeEditor(
             );
             if (confirmed) {
                 editor.value = (ex && ex.starterCode) || lesson.starterCode || "";
+                updateLineNumbers();
                 const codeKey = getExerciseStorageKey(user.id, lesson.id, activeExerciseIndex);
                 localStorage.setItem(codeKey, editor.value);
                 if (activeExerciseIndex === 0 && window.CppStorage && typeof CppStorage.saveLessonCode === "function") {
@@ -1613,4 +1720,120 @@ function escapeHtml(
             /'/g,
             "&#039;"
         );
+}
+
+
+// ============================================================
+// TRỢ LÝ AI TRỢ GIẢNG C++ 24/7 (AI TUTOR MENTOR)
+// ============================================================
+
+function setupAiMentorWidget(lesson, user) {
+    const toggleBtn = document.getElementById("btnToggleAiMentor");
+    const closeBtn = document.getElementById("btnCloseAiMentor");
+    const panel = document.getElementById("aiMentorPanel");
+    const form = document.getElementById("aiMentorForm");
+    const input = document.getElementById("aiMentorInput");
+    const msgContainer = document.getElementById("aiMentorMessages");
+    const chips = document.querySelectorAll(".ai-chip");
+
+    if (!panel) return;
+
+    function openPanel() {
+        panel.hidden = false;
+        if (input) input.focus();
+    }
+
+    function closePanel() {
+        panel.hidden = true;
+    }
+
+    if (toggleBtn) {
+        toggleBtn.addEventListener("click", () => {
+            if (panel.hidden) {
+                openPanel();
+            } else {
+                closePanel();
+            }
+        });
+    }
+
+    if (closeBtn) {
+        closeBtn.addEventListener("click", closePanel);
+    }
+
+    function appendMessage(text, isUser = false) {
+        if (!msgContainer) return;
+        const bubble = document.createElement("div");
+        bubble.className = `ai-msg ${isUser ? "ai-msg-user" : "ai-msg-bot"}`;
+        
+        // Simple Markdown parsing for bot responses
+        if (!isUser) {
+            bubble.innerHTML = formatAiMarkdown(text);
+        } else {
+            bubble.textContent = text;
+        }
+
+        msgContainer.appendChild(bubble);
+        msgContainer.scrollTop = msgContainer.scrollHeight;
+        return bubble;
+    }
+
+    function formatAiMarkdown(str) {
+        if (!str) return "";
+        let formatted = escapeHtml(str);
+        // Code blocks: ```text ... ``` or ```cpp ... ```
+        formatted = formatted.replace(/```(?:cpp|text)?\n([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+        // Inline code `...`
+        formatted = formatted.replace(/`([^`]+)`/g, '<code>$1</code>');
+        // Bold: **text**
+        formatted = formatted.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+        // List items
+        formatted = formatted.replace(/\n- /g, '<br>• ');
+        // Newlines
+        formatted = formatted.replace(/\n/g, '<br>');
+        return formatted;
+    }
+
+    async function sendPrompt(userMsg) {
+        if (!userMsg || !userMsg.trim()) return;
+
+        appendMessage(userMsg, true);
+        if (input) input.value = "";
+
+        // Typing placeholder
+        const typingElem = appendMessage("🤖 *AI đang suy nghĩ và kiểm tra code...*", false);
+
+        const editorElem = document.getElementById("codeEditor");
+        const currentCode = editorElem ? editorElem.value : "";
+
+        try {
+            if (window.CodeLearnApi && typeof CodeLearnApi.ai?.ask === "function") {
+                const res = await CodeLearnApi.ai.ask(userMsg, currentCode, lesson ? lesson.id : "");
+                if (typingElem) typingElem.remove();
+                appendMessage(res.reply || "AI chưa có câu trả lời phù hợp, bạn hãy thử diễn đạt lại nhé.");
+            } else {
+                if (typingElem) typingElem.remove();
+                appendMessage("💡 Hãy kiểm tra lại các từ khóa, cú pháp và dòng lệnh in `cout` theo đúng yêu cầu đề bài nhé!");
+            }
+        } catch (err) {
+            if (typingElem) typingElem.remove();
+            appendMessage(`⚠️ Không thể kết nối với AI Trợ giảng: ${err.message || "Lỗi mạng"}`);
+        }
+    }
+
+    if (form) {
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const val = input ? input.value : "";
+            sendPrompt(val);
+        });
+    }
+
+    chips.forEach(chip => {
+        chip.addEventListener("click", () => {
+            const prompt = chip.getAttribute("data-prompt") || chip.textContent;
+            openPanel();
+            sendPrompt(prompt);
+        });
+    });
 }

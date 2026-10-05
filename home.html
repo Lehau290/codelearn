@@ -648,6 +648,104 @@
 
 
         <!-- =====================================
+             LEADERBOARD & STUDY STREAK (BẢNG VÀNG THI ĐUA)
+        ====================================== -->
+
+        <section class="leaderboard-section" id="leaderboard">
+
+            <div class="container">
+
+                <div class="section-heading-center">
+                    <span class="section-label">🏆 BẢNG VÀNG THI ĐUA</span>
+                    <h2>Top Học Viên Xuất Sắc Tuần Này</h2>
+                    <p>Thi đua lập trình mỗi ngày, duy trì chuỗi học tập (Streak) và tích lũy điểm kinh nghiệm để vinh danh trên bảng vàng.</p>
+                </div>
+
+                <div class="leaderboard-card-wrapper">
+                    <!-- Top 3 Podium Highlights -->
+                    <div class="leaderboard-podium">
+                        <!-- Rank 2 -->
+                        <div class="podium-card podium-silver">
+                            <div class="podium-badge">🥈 #2</div>
+                            <div class="podium-avatar">LH</div>
+                            <h4 class="podium-name">Lê Trung Hậu</h4>
+                            <p class="podium-role">Học viên Xuất sắc</p>
+                            <div class="podium-stats">
+                                <span class="podium-points">1,720 PTS</span>
+                                <span class="podium-streak">🔥 9 ngày</span>
+                            </div>
+                        </div>
+
+                        <!-- Rank 1 -->
+                        <div class="podium-card podium-gold">
+                            <div class="podium-crown">👑</div>
+                            <div class="podium-badge">🥇 #1</div>
+                            <div class="podium-avatar">BN</div>
+                            <h4 class="podium-name">Nguyễn Thị Bảo Ngọc</h4>
+                            <p class="podium-role">Đại học Kinh Tế</p>
+                            <div class="podium-stats">
+                                <span class="podium-points">1,850 PTS</span>
+                                <span class="podium-streak">🔥 14 ngày</span>
+                            </div>
+                        </div>
+
+                        <!-- Rank 3 -->
+                        <div class="podium-card podium-bronze">
+                            <div class="podium-badge">🥉 #3</div>
+                            <div class="podium-avatar">CT</div>
+                            <h4 class="podium-name">Trương Vũ Cát Tường</h4>
+                            <p class="podium-role">Đại Học Sư Phạm</p>
+                            <div class="podium-stats">
+                                <span class="podium-points">1,580 PTS</span>
+                                <span class="podium-streak">🔥 7 ngày</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ranking List Table / Items -->
+                    <div class="leaderboard-table" id="leaderboardList">
+                        <div class="leaderboard-row">
+                            <div class="rank-col"><span class="rank-num">4</span></div>
+                            <div class="user-col">
+                                <div class="rank-avatar">TL</div>
+                                <div class="rank-user-info">
+                                    <strong>Nguyễn Thị Thùy Linh</strong>
+                                    <span>Sinh viên năm 1, Đại học Duy Tân</span>
+                                </div>
+                            </div>
+                            <div class="streak-col">
+                                <span class="streak-pill">🔥 5 ngày liên tục</span>
+                            </div>
+                            <div class="score-col">
+                                <strong>1,420</strong> <small>PTS</small>
+                            </div>
+                        </div>
+
+                        <div class="leaderboard-row highlight-current" id="leaderboardCurrentUserRow">
+                            <div class="rank-col"><span class="rank-num">5</span></div>
+                            <div class="user-col">
+                                <div class="rank-avatar" id="currentUserRankAvatar">U</div>
+                                <div class="rank-user-info">
+                                    <strong id="currentUserRankName">Bạn (Người học)</strong>
+                                    <span id="currentUserRankDesc">Học viên C++ Basic</span>
+                                </div>
+                            </div>
+                            <div class="streak-col">
+                                <span class="streak-pill" id="currentUserRankStreak">🔥 3 ngày liên tục</span>
+                            </div>
+                            <div class="score-col">
+                                <strong id="currentUserRankPoints">850</strong> <small>PTS</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
              STUDENT TESTIMONIALS
         ====================================== -->
 
