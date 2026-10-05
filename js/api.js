@@ -189,10 +189,19 @@
         // AI Mentor
         // -----------------------------------------------------
         ai: {
-            async ask(message, code = "", lessonId = "") {
+            async ask(message, code = "", lessonId = "", history = []) {
                 return request("/ai/ask", {
                     method: "POST",
-                    body: JSON.stringify({ message, code, lessonId })
+                    body: JSON.stringify({ message, code, lessonId, history })
+                });
+            },
+            async getConfig() {
+                return request("/ai/config");
+            },
+            async setConfig(configData) {
+                return request("/ai/config", {
+                    method: "POST",
+                    body: JSON.stringify(configData)
                 });
             }
         },

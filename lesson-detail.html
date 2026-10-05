@@ -804,6 +804,22 @@
 
                                 </div>
 
+                                <!-- Test Cases Breakdown (if any) -->
+                                <div id="aiTestCasesBox" style="margin-top: 16px; border-top: 1px solid var(--border, #e2e8f0); padding-top: 14px;" hidden>
+                                    <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
+                                        <span style="display: flex; align-items: center; gap: 6px;">🧪 Kết quả kiểm thử Test Cases:</span>
+                                        <span id="aiTestCasesCount" style="font-size: 0.82rem; font-weight: 700; color: var(--primary);">0/0 passed</span>
+                                    </h4>
+                                    <div id="aiTestCasesList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                                </div>
+
+                                <!-- AI Action Bar -->
+                                <div class="ai-feedback-actions" style="margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--border, #e2e8f0); display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap;">
+                                    <button type="button" class="btn btn-secondary" id="btnAskAiAboutGrading" style="font-size: 0.88rem; display: flex; align-items: center; gap: 6px;">
+                                        💬 Nhờ AI giải thích chi tiết &amp; hướng dẫn sửa
+                                    </button>
+                                </div>
+
                             </div>
 
                         </section>
@@ -978,16 +994,23 @@
                     <div class="ai-mentor-brand">
                         <div class="ai-avatar-circle">🤖</div>
                         <div>
-                            <strong>CodeLearn AI Tutor</strong>
-                            <span>Trợ giảng C++ thông minh 24/7</span>
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <strong>CodeLearn AI</strong>
+                                <span style="font-size: 0.68rem; background: rgba(16, 185, 129, 0.15); color: #059669; padding: 1px 6px; border-radius: 999px; font-weight: 700;">ChatGPT Mode</span>
+                            </div>
+                            <span style="font-size: 0.75rem; color: var(--text-muted, #64748b);">Trợ giảng C++ thông minh 24/7</span>
                         </div>
                     </div>
-                    <button type="button" id="btnCloseAiMentor" class="ai-close-btn" aria-label="Đóng Trợ lý AI">✕</button>
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                        <button type="button" id="btnResetAiMentor" class="ai-reset-btn" title="Làm mới hội thoại" aria-label="Làm mới hội thoại">🔄</button>
+                        <button type="button" id="btnCloseAiMentor" class="ai-close-btn" aria-label="Đóng Trợ lý AI">✕</button>
+                    </div>
                 </div>
 
                 <div class="ai-mentor-body" id="aiMentorMessages">
                     <div class="ai-msg ai-msg-bot">
-                        👋 Chào bạn! Mình là <strong>AI Trợ giảng CodeLearn C++</strong>. Mình có thể giải thích lý thuyết, phân tích lỗi biên dịch hoặc gợi ý tư duy làm bài tập. Hãy chọn câu hỏi nhanh bên dưới hoặc nhập câu hỏi nhé!
+                        👋 Chào bạn! Mình là <strong>CodeLearn AI (ChatGPT C++ Tutor)</strong>.<br>
+                        Mình có thể giải thích mọi khái niệm C++, phân tích lỗi code, hướng dẫn thuật toán hoặc viết code mẫu như ChatGPT. Hãy nhập bất kỳ câu hỏi nào hoặc chọn gợi ý bên dưới nhé!
                     </div>
                 </div>
 
@@ -995,7 +1018,10 @@
                 <div class="ai-quick-chips">
                     <button type="button" class="ai-chip" data-prompt="Gợi ý cách giải bài tập hiện tại">💡 Gợi ý làm bài</button>
                     <button type="button" class="ai-chip" data-prompt="Kiểm tra xem code trong editor có lỗi gì không">🔍 Kiểm tra lỗi code</button>
-                    <button type="button" class="ai-chip" data-prompt="Giải thích ngắn gọn lý thuyết bài học này">📖 Tóm tắt bài học</button>
+                    <button type="button" class="ai-chip" data-prompt="Giải thích lập trình hướng đối tượng OOP là gì?">🏛️ Giải thích OOP</button>
+                    <button type="button" class="ai-chip" data-prompt="Con trỏ thông minh unique_ptr và shared_ptr khác nhau thế nào?">🧠 Con trỏ thông minh</button>
+                    <button type="button" class="ai-chip" data-prompt="Thuật toán QuickSort hoạt động như thế nào?">⚡ Thuật toán QuickSort</button>
+                    <button type="button" class="ai-chip" data-prompt="Viết code mẫu kiểm tra số nguyên tố tối ưu">📝 Viết code mẫu</button>
                 </div>
 
                 <form id="aiMentorForm" class="ai-mentor-input-row">

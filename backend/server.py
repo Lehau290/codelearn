@@ -245,6 +245,16 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
                 return self.send_json(401, {"error": "Chưa đăng nhập hoặc phiên làm việc đã hết hạn."})
             return self.send_json(200, {"user": user})
 
+        # 3b. AI Status & Provider Config (/api/ai/config)
+        if path == "/api/ai/config":
+            from backend.compiler import get_api_key_from_env_or_config
+            provider, key = get_api_key_from_env_or_config()
+            return self.send_json(200, {
+                "hasApiKey": bool(key),
+                "provider": provider or "builtin",
+                "model": "Gemini 1.5/2.0 Flash" if provider == "gemini" else ("GPT-4o Mini / Llama" if provider in ("openai", "groq") else "CodeLearn C++ Neural Tutor")
+            })
+
         # 4. All lessons (/api/lessons)
         if path == "/api/lessons":
             conn = get_connection()
@@ -658,22 +668,26 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
             # Record submission in database
             now = datetime.now().isoformat()
             sub_id = "sub-" + str(uuid.uuid4())[:8]
-            cursor.execute("""
-                INSERT INTO submissions (id, user_id, lesson_id, exercise_id, code, output, passed, score, execution_time_ms, ai_feedback, submitted_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (
-                sub_id,
-                user_id or "guest",
-                lesson_id,
-                exercise_id,
-                code,
-                eval_res.get("output", ""),
-                1 if eval_res.get("passed") else 0,
-                eval_res.get("score", 0),
-                eval_res.get("execution", {}).get("execution_time_ms", 0),
-                json.dumps(eval_res.get("strengths", []) + eval_res.get("improvements", []), ensure_ascii=False),
-                now
-            ))
+            if user_id:
+                try:
+                    cursor.execute("""
+                        INSERT INTO submissions (id, user_id, lesson_id, exercise_id, code, output, passed, score, execution_time_ms, ai_feedback, submitted_at)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (
+                        sub_id,
+                        user_id,
+                        lesson_id,
+                        exercise_id,
+                        code,
+                        eval_res.get("output", ""),
+                        1 if eval_res.get("passed") else 0,
+                        eval_res.get("score", 0),
+                        eval_res.get("execution", {}).get("execution_time_ms", 0),
+                        json.dumps(eval_res.get("strengths", []) + eval_res.get("improvements", []), ensure_ascii=False),
+                        now
+                    ))
+                except Exception as ex:
+                    print(f"[Submission log] Không thể ghi bản ghi submission: {ex}")
 
             # Streak tracking & Progress updating
             new_achievements = []
@@ -817,6 +831,7 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
             message = body.get("message", "")
             code = body.get("code", "")
             lesson_id = body.get("lessonId", "")
+            history = body.get("history", [])
 
             lesson_info = None
             if lesson_id:
@@ -828,8 +843,31 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
                     lesson_info = dict(row)
                 conn.close()
 
-            ai_resp = get_ai_mentor_reply(message, code=code, lesson_info=lesson_info)
+            ai_resp = get_ai_mentor_reply(message, code=code, lesson_info=lesson_info, history=history)
             return self.send_json(200, ai_resp)
+
+        # 8b. Configure AI Key (/api/ai/config)
+        if path == "/api/ai/config":
+            gemini_key = body.get("geminiKey", "").strip()
+            openai_key = body.get("openaiKey", "").strip()
+            groq_key = body.get("groqKey", "").strip()
+            cfg_path = os.path.join(os.path.dirname(__file__), "config.json")
+            cfg = {}
+            if os.path.exists(cfg_path):
+                try:
+                    with open(cfg_path, "r", encoding="utf-8") as f:
+                        cfg = json.load(f)
+                except Exception:
+                    pass
+            if gemini_key:
+                cfg["GEMINI_API_KEY"] = gemini_key
+            if openai_key:
+                cfg["OPENAI_API_KEY"] = openai_key
+            if groq_key:
+                cfg["GROQ_API_KEY"] = groq_key
+            with open(cfg_path, "w", encoding="utf-8") as f:
+                json.dump(cfg, f, indent=2)
+            return self.send_json(200, {"message": "Đã lưu cấu hình AI thành công."})
 
         # 8. Admin Create Lesson (/api/lessons)
         if path == "/api/lessons":

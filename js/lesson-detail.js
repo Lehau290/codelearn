@@ -1015,8 +1015,13 @@ function setupSubmitButton(
                             score: evalRes.score,
                             comprehensionLevel: evalRes.comprehensionLevel,
                             comprehensionPercent: evalRes.comprehensionPercent,
+                            summary: evalRes.summary,
+                            advice: evalRes.advice,
                             strengths: evalRes.strengths,
-                            improvements: evalRes.improvements
+                            improvements: evalRes.improvements,
+                            testCases: evalRes.testCases,
+                            execution: evalRes.execution,
+                            aiReview: evalRes.aiReview
                         };
                         processGrading(adapted);
                     })
@@ -1242,6 +1247,16 @@ function showGradingResult(
         percentElem.textContent = `${result.comprehensionPercent || result.score}%`;
     }
 
+    function renderFeedbackList(items, defaultText) {
+        if (!items) return `<p>${defaultText}</p>`;
+        if (typeof items === "string") return `<p>${formatLessonContent(items)}</p>`;
+        if (Array.isArray(items)) {
+            if (items.length === 0) return `<p>${defaultText}</p>`;
+            return `<ul class="ai-feedback-bullet-list">` + items.map(it => `<li>${escapeHtml(it)}</li>`).join("") + `</ul>`;
+        }
+        return `<p>${defaultText}</p>`;
+    }
+
     // Tóm tắt
     const summaryElem = document.getElementById("aiSummary");
     if (summaryElem) {
@@ -1251,19 +1266,67 @@ function showGradingResult(
     // Điểm làm tốt
     const strengthElem = document.getElementById("aiStrength");
     if (strengthElem) {
-        strengthElem.innerHTML = formatLessonContent(result.strengths || "Mã nguồn rõ ràng, cấu trúc hợp lệ.");
+        strengthElem.innerHTML = renderFeedbackList(result.strengths, "Mã nguồn rõ ràng, cấu trúc hợp lệ.");
     }
 
     // Cần cải thiện
     const improvElem = document.getElementById("aiImprovement");
     if (improvElem) {
-        improvElem.innerHTML = formatLessonContent(result.improvements || "Không có lỗi cú pháp nghiêm trọng.");
+        improvElem.innerHTML = renderFeedbackList(result.improvements, "Không có lỗi cú pháp nghiêm trọng.");
     }
 
     // Lời khuyên
     const adviceElem = document.getElementById("aiAdvice");
     if (adviceElem) {
-        adviceElem.innerHTML = formatLessonContent(result.advice || "Hãy tiếp tục thử sức với các bài tập tiếp theo!");
+        adviceElem.innerHTML = renderFeedbackList(result.advice, "Hãy tiếp tục thử sức với các bài tập tiếp theo!");
+    }
+
+    // Hiển thị chi tiết Test Cases nếu có
+    const testCasesBox = document.getElementById("aiTestCasesBox");
+    const testCasesCount = document.getElementById("aiTestCasesCount");
+    const testCasesList = document.getElementById("aiTestCasesList");
+
+    if (testCasesBox && testCasesList && Array.isArray(result.testCases) && result.testCases.length > 0) {
+        testCasesBox.hidden = false;
+        testCasesBox.removeAttribute("hidden");
+        const passedCount = result.testCases.filter(t => t.passed).length;
+        if (testCasesCount) {
+            testCasesCount.textContent = `${passedCount}/${result.testCases.length} Passed`;
+            testCasesCount.style.color = (passedCount === result.testCases.length) ? "#10b981" : "#ef4444";
+        }
+        testCasesList.innerHTML = result.testCases.map(tc => {
+            const isPass = tc.passed;
+            return `
+                <div class="testcase-item" style="border-left: 3px solid ${isPass ? '#10b981' : '#ef4444'};">
+                    <div>
+                        <strong>Test #${tc.order}:</strong>
+                        <span style="color: var(--text-muted); margin-left: 6px;">${tc.isHidden ? '(Test ẩn kiểm thử)' : `Input: <code>${escapeHtml(tc.input || 'None')}</code>`}</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 0.75rem; color: var(--text-muted);">${tc.executionTimeMs || 0}ms</span>
+                        <span class="testcase-badge ${isPass ? 'pass' : 'fail'}">${isPass ? '✓ Đạt' : '✕ Sai kết quả'}</span>
+                    </div>
+                </div>
+            `;
+        }).join("");
+    } else if (testCasesBox) {
+        testCasesBox.hidden = true;
+    }
+
+    // Nút Hỏi AI về bài làm
+    const btnAskAiGrading = document.getElementById("btnAskAiAboutGrading");
+    if (btnAskAiGrading) {
+        btnAskAiGrading.onclick = () => {
+            const mentorToggle = document.getElementById("btnToggleAiMentor");
+            const mentorPanel = document.getElementById("aiMentorPanel");
+            if (mentorPanel && mentorPanel.hidden && mentorToggle) {
+                mentorToggle.click();
+            }
+            if (window._sendAiPrompt) {
+                const prompt = `Chào AI, bài làm C++ vừa rồi của tôi đạt ${result.score}/100 điểm (${result.comprehensionLevel || 'Đánh giá'}). ${result.summary || ''} Hãy giải thích chi tiết nguyên nhân và hướng dẫn tôi tối ưu hóa thuật toán hoặc sửa lỗi này nhé!`;
+                window._sendAiPrompt(prompt);
+            }
+        };
     }
 }
 
@@ -1726,6 +1789,7 @@ function escapeHtml(
 function setupAiMentorWidget(lesson, user) {
     const toggleBtn = document.getElementById("btnToggleAiMentor");
     const closeBtn = document.getElementById("btnCloseAiMentor");
+    const resetBtn = document.getElementById("btnResetAiMentor");
     const panel = document.getElementById("aiMentorPanel");
     const form = document.getElementById("aiMentorForm");
     const input = document.getElementById("aiMentorInput");
@@ -1733,6 +1797,8 @@ function setupAiMentorWidget(lesson, user) {
     const chips = document.querySelectorAll(".ai-chip");
 
     if (!panel) return;
+
+    let chatHistory = [];
 
     function openPanel() {
         panel.hidden = false;
@@ -1757,14 +1823,27 @@ function setupAiMentorWidget(lesson, user) {
         closeBtn.addEventListener("click", closePanel);
     }
 
+    if (resetBtn) {
+        resetBtn.addEventListener("click", () => {
+            chatHistory = [];
+            if (msgContainer) {
+                msgContainer.innerHTML = `
+                    <div class="ai-msg ai-msg-bot">
+                        👋 Cuộc trò chuyện đã được làm mới! Hãy hỏi mình bất kỳ câu hỏi nào về C++, thuật toán hoặc nhờ kiểm tra code nhé!
+                    </div>
+                `;
+            }
+        });
+    }
+
     function appendMessage(text, isUser = false) {
         if (!msgContainer) return;
         const bubble = document.createElement("div");
         bubble.className = `ai-msg ${isUser ? "ai-msg-user" : "ai-msg-bot"}`;
         
-        // Simple Markdown parsing for bot responses
         if (!isUser) {
             bubble.innerHTML = formatAiMarkdown(text);
+            bindCodeBlockActions(bubble);
         } else {
             bubble.textContent = text;
         }
@@ -1777,17 +1856,99 @@ function setupAiMentorWidget(lesson, user) {
     function formatAiMarkdown(str) {
         if (!str) return "";
         let formatted = escapeHtml(str);
-        // Code blocks: ```text ... ``` or ```cpp ... ```
-        formatted = formatted.replace(/```(?:cpp|text)?\n([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+
+        // Fenced Code blocks: ```cpp ... ``` or ```text ... ```
+        formatted = formatted.replace(/```(?:([a-zA-Z0-9_\-+]+))?\n([\s\S]*?)```/g, (match, lang, code) => {
+            const langName = (lang || "cpp").toUpperCase();
+            const rawClean = code.trim();
+            return `
+                <div class="ai-code-wrapper">
+                    <div class="ai-code-header">
+                        <span>${langName}</span>
+                        <div class="ai-code-actions">
+                            <button type="button" class="ai-code-btn btn-copy-code" data-code="${encodeURIComponent(rawClean)}">
+                                📋 Sao chép
+                            </button>
+                            <button type="button" class="ai-code-btn btn-apply-editor" data-code="${encodeURIComponent(rawClean)}">
+                                💻 Vào Editor
+                            </button>
+                        </div>
+                    </div>
+                    <pre><code class="language-${(lang || 'cpp').toLowerCase()}">${rawClean}</code></pre>
+                </div>
+            `;
+        });
+
+        // Headers
+        formatted = formatted.replace(/^#### (.*$)/gim, '<h5 style="margin: 8px 0 4px 0; font-size: 0.95rem; font-weight: 700;">$1</h5>');
+        formatted = formatted.replace(/^### (.*$)/gim, '<h4 style="margin: 10px 0 6px 0; font-size: 1.05rem; font-weight: 800; color: var(--primary);">$1</h4>');
+
+        // Markdown Table handling
+        formatted = formatted.replace(/((?:\|[^\n]+\|\r?\n?)+)/g, (match) => {
+            const lines = match.trim().split("\n").filter(l => l.trim().length > 0);
+            if (lines.length < 2) return match;
+            let html = '<div style="overflow-x: auto; margin: 8px 0;"><table class="ai-chat-table">';
+            lines.forEach((line, idx) => {
+                if (line.includes("---")) return; // divider
+                const cells = line.split("|").slice(1, -1).map(c => c.trim());
+                if (idx === 0) {
+                    html += '<thead><tr>' + cells.map(c => `<th>${c}</th>`).join('') + '</tr></thead><tbody>';
+                } else {
+                    html += '<tr>' + cells.map(c => `<td>${c}</td>`).join('') + '</tr>';
+                }
+            });
+            html += '</tbody></table></div>';
+            return html;
+        });
+
         // Inline code `...`
-        formatted = formatted.replace(/`([^`]+)`/g, '<code>$1</code>');
+        formatted = formatted.replace(/`([^`]+)`/g, '<code style="background: rgba(0,0,0,0.06); padding: 2px 6px; border-radius: 4px; font-family: monospace;">$1</code>');
         // Bold: **text**
         formatted = formatted.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
         // List items
         formatted = formatted.replace(/\n- /g, '<br>• ');
+        formatted = formatted.replace(/\n\d+\. /g, (m) => `<br><strong>${m.trim()}</strong> `);
         // Newlines
         formatted = formatted.replace(/\n/g, '<br>');
+
         return formatted;
+    }
+
+    function bindCodeBlockActions(container) {
+        // Copy Code Buttons
+        container.querySelectorAll(".btn-copy-code").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const raw = decodeURIComponent(btn.getAttribute("data-code") || "");
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(raw).then(() => {
+                        const oldText = btn.innerHTML;
+                        btn.innerHTML = "✓ Đã chép!";
+                        btn.style.color = "#10b981";
+                        setTimeout(() => {
+                            btn.innerHTML = oldText;
+                            btn.style.color = "";
+                        }, 2000);
+                    });
+                }
+            });
+        });
+
+        // Apply into Code Editor
+        container.querySelectorAll(".btn-apply-editor").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const raw = decodeURIComponent(btn.getAttribute("data-code") || "");
+                const editor = document.getElementById("codeEditor");
+                if (editor) {
+                    editor.value = raw;
+                    editor.dispatchEvent(new Event("input"));
+                    btn.innerHTML = "✓ Đã đưa vào Editor!";
+                    setTimeout(() => {
+                        btn.innerHTML = "💻 Vào Editor";
+                    }, 2000);
+                    editor.scrollIntoView({ behavior: "smooth", block: "center" });
+                }
+            });
+        });
     }
 
     async function sendPrompt(userMsg) {
@@ -1796,17 +1957,22 @@ function setupAiMentorWidget(lesson, user) {
         appendMessage(userMsg, true);
         if (input) input.value = "";
 
+        // Add to history
+        chatHistory.push({ role: "user", content: userMsg });
+
         // Typing placeholder
-        const typingElem = appendMessage("🤖 *AI đang suy nghĩ và kiểm tra code...*", false);
+        const typingElem = appendMessage("🤖 *AI đang suy nghĩ và phân tích...*", false);
 
         const editorElem = document.getElementById("codeEditor");
         const currentCode = editorElem ? editorElem.value : "";
 
         try {
             if (window.CodeLearnApi && typeof CodeLearnApi.ai?.ask === "function") {
-                const res = await CodeLearnApi.ai.ask(userMsg, currentCode, lesson ? lesson.id : "");
+                const res = await CodeLearnApi.ai.ask(userMsg, currentCode, lesson ? lesson.id : "", chatHistory);
                 if (typingElem) typingElem.remove();
-                appendMessage(res.reply || "AI chưa có câu trả lời phù hợp, bạn hãy thử diễn đạt lại nhé.");
+                const replyText = res.reply || "AI chưa có câu trả lời phù hợp, bạn hãy thử diễn đạt lại nhé.";
+                appendMessage(replyText);
+                chatHistory.push({ role: "assistant", content: replyText });
             } else {
                 if (typingElem) typingElem.remove();
                 appendMessage("💡 Hãy kiểm tra lại các từ khóa, cú pháp và dòng lệnh in `cout` theo đúng yêu cầu đề bài nhé!");
@@ -1816,6 +1982,12 @@ function setupAiMentorWidget(lesson, user) {
             appendMessage(`⚠️ Không thể kết nối với AI Trợ giảng: ${err.message || "Lỗi mạng"}`);
         }
     }
+
+    // Expose global sender so other buttons can invoke AI
+    window._sendAiPrompt = (prompt) => {
+        openPanel();
+        sendPrompt(prompt);
+    };
 
     if (form) {
         form.addEventListener("submit", (e) => {
