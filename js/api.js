@@ -273,9 +273,9 @@
     // Auto check health on load
     checkHealth().then(isOnline => {
         if (isOnline) {
-            console.log("⚡ [CodeLearn C++] Đã kết nối thành công với Python Backend & Trình biên dịch G++ 13.2.0!");
+            console.log("[CodeLearn C++] Đã kết nối thành công với Python Backend & Trình biên dịch G++ 13.2.0!");
         } else {
-            console.log("ℹ️ [CodeLearn C++] Đang chạy chế độ Offline-First (localStorage). Chạy `python run_server.py` để kích hoạt Backend!");
+            console.log("[CodeLearn C++] Đang chạy chế độ Offline-First (localStorage). Chạy `python run_server.py` để kích hoạt Backend!");
         }
     });
 

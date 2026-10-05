@@ -307,7 +307,7 @@ function setupAvatarManagement(user) {
                     presetsContainer.querySelectorAll(".preset-avatar-btn").forEach(b => b.classList.remove("selected"));
                 }
 
-                showProfileMessage("✓ Đã tải ảnh đại diện thành công. Đừng quên bấm 'Lưu thay đổi'!", "success");
+                showProfileMessage("Đã tải ảnh đại diện thành công. Đừng quên bấm 'Lưu thay đổi'!", "success");
             } catch (err) {
                 console.error("Lỗi đọc file ảnh:", err);
                 showProfileMessage("Không thể xử lý ảnh. Vui lòng thử lại với ảnh khác.", "error");
@@ -463,16 +463,16 @@ function renderProfileStats(user) {
     const rankBadge = document.getElementById("profileRankBadge");
     if (rankBadge) {
         if (percent >= 80) {
-            rankBadge.textContent = "🏆 C++ Master";
+            rankBadge.textContent = "C++ Master";
             rankBadge.className = "profile-rank rank-master";
         } else if (percent >= 50) {
-            rankBadge.textContent = "⚡ Lập trình viên C++";
+            rankBadge.textContent = "Lập trình viên C++";
             rankBadge.className = "profile-rank rank-coder";
         } else if (percent >= 20) {
-            rankBadge.textContent = "🚀 Coder Tập sự";
+            rankBadge.textContent = "Coder Tập sự";
             rankBadge.className = "profile-rank rank-apprentice";
         } else {
-            rankBadge.textContent = "🌱 Học viên Mới";
+            rankBadge.textContent = "Học viên Mới";
             rankBadge.className = "profile-rank rank-beginner";
         }
     }
@@ -502,7 +502,7 @@ function renderProfileProgress(user) {
     const descElem = document.getElementById("profileProgressDesc");
     if (descElem) {
         if (percent === 100) {
-            descElem.innerHTML = `🎉 Xuất sắc! Bạn đã hoàn thành toàn bộ <strong>${total}/${total}</strong> bài học C++!`;
+            descElem.innerHTML = `Xuất sắc! Bạn đã hoàn thành toàn bộ <strong>${total}/${total}</strong> bài học C++!`;
         } else if (completed > 0) {
             descElem.innerHTML = `Bạn đã hoàn thành <strong>${completed}/${total}</strong> bài học (${percent}%). Còn <strong>${total - completed}</strong> bài học nữa, tiếp tục phát huy nhé!`;
         } else {
@@ -545,7 +545,6 @@ function renderRecentLessons(user) {
     if (!completedLessons.length) {
         container.innerHTML = `
             <div class="empty-state">
-                <div class="empty-state-icon">📚</div>
                 <h3>Chưa có bài hoàn thành</h3>
                 <p>Hãy bắt đầu học bài đầu tiên để lưu lại lịch sử làm bài và điểm số của bạn.</p>
                 <a href="lessons.html" class="btn btn-primary" style="margin-top: 12px;">Bắt đầu học ngay →</a>
@@ -603,53 +602,46 @@ function renderAchievements(user) {
             id: "first-lesson",
             title: "Bắt đầu hành trình",
             description: "Hoàn thành bài học C++ đầu tiên.",
-            icon: "🚀",
             unlocked: completed >= 1
         },
         {
             id: "three-lessons",
             title: "Tăng tốc kiến thức",
             description: "Hoàn thành 3 bài học C++.",
-            icon: "⚡",
             unlocked: completed >= 3
         },
         {
             id: "five-lessons",
             title: "Chăm chỉ rèn luyện",
             description: "Hoàn thành 5 bài học C++.",
-            icon: "🔥",
             unlocked: completed >= 5
         },
         {
             id: "high-score",
             title: "Thiện xạ C++",
             description: "Đạt từ 90 điểm trở lên trong một bài tập.",
-            icon: "⭐",
             unlocked: hasHighScore
         },
         {
             id: "half-way",
             title: "Vượt qua nửa chặng",
             description: `Hoàn thành ít nhất ${Math.ceil(lessons.length / 2)} bài học.`,
-            icon: "🎯",
             unlocked: completed >= Math.ceil(lessons.length / 2) && lessons.length > 0
         },
         {
             id: "all-lessons",
             title: "C++ Master Tinh anh",
             description: "Hoàn thành xuất sắc toàn bộ khóa học C++.",
-            icon: "🏆",
             unlocked: completed >= lessons.length && lessons.length > 0
         }
     ];
 
     container.innerHTML = achievements.map(ach => `
         <div class="achievement-card ${ach.unlocked ? '' : 'locked'}">
-            <div class="achievement-icon">${ach.icon}</div>
             <div class="achievement-info">
                 <strong>${escapeHtml(ach.title)}</strong>
                 <p>${escapeHtml(ach.description)}</p>
-                <small>${ach.unlocked ? '✓ Đã mở khóa' : '🔒 Chưa mở khóa'}</small>
+                <small>${ach.unlocked ? 'Đã mở khóa' : 'Chưa mở khóa'}</small>
             </div>
         </div>
     `).join("");
@@ -750,7 +742,7 @@ function setupProfileForm(currentUser) {
         renderProfile(updatedUser);
         renderProfileStats(updatedUser);
 
-        showProfileMessage("✓ Cập nhật hồ sơ & cài đặt thành công!", "success");
+        showProfileMessage("Cập nhật hồ sơ & cài đặt thành công!", "success");
     });
 
     // Nút Hủy
@@ -795,7 +787,7 @@ function setupPasswordToggles() {
         btn1.addEventListener("click", () => {
             const isPwd = pwd1.type === "password";
             pwd1.type = isPwd ? "text" : "password";
-            btn1.textContent = isPwd ? "🙈" : "👁️";
+            btn1.textContent = isPwd ? "Ẩn" : "Hiện";
         });
     }
 
@@ -805,7 +797,7 @@ function setupPasswordToggles() {
         btn2.addEventListener("click", () => {
             const isPwd = pwd2.type === "password";
             pwd2.type = isPwd ? "text" : "password";
-            btn2.textContent = isPwd ? "🙈" : "👁️";
+            btn2.textContent = isPwd ? "Ẩn" : "Hiện";
         });
     }
 }

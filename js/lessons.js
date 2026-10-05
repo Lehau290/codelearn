@@ -247,10 +247,6 @@ function renderLessons(
         }
         container.innerHTML = `
             <div class="empty-state">
-                <div class="empty-state-icon">
-                    🔍
-                </div>
-
                 <h3>
                     Không tìm thấy bài học
                 </h3>

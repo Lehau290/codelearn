@@ -194,10 +194,6 @@ function renderAdminLessons(
         container.innerHTML = `
             <div class="empty-state">
 
-                <div class="empty-state-icon">
-                    🔍
-                </div>
-
                 <h3>
                     Không tìm thấy bài học
                 </h3>
@@ -343,7 +339,7 @@ function createAdminLessonRow(
                     class="btn btn-secondary"
                     title="Xem trước bài học"
                 >
-                    👁️ Xem
+                    Xem
                 </a>
 
                 <button
@@ -354,7 +350,7 @@ function createAdminLessonRow(
                         lesson.id
                     )}"
                 >
-                    ✏️ Sửa
+                    Sửa
                 </button>
 
 
@@ -366,7 +362,7 @@ function createAdminLessonRow(
                         lesson.id
                     )}"
                 >
-                    🗑️ Xóa
+                    Xóa
                 </button>
 
             </div>
@@ -538,7 +534,7 @@ function saveLessonFromForm() {
         }
 
         showAdminMessage(
-            "✓ Đã cập nhật bài học.",
+            "Đã cập nhật bài học.",
             "success"
         );
     } else {
@@ -560,7 +556,7 @@ function saveLessonFromForm() {
         }
 
         showAdminMessage(
-            "✓ Đã tạo bài học mới.",
+            "Đã tạo bài học mới.",
             "success"
         );
     }
@@ -642,7 +638,7 @@ function editLesson(
         document.querySelector("#lessonForm button[type='submit']");
 
     if (submitButton) {
-        submitButton.textContent = "💾 Lưu thay đổi";
+        submitButton.textContent = "Lưu thay đổi";
     }
 
     // --------------------------------------------------------
@@ -723,7 +719,7 @@ function deleteLesson(
 
 
     showAdminMessage(
-        "✓ Đã xóa bài học.",
+        "Đã xóa bài học.",
         "success"
     );
 
@@ -963,23 +959,23 @@ function setupDatabaseSection() {
     if (btnBackup) {
         btnBackup.addEventListener("click", () => {
             btnBackup.disabled = true;
-            btnBackup.textContent = "⏳ Đang sao lưu...";
+            btnBackup.textContent = "Đang sao lưu...";
             if (window.CodeLearnApi && typeof CodeLearnApi.admin?.database?.backup === "function") {
                 CodeLearnApi.admin.database.backup()
                     .then(res => {
                         btnBackup.disabled = false;
-                        btnBackup.textContent = "💾 Sao lưu Database";
-                        showDbMsg(`✓ Đã tạo bản sao lưu thành công: ${res.filename} (${res.size_kb} KB)`, "success");
+                        btnBackup.textContent = "Sao lưu Database";
+                        showDbMsg(`Đã tạo bản sao lưu thành công: ${res.filename} (${res.size_kb} KB)`, "success");
                         loadDbStats();
                     })
                     .catch(err => {
                         btnBackup.disabled = false;
-                        btnBackup.textContent = "💾 Sao lưu Database";
+                        btnBackup.textContent = "Sao lưu Database";
                         showDbMsg(`Lỗi khi tạo sao lưu: ${err.message}`, "error");
                     });
             } else {
                 btnBackup.disabled = false;
-                btnBackup.textContent = "💾 Sao lưu Database";
+                btnBackup.textContent = "Sao lưu Database";
                 showDbMsg("Backend đang chạy chế độ offline hoặc chưa khởi động.", "info");
             }
         });
@@ -988,22 +984,22 @@ function setupDatabaseSection() {
     if (btnExport) {
         btnExport.addEventListener("click", () => {
             btnExport.disabled = true;
-            btnExport.textContent = "⏳ Đang xuất...";
+            btnExport.textContent = "Đang xuất...";
             if (window.CodeLearnApi && typeof CodeLearnApi.admin?.database?.export === "function") {
                 CodeLearnApi.admin.database.export()
                     .then(res => {
                         btnExport.disabled = false;
-                        btnExport.textContent = "📥 Xuất SQL & JSON";
-                        showDbMsg(`✓ Đã xuất dữ liệu thành công ra backend/${res.sql} và backend/${res.json}!`, "success");
+                        btnExport.textContent = "Xuất SQL & JSON";
+                        showDbMsg(`Đã xuất dữ liệu thành công ra backend/${res.sql} và backend/${res.json}!`, "success");
                     })
                     .catch(err => {
                         btnExport.disabled = false;
-                        btnExport.textContent = "📥 Xuất SQL & JSON";
+                        btnExport.textContent = "Xuất SQL & JSON";
                         showDbMsg(`Lỗi khi xuất dữ liệu: ${err.message}`, "error");
                     });
             } else {
                 btnExport.disabled = false;
-                btnExport.textContent = "📥 Xuất SQL & JSON";
+                btnExport.textContent = "Xuất SQL & JSON";
                 showDbMsg("Backend đang chạy chế độ offline.", "info");
             }
         });

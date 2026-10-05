@@ -141,7 +141,6 @@ function renderFeaturedLessons(user) {
     if (!lessons.length) {
         container.innerHTML = `
             <div class="empty-state">
-                <div class="empty-state-icon">📚</div>
                 <h3>Chưa có bài học</h3>
                 <p>
                     Hiện tại chưa có bài học nào
@@ -395,6 +394,6 @@ function updateLeaderboardUser(user) {
             if (parsed.streak) streakVal = parsed.streak;
         }
     } catch(e) {}
-    if (streakEl) streakEl.textContent = `🔥 ${streakVal} ngày liên tục`;
+    if (streakEl) streakEl.textContent = `${streakVal} ngày liên tục`;
     if (descEl) descEl.textContent = `Đã hoàn thành ${completedCount}/${lessons.length} bài học`;
 }
