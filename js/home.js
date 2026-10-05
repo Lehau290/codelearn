@@ -376,6 +376,23 @@ function updateLeaderboardUser(user) {
         }
     }
 
+    // Kết nối dữ liệu xếp hạng thực tế từ backend nếu có
+    if (window.CodeLearnApi && typeof CodeLearnApi.leaderboard?.get === "function") {
+        CodeLearnApi.leaderboard.get().then(res => {
+            if (res && res.leaderboard) {
+                const myEntry = res.leaderboard.find(u => u.isCurrentUser || u.id === user.id);
+                if (myEntry) {
+                    if (pointsEl) pointsEl.textContent = Number(myEntry.points || 0).toLocaleString();
+                    if (streakEl) streakEl.textContent = `${myEntry.streak || 1} ngày liên tục`;
+                    if (descEl) descEl.textContent = `${myEntry.rankTitle || 'Học viên'} (Hoàn thành ${myEntry.completedLessons || 0} bài)`;
+                    return;
+                }
+            }
+        }).catch(() => {
+            // Tự động dùng fallback bộ nhớ cục bộ nếu offline
+        });
+    }
+
     const progress = CppStorage.getUserProgress(user.id);
     const lessons = CppStorage.getLessons();
     const completedCount = lessons.filter(l => progress[l.id]?.completed).length;

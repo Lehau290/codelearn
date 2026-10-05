@@ -31,9 +31,35 @@ from backend.auth import (
     authenticate_user,
     delete_session
 )
-from backend.compiler import compile_and_run, evaluate_exercise, get_compiler_version
+from backend.compiler import compile_and_run, evaluate_exercise, get_compiler_version, get_ai_mentor_reply
+import time
+import threading
 
 PORT = int(os.environ.get("PORT", 5000))
+MAX_BODY_BYTES = 10 * 1024 * 1024  # 10 MB maximum request payload
+
+class SimpleRateLimiter:
+    """Sliding-window IP rate limiter to mitigate DoS & brute-force attacks."""
+    def __init__(self):
+        self._history = {}
+        self._lock = threading.Lock()
+
+    def is_allowed(self, key: str, max_requests: int, window_seconds: int) -> tuple[bool, int]:
+        now = time.time()
+        with self._lock:
+            records = self._history.get(key, [])
+            cutoff = now - window_seconds
+            valid_records = [t for t in records if t > cutoff]
+            if len(valid_records) >= max_requests:
+                oldest = valid_records[0]
+                retry_after = max(1, int(oldest + window_seconds - now))
+                self._history[key] = valid_records
+                return False, retry_after
+            valid_records.append(now)
+            self._history[key] = valid_records
+            return True, 0
+
+rate_limiter = SimpleRateLimiter()
 
 class CodeLearnHandler(SimpleHTTPRequestHandler):
     """Handles both REST API endpoints (/api/*) and static files."""
@@ -66,11 +92,17 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(response_bytes)
 
-    def read_json_body(self) -> dict:
-        """Parses JSON request body safely."""
-        content_length = int(self.headers.get("Content-Length", 0))
+    def read_json_body(self) -> dict | None:
+        """Parses JSON request body safely with payload size limit."""
+        content_length_str = self.headers.get("Content-Length", "0")
+        try:
+            content_length = int(content_length_str)
+        except ValueError:
+            return {}
         if content_length <= 0:
             return {}
+        if content_length > MAX_BODY_BYTES:
+            return None  # Exceeds max payload limit
         try:
             body = self.rfile.read(content_length).decode("utf-8")
             return json.loads(body)
@@ -123,13 +155,95 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
                 "time": datetime.now().isoformat()
             })
 
-        # 2. Current user (/api/auth/me)
+        # API Documentation & Capabilities metadata (/api or /api/docs)
+        if path in ("/api", "/api/docs"):
+            return self.send_json(200, {
+                "name": "CodeLearn C++ Backend API",
+                "version": "2.1.0",
+                "status": "online",
+                "compiler": get_compiler_version(),
+                "endpoints": [
+                    {"method": "GET", "path": "/api/health", "desc": "Kiểm tra trạng thái server & g++"},
+                    {"method": "GET", "path": "/api/docs", "desc": "Tài liệu danh sách API"},
+                    {"method": "GET", "path": "/api/leaderboard", "desc": "Bảng vàng thi đua học viên thực tế"},
+                    {"method": "POST", "path": "/api/auth/register", "desc": "Đăng ký tài khoản mới"},
+                    {"method": "POST", "path": "/api/auth/login", "desc": "Đăng nhập và nhận session token"},
+                    {"method": "POST", "path": "/api/auth/logout", "desc": "Đăng xuất khỏi hệ thống"},
+                    {"method": "GET", "path": "/api/auth/me", "desc": "Lấy thông tin người dùng hiện tại"},
+                    {"method": "GET", "path": "/api/lessons", "desc": "Danh sách bài học kèm tiến độ cá nhân"},
+                    {"method": "GET", "path": "/api/lessons/{id}", "desc": "Chi tiết lý thuyết, code mẫu và bài tập"},
+                    {"method": "POST", "path": "/api/compile", "desc": "Biên dịch và chạy mã C++ an toàn qua g++"},
+                    {"method": "POST", "path": "/api/submit-exercise", "desc": "Nộp bài tập và chấm điểm tự động"},
+                    {"method": "POST", "path": "/api/ai/ask", "desc": "Trợ lý AI Trợ giảng C++ hỗ trợ học viên"},
+                    {"method": "GET/POST", "path": "/api/progress", "desc": "Xem và lưu tiến độ học tập"},
+                    {"method": "GET/PUT", "path": "/api/user/profile", "desc": "Cập nhật hồ sơ & ảnh đại diện"},
+                    {"method": "PUT", "path": "/api/user/password", "desc": "Đổi mật khẩu người dùng"},
+                    {"method": "GET/POST/PUT/DELETE", "path": "/api/admin/*", "desc": "Quản trị bài học, người dùng và CSDL"}
+                ]
+            })
+
+        # 2. Leaderboard (/api/leaderboard)
+        if path == "/api/leaderboard":
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT 
+                    u.id, 
+                    u.username, 
+                    u.full_name, 
+                    u.avatar, 
+                    u.role,
+                    u.created_at,
+                    COALESCE(SUM(p.score), 0) AS total_score,
+                    COUNT(CASE WHEN p.status = 'completed' THEN 1 END) AS completed_lessons,
+                    MAX(p.updated_at) AS last_active
+                FROM users u
+                LEFT JOIN progress p ON u.id = p.user_id
+                GROUP BY u.id
+                ORDER BY total_score DESC, completed_lessons DESC, u.created_at ASC
+                LIMIT 50
+            """)
+            rows = cursor.fetchall()
+            leaderboard = []
+            for idx, r in enumerate(rows, 1):
+                completed = r["completed_lessons"]
+                if completed >= 10:
+                    rank_title = "C++ Master"
+                elif completed >= 5:
+                    rank_title = "Lập trình viên C++"
+                elif completed >= 2:
+                    rank_title = "Coder Tập sự"
+                else:
+                    rank_title = "Học viên Mới"
+
+                streak = max(1, completed) if completed > 0 else 0
+                leaderboard.append({
+                    "rank": idx,
+                    "id": r["id"],
+                    "username": r["username"],
+                    "fullName": r["full_name"] or r["username"],
+                    "avatar": r["avatar"] or "",
+                    "role": r["role"],
+                    "rankTitle": rank_title,
+                    "points": int(r["total_score"]),
+                    "completedLessons": completed,
+                    "streak": streak,
+                    "isCurrentUser": (user_id == r["id"]) if user_id else False
+                })
+            conn.close()
+            return self.send_json(200, {
+                "leaderboard": leaderboard,
+                "total": len(leaderboard),
+                "generatedAt": datetime.now().isoformat()
+            })
+
+        # 3. Current user (/api/auth/me)
         if path == "/api/auth/me":
             if not user:
                 return self.send_json(401, {"error": "Chưa đăng nhập hoặc phiên làm việc đã hết hạn."})
             return self.send_json(200, {"user": user})
 
-        # 3. All lessons (/api/lessons)
+        # 4. All lessons (/api/lessons)
         if path == "/api/lessons":
             conn = get_connection()
             cursor = conn.cursor()
@@ -361,6 +475,29 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
         path = parsed.path
         body = self.read_json_body()
         user = self.get_auth_user()
+
+        if body is None:
+            return self.send_json(413, {"error": "Dung lượng dữ liệu gửi lên vượt quá giới hạn cho phép (10MB)."})
+
+        client_ip = self.client_address[0] if self.client_address else "127.0.0.1"
+
+        # Rate limiting cho biên dịch code và nộp bài (30 req / phút / IP)
+        if path in ("/api/compile", "/api/submit-exercise"):
+            allowed, retry_sec = rate_limiter.is_allowed(f"compile:{client_ip}", max_requests=30, window_seconds=60)
+            if not allowed:
+                return self.send_json(429, {
+                    "error": f"Bạn đang gửi yêu cầu biên dịch quá nhanh. Vui lòng thử lại sau {retry_sec} giây.",
+                    "retryAfter": retry_sec
+                })
+
+        # Rate limiting cho đăng nhập chống tấn công dò mật khẩu (10 req / phút / IP)
+        if path == "/api/auth/login":
+            allowed, retry_sec = rate_limiter.is_allowed(f"login:{client_ip}", max_requests=10, window_seconds=60)
+            if not allowed:
+                return self.send_json(429, {
+                    "error": f"Quá nhiều lần thử đăng nhập. Vui lòng chờ {retry_sec} giây trước khi thử lại.",
+                    "retryAfter": retry_sec
+                })
 
         # 1. Register (/api/auth/register)
         if path == "/api/auth/register":
@@ -616,6 +753,9 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
         body = self.read_json_body()
         user = self.get_auth_user()
 
+        if body is None:
+            return self.send_json(413, {"error": "Dung lượng dữ liệu gửi lên vượt quá giới hạn cho phép (10MB)."})
+
         # 1. Update Profile (/api/user/profile)
         if path == "/api/user/profile":
             if not user:
@@ -626,6 +766,9 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
             email = body.get("email", user.get("email", "")).strip().lower()
             avatar = body.get("avatar", user.get("avatar", ""))
             password = body.get("password")
+
+            if avatar and len(avatar) > 5 * 1024 * 1024:
+                return self.send_json(400, {"error": "Dung lượng ảnh đại diện vượt quá giới hạn 5MB."})
 
             conn = get_connection()
             cursor = conn.cursor()

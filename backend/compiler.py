@@ -8,9 +8,53 @@ import time
 import subprocess
 import tempfile
 import re
+import json
+import urllib.request
+import urllib.error
 
 COMPILER_CMD = "g++"
 COMPILER_FLAGS = ["-O2", "-std=c++17", "-Wall"]
+MAX_OUTPUT_CHARS = 32768  # 32 KB output buffer limit to prevent RAM exhaustion
+
+# Danh sách mẫu code nguy hiểm bị cấm để bảo vệ hệ thống máy chủ
+DANGEROUS_CODE_PATTERNS = [
+    # Cấm các header can thiệp hệ thống / mạng / tiến trình
+    (re.compile(r'#\s*include\s*[<"](?:windows\.h|process\.h|unistd\.h|sys/socket\.h|winsock2?\.h|ws2tcpip\.h|direct\.h|io\.h|arpa/inet\.h|netdb\.h)[>"]', re.IGNORECASE),
+     "Thư viện can thiệp hệ điều hành / mạng bị cấm"),
+
+    # Cấm lệnh gọi shell hoặc tiến trình bên ngoài
+    (re.compile(r'\b(?:system|popen|_popen|fork|CreateProcess[AW]?|WinExec|ShellExecute[AW]?|_spawn[a-z]*|spawn[a-z]*)\s*\(', re.IGNORECASE),
+     "Lệnh tạo hoặc thực thi tiến trình hệ thống (system / popen / fork)"),
+
+    # Cấm lệnh thay thế tiến trình
+    (re.compile(r'\b(?:execl|execle|execlp|execv|execve|execvp|execvpe)\s*\(', re.IGNORECASE),
+     "Lệnh thay thế tiến trình (exec)"),
+
+    # Cấm lệnh xóa tệp / thư mục
+    (re.compile(r'\b(?:remove|unlink|rmdir|_rmdir)\s*\(', re.IGNORECASE),
+     "Lệnh xóa tệp hoặc thư mục trên máy chủ"),
+
+    (re.compile(r'\b(?:std::)?filesystem::(?:remove|remove_all)\b', re.IGNORECASE),
+     "Lệnh xóa tệp trong std::filesystem"),
+
+    # Cấm mã assembly nội tuyến
+    (re.compile(r'\b(?:__asm__|__asm)\b|\basm\s*\(', re.IGNORECASE),
+     "Mã hợp ngữ nội tuyến (Inline Assembly)")
+]
+
+def validate_code_safety(code: str) -> tuple[bool, str]:
+    """
+    Kiểm tra tĩnh mã nguồn C++ để phát hiện các lệnh nguy hiểm
+    (system call, socket mạng, xóa tệp) trước khi biên dịch.
+    """
+    if not code:
+        return True, ""
+    for pattern, desc in DANGEROUS_CODE_PATTERNS:
+        match = pattern.search(code)
+        if match:
+            forbidden_call = match.group(0).strip()
+            return False, f"{desc}: `{forbidden_call}`"
+    return True, ""
 
 def get_compiler_version() -> str:
     """Gets installed GCC/G++ version."""
@@ -25,10 +69,10 @@ def get_compiler_version() -> str:
 
 def compile_and_run(code: str, stdin_input: str = "", timeout_sec: int = 5) -> dict:
     """
-    Compiles and executes C++ source code safely.
+    Compiles and executes C++ source code safely with sandbox validation.
     Returns:
         success: bool,
-        stage: 'compile' | 'run',
+        stage: 'compile' | 'run' | 'security',
         output: str,
         error: str,
         execution_time_ms: float,
@@ -44,8 +88,18 @@ def compile_and_run(code: str, stdin_input: str = "", timeout_sec: int = 5) -> d
             "compiler": get_compiler_version()
         }
 
-    # Basic safety filter against dangerous system commands if desired
-    # (Notice: in local desktop environments g++ runs natively)
+    # 1. Kiểm tra an toàn mã nguồn (Sandbox Security Validator)
+    is_safe, security_reason = validate_code_safety(code)
+    if not is_safe:
+        return {
+            "success": False,
+            "stage": "security",
+            "output": "",
+            "error": f"⚠️ Từ chối thực thi vì lý do bảo mật máy chủ: {security_reason}.",
+            "execution_time_ms": 0,
+            "compiler": get_compiler_version()
+        }
+
     with tempfile.TemporaryDirectory() as tmpdir:
         src_path = os.path.join(tmpdir, "solution.cpp")
         exe_path = os.path.join(tmpdir, "solution.exe")
@@ -120,11 +174,19 @@ def compile_and_run(code: str, stdin_input: str = "", timeout_sec: int = 5) -> d
             )
             exec_time_ms = (time.time() - exec_start) * 1000
 
+            stdout_text = run_proc.stdout or ""
+            if len(stdout_text) > MAX_OUTPUT_CHARS:
+                stdout_text = stdout_text[:MAX_OUTPUT_CHARS] + "\n... [Cảnh báo: Đầu ra vượt quá 32KB và đã được hệ thống cắt ngắn để bảo vệ bộ nhớ]"
+
+            stderr_text = run_proc.stderr.strip() if run_proc.stderr else ""
+            if len(stderr_text) > MAX_OUTPUT_CHARS:
+                stderr_text = stderr_text[:MAX_OUTPUT_CHARS] + "\n... [Cảnh báo: Thông báo lỗi stderr vượt quá 32KB]"
+
             return {
                 "success": run_proc.returncode == 0,
                 "stage": "run",
-                "output": run_proc.stdout,
-                "error": run_proc.stderr.strip() if run_proc.stderr else "",
+                "output": stdout_text,
+                "error": stderr_text,
                 "exit_code": run_proc.returncode,
                 "execution_time_ms": round(exec_time_ms, 2),
                 "compile_time_ms": round(compile_time_ms, 2),
@@ -267,10 +329,43 @@ def evaluate_exercise(code: str, expected_output: str, test_keywords: list = Non
         "improvements": improvements
     }
 
+def query_gemini_api(prompt: str, api_key: str) -> str | None:
+    """Gọi Gemini 1.5 Flash API qua urllib nếu có GEMINI_API_KEY."""
+    if not api_key:
+        return None
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
+    payload = {
+        "contents": [
+            {
+                "parts": [
+                    {"text": prompt}
+                ]
+            }
+        ],
+        "generationConfig": {
+            "temperature": 0.4,
+            "maxOutputTokens": 800
+        }
+    }
+    data = json.dumps(payload).encode("utf-8")
+    req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"})
+    try:
+        with urllib.request.urlopen(req, timeout=10) as res:
+            res_data = json.loads(res.read().decode("utf-8"))
+            candidates = res_data.get("candidates", [])
+            if candidates:
+                parts = candidates[0].get("content", {}).get("parts", [])
+                if parts:
+                    return parts[0].get("text", "")
+    except Exception as e:
+        print(f"[Gemini Notice] Không thể kết nối Gemini API ({e}), chuyển sang gia sư quy tắc tĩnh.", file=sys.stderr)
+    return None
+
 def get_ai_mentor_reply(message: str, code: str = "", lesson_info: dict = None) -> dict:
     """
     Trợ lý AI Trợ giảng C++ thông minh:
-    Phân tích lỗi cú pháp g++, giải thích nguyên nhân và đưa ra lời khuyên học tập bằng tiếng Việt.
+    - Nếu có GEMINI_API_KEY: Phân tích bằng mô hình LLM Gemini 1.5 Flash.
+    - Nếu không có API Key hoặc chạy offline: Phân tích chuyên sâu bằng bộ luật Heuristic 15+ mẫu lỗi C++.
     """
     msg_lower = (message or "").strip().lower()
     code = (code or "").strip()
@@ -285,7 +380,42 @@ def get_ai_mentor_reply(message: str, code: str = "", lesson_info: dict = None) 
         if not run_res.get("success"):
             compile_error = run_res.get("error", "")
 
-    # 2. Xử lý khi có lỗi biên dịch thực tế từ g++
+    # 2. Kiểm tra cấu hình Gemini API Key
+    gemini_key = os.environ.get("GEMINI_API_KEY", "").strip()
+    if not gemini_key:
+        cfg_path = os.path.join(os.path.dirname(__file__), "config.json")
+        if os.path.exists(cfg_path):
+            try:
+                with open(cfg_path, "r", encoding="utf-8") as f:
+                    cfg = json.load(f)
+                    gemini_key = cfg.get("GEMINI_API_KEY", "").strip()
+            except Exception:
+                pass
+
+    if gemini_key:
+        prompt_parts = [
+            "Bạn là AI Trợ giảng C++ tận tâm của học viện lập trình CodeLearn C++.",
+            "Hãy trả lời bằng tiếng Việt, dùng Markdown rõ ràng, dễ hiểu cho người mới học.",
+            "Quy tắc quan trọng: Hãy giải thích bản chất lỗi và gợi ý cách tư duy, KHÔNG viết toàn bộ code giải hộ học viên."
+        ]
+        if lesson_info:
+            prompt_parts.append(f"Bài học hiện tại: {lesson_info.get('title', '')} ({lesson_info.get('chapter', '')})")
+        if has_code:
+            prompt_parts.append(f"Code học viên đang viết:\n```cpp\n{code}\n```")
+            if compile_error:
+                prompt_parts.append(f"Lỗi biên dịch thực tế từ trình biên dịch g++:\n```text\n{compile_error}\n```")
+        prompt_parts.append(f"Câu hỏi của học viên: {message}")
+
+        gemini_reply = query_gemini_api("\n\n".join(prompt_parts), gemini_key)
+        if gemini_reply:
+            return {
+                "reply": gemini_reply.strip(),
+                "has_error": bool(compile_error),
+                "error_detail": compile_error or "",
+                "status": "ai_gemini"
+            }
+
+    # 3. Xử lý bằng bộ luật Heuristic khi có lỗi biên dịch thực tế từ g++
     if compile_error:
         err_lower = compile_error.lower()
         if "expected ';'" in err_lower:

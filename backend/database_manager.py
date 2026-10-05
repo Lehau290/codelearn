@@ -25,10 +25,12 @@ DUMP_JSON_PATH = os.path.join(BACKEND_DIR, "database_dump.json")
 BACKUP_DIR = os.path.join(BACKEND_DIR, "backups")
 
 def get_connection():
-    """Tạo kết nối SQLite với Row factory dạng dictionary."""
-    conn = sqlite3.connect(DB_PATH)
+    """Tạo kết nối SQLite với Row factory dạng dictionary và chế độ WAL."""
+    conn = sqlite3.connect(DB_PATH, timeout=10.0)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
+    conn.execute("PRAGMA journal_mode = WAL")
+    conn.execute("PRAGMA busy_timeout = 5000")
     return conn
 
 def init_schema():

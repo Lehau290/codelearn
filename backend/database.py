@@ -14,10 +14,13 @@ DB_PATH = os.path.join(os.path.dirname(__file__), "database.db")
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 def get_connection():
-    """Returns a SQLite connection with dict row factory."""
-    conn = sqlite3.connect(DB_PATH)
+    """Returns a SQLite connection with dict row factory, WAL mode and concurrency timeout."""
+    conn = sqlite3.connect(DB_PATH, timeout=10.0)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
+    conn.execute("PRAGMA journal_mode = WAL")
+    conn.execute("PRAGMA busy_timeout = 5000")
+    conn.execute("PRAGMA synchronous = NORMAL")
     return conn
 
 def hash_password(password: str) -> str:
