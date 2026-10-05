@@ -470,19 +470,32 @@
                             <!-- =====================================
                                  CERTIFICATE OF COMPLETION CARD
                             ====================================== -->
-                            <section class="profile-content-card cert-promo-card" id="certificatePromoCard" style="background: linear-gradient(135deg, rgba(212, 175, 55, 0.08), rgba(132, 125, 232, 0.06)); border: 1px solid rgba(212, 175, 55, 0.3);">
+                            <section class="profile-content-card cert-promo-card state-locked" id="certificatePromoCard">
                                 <div class="profile-content-header" style="border: none; padding-bottom: 0;">
                                     <div>
-                                        <span class="section-label" style="color: #b45309;">OFFICIAL CERTIFICATE</span>
-                                        <h2>Chứng chỉ Tốt nghiệp C++ Master</h2>
+                                        <div id="certStatusBadgeWrapper">
+                                            <span class="cert-status-badge badge-locked" id="certStatusBadge">
+                                                🔒 CHƯA ĐỦ ĐIỀU KIỆN (0/20 BÀI HỌC)
+                                            </span>
+                                        </div>
+                                        <h2 id="certPromoTitle">Chứng chỉ Tốt nghiệp C++ Master</h2>
                                     </div>
-                                    <button type="button" class="btn btn-primary" id="btnOpenCertificate" style="background: linear-gradient(135deg, #d4af37, #b45309); border: none; color: #fff; font-weight: 700; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);">
-                                        Xem &amp; Nhận Chứng chỉ
+                                    <button type="button" class="btn btn-secondary" id="btnOpenCertificate" style="font-weight: 700;">
+                                        🔒 Chưa mở khóa (0/20 bài)
                                     </button>
                                 </div>
-                                <p style="color: var(--text-secondary); margin-top: 14px; font-size: 0.95rem; line-height: 1.6;">
-                                    Sau khi hoàn thành các chặng học C++, bạn sẽ nhận được Chứng chỉ Tốt nghiệp chính thức có mã số xác thực điện tử và con dấu danh dự từ CodeLearn Academy để ghi nhận kỹ năng lập trình thực chiến.
+                                <p id="certPromoDesc" style="color: var(--text-secondary); margin-top: 14px; font-size: 0.95rem; line-height: 1.6;">
+                                    Giấy Chứng Nhận Tốt Nghiệp C++ Master chính thức được trao tặng khi học viên đã hoàn thành xuất sắc toàn bộ 20/20 bài học và bài tập thực hành.
                                 </p>
+                                <div class="cert-mini-progress" id="certMiniProgressBox">
+                                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700;">
+                                        <span style="color: var(--text-secondary);">Tiến độ tốt nghiệp:</span>
+                                        <span id="certMiniProgressText" style="color: var(--primary);">0/20 bài học (0%)</span>
+                                    </div>
+                                    <div class="cert-mini-bar-track">
+                                        <div class="cert-mini-bar-fill" id="certMiniProgressBar" style="width: 0%;"></div>
+                                    </div>
+                                </div>
                             </section>
 
 
@@ -843,50 +856,166 @@
         </section>
 
         <!-- =========================================
-             CERTIFICATE MODAL POPUP
+             CONFETTI CANVAS CELEBRATION
+        ========================================== -->
+        <canvas id="certConfettiCanvas"></canvas>
+
+        <!-- =========================================
+             ROYAL CERTIFICATE MODAL POPUP
         ========================================== -->
         <div id="certificateModal" class="cert-modal-backdrop" hidden>
             <div class="cert-card-container">
-                <button type="button" id="btnCloseCertModal" style="position: absolute; top: 16px; right: 18px; background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #94a3b8;" title="Đóng">✕</button>
+                <!-- 4 Corner Filigrees -->
+                <div class="cert-corner cert-corner-tl"></div>
+                <div class="cert-corner cert-corner-tr"></div>
+                <div class="cert-corner cert-corner-bl"></div>
+                <div class="cert-corner cert-corner-br"></div>
 
+                <button type="button" id="btnCloseCertModal" style="position: absolute; top: 18px; right: 20px; background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #94a3b8; z-index: 10;" title="Đóng">✕</button>
+
+                <!-- Certificate Header -->
                 <div class="cert-header">
+                    <div class="cert-crest">
+                        ★
+                    </div>
                     <div class="cert-logo">
                         CODELEARN ACADEMY
+                    </div>
+                    <div class="cert-tagline">
+                        HỌC VIỆN ĐÀO TẠO LẬP TRÌNH C++ CHUẨN QUỐC TẾ
                     </div>
                     <h1 class="cert-title">CHỨNG CHỈ TỐT NGHIỆP</h1>
                     <span class="cert-subtitle">CERTIFICATE OF EXCELLENCE IN C++ PROGRAMMING</span>
                 </div>
 
+                <!-- Certificate Body -->
                 <div class="cert-body">
-                    <p style="color: #64748b; font-size: 1rem; margin: 0;">Chứng nhận học viên:</p>
+                    <p class="cert-intro-text">Trân trọng chứng nhận học viên:</p>
                     <div class="cert-recipient-name" id="certRecipientName">Lê Trung Hậu</div>
+                    <div class="cert-name-underline">✦</div>
                     <p class="cert-desc">
-                        Đã hoàn thành xuất sắc chương trình đào tạo <strong>"Lập Trình C++ Nền Tảng Đến Thực Chiến"</strong> (20 Chuyên đề chuẩn hóa &amp; 60 Bài tập thực hành, cấu trúc dữ liệu, giải thuật, hướng đối tượng OOP và quản lý bộ nhớ).
+                        Đã hoàn thành xuất sắc toàn bộ 20 Chuyên đề chuẩn hóa &amp; 60 Bài tập thực hành của chương trình đào tạo <strong>"Lập Trình C++ Nền Tảng Đến Thực Chiến"</strong> (Cấu trúc dữ liệu, Thuật toán tối ưu, Lập trình hướng đối tượng OOP và Quản lý bộ nhớ nâng cao).
                     </p>
+                    <div class="cert-distinction-badge">
+                        <span>★</span> XẾP LOẠI: XUẤT SẮC • ĐIỂM TỔNG KẾT: <strong id="certFinalScore">100/100</strong>
+                    </div>
                 </div>
 
+                <!-- Certificate Footer -->
                 <div class="cert-footer-row">
-                    <div>
-                        <div style="font-size: 0.8rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Mã chứng chỉ:</div>
-                        <strong id="certSerialCode" style="font-family: monospace; color: #4338ca; font-size: 0.95rem;">CERT-CPP-2026-8942</strong>
-                        <div style="font-size: 0.8rem; color: #64748b; margin-top: 4px;">Ngày cấp: <span id="certIssueDate">05/10/2026</span></div>
+                    <!-- Left: Verification Credentials & QR -->
+                    <div class="cert-left-meta">
+                        <div class="cert-qr-box" title="Quét mã xác thực chứng chỉ điện tử">
+                            <svg viewBox="0 0 100 100" fill="#1e1b4b">
+                                <rect x="5" y="5" width="28" height="28" rx="2" fill="none" stroke="#1e1b4b" stroke-width="6"/>
+                                <rect x="13" y="13" width="12" height="12"/>
+                                <rect x="67" y="5" width="28" height="28" rx="2" fill="none" stroke="#1e1b4b" stroke-width="6"/>
+                                <rect x="75" y="13" width="12" height="12"/>
+                                <rect x="5" y="67" width="28" height="28" rx="2" fill="none" stroke="#1e1b4b" stroke-width="6"/>
+                                <rect x="13" y="75" width="12" height="12"/>
+                                <rect x="42" y="10" width="8" height="8"/>
+                                <rect x="52" y="20" width="8" height="8"/>
+                                <rect x="42" y="38" width="16" height="8"/>
+                                <rect x="68" y="44" width="8" height="8"/>
+                                <rect x="80" y="52" width="12" height="8"/>
+                                <rect x="42" y="68" width="8" height="18"/>
+                                <rect x="56" y="76" width="12" height="8"/>
+                                <rect x="74" y="68" width="18" height="8"/>
+                                <rect x="84" y="82" width="8" height="10"/>
+                            </svg>
+                        </div>
+                        <div class="cert-meta-info">
+                            <div>MÃ CHỨNG CHỈ:</div>
+                            <strong id="certSerialCode">CERT-CPP-2026-XXXXXX</strong>
+                            <div style="margin-top: 3px;">MÃ BĂM XÁC THỰC (SHA-256):</div>
+                            <div class="cert-hash-snippet" id="certVerifyHash">000000000000...</div>
+                            <div style="margin-top: 3px;">NGÀY CẤP: <span id="certIssueDate">05/10/2026</span></div>
+                        </div>
                     </div>
 
-                    <div class="cert-seal-badge">
-                        <span>VERIFIED</span>
-                        <strong>MASTER</strong>
-                        <span>C++</span>
+                    <!-- Center: 3D Royal Gold Seal Medallion -->
+                    <div class="cert-seal-wrapper">
+                        <div class="cert-seal-badge">
+                            <span class="seal-star">★ ★ ★</span>
+                            <span>VERIFIED</span>
+                            <strong>MASTER</strong>
+                            <span>C++</span>
+                        </div>
+                        <div class="cert-seal-ribbons">
+                            <div class="cert-seal-ribbon ribbon-left"></div>
+                            <div class="cert-seal-ribbon ribbon-right"></div>
+                        </div>
                     </div>
 
-                    <div style="text-align: right;">
-                        <div style="font-family: Georgia, serif; font-size: 1.3rem; font-style: italic; color: #1e1b4b; border-bottom: 1px solid #94a3b8; padding-bottom: 2px;">CodeLearn Team</div>
-                        <div style="font-size: 0.8rem; color: #64748b; margin-top: 4px;">Hội Đồng Đào Tạo CodeLearn C++</div>
+                    <!-- Right: Signature & Official Red Stamp -->
+                    <div class="cert-right-sig">
+                        <div class="cert-sig-container">
+                            <div class="cert-signature-art">CodeLearn Academic Council</div>
+                            <div class="cert-red-stamp" title="Dấu chứng nhận đào tạo chính thức">
+                                <span>CODELEARN</span>
+                                <strong>CHỨNG NHẬN</strong>
+                                <span>C++ ĐẠT CHUẨN</span>
+                            </div>
+                        </div>
+                        <div class="cert-sig-line"></div>
+                        <div class="cert-sig-title">Hội Đồng Đào Tạo CodeLearn C++</div>
                     </div>
                 </div>
 
+                <!-- Actions Bar -->
                 <div class="cert-actions-bar">
-                    <button type="button" class="btn btn-primary" id="btnPrintCert">In / Tải PDF Chứng chỉ</button>
-                    <button type="button" class="btn btn-secondary" id="btnCloseCertAction">Đóng</button>
+                    <button type="button" class="btn btn-primary" id="btnPrintCert" style="background: linear-gradient(135deg, #4f46e5, #4338ca); color: #fff;">
+                        🖨️ In / Tải PDF Chứng chỉ
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="btnCopyVerifyLink">
+                        🔗 Sao chép liên kết xác thực
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="btnCloseCertAction">
+                        Đóng
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- =========================================
+             LOCKED CERTIFICATE REQUIREMENTS MODAL
+        ========================================== -->
+        <div id="certLockedModal" class="cert-modal-backdrop" hidden>
+            <div style="max-width: 520px; width: 100%; background: var(--bg-card, #ffffff); border-radius: 18px; padding: 32px 28px; text-align: center; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4); border: 1px solid var(--border, #e2e8f0); position: relative;">
+                <button type="button" id="btnCloseCertLockedModal" style="position: absolute; top: 16px; right: 18px; background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);" title="Đóng">✕</button>
+                
+                <div style="width: 68px; height: 68px; border-radius: 50%; background: rgba(245, 158, 11, 0.15); color: #d97706; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 16px auto;">
+                    🔒
+                </div>
+
+                <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--text-primary); margin: 0 0 10px 0;">
+                    Chưa Đủ Điều Kiện Nhận Chứng Chỉ
+                </h3>
+
+                <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin: 0 0 20px 0;">
+                    Để đảm bảo chuẩn đầu ra và giá trị uy tín chuyên môn, <strong>Giấy Chứng Nhận Tốt Nghiệp C++ Master</strong> chỉ được trao tặng khi học viên đã hoàn thành xuất sắc <strong>toàn bộ 20/20 bài học</strong> và bài tập thực hành.
+                </p>
+
+                <div style="background: var(--bg-hover, #f8fafc); border: 1px solid var(--border, #e2e8f0); border-radius: 12px; padding: 14px 18px; margin-bottom: 24px; text-align: left;">
+                    <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 0.9rem; margin-bottom: 6px;">
+                        <span style="color: var(--text-secondary);">Tiến độ hiện tại:</span>
+                        <span id="lockedModalProgressText" style="color: var(--primary);">0/20 bài (0%)</span>
+                    </div>
+                    <div class="cert-mini-bar-track">
+                        <div class="cert-mini-bar-fill" id="lockedModalProgressBar" style="width: 0%;"></div>
+                    </div>
+                    <small id="lockedModalRemainingText" style="color: var(--text-secondary); display: block; margin-top: 6px;">
+                        Bạn còn thiếu 20 bài học nữa để mở khóa.
+                    </small>
+                </div>
+
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <a href="lessons.html" class="btn btn-primary" id="btnLockedResumeLearning" style="font-weight: 700;">
+                        Học tiếp ngay →
+                    </a>
+                    <button type="button" class="btn btn-secondary" id="btnLockedDismiss">
+                        Đã hiểu
+                    </button>
                 </div>
             </div>
         </div>

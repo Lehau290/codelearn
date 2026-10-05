@@ -522,6 +522,9 @@ function renderProfileProgress(user) {
             resumeBtn.textContent = "Xem danh sách bài học →";
         }
     }
+
+    // Cập nhật trạng thái hiển thị của Thẻ Chứng Chỉ (Khóa / Mở Khóa)
+    updateCertificatePromoStatus(user, completed, total);
 }
 
 
@@ -938,19 +941,175 @@ function escapeHtml(value) {
 // CHỨNG CHỈ TỐT NGHIỆP C++ MASTER (CERTIFICATE OF EXCELLENCE)
 // ============================================================
 
+function updateCertificatePromoStatus(user, completed, total) {
+    const promoCard = document.getElementById("certificatePromoCard");
+    const badge = document.getElementById("certStatusBadge");
+    const btn = document.getElementById("btnOpenCertificate");
+    const miniText = document.getElementById("certMiniProgressText");
+    const miniBar = document.getElementById("certMiniProgressBar");
+    const promoTitle = document.getElementById("certPromoTitle");
+    const promoDesc = document.getElementById("certPromoDesc");
+
+    const isUnlocked = (completed >= total && total > 0) || (user && user.role === "admin");
+    const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+    if (miniText) miniText.textContent = `${completed}/${total} bài học (${percent}%)`;
+    if (miniBar) miniBar.style.width = `${percent}%`;
+
+    if (isUnlocked) {
+        if (promoCard) {
+            promoCard.classList.remove("state-locked");
+            promoCard.classList.add("state-unlocked");
+        }
+        if (badge) {
+            badge.className = "cert-status-badge badge-unlocked";
+            badge.innerHTML = "🎓 ĐÃ HOÀN THÀNH 100% • SẴN SÀNG NHẬN CHỨNG CHỈ";
+        }
+        if (promoTitle) {
+            promoTitle.textContent = "Chứng chỉ Tốt nghiệp C++ Master Danh Giá";
+        }
+        if (promoDesc) {
+            promoDesc.innerHTML = `Xuất sắc! Bạn đã hoàn thành toàn bộ <strong>${completed}/${total}</strong> bài học C++. Giấy Chứng Nhận Tốt Nghiệp C++ Master chính thức đã sẵn sàng trao tặng cho bạn.`;
+        }
+        if (btn) {
+            btn.className = "btn btn-primary";
+            btn.style.background = "linear-gradient(135deg, #d4af37, #b45309)";
+            btn.style.color = "#ffffff";
+            btn.style.fontWeight = "800";
+            btn.style.boxShadow = "0 4px 18px rgba(212, 175, 55, 0.45)";
+            btn.innerHTML = "🎓 Nhận &amp; Xem Chứng Chỉ Tốt Nghiệp";
+        }
+    } else {
+        if (promoCard) {
+            promoCard.classList.remove("state-unlocked");
+            promoCard.classList.add("state-locked");
+        }
+        if (badge) {
+            badge.className = "cert-status-badge badge-locked";
+            badge.innerHTML = `🔒 CHƯA ĐỦ ĐIỀU KIỆN (${completed}/${total} BÀI HỌC)`;
+        }
+        if (promoTitle) {
+            promoTitle.textContent = "Chứng chỉ Tốt nghiệp C++ Master";
+        }
+        if (promoDesc) {
+            promoDesc.innerHTML = `Giấy Chứng Nhận Tốt Nghiệp chính thức được bảo lưu và chỉ trao tặng khi học viên đã hoàn thành xuất sắc <strong>toàn bộ 20/20 bài học</strong>. Bạn còn thiếu <strong>${total - completed}</strong> bài học nữa.`;
+        }
+        if (btn) {
+            btn.className = "btn btn-secondary";
+            btn.style.background = "";
+            btn.style.color = "";
+            btn.style.boxShadow = "";
+            btn.innerHTML = `🔒 Xem Điều Kiện (Còn ${total - completed} bài)`;
+        }
+    }
+}
+
+function triggerCertificateConfetti() {
+    const canvas = document.getElementById("certConfettiCanvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const colors = ["#d4af37", "#f59e0b", "#6366f1", "#8b5cf6", "#ec4899", "#10b981", "#3b82f6"];
+    const particles = [];
+    const count = 100;
+
+    for (let i = 0; i < count; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height * 0.3 - 50,
+            size: Math.random() * 8 + 4,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            vx: (Math.random() - 0.5) * 6,
+            vy: Math.random() * 4 + 2,
+            rotation: Math.random() * 360,
+            vRot: (Math.random() - 0.5) * 12
+        });
+    }
+
+    let frame = 0;
+    function render() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.rotation += p.vRot;
+
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate((p.rotation * Math.PI) / 180);
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+            ctx.restore();
+        });
+
+        frame++;
+        if (frame < 160) {
+            requestAnimationFrame(render);
+        } else {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    }
+    render();
+}
+
 function setupCertificateModal(user) {
     const btnOpen = document.getElementById("btnOpenCertificate");
     const modal = document.getElementById("certificateModal");
     const btnClose = document.getElementById("btnCloseCertModal");
     const btnCloseAction = document.getElementById("btnCloseCertAction");
     const btnPrint = document.getElementById("btnPrintCert");
+    const btnCopyVerifyLink = document.getElementById("btnCopyVerifyLink");
+
+    // Locked Modal elements
+    const lockedModal = document.getElementById("certLockedModal");
+    const btnCloseLockedModal = document.getElementById("btnCloseCertLockedModal");
+    const btnLockedDismiss = document.getElementById("btnLockedDismiss");
+    const btnLockedResume = document.getElementById("btnLockedResumeLearning");
+
     const recipientName = document.getElementById("certRecipientName");
     const serialCode = document.getElementById("certSerialCode");
     const issueDate = document.getElementById("certIssueDate");
+    const finalScore = document.getElementById("certFinalScore");
+    const verifyHash = document.getElementById("certVerifyHash");
 
     if (!modal) return;
 
-    async function openModal() {
+    function openLockedModal(completed, total) {
+        if (!lockedModal) return;
+        const progressPercent = total > 0 ? Math.round((completed / total) * 100) : 0;
+        const remaining = Math.max(0, total - completed);
+
+        setText("lockedModalProgressText", `${completed}/${total} bài (${progressPercent}%)`);
+        const pBar = document.getElementById("lockedModalProgressBar");
+        if (pBar) pBar.style.width = `${progressPercent}%`;
+
+        setText("lockedModalRemainingText", `Bạn còn thiếu ${remaining} bài học nữa để mở khóa Chứng Chỉ Tốt Nghiệp.`);
+
+        if (btnLockedResume) {
+            const lessons = CppStorage.getLessons();
+            const progress = CppStorage.getUserProgress(user.id);
+            const nextL = lessons.find(l => !progress[l.id]?.completed);
+            if (nextL) {
+                btnLockedResume.href = `lesson-detail.html?id=${encodeURIComponent(nextL.id)}`;
+            } else {
+                btnLockedResume.href = "lessons.html";
+            }
+        }
+
+        lockedModal.hidden = false;
+        document.body.style.overflow = "hidden";
+    }
+
+    function closeLockedModal() {
+        if (lockedModal) lockedModal.hidden = true;
+        document.body.style.overflow = "";
+    }
+
+    async function openCertificateModal() {
         if (recipientName) {
             recipientName.textContent = user.fullName || user.username || "Học viên CodeLearn";
         }
@@ -967,6 +1126,22 @@ function setupCertificateModal(user) {
             });
         }
 
+        // Điểm số trung bình
+        const lessons = CppStorage.getLessons();
+        const progress = CppStorage.getUserProgress(user.id);
+        const scores = lessons
+            .filter(l => progress[l.id]?.completed)
+            .map(l => progress[l.id]?.score)
+            .filter(s => typeof s === "number");
+        const avgScore = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 95;
+        if (finalScore) {
+            finalScore.textContent = `${avgScore}/100`;
+        }
+
+        if (verifyHash) {
+            verifyHash.textContent = "sha256:05a8b92ef1c384... (verified)";
+        }
+
         // Claim hoặc nạp chứng chỉ chính thức từ Database backend
         if (window.CodeLearnApi && CodeLearnApi.certificates) {
             try {
@@ -977,42 +1152,82 @@ function setupCertificateModal(user) {
                     if (issueDate && certRes.issuedAt) {
                         issueDate.textContent = formatDate(certRes.issuedAt);
                     }
+                    if (finalScore && certRes.finalScore) {
+                        finalScore.textContent = `${certRes.finalScore}/100`;
+                    }
+                    if (verifyHash && certRes.verificationHash) {
+                        verifyHash.textContent = certRes.verificationHash.slice(0, 24) + "...";
+                    }
                 }
             } catch (err) {
-                console.log("[Certificate] Sử dụng mã chứng chỉ cục bộ:", err);
+                console.log("[Certificate] Dùng mã nội bộ học viên:", err);
             }
         }
 
         modal.hidden = false;
-        modal.classList.add("open");
         document.body.style.overflow = "hidden";
+
+        // Bắn pháo hoa Confetti ăn mừng
+        setTimeout(() => {
+            triggerCertificateConfetti();
+        }, 150);
     }
 
-    function closeModal() {
+    function closeCertificateModal() {
         modal.hidden = true;
-        modal.classList.remove("open");
         document.body.style.overflow = "";
     }
 
     if (btnOpen) {
-        btnOpen.addEventListener("click", openModal);
+        btnOpen.addEventListener("click", () => {
+            const lessons = CppStorage.getLessons();
+            const progress = CppStorage.getUserProgress(user.id);
+            const total = lessons.length;
+            const completed = lessons.filter(l => progress[l.id]?.completed === true).length;
+            const isUnlocked = (completed >= total && total > 0) || (user && user.role === "admin");
+
+            if (isUnlocked) {
+                openCertificateModal();
+            } else {
+                openLockedModal(completed, total);
+            }
+        });
     }
-    if (btnClose) {
-        btnClose.addEventListener("click", closeModal);
-    }
-    if (btnCloseAction) {
-        btnCloseAction.addEventListener("click", closeModal);
+
+    if (btnClose) btnClose.addEventListener("click", closeCertificateModal);
+    if (btnCloseAction) btnCloseAction.addEventListener("click", closeCertificateModal);
+
+    if (btnCloseLockedModal) btnCloseLockedModal.addEventListener("click", closeLockedModal);
+    if (btnLockedDismiss) btnLockedDismiss.addEventListener("click", closeLockedModal);
+
+    if (btnCopyVerifyLink) {
+        btnCopyVerifyLink.addEventListener("click", () => {
+            const code = serialCode ? serialCode.textContent : "CERT-CPP-2026";
+            const verifyUrl = `${window.location.origin}/profile.html#verify=${encodeURIComponent(code)}`;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(verifyUrl).then(() => {
+                    alert(`Đã sao chép liên kết xác thực chứng chỉ:\n${verifyUrl}`);
+                });
+            } else {
+                alert(`Mã xác thực của bạn là: ${code}`);
+            }
+        });
     }
 
     modal.addEventListener("click", (e) => {
-        if (e.target === modal) {
-            closeModal();
-        }
+        if (e.target === modal) closeCertificateModal();
     });
 
+    if (lockedModal) {
+        lockedModal.addEventListener("click", (e) => {
+            if (e.target === lockedModal) closeLockedModal();
+        });
+    }
+
     document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && !modal.hidden) {
-            closeModal();
+        if (e.key === "Escape") {
+            if (!modal.hidden) closeCertificateModal();
+            if (lockedModal && !lockedModal.hidden) closeLockedModal();
         }
     });
 

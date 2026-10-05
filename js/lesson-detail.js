@@ -1555,12 +1555,8 @@ function setupLessonNavigation(
                 "";
 
         } else {
-
-            nextButton.href =
-                "lessons.html";
-
-            nextButton.textContent =
-                "Hoàn thành khóa học →";
+            nextButton.href = "profile.html";
+            nextButton.textContent = "🎓 Nhận Chứng Chỉ Tốt Nghiệp →";
         }
     }
 }

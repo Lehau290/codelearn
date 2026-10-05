@@ -933,6 +933,21 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
             comp_cnt = stats["comp_cnt"] or 0
             avg_score = round(stats["avg_score"] or 90) if stats["avg_score"] is not None else 90
 
+            # Check total lessons in curriculum
+            cursor.execute("SELECT COUNT(*) as total_lessons FROM lessons")
+            total_row = cursor.fetchone()
+            total_lessons = total_row["total_lessons"] if total_row and total_row["total_lessons"] > 0 else 20
+
+            # Require completing all lessons (unless admin preview)
+            if comp_cnt < total_lessons and user.get("role") != "admin":
+                conn.close()
+                return self.send_json(403, {
+                    "error": f"Bạn cần hoàn thành tất cả {total_lessons} bài học để được cấp Giấy Chứng Nhận Tốt Nghiệp C++ Master. (Hiện tại: {comp_cnt}/{total_lessons} bài)",
+                    "completed": comp_cnt,
+                    "total": total_lessons,
+                    "unlocked": False
+                })
+
             # Generate unique cert code and sha256 hash
             cert_uuid = str(uuid.uuid4()).replace("-", "").upper()[:6]
             cert_code = f"CERT-CPP-2026-{cert_uuid}"
