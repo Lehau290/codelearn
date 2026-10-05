@@ -17,7 +17,9 @@ import json
 import mimetypes
 import urllib.parse
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
-from datetime import datetime
+from datetime import datetime, timedelta
+import uuid
+import hashlib
 
 # Add root directory to sys.path
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -31,7 +33,7 @@ from backend.auth import (
     authenticate_user,
     delete_session
 )
-from backend.compiler import compile_and_run, evaluate_exercise, get_compiler_version, get_ai_mentor_reply
+from backend.compiler import compile_and_run, evaluate_exercise, get_compiler_version, get_ai_mentor_reply, normalize_text
 import time
 import threading
 
@@ -280,7 +282,25 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
             conn.close()
             return self.send_json(200, {"lessons": result})
 
-        # 4. Single lesson (/api/lessons/<id>)
+        # 4. Lesson Comments (/api/lessons/{id}/comments)
+        if path.startswith("/api/lessons/") and path.endswith("/comments"):
+            lid = path.split("/")[3]
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT c.id, c.lesson_id, c.user_id, c.parent_id, c.content, c.created_at,
+                       u.username, u.full_name, u.avatar, u.role
+                FROM comments c
+                JOIN users u ON c.user_id = u.id
+                WHERE c.lesson_id = ?
+                ORDER BY c.created_at DESC
+                LIMIT 100
+            """, (lid,))
+            comments = [dict(r) for r in cursor.fetchall()]
+            conn.close()
+            return self.send_json(200, {"comments": comments, "total": len(comments)})
+
+        # 5. Single lesson (/api/lessons/<id>)
         if path.startswith("/api/lessons/"):
             lesson_id = path[len("/api/lessons/"):].strip()
             conn = get_connection()
@@ -465,6 +485,64 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
             integ = dbm.check_integrity()
             return self.send_json(200, {"stats": stats, "integrity": integ})
 
+        # 10. Verify Certificate (/api/certificates/verify?code=...)
+        if path == "/api/certificates/verify":
+            code = query.get("code", [""])[0].strip()
+            if not code:
+                return self.send_json(400, {"error": "Thiếu mã chứng chỉ cần tra cứu."})
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT c.cert_code, c.course_name, c.final_score, c.issued_at, c.verification_hash,
+                       u.full_name, u.username, u.avatar
+                FROM certificates c
+                JOIN users u ON c.user_id = u.id
+                WHERE c.cert_code = ?
+            """, (code,))
+            row = cursor.fetchone()
+            conn.close()
+            if not row:
+                return self.send_json(404, {"valid": False, "error": f"Không tìm thấy chứng chỉ với mã {code}."})
+            return self.send_json(200, {
+                "valid": True,
+                "certCode": row["cert_code"],
+                "courseName": row["course_name"],
+                "studentName": row["full_name"] or row["username"],
+                "username": row["username"],
+                "finalScore": row["final_score"],
+                "issuedAt": row["issued_at"],
+                "verificationHash": row["verification_hash"]
+            })
+
+        # 11. My Certificates (/api/certificates/me)
+        if path == "/api/certificates/me":
+            if not user:
+                return self.send_json(401, {"error": "Cần đăng nhập."})
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM certificates WHERE user_id = ? ORDER BY issued_at DESC", (user["id"],))
+            certs = [dict(r) for r in cursor.fetchall()]
+            conn.close()
+            return self.send_json(200, {"certificates": certs})
+
+        # 12. Achievements with unlock status (/api/achievements)
+        if path == "/api/achievements":
+            conn = get_connection()
+            cursor = conn.cursor()
+            if user:
+                cursor.execute("""
+                    SELECT a.id, a.code, a.title, a.description, a.points, a.order_num,
+                           ua.unlocked_at, CASE WHEN ua.unlocked_at IS NOT NULL THEN 1 ELSE 0 END as unlocked
+                    FROM achievements a
+                    LEFT JOIN user_achievements ua ON a.id = ua.achievement_id AND ua.user_id = ?
+                    ORDER BY a.order_num ASC
+                """, (user["id"],))
+            else:
+                cursor.execute("SELECT id, code, title, description, points, order_num, 0 as unlocked, NULL as unlocked_at FROM achievements ORDER BY order_num ASC")
+            ach_rows = [dict(r) for r in cursor.fetchall()]
+            conn.close()
+            return self.send_json(200, {"achievements": ach_rows})
+
         return self.send_json(404, {"error": "Endpoint không tồn tại."})
 
     # ---------------------------------------------------------
@@ -558,6 +636,15 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
             expected_output = body.get("expectedOutput", "")
             test_keywords = body.get("testKeywords", [])
 
+            # Check test cases from database
+            cursor.execute("""
+                SELECT id, input_data, expected_output, is_hidden, weight_points, order_num
+                FROM test_cases
+                WHERE lesson_id = ? AND exercise_id = ?
+                ORDER BY order_num ASC
+            """, (lesson_id, exercise_id))
+            db_test_cases = [dict(r) for r in cursor.fetchall()]
+
             # If not provided, fetch from database exercises
             if not expected_output and lesson_id and exercise_id:
                 cursor.execute("SELECT expected_output, test_keywords FROM exercises WHERE lesson_id = ? AND id = ?", (lesson_id, exercise_id))
@@ -566,11 +653,11 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
                     expected_output = ex_row["expected_output"]
                     test_keywords = json.loads(ex_row["test_keywords"] or "[]")
 
-            eval_res = evaluate_exercise(code, expected_output, test_keywords, stdin_input=stdin_val)
+            eval_res = evaluate_exercise(code, expected_output, test_keywords, stdin_input=stdin_val, test_cases=db_test_cases)
 
             # Record submission in database
             now = datetime.now().isoformat()
-            sub_id = "sub-" + str(datetime.now().timestamp())
+            sub_id = "sub-" + str(uuid.uuid4())[:8]
             cursor.execute("""
                 INSERT INTO submissions (id, user_id, lesson_id, exercise_id, code, output, passed, score, execution_time_ms, ai_feedback, submitted_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -588,27 +675,91 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
                 now
             ))
 
-            # If passed and user is logged in, update progress
-            if user_id and lesson_id:
-                cursor.execute("SELECT id, status, score FROM progress WHERE user_id = ? AND lesson_id = ?", (user_id, lesson_id))
-                prog_row = cursor.fetchone()
-                new_status = "completed" if eval_res["passed"] else "in_progress"
-                new_score = max(eval_res["score"], prog_row["score"] if prog_row else 0)
+            # Streak tracking & Progress updating
+            new_achievements = []
+            if user_id:
+                # 1. Update streak
+                today_str = datetime.now().strftime("%Y-%m-%d")
+                cursor.execute("SELECT current_streak, longest_streak, last_study_date FROM users WHERE id = ?", (user_id,))
+                u_row = cursor.fetchone()
+                if u_row:
+                    curr_s = u_row["current_streak"] or 0
+                    long_s = u_row["longest_streak"] or 0
+                    last_d = u_row["last_study_date"]
+                    if last_d != today_str:
+                        yesterday_str = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+                        if last_d == yesterday_str:
+                            curr_s += 1
+                        else:
+                            curr_s = 1
+                        long_s = max(long_s, curr_s)
+                        cursor.execute("UPDATE users SET current_streak = ?, longest_streak = ?, last_study_date = ? WHERE id = ?", (curr_s, long_s, today_str, user_id))
 
-                if prog_row:
-                    cursor.execute("""
-                        UPDATE progress
-                        SET status = ?, code = ?, score = ?, comprehension_level = ?, updated_at = ?, completed_at = CASE WHEN ? = 'completed' AND completed_at IS NULL THEN ? ELSE completed_at END
-                        WHERE user_id = ? AND lesson_id = ?
-                    """, (new_status, code, new_score, eval_res["comprehensionLevel"], now, new_status, now, user_id, lesson_id))
-                else:
-                    cursor.execute("""
-                        INSERT INTO progress (id, user_id, lesson_id, status, code, score, comprehension_level, completed_at, updated_at)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    """, ("prog-" + str(datetime.now().timestamp()), user_id, lesson_id, new_status, code, new_score, eval_res["comprehensionLevel"], now if new_status == "completed" else None, now))
+                # 2. Update progress
+                if lesson_id:
+                    cursor.execute("SELECT id, status, score FROM progress WHERE user_id = ? AND lesson_id = ?", (user_id, lesson_id))
+                    prog_row = cursor.fetchone()
+                    new_status = "completed" if eval_res["passed"] else "in_progress"
+                    new_score = max(eval_res["score"], prog_row["score"] if prog_row else 0)
+
+                    if prog_row:
+                        cursor.execute("""
+                            UPDATE progress
+                            SET status = ?, code = ?, score = ?, comprehension_level = ?, updated_at = ?, completed_at = CASE WHEN ? = 'completed' AND completed_at IS NULL THEN ? ELSE completed_at END
+                            WHERE user_id = ? AND lesson_id = ?
+                        """, (new_status, code, new_score, eval_res["comprehensionLevel"], now, new_status, now, user_id, lesson_id))
+                    else:
+                        cursor.execute("""
+                            INSERT INTO progress (id, user_id, lesson_id, status, code, score, comprehension_level, completed_at, updated_at)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        """, ("prog-" + str(uuid.uuid4())[:8], user_id, lesson_id, new_status, code, new_score, eval_res["comprehensionLevel"], now if new_status == "completed" else None, now))
+
+                # 3. Check and unlock achievements
+                if eval_res.get("passed"):
+                    cursor.execute("SELECT COUNT(DISTINCT lesson_id) as cnt FROM progress WHERE user_id = ? AND status = 'completed'", (user_id,))
+                    comp_cnt = cursor.fetchone()["cnt"] or 0
+
+                    cursor.execute("SELECT achievement_id FROM user_achievements WHERE user_id = ?", (user_id,))
+                    unlocked_ids = {r["achievement_id"] for r in cursor.fetchall()}
+
+                    candidates = []
+                    if comp_cnt >= 1:
+                        candidates.append("first_lesson")
+                    if comp_cnt >= 3:
+                        candidates.append("three_lessons")
+                    if comp_cnt >= 5:
+                        candidates.append("five_lessons")
+                    if comp_cnt >= 10:
+                        candidates.append("half_way")
+                    if comp_cnt >= 20:
+                        candidates.append("master")
+                    if eval_res.get("score", 0) >= 100:
+                        candidates.append("high_score")
+
+                    for code_name in candidates:
+                        cursor.execute("SELECT id, title, description, points FROM achievements WHERE code = ?", (code_name,))
+                        ach = cursor.fetchone()
+                        if ach and ach["id"] not in unlocked_ids:
+                            cursor.execute("INSERT INTO user_achievements (user_id, achievement_id, unlocked_at) VALUES (?, ?, ?)", (user_id, ach["id"], now))
+                            new_achievements.append(dict(ach))
+
+                # 4. Activity log
+                cursor.execute("""
+                    INSERT INTO activity_logs (id, user_id, action, ip_address, details, created_at)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                """, (
+                    str(uuid.uuid4()),
+                    user_id,
+                    "submit_exercise",
+                    client_ip,
+                    f"Lesson: {lesson_id}, Ex: {exercise_id}, Score: {eval_res.get('score', 0)}, Passed: {eval_res.get('passed')}",
+                    now
+                ))
 
             conn.commit()
             conn.close()
+
+            eval_res["newAchievements"] = new_achievements
             return self.send_json(200, eval_res)
 
         # 6. Save User Progress Draft (/api/progress)
@@ -740,6 +891,148 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
                 "message": "Xuất dữ liệu Database thành công!",
                 "sql": os.path.basename(sql_p),
                 "json": os.path.basename(json_p)
+            })
+
+        # 11. Claim Certificate (/api/certificates/claim)
+        if path == "/api/certificates/claim":
+            if not user:
+                return self.send_json(401, {"error": "Bạn cần đăng nhập để cấp chứng chỉ."})
+
+            conn = get_connection()
+            cursor = conn.cursor()
+
+            # Check existing certificate
+            cursor.execute("""
+                SELECT c.cert_code, c.course_name, c.final_score, c.issued_at, c.verification_hash,
+                       u.full_name, u.username
+                FROM certificates c
+                JOIN users u ON c.user_id = u.id
+                WHERE c.user_id = ?
+            """, (user["id"],))
+            existing = cursor.fetchone()
+            if existing:
+                conn.close()
+                return self.send_json(200, {
+                    "claimed": True,
+                    "isNew": False,
+                    "certCode": existing["cert_code"],
+                    "courseName": existing["course_name"],
+                    "studentName": existing["full_name"] or existing["username"],
+                    "finalScore": existing["final_score"],
+                    "issuedAt": existing["issued_at"],
+                    "verificationHash": existing["verification_hash"]
+                })
+
+            # Calculate user's average score across completed lessons
+            cursor.execute("""
+                SELECT COUNT(DISTINCT lesson_id) as comp_cnt, AVG(score) as avg_score
+                FROM progress
+                WHERE user_id = ? AND status = 'completed'
+            """, (user["id"],))
+            stats = cursor.fetchone()
+            comp_cnt = stats["comp_cnt"] or 0
+            avg_score = round(stats["avg_score"] or 90) if stats["avg_score"] is not None else 90
+
+            # Generate unique cert code and sha256 hash
+            cert_uuid = str(uuid.uuid4()).replace("-", "").upper()[:6]
+            cert_code = f"CERT-CPP-2026-{cert_uuid}"
+            now = datetime.now().isoformat()
+            verify_payload = f"{user['id']}:{cert_code}:{now}"
+            verification_hash = hashlib.sha256(verify_payload.encode("utf-8")).hexdigest()
+
+            course_name = body.get("courseName", "Khóa học Lập trình C++ Toàn diện")
+
+            cursor.execute("""
+                INSERT INTO certificates (id, cert_code, user_id, course_name, final_score, issued_at, verification_hash)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (
+                str(uuid.uuid4()),
+                cert_code,
+                user["id"],
+                course_name,
+                avg_score,
+                now,
+                verification_hash
+            ))
+
+            # Activity log
+            cursor.execute("""
+                INSERT INTO activity_logs (id, user_id, action, ip_address, details, created_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (
+                str(uuid.uuid4()),
+                user["id"],
+                "claim_certificate",
+                client_ip,
+                f"CertCode: {cert_code}, Score: {avg_score}",
+                now
+            ))
+
+            conn.commit()
+            conn.close()
+
+            return self.send_json(201, {
+                "claimed": True,
+                "isNew": True,
+                "certCode": cert_code,
+                "courseName": course_name,
+                "studentName": user.get("fullName") or user.get("username"),
+                "finalScore": avg_score,
+                "issuedAt": now,
+                "verificationHash": verification_hash
+            })
+
+        # 12. Add Lesson Comment (/api/lessons/{id}/comments)
+        if path.startswith("/api/lessons/") and path.endswith("/comments"):
+            if not user:
+                return self.send_json(401, {"error": "Bạn cần đăng nhập để gửi bình luận thảo luận."})
+
+            lid = path.split("/")[3]
+            content = body.get("content", "").strip()
+            parent_id = body.get("parentId") or None
+
+            if not content or len(content) < 2:
+                return self.send_json(400, {"error": "Nội dung bình luận quá ngắn (tối thiểu 2 ký tự)."})
+
+            now = datetime.now().isoformat()
+            cid = "cmt-" + str(uuid.uuid4())[:8]
+
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("""
+                INSERT INTO comments (id, lesson_id, user_id, parent_id, content, created_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (cid, lid, user["id"], parent_id, content, now))
+
+            cursor.execute("""
+                INSERT INTO activity_logs (id, user_id, action, ip_address, details, created_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (
+                str(uuid.uuid4()),
+                user["id"],
+                "post_comment",
+                client_ip,
+                f"Lesson: {lid}, CommentId: {cid}",
+                now
+            ))
+
+            conn.commit()
+            conn.close()
+
+            return self.send_json(201, {
+                "message": "Đã gửi bình luận thành công!",
+                "comment": {
+                    "id": cid,
+                    "lesson_id": lid,
+                    "user_id": user["id"],
+                    "parent_id": parent_id,
+                    "content": content,
+                    "created_at": now,
+                    "username": user["username"],
+                    "full_name": user.get("fullName") or user["username"],
+                    "avatar": user.get("avatar") or "",
+                    "role": user.get("role", "student")
+                }
             })
 
         return self.send_json(404, {"error": "Endpoint POST không tồn tại."})

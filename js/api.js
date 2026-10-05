@@ -276,6 +276,51 @@
                     return request("/admin/database/export", { method: "POST" });
                 }
             }
+        },
+
+        // -----------------------------------------------------
+        // Certificates
+        // -----------------------------------------------------
+        certificates: {
+            async claim(courseName = "C++ Master Foundation") {
+                return request("/certificates/claim", {
+                    method: "POST",
+                    body: JSON.stringify({ courseName })
+                });
+            },
+
+            async getMe() {
+                return request("/certificates/me");
+            },
+
+            async verify(code) {
+                return request(`/certificates/verify?code=${encodeURIComponent(code)}`);
+            }
+        },
+
+        // -----------------------------------------------------
+        // Achievements
+        // -----------------------------------------------------
+        achievements: {
+            async get() {
+                return request("/achievements");
+            }
+        },
+
+        // -----------------------------------------------------
+        // Comments & Discussions
+        // -----------------------------------------------------
+        comments: {
+            async getByLesson(lessonId) {
+                return request(`/lessons/${encodeURIComponent(lessonId)}/comments`);
+            },
+
+            async post(lessonId, content, parentId = null) {
+                return request(`/lessons/${encodeURIComponent(lessonId)}/comments`, {
+                    method: "POST",
+                    body: JSON.stringify({ content, parentId })
+                });
+            }
         }
     };
 

@@ -125,6 +125,67 @@ def init_db():
         key TEXT PRIMARY KEY,
         value TEXT NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS certificates (
+        id                TEXT PRIMARY KEY,
+        cert_code         TEXT UNIQUE NOT NULL,
+        user_id           TEXT NOT NULL,
+        course_name       TEXT NOT NULL DEFAULT 'C++ Basic Programming',
+        final_score       INTEGER NOT NULL,
+        issued_at         TEXT NOT NULL,
+        verification_hash TEXT NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS test_cases (
+        id              TEXT PRIMARY KEY,
+        lesson_id       TEXT NOT NULL,
+        exercise_id     TEXT NOT NULL,
+        input_data      TEXT DEFAULT '',
+        expected_output TEXT NOT NULL,
+        is_hidden       INTEGER DEFAULT 0,
+        weight_points   INTEGER DEFAULT 30,
+        order_num       INTEGER NOT NULL DEFAULT 1,
+        FOREIGN KEY (lesson_id, exercise_id) REFERENCES exercises(lesson_id, id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS achievements (
+        id          TEXT PRIMARY KEY,
+        code        TEXT UNIQUE NOT NULL,
+        title       TEXT NOT NULL,
+        description TEXT NOT NULL,
+        points      INTEGER DEFAULT 50,
+        order_num   INTEGER NOT NULL DEFAULT 1
+    );
+
+    CREATE TABLE IF NOT EXISTS user_achievements (
+        user_id        TEXT NOT NULL,
+        achievement_id TEXT NOT NULL,
+        unlocked_at    TEXT NOT NULL,
+        PRIMARY KEY (user_id, achievement_id),
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (achievement_id) REFERENCES achievements(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS comments (
+        id          TEXT PRIMARY KEY,
+        lesson_id   TEXT NOT NULL,
+        user_id     TEXT NOT NULL,
+        parent_id   TEXT,
+        content     TEXT NOT NULL,
+        created_at  TEXT NOT NULL,
+        FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE CASCADE,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS activity_logs (
+        id          TEXT PRIMARY KEY,
+        user_id     TEXT,
+        action      TEXT NOT NULL,
+        ip_address  TEXT DEFAULT '',
+        details     TEXT DEFAULT '',
+        created_at  TEXT NOT NULL
+    );
     """)
     conn.commit()
 

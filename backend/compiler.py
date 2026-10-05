@@ -221,14 +221,231 @@ def normalize_text(text: str) -> str:
     lines = [line.strip() for line in text.replace("\r\n", "\n").replace("\r", "\n").split("\n")]
     return "\n".join(lines).strip()
 
-def evaluate_exercise(code: str, expected_output: str, test_keywords: list = None, stdin_input: str = "") -> dict:
+def evaluate_exercise(code: str, expected_output: str = "", test_keywords: list = None, stdin_input: str = "", test_cases: list = None) -> dict:
     """
     Evaluates exercise code:
+    - If test_cases provided, compiles once and runs against all test cases (public & hidden)
     - Compiles and runs using real G++
     - Verifies test case output
     - Checks required keywords
     - Returns AI grade, score, strengths & improvements
     """
+    if test_cases and len(test_cases) > 0:
+        is_safe, security_reason = validate_code_safety(code)
+        if not is_safe:
+            return {
+                "passed": False,
+                "score": 0,
+                "comprehensionPercent": 0,
+                "comprehensionLevel": "Mã vi phạm an toàn",
+                "execution": {"success": False, "stage": "security", "error": security_reason, "output": ""},
+                "output": "",
+                "error": f"⚠️ Từ chối thực thi vì lý do bảo mật máy chủ: {security_reason}.",
+                "strengths": [],
+                "improvements": ["Không sử dụng các lệnh hệ thống hoặc file stream nguy hiểm."],
+                "testCases": []
+            }
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            src_path = os.path.join(tmpdir, "solution.cpp")
+            exe_path = os.path.join(tmpdir, "solution.exe")
+
+            try:
+                with open(src_path, "w", encoding="utf-8") as f:
+                    f.write(code)
+            except Exception as e:
+                return {
+                    "passed": False,
+                    "score": 0,
+                    "comprehensionPercent": 0,
+                    "comprehensionLevel": "Lỗi lưu file",
+                    "execution": {"success": False, "stage": "compile", "error": str(e), "output": ""},
+                    "output": "",
+                    "error": str(e),
+                    "strengths": [],
+                    "improvements": ["Lỗi ghi tệp mã nguồn."],
+                    "testCases": []
+                }
+
+            compile_start = time.time()
+            try:
+                compile_proc = subprocess.run(
+                    [COMPILER_CMD] + COMPILER_FLAGS + [src_path, "-o", exe_path],
+                    capture_output=True,
+                    text=True,
+                    timeout=12
+                )
+            except subprocess.TimeoutExpired:
+                return {
+                    "passed": False,
+                    "score": 20,
+                    "comprehensionPercent": 20,
+                    "comprehensionLevel": "Quá thời gian biên dịch",
+                    "execution": {"success": False, "stage": "compile", "error": "Compile Timeout > 12s", "output": ""},
+                    "output": "",
+                    "error": "Quá thời gian biên dịch (>12s).",
+                    "strengths": [],
+                    "improvements": ["Đơn giản hóa mã nguồn để tránh quá tải trình biên dịch."],
+                    "testCases": []
+                }
+            except FileNotFoundError:
+                return {
+                    "passed": False,
+                    "score": 0,
+                    "comprehensionPercent": 0,
+                    "comprehensionLevel": "Thiếu trình biên dịch",
+                    "execution": {"success": False, "stage": "compile", "error": "g++ not found", "output": ""},
+                    "output": "",
+                    "error": "Trình biên dịch g++ chưa được cài đặt trong hệ thống.",
+                    "strengths": [],
+                    "improvements": [],
+                    "testCases": []
+                }
+
+            compile_time_ms = (time.time() - compile_start) * 1000
+
+            if compile_proc.returncode != 0:
+                err_msg = re.sub(re.escape(src_path), "solution.cpp", compile_proc.stderr)
+                return {
+                    "passed": False,
+                    "score": 25,
+                    "comprehensionPercent": 25,
+                    "comprehensionLevel": "Cần ôn luyện cú pháp",
+                    "execution": {"success": False, "stage": "compile", "error": err_msg.strip(), "output": "", "compile_time_ms": round(compile_time_ms, 2)},
+                    "output": "",
+                    "error": err_msg.strip(),
+                    "strengths": ["Đã có nỗ lực viết cấu trúc chương trình C++."],
+                    "improvements": [
+                        "Mã nguồn chưa biên dịch được: " + (err_msg.strip().split("\n")[0] if err_msg else ""),
+                        "Kiểm tra lại cấu trúc hàm main, dấu chấm phẩy ';' và thư viện #include <iostream>."
+                    ],
+                    "testCases": []
+                }
+
+            # Compile ok -> Run through all test cases
+            test_results = []
+            passed_count = 0
+            total_exec_time = 0.0
+            first_output = ""
+
+            for idx, tc in enumerate(test_cases):
+                tc_in = tc.get("input_data", "") or ""
+                tc_expected = tc.get("expected_output", "") or ""
+                is_hidden = bool(tc.get("is_hidden", 0))
+
+                t_start = time.time()
+                try:
+                    r_proc = subprocess.run(
+                        [exe_path],
+                        input=tc_in,
+                        capture_output=True,
+                        text=True,
+                        timeout=5
+                    )
+                    t_exec = (time.time() - t_start) * 1000
+                    total_exec_time += t_exec
+                    tc_out = r_proc.stdout or ""
+                    if idx == 0:
+                        first_output = tc_out
+
+                    norm_out = normalize_text(tc_out)
+                    norm_exp = normalize_text(tc_expected)
+                    is_match = (norm_out == norm_exp) or (norm_exp != "" and norm_exp in norm_out)
+
+                    if is_match:
+                        passed_count += 1
+
+                    test_results.append({
+                        "order": idx + 1,
+                        "passed": is_match,
+                        "input": "[Ẩn / Hidden testcase]" if is_hidden else tc_in,
+                        "expected": "[Ẩn / Hidden testcase]" if is_hidden else tc_expected,
+                        "actual": ("[Khớp]" if is_match else "[Sai lệch kết quả]") if is_hidden else tc_out,
+                        "executionTimeMs": round(t_exec, 2),
+                        "isHidden": is_hidden
+                    })
+                except subprocess.TimeoutExpired:
+                    test_results.append({
+                        "order": idx + 1,
+                        "passed": False,
+                        "input": "[Ẩn]" if is_hidden else tc_in,
+                        "expected": "[Ẩn]" if is_hidden else tc_expected,
+                        "actual": "Lỗi chạy quá 5s (Timeout)",
+                        "executionTimeMs": 5000,
+                        "isHidden": is_hidden
+                    })
+                except Exception as ex:
+                    test_results.append({
+                        "order": idx + 1,
+                        "passed": False,
+                        "input": "[Ẩn]" if is_hidden else tc_in,
+                        "expected": "[Ẩn]" if is_hidden else tc_expected,
+                        "actual": f"Lỗi: {str(ex)}",
+                        "executionTimeMs": 0,
+                        "isHidden": is_hidden
+                    })
+
+            total_tc = len(test_cases)
+            tc_ratio = (passed_count / total_tc) if total_tc > 0 else 1.0
+            score = 30 + int(tc_ratio * 50)
+
+            strengths = ["Mã nguồn biên dịch thành công không có lỗi cú pháp."]
+            improvements = []
+
+            if passed_count == total_tc:
+                strengths.append(f"Vượt qua xuất sắc toàn bộ {total_tc}/{total_tc} bộ test kiểm thử.")
+            else:
+                improvements.append(f"Vượt qua {passed_count}/{total_tc} bộ test. Cần kiểm tra lại các trường hợp biên hoặc định dạng xuất.")
+
+            code_lower = code.lower()
+            if test_keywords:
+                matched_kw = [kw for kw in test_keywords if kw.lower() in code_lower]
+                kw_ratio = len(matched_kw) / len(test_keywords) if test_keywords else 1.0
+                score += int(kw_ratio * 20)
+                if kw_ratio >= 0.8:
+                    strengths.append(f"Vận dụng tốt các từ khóa trọng tâm: {', '.join(matched_kw)}.")
+                else:
+                    missing_kw = [kw for kw in test_keywords if kw.lower() not in code_lower]
+                    if missing_kw:
+                        improvements.append(f"Cần áp dụng thêm các cú pháp trọng tâm của bài: {', '.join(missing_kw)}.")
+            else:
+                score += 20
+
+            if "return 0;" in code:
+                strengths.append("Có lệnh 'return 0;' chuẩn mực kết thúc hàm main().")
+
+            score = max(20, min(100, score))
+            passed = (passed_count == total_tc) and (score >= 75)
+
+            if score >= 90:
+                comprehension_level = "Hiểu bài xuất sắc (90%+)"
+            elif score >= 75:
+                comprehension_level = "Đạt yêu cầu (75%+)"
+            elif score >= 50:
+                comprehension_level = "Cần cải thiện (50%+)"
+            else:
+                comprehension_level = "Cần ôn luyện kỹ lại lý thuyết"
+
+            return {
+                "passed": passed,
+                "score": score,
+                "comprehensionPercent": score,
+                "comprehensionLevel": comprehension_level,
+                "execution": {
+                    "success": True,
+                    "stage": "run",
+                    "output": first_output,
+                    "compile_time_ms": round(compile_time_ms, 2),
+                    "execution_time_ms": round(total_exec_time, 2),
+                    "compiler": get_compiler_version()
+                },
+                "output": first_output,
+                "error": "",
+                "strengths": strengths,
+                "improvements": improvements,
+                "testCases": test_results
+            }
+
     run_res = compile_and_run(code, stdin_input=stdin_input, timeout_sec=5)
 
     score = 0

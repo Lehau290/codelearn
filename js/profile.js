@@ -583,9 +583,30 @@ function renderRecentLessons(user) {
 // THÀNH TÍCH (ACHIEVEMENTS)
 // ============================================================
 
-function renderAchievements(user) {
+async function renderAchievements(user) {
     const container = document.getElementById("achievementsList");
     if (!container) return;
+
+    // Check if backend achievements are available
+    if (window.CodeLearnApi && CodeLearnApi.achievements) {
+        try {
+            const res = await CodeLearnApi.achievements.get();
+            if (res && res.achievements && res.achievements.length > 0) {
+                container.innerHTML = res.achievements.map(ach => `
+                    <div class="achievement-card ${ach.unlocked ? '' : 'locked'}">
+                        <div class="achievement-info">
+                            <strong>${escapeHtml(ach.title)}</strong>
+                            <p>${escapeHtml(ach.description)}</p>
+                            <small>${ach.unlocked ? 'Đã mở khóa' : 'Chưa mở khóa'}</small>
+                        </div>
+                    </div>
+                `).join("");
+                return;
+            }
+        } catch (e) {
+            // fallback to local calculation
+        }
+    }
 
     const lessons = CppStorage.getLessons();
     const progress = CppStorage.getUserProgress(user.id);
@@ -929,7 +950,7 @@ function setupCertificateModal(user) {
 
     if (!modal) return;
 
-    function openModal() {
+    async function openModal() {
         if (recipientName) {
             recipientName.textContent = user.fullName || user.username || "Học viên CodeLearn";
         }
@@ -945,6 +966,23 @@ function setupCertificateModal(user) {
                 year: "numeric"
             });
         }
+
+        // Claim hoặc nạp chứng chỉ chính thức từ Database backend
+        if (window.CodeLearnApi && CodeLearnApi.certificates) {
+            try {
+                const certRes = await CodeLearnApi.certificates.claim("Khóa học Lập trình C++ Toàn diện");
+                if (certRes && certRes.certCode) {
+                    if (serialCode) serialCode.textContent = certRes.certCode;
+                    if (recipientName && certRes.studentName) recipientName.textContent = certRes.studentName;
+                    if (issueDate && certRes.issuedAt) {
+                        issueDate.textContent = formatDate(certRes.issuedAt);
+                    }
+                }
+            } catch (err) {
+                console.log("[Certificate] Sử dụng mã chứng chỉ cục bộ:", err);
+            }
+        }
+
         modal.hidden = false;
         modal.classList.add("open");
         document.body.style.overflow = "hidden";

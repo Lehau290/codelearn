@@ -13,15 +13,18 @@ PRAGMA foreign_keys = ON;
 -- 1. BẢNG USERS (Người dùng / Học viên / Quản trị viên)
 -- ------------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS users (
-    id            TEXT PRIMARY KEY,
-    username      TEXT UNIQUE NOT NULL,
-    email         TEXT UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL,
-    full_name     TEXT NOT NULL,
-    role          TEXT NOT NULL DEFAULT 'student', -- 'student' | 'admin'
-    avatar        TEXT DEFAULT '',
-    created_at    TEXT NOT NULL,
-    updated_at    TEXT NOT NULL
+    id             TEXT PRIMARY KEY,
+    username       TEXT UNIQUE NOT NULL,
+    email          TEXT UNIQUE NOT NULL,
+    password_hash  TEXT NOT NULL,
+    full_name      TEXT NOT NULL,
+    role           TEXT NOT NULL DEFAULT 'student', -- 'student' | 'admin'
+    avatar         TEXT DEFAULT '',
+    current_streak INTEGER DEFAULT 0,
+    longest_streak INTEGER DEFAULT 0,
+    last_study_date TEXT DEFAULT '',
+    created_at     TEXT NOT NULL,
+    updated_at     TEXT NOT NULL
 );
 
 CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
@@ -137,3 +140,95 @@ CREATE TABLE IF NOT EXISTS settings (
     key   TEXT PRIMARY KEY,
     value TEXT NOT NULL
 );
+
+-- ------------------------------------------------------------------------------
+-- 8. BẢNG CERTIFICATES (Chứng chỉ tốt nghiệp xác thực)
+-- ------------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS certificates (
+    id                TEXT PRIMARY KEY,
+    cert_code         TEXT UNIQUE NOT NULL,      -- Mã tra cứu: CERT-CPP-2026-XXXX
+    user_id           TEXT NOT NULL,
+    course_name       TEXT NOT NULL DEFAULT 'C++ Basic Programming',
+    final_score       INTEGER NOT NULL,
+    issued_at         TEXT NOT NULL,
+    verification_hash TEXT NOT NULL,             -- Mã băm chống làm giả
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_certificates_code ON certificates(cert_code);
+CREATE INDEX IF NOT EXISTS idx_certificates_user ON certificates(user_id);
+
+-- ------------------------------------------------------------------------------
+-- 9. BẢNG TEST_CASES (Bộ kiểm thử đa trường hợp cho bài tập)
+-- ------------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS test_cases (
+    id              TEXT PRIMARY KEY,
+    lesson_id       TEXT NOT NULL,
+    exercise_id     TEXT NOT NULL,
+    input_data      TEXT DEFAULT '',             -- Dữ liệu stdin (cin)
+    expected_output TEXT NOT NULL,               -- Dữ liệu stdout mong đợi
+    is_hidden       INTEGER DEFAULT 0,           -- 1 = Test ẩn chống gian lận, 0 = Test công khai
+    weight_points   INTEGER DEFAULT 30,          -- Điểm của testcase này
+    order_num       INTEGER NOT NULL DEFAULT 1,
+    FOREIGN KEY (lesson_id, exercise_id) REFERENCES exercises(lesson_id, id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_test_cases_exercise ON test_cases(lesson_id, exercise_id);
+
+-- ------------------------------------------------------------------------------
+-- 10. BẢNG ACHIEVEMENTS (Danh mục danh hiệu & thành tựu học viên)
+-- ------------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS achievements (
+    id          TEXT PRIMARY KEY,
+    code        TEXT UNIQUE NOT NULL,            -- 'first_lesson', 'streak_7', 'master'
+    title       TEXT NOT NULL,
+    description TEXT NOT NULL,
+    points      INTEGER DEFAULT 50,
+    order_num   INTEGER NOT NULL DEFAULT 1
+);
+
+-- ------------------------------------------------------------------------------
+-- 11. BẢNG USER_ACHIEVEMENTS (Thành tựu đã mở khóa của học viên)
+-- ------------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS user_achievements (
+    user_id        TEXT NOT NULL,
+    achievement_id TEXT NOT NULL,
+    unlocked_at    TEXT NOT NULL,
+    PRIMARY KEY (user_id, achievement_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (achievement_id) REFERENCES achievements(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_user_achievements_user ON user_achievements(user_id);
+
+-- ------------------------------------------------------------------------------
+-- 12. BẢNG COMMENTS (Hỏi đáp & Thảo luận bài học)
+-- ------------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS comments (
+    id          TEXT PRIMARY KEY,
+    lesson_id   TEXT NOT NULL,
+    user_id     TEXT NOT NULL,
+    parent_id   TEXT,                            -- Trả lời bình luận khác
+    content     TEXT NOT NULL,
+    created_at  TEXT NOT NULL,
+    FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_comments_lesson ON comments(lesson_id);
+CREATE INDEX IF NOT EXISTS idx_comments_parent ON comments(parent_id);
+
+-- ------------------------------------------------------------------------------
+-- 13. BẢNG ACTIVITY_LOGS (Nhật ký kiểm toán an toàn hệ thống)
+-- ------------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS activity_logs (
+    id          TEXT PRIMARY KEY,
+    user_id     TEXT,
+    action      TEXT NOT NULL,                   -- 'login', 'compile', 'claim_cert', 'update_profile'
+    ip_address  TEXT DEFAULT '',
+    details     TEXT DEFAULT '',
+    created_at  TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_activity_logs_action ON activity_logs(action);
+CREATE INDEX IF NOT EXISTS idx_activity_logs_created_at ON activity_logs(created_at);
