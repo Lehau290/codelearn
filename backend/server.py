@@ -854,51 +854,64 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
             # 1. User Context (Tên, tiến độ, điểm số, streak)
             user_context = None
             if user:
-                conn = get_connection()
-                cursor = conn.cursor()
-                cursor.execute("""
-                    SELECT 
-                        u.full_name, u.username, u.current_streak,
-                        COUNT(CASE WHEN p.status = 'completed' THEN 1 END) as completed_lessons,
-                        COALESCE(AVG(p.score), 0) as avg_score
-                    FROM users u
-                    LEFT JOIN progress p ON u.id = p.user_id
-                    WHERE u.id = ?
-                    GROUP BY u.id
-                """, (user["id"],))
-                u_row = cursor.fetchone()
-                if u_row:
-                    user_context = dict(u_row)
-                conn.close()
+                try:
+                    conn = get_connection()
+                    cursor = conn.cursor()
+                    cursor.execute("""
+                        SELECT 
+                            u.full_name, u.username, u.current_streak,
+                            COUNT(CASE WHEN p.status = 'completed' THEN 1 END) as completed_lessons,
+                            COALESCE(AVG(p.score), 0) as avg_score
+                        FROM users u
+                        LEFT JOIN progress p ON u.id = p.user_id
+                        WHERE u.id = ?
+                        GROUP BY u.id
+                    """, (user["id"],))
+                    u_row = cursor.fetchone()
+                    if u_row:
+                        user_context = dict(u_row)
+                    conn.close()
+                except Exception as ex:
+                    print(f"[AI Ask] Lỗi lấy context người dùng: {ex}")
 
             # 2. Detailed Lesson Context (Nội dung lý thuyết, bài tập)
             lesson_info = None
             if lesson_id:
-                conn = get_connection()
-                cursor = conn.cursor()
-                cursor.execute("SELECT id, title, chapter, description, content, code_starter FROM lessons WHERE id = ?", (lesson_id,))
-                row = cursor.fetchone()
-                if row:
-                    lesson_info = dict(row)
-                    cursor.execute("SELECT id, title, description, expected_output, test_keywords FROM exercises WHERE lesson_id = ?", (lesson_id,))
-                    lesson_info["exercises"] = [dict(ex) for ex in cursor.fetchall()]
-                conn.close()
+                try:
+                    conn = get_connection()
+                    cursor = conn.cursor()
+                    cursor.execute("SELECT id, title, chapter, description, content, starter_code FROM lessons WHERE id = ?", (lesson_id,))
+                    row = cursor.fetchone()
+                    if row:
+                        lesson_info = dict(row)
+                        cursor.execute("SELECT id, title, description, expected_output, test_keywords FROM exercises WHERE lesson_id = ?", (lesson_id,))
+                        lesson_info["exercises"] = [dict(ex) for ex in cursor.fetchall()]
+                    conn.close()
+                except Exception as ex:
+                    print(f"[AI Ask] Lỗi truy vấn bài học: {ex}")
 
-            ai_resp = get_ai_mentor_reply(
-                message, 
-                code=code, 
-                lesson_info=lesson_info, 
-                history=history,
-                persona=persona,
-                user_context=user_context
-            )
+            try:
+                ai_resp = get_ai_mentor_reply(
+                    message, 
+                    code=code, 
+                    lesson_info=lesson_info, 
+                    history=history,
+                    persona=persona,
+                    user_context=user_context
+                )
+            except Exception as ex:
+                print(f"[AI Ask] Lỗi get_ai_mentor_reply: {ex}")
+                ai_resp = {
+                    "reply": "Xin lỗi, đã có gián đoạn xử lý tạm thời. Bạn hãy thử lại câu hỏi nhé!",
+                    "provider": "builtin"
+                }
 
             # 3. Lưu tin nhắn vào Database (Persistent Chat History)
             if user and user.get("id"):
                 now_str = datetime.now().isoformat()
-                conn = get_connection()
-                cursor = conn.cursor()
                 try:
+                    conn = get_connection()
+                    cursor = conn.cursor()
                     # Tin nhắn người dùng
                     cursor.execute("""
                         INSERT INTO ai_chat_messages (id, user_id, role, content, persona, code_snippet, lesson_id, created_at)
@@ -914,10 +927,9 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
                         str(uuid.uuid4()), user["id"], ai_resp.get("reply", ""), persona, lesson_id or '', datetime.now().isoformat()
                     ))
                     conn.commit()
+                    conn.close()
                 except Exception as ex:
                     print(f"[AI Chat log] Lỗi lưu tin nhắn chat: {ex}")
-                finally:
-                    conn.close()
 
             return self.send_json(200, ai_resp)
 

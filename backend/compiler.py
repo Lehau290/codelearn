@@ -1355,6 +1355,55 @@ def generate_heuristic_response(
             "status": "hint"
         }
 
+    # 3b. Xử lý câu chào hỏi tự nhiên (Greetings)
+    greetings = ["hello", "hi", "chào", "xin chào", "hey", "alo", "helo", "chào bạn", "hello bot"]
+    if any(msg_lower == g or msg_lower.startswith(g + " ") for g in greetings):
+        return {
+            "reply": (
+                f"👋 {name_prefix}Chào bạn! Rất vui được đồng hành cùng bạn học lập trình C++!\n\n"
+                f"Mình có thể giúp bạn giải đáp lý thuyết, gợi ý thuật toán, phân tích lỗi code (nhấn 📎) hoặc viết code mẫu. Bạn đang tìm hiểu phần nào trong bài học?"
+            ),
+            "has_error": False,
+            "status": "greeting"
+        }
+
+    # 3c. Xử lý phép tính toán học cơ bản (Math Query)
+    import re
+    math_match = re.search(r'(\d+(?:\.\d+)?)\s*([\+\-\*\/])\s*(\d+(?:\.\d+)?)', msg_clean)
+    if math_match:
+        try:
+            n1 = float(math_match.group(1))
+            op = math_match.group(2)
+            n2 = float(math_match.group(3))
+            res_val = 0
+            if op == '+': res_val = n1 + n2
+            elif op == '-': res_val = n1 - n2
+            elif op == '*': res_val = n1 * n2
+            elif op == '/': res_val = n1 / n2 if n2 != 0 else "Không thể chia cho 0 (Division by zero)"
+
+            res_display = int(res_val) if isinstance(res_val, float) and res_val.is_integer() else res_val
+            n1_display = int(n1) if n1.is_integer() else n1
+            n2_display = int(n2) if n2.is_integer() else n2
+
+            return {
+                "reply": (
+                    f"🔢 **Kết quả:** `{n1_display} {op} {n2_display} = {res_display}`\n\n"
+                    f"Trong C++, bạn có thể tính và in kết quả này như sau:\n"
+                    f"```cpp\n"
+                    f"#include <iostream>\n"
+                    f"using namespace std;\n\n"
+                    f"int main() {{\n"
+                    f"    cout << \"Ket qua: \" << ({n1_display} {op} {n2_display}) << endl;\n"
+                    f"    return 0;\n"
+                    f"}}\n"
+                    f"```"
+                ),
+                "has_error": False,
+                "status": "math_eval"
+            }
+        except Exception:
+            pass
+
     # 4. Tra cứu Knowledge Base chủ đề C++
     for item in CPP_KNOWLEDGE_BASE:
         for kw in item["keywords"]:
