@@ -1431,14 +1431,19 @@ int main() {
 
     function getLessons() {
 
-        const lessons =
+        let lessons =
             getItem(
                 STORAGE_KEYS.LESSONS,
                 []
             );
 
-        if (!Array.isArray(lessons)) {
-            return [];
+        if (!Array.isArray(lessons) || lessons.length === 0) {
+            lessons = Array.isArray(DEFAULT_LESSONS) && DEFAULT_LESSONS.length > 0
+                ? DEFAULT_LESSONS
+                : [];
+            if (lessons.length > 0) {
+                setItem(STORAGE_KEYS.LESSONS, lessons);
+            }
         }
 
         return lessons
@@ -1454,6 +1459,11 @@ int main() {
                     Number(a.order || 0) -
                     Number(b.order || 0)
             );
+    }
+
+    function resetLessons() {
+        setItem(STORAGE_KEYS.LESSONS, DEFAULT_LESSONS);
+        return getLessons();
     }
 
 
@@ -2178,6 +2188,7 @@ int main() {
 
         /* Lessons */
         getLessons,
+        resetLessons,
         saveLessons,
         getLessonById,
         addLesson,

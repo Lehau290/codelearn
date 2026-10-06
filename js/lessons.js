@@ -3,7 +3,7 @@
 // File: js/lessons.js
 // ============================================================
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     const currentUser = CppStorage.getCurrentUser();
 
     // Lấy các thành phần trên trang
@@ -15,14 +15,22 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("lessonList");
     const clearFiltersButton = document.getElementById("clearFiltersButton");
 
-    // Lưu dữ liệu để sử dụng khi lọc
-    let allLessons = CppStorage.getLessons();
+    // Lấy tiến độ người dùng
     const userProgress = currentUser ? CppStorage.getUserProgress(currentUser.id) : {};
+
+    // 1. Tải danh sách bài học ngay từ Storage / DEFAULT_LESSONS để hiển thị tức thì
+    let allLessons = CppStorage.getLessons();
+    if (!allLessons || allLessons.length === 0) {
+        if (typeof CppStorage.resetLessons === "function") {
+            CppStorage.resetLessons();
+        }
+        allLessons = CppStorage.getLessons();
+    }
 
     // Hiển thị bộ lọc chương
     renderChapterFilter(allLessons, chapterFilter);
 
-    // Hiển thị danh sách ban đầu
+    // Hiển thị danh sách ban đầu ngay
     renderLessons(
         allLessons,
         userProgress,
@@ -35,46 +43,72 @@ document.addEventListener("DOMContentLoaded", () => {
         userProgress
     );
 
+    // 2. Tự động đồng bộ với Backend API (/api/lessons) nếu máy chủ đang chạy
+    if (window.CodeLearnApi && typeof CodeLearnApi.lessons?.getAll === "function") {
+        try {
+            const res = await CodeLearnApi.lessons.getAll();
+            const apiLessons = (res && Array.isArray(res.lessons)) ? res.lessons : (Array.isArray(res) ? res : null);
+            if (apiLessons && apiLessons.length > 0) {
+                const storageMap = new Map((allLessons || []).map(l => [String(l.id), l]));
+                const mergedLessons = apiLessons.map(apiL => {
+                    const localL = storageMap.get(String(apiL.id)) || {};
+                    return {
+                        ...localL,
+                        ...apiL,
+                        content: apiL.content || localL.content || localL.theory || "",
+                        theory: apiL.content || localL.theory || localL.content || "",
+                        starterCode: apiL.starterCode || localL.starterCode || "",
+                        example: apiL.example || localL.example || ""
+                    };
+                }).sort((a, b) => Number(a.order || 0) - Number(b.order || 0));
+
+                allLessons = mergedLessons;
+                CppStorage.saveLessons(mergedLessons);
+
+                renderChapterFilter(allLessons, chapterFilter);
+                filterLessons(
+                    allLessons,
+                    userProgress,
+                    lessonList,
+                    searchInput,
+                    chapterFilter,
+                    statusFilter
+                );
+                updateOverallProgress(allLessons, userProgress);
+            }
+        } catch (err) {
+            console.warn("Không thể đồng bộ từ API backend, sử dụng dữ liệu cục bộ:", err);
+        }
+    }
+
+    // Helper kích hoạt lọc
+    function triggerFilter() {
+        if (!allLessons || allLessons.length === 0) {
+            allLessons = CppStorage.getLessons();
+        }
+        filterLessons(
+            allLessons,
+            userProgress,
+            lessonList,
+            searchInput,
+            chapterFilter,
+            statusFilter
+        );
+    }
+
     // Tìm kiếm
     if (searchInput) {
-        searchInput.addEventListener("input", () => {
-            filterLessons(
-                allLessons,
-                userProgress,
-                lessonList,
-                searchInput,
-                chapterFilter,
-                statusFilter
-            );
-        });
+        searchInput.addEventListener("input", triggerFilter);
     }
 
     // Lọc chương
     if (chapterFilter) {
-        chapterFilter.addEventListener("change", () => {
-            filterLessons(
-                allLessons,
-                userProgress,
-                lessonList,
-                searchInput,
-                chapterFilter,
-                statusFilter
-            );
-        });
+        chapterFilter.addEventListener("change", triggerFilter);
     }
 
     // Lọc trạng thái
     if (statusFilter) {
-        statusFilter.addEventListener("change", () => {
-            filterLessons(
-                allLessons,
-                userProgress,
-                lessonList,
-                searchInput,
-                chapterFilter,
-                statusFilter
-            );
-        });
+        statusFilter.addEventListener("change", triggerFilter);
     }
 
     // Xóa bộ lọc
@@ -83,14 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (searchInput) searchInput.value = "";
             if (chapterFilter) chapterFilter.value = "all";
             if (statusFilter) statusFilter.value = "all";
-            filterLessons(
-                allLessons,
-                userProgress,
-                lessonList,
-                searchInput,
-                chapterFilter,
-                statusFilter
-            );
+            triggerFilter();
         });
     }
 });
@@ -105,9 +132,11 @@ function renderChapterFilter(lessons, select) {
         return;
     }
 
+    const currentVal = select.value;
+
     const chapters = [
         ...new Set(
-            lessons
+            (lessons || [])
                 .map(lesson => lesson.chapter)
                 .filter(Boolean)
         )
@@ -127,6 +156,10 @@ function renderChapterFilter(lessons, select) {
 
         select.appendChild(option);
     });
+
+    if (currentVal && Array.from(select.options).some(o => o.value === currentVal)) {
+        select.value = currentVal;
+    }
 }
 
 
@@ -146,6 +179,10 @@ function filterLessons(
         return;
     }
 
+    const currentLessons = (lessons && lessons.length > 0)
+        ? lessons
+        : CppStorage.getLessons();
+
     const searchText = searchInput
         ? searchInput.value
             .trim()
@@ -161,7 +198,7 @@ function filterLessons(
         : "all";
 
 
-    const filteredLessons = lessons.filter(lesson => {
+    const filteredLessons = currentLessons.filter(lesson => {
         // --------------------------------------------
         // Tìm kiếm
         // --------------------------------------------
@@ -189,7 +226,8 @@ function filterLessons(
         // --------------------------------------------
         const matchesChapter =
             selectedChapter === "all" ||
-            lesson.chapter === selectedChapter;
+            lesson.chapter === selectedChapter ||
+            (selectedChapter && lesson.chapter && lesson.chapter.toLowerCase().includes(selectedChapter.toLowerCase()));
 
 
         // --------------------------------------------
@@ -241,22 +279,12 @@ function renderLessons(
     const noLessons = document.getElementById("noLessons");
 
     // Không có kết quả
-    if (!lessons.length) {
+    if (!lessons || !lessons.length) {
         if (noLessons) {
             noLessons.hidden = false;
         }
-        container.innerHTML = `
-            <div class="empty-state">
-                <h3>
-                    Không tìm thấy bài học
-                </h3>
-
-                <p>
-                    Hãy thử thay đổi từ khóa
-                    hoặc bộ lọc.
-                </p>
-            </div>
-        `;
+        // Giữ container trống, KHÔNG hiển thị thêm thẻ empty-state thứ 2 để tránh trùng lặp
+        container.innerHTML = "";
         return;
     }
 
