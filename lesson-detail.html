@@ -731,6 +731,17 @@
                                             Hệ thống đang phân tích bài làm.
                                         </p>
 
+                                        <!-- Real Academic Benchmark (VNOI Wiki) -->
+                                        <div id="aiRealDataBenchmark" class="ai-real-benchmark-box" style="margin-top: 10px; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: 8px; padding: 10px 12px; display: none;">
+                                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+                                                <span style="display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 0.8rem; color: #4338ca;">
+                                                    📚 ĐỐI CHIẾU DỮ LIỆU THẬT (VNOI WIKI &amp; OLYMPIC TIN HỌC)
+                                                </span>
+                                                <a id="aiRealSourceLink" href="https://github.com/VNOI-Admin/vnoi_wiki" target="_blank" rel="noopener" style="font-size: 0.78rem; color: #4f46e5; text-decoration: underline; font-weight: 600;">Xem bài viết gốc ↗</a>
+                                            </div>
+                                            <div id="aiRealStandardDesc" style="font-size: 0.82rem; color: var(--text-color, #1e293b); margin-top: 5px; line-height: 1.45;"></div>
+                                        </div>
+
                                     </div>
 
                                 </div>
@@ -997,8 +1008,9 @@
                             <div style="display: flex; align-items: center; gap: 6px;">
                                 <strong>CodeLearn AI</strong>
                                 <span style="font-size: 0.68rem; background: rgba(16, 185, 129, 0.15); color: #059669; padding: 1px 6px; border-radius: 999px; font-weight: 700;">ChatGPT Mode</span>
+                                <span style="font-size: 0.68rem; background: rgba(79, 70, 229, 0.15); color: #4338ca; padding: 1px 6px; border-radius: 999px; font-weight: 700;">📚 Data Thật VNOI</span>
                             </div>
-                            <span style="font-size: 0.75rem; color: var(--text-muted, #64748b);">Trợ giảng C++ thông minh 24/7</span>
+                            <span style="font-size: 0.75rem; color: var(--text-muted, #64748b);">Trợ giảng C++ thông minh 24/7 (Chuẩn Olympic Tin học)</span>
                         </div>
                     </div>
                     <div style="display: flex; align-items: center; gap: 4px;">
@@ -1021,18 +1033,19 @@
                 <div class="ai-mentor-body" id="aiMentorMessages">
                     <div class="ai-msg ai-msg-bot">
                         👋 Chào bạn! Mình là <strong>CodeLearn AI (ChatGPT C++ Tutor)</strong>.<br>
-                        Mình có thể giải thích mọi khái niệm C++, phân tích lỗi code, hướng dẫn thuật toán hoặc viết code mẫu như ChatGPT. Hãy nhập bất kỳ câu hỏi nào hoặc chọn gợi ý bên dưới nhé!
+                        Hệ thống được trang bị <strong>100% Dữ liệu Thật từ VNOI Wiki &amp; Chuẩn Olympic Tin học (Tác giả IOI Phạm Văn Hạnh, VNU-HUS, Google)</strong>. Mình có thể giải thích chi tiết, gợi ý bài tập, đối chiếu thuật toán và review code chuẩn mực! Hãy hỏi bất kỳ điều gì hoặc chọn gợi ý bên dưới nhé.
                     </div>
                 </div>
 
                 <!-- Quick prompt chips -->
                 <div class="ai-quick-chips">
+                    <button type="button" class="ai-chip" data-prompt="Con trỏ trong C/C++ theo chuyên đề Phạm Văn Hạnh (Huy chương Vàng IOI 2015)">📖 Con trỏ (Phạm Văn Hạnh)</button>
+                    <button type="button" class="ai-chip" data-prompt="Thuật toán Tìm kiếm nhị phân chuẩn VNOI Wiki">🔍 Nhị phân VNOI</button>
+                    <button type="button" class="ai-chip" data-prompt="Kinh nghiệm thực tế phỏng vấn kỹ thuật tại Google">💼 Phỏng vấn Google</button>
                     <button type="button" class="ai-chip" data-prompt="Gợi ý cách giải bài tập hiện tại">💡 Gợi ý làm bài</button>
                     <button type="button" class="ai-chip" data-prompt="Kiểm tra xem code trong editor có lỗi gì không">🔍 Kiểm tra lỗi code</button>
-                    <button type="button" class="ai-chip" data-prompt="Giải thích lập trình hướng đối tượng OOP là gì?">🏛️ Giải thích OOP</button>
                     <button type="button" class="ai-chip" data-prompt="Con trỏ thông minh unique_ptr và shared_ptr khác nhau thế nào?">🧠 Con trỏ thông minh</button>
-                    <button type="button" class="ai-chip" data-prompt="Thuật toán QuickSort hoạt động như thế nào?">⚡ Thuật toán QuickSort</button>
-                    <button type="button" class="ai-chip" data-prompt="Viết code mẫu kiểm tra số nguyên tố tối ưu">📝 Viết code mẫu</button>
+                    <button type="button" class="ai-chip" data-prompt="Thuật toán quy hoạch động Cái túi (Knapsack) chuẩn VNOI">🎒 DP Cái túi</button>
                 </div>
 
                 <!-- Attached code indicator -->

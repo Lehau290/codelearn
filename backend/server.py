@@ -713,7 +713,26 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
                     expected_output = ex_row["expected_output"]
                     test_keywords = json.loads(ex_row["test_keywords"] or "[]")
 
-            eval_res = evaluate_exercise(code, expected_output, test_keywords, stdin_input=stdin_val, test_cases=db_test_cases)
+            # Lấy tiêu đề bài học để đối chiếu với dữ liệu thật VNOI
+            lesson_title = ""
+            if lesson_id:
+                try:
+                    cursor.execute("SELECT title FROM lessons WHERE id = ?", (lesson_id,))
+                    l_row = cursor.fetchone()
+                    if l_row:
+                        lesson_title = l_row["title"]
+                except Exception:
+                    pass
+
+            eval_res = evaluate_exercise(
+                code, 
+                expected_output, 
+                test_keywords, 
+                stdin_input=stdin_val, 
+                test_cases=db_test_cases,
+                lesson_title=lesson_title,
+                lesson_id=lesson_id
+            )
 
             # Record submission in database
             now = datetime.now().isoformat()

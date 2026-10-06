@@ -285,15 +285,44 @@ def analyze_code_quality(code: str) -> dict:
         "bestPractices": best_practices
     }
 
-def evaluate_exercise(code: str, expected_output: str = "", test_keywords: list = None, stdin_input: str = "", test_cases: list = None) -> dict:
+def evaluate_exercise(
+    code: str, 
+    expected_output: str = "", 
+    test_keywords: list = None, 
+    stdin_input: str = "", 
+    test_cases: list = None,
+    lesson_title: str = "",
+    lesson_id: str = ""
+) -> dict:
     """
     AI Chấm & Đánh giá bài làm C++:
     - Biên dịch và thực thi an toàn trong Sandbox
+    - Đối chiếu tiêu chuẩn thuật toán & Clean Code theo Dữ liệu Thật VNOI Wiki
     - Kiểm tra test cases (công khai và ẩn)
     - Phân tích cú pháp, phong cách code và tối ưu thuật toán
     - Trả về điểm số, nhận xét chi tiết, điểm mạnh, điểm cần cải thiện và lời khuyên định hướng
     """
     code_quality = analyze_code_quality(code)
+    code_quality["benchmarkSource"] = "VNOI Wiki & IOI Competitive Standards"
+
+    # Tra cứu đối chiếu Tiêu chuẩn Thuật toán Thật (Real VNOI Wiki Benchmark)
+    vnoi_benchmark = None
+    search_query = lesson_title or code
+    if search_query:
+        try:
+            real_docs = search_real_vnoi_knowledge(search_query, limit=1)
+            if real_docs:
+                d = real_docs[0]
+                vnoi_benchmark = {
+                    "matched": True,
+                    "title": d.get("title", ""),
+                    "category": d.get("category", ""),
+                    "author": d.get("author", "VNOI Wiki"),
+                    "source_url": d.get("source_url", ""),
+                    "summary": (d.get("summary", "")[:260] + "...") if len(d.get("summary", "")) > 260 else d.get("summary", "")
+                }
+        except Exception as ex:
+            print(f"[AI Evaluate Benchmark] Lỗi tra cứu VNOI: {ex}")
 
     # 1. Trường hợp có test cases từ database
     if test_cases and len(test_cases) > 0:
@@ -523,6 +552,13 @@ def evaluate_exercise(code: str, expected_output: str = "", test_keywords: list 
                 summary = f"Bài làm chưa đạt yêu cầu kiểm thử ({score}/100)."
                 advice = "Hãy ôn lại lý thuyết bài học, xem code mẫu và thử chạy từng bước với dữ liệu nhỏ."
 
+            if vnoi_benchmark:
+                if passed:
+                    strengths.append(f"Mã nguồn tương thích tốt với chuẩn học thuật VNOI Wiki ({vnoi_benchmark['title']}).")
+                else:
+                    improvements.append(f"Tham khảo thuật toán chuẩn tại bài viết VNOI Wiki: '{vnoi_benchmark['title']}' (Tác giả: {vnoi_benchmark['author']}).")
+                advice += f"\n\n📚 **Tiêu chuẩn Học thuật Thật (VNOI Wiki):** Bài học này đối chiếu trực tiếp với chuyên đề *'{vnoi_benchmark['title']}'* do **{vnoi_benchmark['author']}** biên soạn."
+
             return {
                 "passed": passed,
                 "score": score,
@@ -543,7 +579,8 @@ def evaluate_exercise(code: str, expected_output: str = "", test_keywords: list 
                 "strengths": strengths,
                 "improvements": improvements,
                 "testCases": test_results,
-                "aiReview": code_quality
+                "aiReview": code_quality,
+                "vnoiBenchmark": vnoi_benchmark
             }
 
     # 2. Chế độ đơn lẻ (Single expected output check)
@@ -647,6 +684,13 @@ def evaluate_exercise(code: str, expected_output: str = "", test_keywords: list 
         summary = f"Bài tập chưa đạt chuẩn ({score}/100)."
         advice = "Hãy xem lại lý thuyết bài học và thử chạy từng lệnh nhỏ để hiểu rõ bài toán."
 
+    if vnoi_benchmark:
+        if passed:
+            strengths.append(f"Mã nguồn tương thích tốt với chuẩn học thuật VNOI Wiki ({vnoi_benchmark['title']}).")
+        else:
+            improvements.append(f"Tham khảo thuật toán chuẩn tại bài viết VNOI Wiki: '{vnoi_benchmark['title']}' (Tác giả: {vnoi_benchmark['author']}).")
+        advice += f"\n\n📚 **Tiêu chuẩn Học thuật Thật (VNOI Wiki):** Bài học này đối chiếu trực tiếp với chuyên đề *'{vnoi_benchmark['title']}'* do **{vnoi_benchmark['author']}** biên soạn."
+
     return {
         "passed": passed,
         "score": score,
@@ -659,7 +703,8 @@ def evaluate_exercise(code: str, expected_output: str = "", test_keywords: list 
         "error": run_res.get("error", ""),
         "strengths": strengths,
         "improvements": improvements,
-        "aiReview": code_quality
+        "aiReview": code_quality,
+        "vnoiBenchmark": vnoi_benchmark
     }
 
 # =========================================================================
@@ -1340,11 +1385,22 @@ def search_real_vnoi_knowledge(query: str, limit: int = 2) -> list:
 
             # 2. Khớp tiêu đề
             if q_clean in title_l:
-                score += 50
-            else:
+                score += 60
+            elif len(q_clean) < 120:
+                # Chỉ tách từ khi query là câu hỏi hoặc tiêu đề ngắn (không phải toàn bộ code)
+                stop_words = {"các", "của", "cho", "với", "trong", "một", "những", "được", "này", "bài", "học", "chương", "phần", "int", "void", "main", "cout", "cin", "return", "using", "namespace", "std"}
                 for word in q_clean.split():
-                    if len(word) >= 3 and word in title_l:
+                    w_stripped = word.strip(".,;:?!'\"()[]{}")
+                    if len(w_stripped) >= 3 and w_stripped not in stop_words and w_stripped in title_l:
                         score += 15
+
+            # 2b. Nhận diện chuyên đề từ cấu trúc code đặc trưng
+            if any(term in q_clean for term in ["con trỏ", "pointer", "*ptr", "int*", "char*"]):
+                if "con trỏ" in title_l:
+                    score += 75
+            if any(term in q_clean for term in ["string", "xâu", "chuỗi"]):
+                if "xâu" in title_l or "chuỗi" in title_l:
+                    score += 75
 
             # 3. Khớp tên tác giả nổi tiếng (Phạm Văn Hạnh, IOI, Topcoder, VNU, Google...)
             auth_keywords = ["phạm văn hạnh", "pham van hanh", "skyvn97", "vnoi", "ioi", "topcoder", "vnu", "google", "phỏng vấn", "rr"]

@@ -1021,7 +1021,8 @@ function setupSubmitButton(
                             improvements: evalRes.improvements,
                             testCases: evalRes.testCases,
                             execution: evalRes.execution,
-                            aiReview: evalRes.aiReview
+                            aiReview: evalRes.aiReview,
+                            vnoiBenchmark: evalRes.vnoiBenchmark
                         };
                         processGrading(adapted);
                     })
@@ -1279,6 +1280,23 @@ function showGradingResult(
     const adviceElem = document.getElementById("aiAdvice");
     if (adviceElem) {
         adviceElem.innerHTML = renderFeedbackList(result.advice, "Hãy tiếp tục thử sức với các bài tập tiếp theo!");
+    }
+
+    // Hiển thị Khối Tiêu chuẩn Thuật toán Thật (VNOI Wiki Benchmark)
+    const realBox = document.getElementById("aiRealDataBenchmark");
+    const realLink = document.getElementById("aiRealSourceLink");
+    const realDesc = document.getElementById("aiRealStandardDesc");
+    if (realBox && result.vnoiBenchmark && result.vnoiBenchmark.matched) {
+        realBox.style.display = "block";
+        if (realLink) {
+            realLink.href = result.vnoiBenchmark.source_url || "https://github.com/VNOI-Admin/vnoi_wiki";
+            realLink.textContent = "Xem bài viết gốc ↗";
+        }
+        if (realDesc) {
+            realDesc.innerHTML = `<strong>${escapeHtml(result.vnoiBenchmark.title)}</strong> (✍️ Tác giả: <em>${escapeHtml(result.vnoiBenchmark.author || 'VNOI')}</em>): ${escapeHtml(result.vnoiBenchmark.summary)}`;
+        }
+    } else if (realBox) {
+        realBox.style.display = "none";
     }
 
     // Hiển thị chi tiết Test Cases nếu có
