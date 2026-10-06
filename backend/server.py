@@ -272,6 +272,39 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
             conn.close()
             return self.send_json(200, {"messages": rows})
 
+        # 3d. VNOI Real Articles API (/api/vnoi/articles)
+        if path == "/api/vnoi/articles":
+            category = query.get("category", [None])[0]
+            search_q = query.get("q", [None])[0]
+            try:
+                conn = get_connection()
+                cursor = conn.cursor()
+                sql = "SELECT id, title, category, author, source_url, keywords, summary, updated_at FROM vnoi_real_knowledge WHERE 1=1"
+                params = []
+                if category:
+                    sql += " AND category = ?"
+                    params.append(category)
+                if search_q:
+                    sql += " AND (title LIKE ? OR summary LIKE ? OR keywords LIKE ?)"
+                    wildcard = f"%{search_q}%"
+                    params.extend([wildcard, wildcard, wildcard])
+                sql += " ORDER BY category, title"
+                cursor.execute(sql, params)
+                rows = [dict(r) for r in cursor.fetchall()]
+                for r in rows:
+                    try:
+                        r["keywords"] = json.loads(r["keywords"])
+                    except Exception:
+                        pass
+                conn.close()
+                return self.send_json(200, {
+                    "count": len(rows),
+                    "source": "VNOI Wiki Official Repository",
+                    "articles": rows
+                })
+            except Exception as e:
+                return self.send_json(500, {"error": f"Lỗi truy vấn dữ liệu VNOI: {str(e)}"})
+
         # 4. All lessons (/api/lessons)
         if path == "/api/lessons":
             conn = get_connection()
@@ -1017,6 +1050,21 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
                 "sql": os.path.basename(sql_p),
                 "json": os.path.basename(json_p)
             })
+
+        # 10b. Admin Sync Real Data from VNOI Wiki (/api/admin/sync-real-data)
+        if path == "/api/admin/sync-real-data":
+            if not user or user["role"] != "admin":
+                return self.send_json(403, {"error": "Chỉ dành cho Quản trị viên."})
+            try:
+                from backend.real_data_sync import sync_real_data
+                count = sync_real_data()
+                return self.send_json(200, {
+                    "success": True,
+                    "count": count,
+                    "message": f"Đã đồng bộ thành công {count} tài liệu C++ & Thuật toán chính thức từ VNOI Wiki."
+                })
+            except Exception as e:
+                return self.send_json(500, {"error": f"Lỗi đồng bộ dữ liệu VNOI: {str(e)}"})
 
         # 11. Claim Certificate (/api/certificates/claim)
         if path == "/api/certificates/claim":

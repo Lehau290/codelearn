@@ -9,6 +9,7 @@ import subprocess
 import tempfile
 import re
 import json
+import sqlite3
 import urllib.request
 import urllib.error
 
@@ -1284,6 +1285,92 @@ def load_custom_knowledge_base() -> dict:
         print(f"[KnowledgeBase] Lỗi tải knowledge_base.json: {e}")
         return _KNOWLEDGE_CACHE or {"topics": [], "conversational_scenarios": []}
 
+def search_real_vnoi_knowledge(query: str, limit: int = 2) -> list:
+    """
+    Tìm kiếm tài liệu học thuật thực tế từ VNOI Wiki & Competitive Programming trong SQLite.
+    Ưu tiên: Khớp từ khóa chuẩn > Khớp tiêu đề > Khớp tác giả/chuyên mục > Khớp tóm tắt.
+    Trả về danh sách dict kèm trường 'match_score'.
+    """
+    if not query:
+        return []
+
+    db_path = os.path.join(os.path.dirname(__file__), "database.db")
+    if not os.path.exists(db_path):
+        return []
+
+    q_clean = query.strip().lower()
+    try:
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='vnoi_real_knowledge'")
+        if not cursor.fetchone():
+            conn.close()
+            return []
+
+        cursor.execute("""
+            SELECT id, title, category, author, source_url, keywords, summary, content, code_sample, updated_at 
+            FROM vnoi_real_knowledge
+        """)
+        rows = cursor.fetchall()
+        conn.close()
+
+        scored = []
+        for r in rows:
+            score = 0
+            keywords = []
+            try:
+                keywords = json.loads(r["keywords"])
+            except Exception:
+                keywords = []
+
+            title_l = (r["title"] or "").lower()
+            summary_l = (r["summary"] or "").lower()
+            author_l = (r["author"] or "").lower()
+            cat_l = (r["category"] or "").lower()
+
+            # 1. Khớp từ khóa VNOI chính thức
+            for kw in keywords:
+                kw_l = kw.lower()
+                if kw_l in q_clean:
+                    score += 60 + len(kw_l) * 2
+                elif len(kw_l) > 3 and kw_l in q_clean:
+                    score += 40
+
+            # 2. Khớp tiêu đề
+            if q_clean in title_l:
+                score += 50
+            else:
+                for word in q_clean.split():
+                    if len(word) >= 3 and word in title_l:
+                        score += 15
+
+            # 3. Khớp tên tác giả nổi tiếng (Phạm Văn Hạnh, IOI, Topcoder, VNU, Google...)
+            auth_keywords = ["phạm văn hạnh", "pham van hanh", "skyvn97", "vnoi", "ioi", "topcoder", "vnu", "google", "phỏng vấn", "rr"]
+            for ak in auth_keywords:
+                if ak in q_clean and ak in author_l:
+                    score += 70
+
+            # 4. Khi người dùng hỏi cụ thể về dữ liệu thật / nguồn học thuật
+            if any(term in q_clean for term in ["dữ liệu thật", "data thật", "vnoi", "wiki", "bài viết"]):
+                score += 25
+
+            # 5. Khớp chuyên mục
+            if cat_l in q_clean:
+                score += 15
+
+            if score > 0:
+                item_dict = dict(r)
+                item_dict["match_score"] = score
+                scored.append((score, item_dict))
+
+        scored.sort(key=lambda x: x[0], reverse=True)
+        return [item[1] for item in scored[:limit]]
+    except Exception as e:
+        print(f"[VNOI Real Search] Lỗi tra cứu VNOI: {e}")
+        return []
+
 def generate_heuristic_response(
     message: str, 
     code: str = "", 
@@ -1444,6 +1531,49 @@ def generate_heuristic_response(
         except Exception:
             pass
 
+    # 4. Tra cứu DỮ LIỆU THẬT 100% từ VNOI Wiki & Chuyên gia IOI (Real VNOI Knowledge)
+    vnoi_hits = search_real_vnoi_knowledge(msg_clean, limit=1)
+    if vnoi_hits:
+        top_vnoi = vnoi_hits[0]
+        score = top_vnoi.get("match_score", 0)
+        is_explicit = any(w in msg_lower for w in ["vnoi", "dữ liệu thật", "data thật", "phạm văn hạnh", "skyvn97", "bài viết thật", "tài liệu gốc", "nguyễn thành trung", "kho tài liệu"])
+        if is_explicit or score >= 50:
+            doc = top_vnoi
+            reply_parts = [
+                f"### 📖 {doc.get('title', 'Tài liệu Chuyên sâu VNOI Wiki')}\n",
+                f"🏷️ **Chuyên mục:** `{doc.get('category', '').upper()}` | ✍️ **Tác giả / Biên soạn:** {doc.get('author') or 'Cộng đồng VNOI'}",
+                f"🔗 **Tài liệu gốc chính thức:** [VNOI Wiki GitHub Repository]({doc.get('source_url')})\n",
+                f"#### 💡 Tóm lược bản chất học thuật:\n{doc.get('summary')}\n"
+            ]
+
+            content_body = doc.get("content", "")
+            clean_body = re.sub(r'^#\s+.*?\n', '', content_body, flags=re.MULTILINE)
+            clean_body = re.sub(r'\*\*Tác giả\*\*:\s*.*?\n', '', clean_body)
+            clean_body = re.sub(r'\[\[_TOC_\]\]', '', clean_body)
+            paragraphs = [p.strip() for p in clean_body.split("\n\n") if p.strip() and not p.startswith("!") and not p.startswith("<img")]
+            if len(paragraphs) > 1:
+                key_text = "\n\n".join(paragraphs[1:3])[:900]
+                if key_text:
+                    reply_parts.append(f"#### 🔍 Trích đoạn phân tích chuyên sâu:\n{key_text}\n")
+
+            if doc.get("code_sample"):
+                reply_parts.append(f"#### 💻 Code mẫu minh họa trích từ bài viết:\n```cpp\n{doc.get('code_sample')[:1000]}\n```\n")
+
+            if persona == "interviewer":
+                reply_parts.append("💼 *FAANG Interviewer Tip: Đây là chủ đề thuật toán trọng tâm trong các kỳ phỏng vấn Big Tech. Đừng chỉ học thuộc code, hãy nắm vững chứng minh tính đúng và phân tích Big-O như tác giả bài viết!*")
+            elif persona == "professor":
+                reply_parts.append("🎓 *Academic Recommendation: Khuyến khích đọc kỹ tài liệu gốc từ VNOI Wiki để rèn luyện tư duy toán học và cấu trúc dữ liệu chuẩn mực.*")
+            else:
+                reply_parts.append("💡 *Gợi ý tự học: Bạn có thể nhấp vào link nguồn bên trên để đọc trọn vẹn toàn bộ bài viết và các bài tập luyện tập thực chiến trên VNOJ!*")
+
+            return {
+                "reply": (f"{name_prefix}\n\n" if name_prefix else "") + "\n".join(reply_parts),
+                "has_error": False,
+                "status": "vnoi_real_data_hit",
+                "source": "vnoi_wiki",
+                "author": doc.get("author")
+            }
+
     # 4a. Tra cứu Topics từ file mở rộng knowledge_base.json (chọn keyword khớp dài nhất & an toàn)
     best_topic = None
     best_match_len = 0
@@ -1592,6 +1722,21 @@ def get_ai_mentor_reply(
                 if len(matched_kb) >= 2: break
         if matched_kb:
             prompt_parts.append("KHO TRI THỨC BỔ TRỢ (RAG KNOWLEDGE CONTEXT):\n" + "\n\n".join(matched_kb))
+
+        # Tra cứu RAG từ DỮ LIỆU THẬT VNOI Wiki & Chuyên gia IOI
+        real_vnoi_docs = search_real_vnoi_knowledge(message, limit=1)
+        if real_vnoi_docs:
+            v_doc = real_vnoi_docs[0]
+            prompt_parts.append(
+                f"KHO TRI THỨC THỰC TẾ CHÍNH THỨC (REAL VNOI WIKI / CP-ALGORITHMS):\n"
+                f"- Tiêu đề bài viết: {v_doc.get('title')}\n"
+                f"- Chuyên mục: {v_doc.get('category')}\n"
+                f"- Tác giả / Biên soạn: {v_doc.get('author')}\n"
+                f"- Nguồn bài viết: {v_doc.get('source_url')}\n"
+                f"- Tóm tắt: {v_doc.get('summary')}\n"
+                f"- Trích đoạn bài viết:\n{v_doc.get('content')[:1200]}...\n"
+                f"*Yêu cầu: Hãy tham khảo trực tiếp và trích dẫn tác giả ({v_doc.get('author')}) hoặc nguồn VNOI Wiki khi trả lời để khẳng định tính chuẩn mực học thuật.*"
+            )
 
         if has_code:
             prompt_parts.append(f"Mã nguồn C++ hiện tại trong editor của học viên:\n```cpp\n{code}\n```")

@@ -249,3 +249,22 @@ CREATE TABLE IF NOT EXISTS ai_chat_messages (
 );
 
 CREATE INDEX IF NOT EXISTS idx_ai_chats_user ON ai_chat_messages(user_id, created_at);
+
+-- ------------------------------------------------------------------------------
+-- 15. BẢNG VNOI_REAL_KNOWLEDGE (Kho tri thức thật từ VNOI Wiki & Competitive Programming)
+-- ------------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS vnoi_real_knowledge (
+    id          TEXT PRIMARY KEY,
+    title       TEXT NOT NULL,
+    category    TEXT NOT NULL,               -- 'languages', 'basic', 'data-structures', 'dp', 'graph', 'interview'
+    author      TEXT DEFAULT '',
+    source_url  TEXT DEFAULT '',
+    keywords    TEXT NOT NULL,               -- JSON array of keywords
+    summary     TEXT NOT NULL,
+    content     TEXT NOT NULL,               -- Full markdown content
+    code_sample TEXT DEFAULT '',
+    updated_at  TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_vnoi_category ON vnoi_real_knowledge(category);
+CREATE INDEX IF NOT EXISTS idx_vnoi_title ON vnoi_real_knowledge(title);

@@ -1,0 +1,300 @@
+{
+  "total_documents": 19,
+  "last_synced": "2026-10-06T10:32:21.374427",
+  "sources": [
+    {
+      "id": "vnoi_cpp_pointers",
+      "title": "Con trỏ trong C/C++",
+      "author": "[Phạm Văn Hạnh](https://github.com/skyvn97/resume/blob/master/PhamVanHanh.pdf) (*skyvn97, prof.PVH, I_love_tigersugar*)",
+      "category": "languages",
+      "keywords": [
+        "con trỏ",
+        "pointer",
+        "địa chỉ",
+        "dereference",
+        "con trỏ hàm",
+        "cấp phát động"
+      ],
+      "summary": "Con trỏ là một trong những tính năng quan trọng của mỗi ngôn ngữ lập trình. Thực tế, để được gọi là sử dụng thành thạo một ngôn ngữ lập trình như C/C++, lập trình viên cần biết cách sử dụng con trỏ. Tuy nhiên, do ít được sử dụng trong các bài toán lập trình ở các kỳ thi học sinh giỏi, nhiều bạn học sinh chuyên tin cấp ba không nắm chắc cách dùng con trỏ, hoặc thậm chỉ bỏ qua phần kiến thức này. Vì",
+      "source_url": "https://github.com/VNOI-Admin/vnoi_wiki/blob/master/languages/cpp/pointers.md",
+      "content_len": 38351
+    },
+    {
+      "id": "vnoi_cpp_string",
+      "title": "Xâu trong C++",
+      "author": "VNOI Community",
+      "category": "languages",
+      "keywords": [
+        "xử lý chuỗi",
+        "string",
+        "chuỗi c++",
+        "char*",
+        "getline"
+      ],
+      "summary": "Bài viết sưu tầm trên mạng.",
+      "source_url": "https://github.com/VNOI-Admin/vnoi_wiki/blob/master/languages/cpp/string.md",
+      "content_len": 14672
+    },
+    {
+      "id": "vnoi_binary_search",
+      "title": "Thuật toán tìm kiếm nhị phân",
+      "author": "- Nguyễn Nhật Minh Khôi - VNU University of Science. Biên soạn lại từ bản dịch của Vũ Thị Thiên Anh",
+      "category": "basic",
+      "keywords": [
+        "tìm kiếm nhị phân",
+        "binary search",
+        "chặt nhị phân",
+        "lower_bound",
+        "upper_bound"
+      ],
+      "summary": "Tìm kiếm nhị phân (hay còn gọi là chặt nhị phân) là một trong số các thuật toán cơ bản của khoa học máy tính. Trong bài viết này, chúng ta sẽ xây dựng một nền tảng lý thuyết, sau đó đưa ra cách cài đặt thuật toán này một cách chuẩn xác.",
+      "source_url": "https://github.com/VNOI-Admin/vnoi_wiki/blob/master/algo/basic/binary-search.md",
+      "content_len": 23527
+    },
+    {
+      "id": "vnoi_bitwise_operators",
+      "title": "Phép toán bit",
+      "author": "VNOI Community",
+      "category": "basic",
+      "keywords": [
+        "phép toán bit",
+        "bitwise",
+        "thao tác bit",
+        "bật tắt bit",
+        "xor",
+        "and",
+        "or"
+      ],
+      "summary": "---\ntitle: Phép toán bit\ndescription: \npublished: true\ndate: 2024-10-24T14:28:27.758Z\ntags: \neditor: markdown\ndateCreated: 2023-12-25T10:59:55.638Z\n---",
+      "source_url": "https://github.com/VNOI-Admin/vnoi_wiki/blob/master/algo/basic/bitwise-operators.md",
+      "content_len": 24733
+    },
+    {
+      "id": "vnoi_computational_complexity",
+      "title": "Độ phức tạp thời gian",
+      "author": "VNOI Community",
+      "category": "basic",
+      "keywords": [
+        "độ phức tạp",
+        "o(n)",
+        "big o",
+        "thời gian chạy",
+        "không gian bộ nhớ"
+      ],
+      "summary": "---\ntitle: Độ phức tạp thời gian\ndescription: \npublished: true\ndate: 2026-08-21T04:03:28.709Z\ntags: \neditor: markdown\ndateCreated: 2023-12-25T10:59:59.368Z\n---",
+      "source_url": "https://github.com/VNOI-Admin/vnoi_wiki/blob/master/algo/basic/computational-complexity.md",
+      "content_len": 18738
+    },
+    {
+      "id": "vnoi_backtracking",
+      "title": "Đệ quy và Thuật toán quay lui",
+      "author": "VNOI Community",
+      "category": "basic",
+      "keywords": [
+        "quay lui",
+        "backtracking",
+        "thử và sai",
+        "n quân hậu",
+        "sinh hoán vị"
+      ],
+      "summary": "---\ntitle: Đệ quy và Thuật toán quay lui\ndescription: \npublished: true\ndate: 2024-08-26T09:35:00.358Z\ntags: \neditor: markdown\ndateCreated: 2023-12-25T10:59:48.774Z\n---",
+      "source_url": "https://github.com/VNOI-Admin/vnoi_wiki/blob/master/algo/basic/backtracking.md",
+      "content_len": 23180
+    },
+    {
+      "id": "vnoi_divide_and_conquer",
+      "title": "Chia để trị (Divide and Conquer)",
+      "author": "VNOI Community",
+      "category": "basic",
+      "keywords": [
+        "chia để trị",
+        "divide and conquer",
+        "quicksort",
+        "mergesort"
+      ],
+      "summary": "---\ntitle: Chia để trị (Divide and Conquer)\ndescription: \npublished: true\ndate: 2024-09-13T06:07:28.334Z\ntags: \neditor: markdown\ndateCreated: 2024-05-07T11:59:22.050Z\n---",
+      "source_url": "https://github.com/VNOI-Admin/vnoi_wiki/blob/master/algo/basic/divide-and-conquer.md",
+      "content_len": 24718
+    },
+    {
+      "id": "vnoi_stack",
+      "title": "**Stack (ngăn xếp)**",
+      "author": "VNOI Community",
+      "category": "data-structures",
+      "keywords": [
+        "stack",
+        "ngăn xếp",
+        "lifo",
+        "push",
+        "pop"
+      ],
+      "summary": "---\ntitle: Stack (ngăn xếp)\ndescription: \npublished: true\ndate: 2025-03-24T17:25:22.689Z\ntags: \neditor: markdown\ndateCreated: 2023-12-25T11:00:37.911Z\n---",
+      "source_url": "https://github.com/VNOI-Admin/vnoi_wiki/blob/master/algo/data-structures/Stack.md",
+      "content_len": 25990
+    },
+    {
+      "id": "vnoi_deque",
+      "title": "Deque - hàng đợi hai đầu",
+      "author": "VNOI Community",
+      "category": "data-structures",
+      "keywords": [
+        "deque",
+        "hàng đợi hai đầu",
+        "sliding window deque",
+        "min max đoạn"
+      ],
+      "summary": "- _Thêm_ một phần tử vào _cuối deque_. **(Push back)**\n  - _Thêm_ một phần tử vào _đầu deque_. **(Push front)**\n  - _Bỏ_ đi phần tử ở _cuối deque_, trả về giá trị của phần tử đó. **(Pop back)**\n  - _Bỏ_ đi phần tử ở _đầu deque_, trả về giá trị của phần tử đó. **(Pop front)**",
+      "source_url": "https://github.com/VNOI-Admin/vnoi_wiki/blob/master/algo/data-structures/Deque.md",
+      "content_len": 9361
+    },
+    {
+      "id": "vnoi_dsu",
+      "title": "Disjoint Set Union",
+      "author": "VNOI Community",
+      "category": "data-structures",
+      "keywords": [
+        "dsu",
+        "disjoint set union",
+        "tập hợp rời rạc",
+        "kruskal",
+        "find union"
+      ],
+      "summary": "---\ntitle: Disjoint Set Union\ndescription: \npublished: true\ndate: 2025-01-31T09:45:46.763Z\ntags: \neditor: markdown\ndateCreated: 2023-12-25T11:00:54.406Z\n---",
+      "source_url": "https://github.com/VNOI-Admin/vnoi_wiki/blob/master/algo/data-structures/disjoint-set-union.md",
+      "content_len": 30253
+    },
+    {
+      "id": "vnoi_array_vs_linked_list",
+      "title": "Mảng và danh sách liên kết",
+      "author": "VNOI Community",
+      "category": "data-structures",
+      "keywords": [
+        "mảng và danh sách liên kết",
+        "array vs linked list",
+        "danh sách liên kết"
+      ],
+      "summary": "Cấu trúc dữ liệu đơn giản nhất chính là các biến (variable). Chúng nắm giữ duy nhất một giá trị, hơn nữa, phạm vi sử dụng có giới hạn. Khi nhiều giá trị cần lưu trữ, [mảng](#mảng-arrays) (arrays) được sử dụng.",
+      "source_url": "https://github.com/VNOI-Admin/vnoi_wiki/blob/master/algo/data-structures/array-vs-linked-lists.md",
+      "content_len": 5707
+    },
+    {
+      "id": "vnoi_dp_basic_1",
+      "title": "Quy hoạch động cơ bản (Phần 1)",
+      "author": "VNOI Community",
+      "category": "dp",
+      "keywords": [
+        "quy hoạch động cơ bản",
+        "dynamic programming",
+        "công thức truy hồi",
+        "bài toán con"
+      ],
+      "summary": "Bài viết có tham khảo và bổ sung, chỉnh sửa từ [TopCoder](https://www.topcoder.com/thrive/articles/Dynamic%20Programming:%20From%20Novice%20to%20Advanced) và một số nguồn khác.",
+      "source_url": "https://github.com/VNOI-Admin/vnoi_wiki/blob/master/algo/dp/basic-dynamic-programming-1.md",
+      "content_len": 29700
+    },
+    {
+      "id": "vnoi_dp_knapsack",
+      "title": "Quy hoạch động cái túi (DP Knapsack), phần 1",
+      "author": "VNOI Community",
+      "category": "dp",
+      "keywords": [
+        "cái túi",
+        "knapsack",
+        "quy hoạch động cái túi",
+        "balo"
+      ],
+      "summary": "---\ntitle: Quy hoạch động cái túi, phần 1\ndescription: \npublished: true\ndate: 2025-12-21T09:16:21.388Z\ntags: \neditor: markdown\ndateCreated: 2025-11-27T14:24:13.740Z\n---",
+      "source_url": "https://github.com/VNOI-Admin/vnoi_wiki/blob/master/algo/dp/dp-knapsack-1.md",
+      "content_len": 30363
+    },
+    {
+      "id": "vnoi_dp_bitmask",
+      "title": "Quy hoạch động Bitmask",
+      "author": "VNOI Community",
+      "category": "dp",
+      "keywords": [
+        "dp bitmask",
+        "quy hoạch động bitmask",
+        "trạng thái bit"
+      ],
+      "summary": "---\ntitle: Quy hoạch động bitmask\ndescription: \npublished: true\ndate: 2024-09-06T04:35:48.793Z\ntags: \neditor: markdown\ndateCreated: 2024-09-02T08:40:16.714Z\n---",
+      "source_url": "https://github.com/VNOI-Admin/vnoi_wiki/blob/master/algo/dp/dp-bitmask.md",
+      "content_len": 9377
+    },
+    {
+      "id": "vnoi_bfs",
+      "title": "BFS (Breadth-first search)",
+      "author": "VNOI Community",
+      "category": "graph",
+      "keywords": [
+        "bfs",
+        "tìm kiếm theo chiều rộng",
+        "đường đi ngắn nhất không trọng số",
+        "queue bfs"
+      ],
+      "summary": "Thuật toán **duyệt đồ thị ưu tiên chiều rộng** *(Breadth-first search - BFS)* là một trong những thuật toán tìm kiếm cơ bản và thiết yếu trên đồ thị. Mà trong đó, những đỉnh nào gần đỉnh xuất phát hơn sẽ được duyệt trước.",
+      "source_url": "https://github.com/VNOI-Admin/vnoi_wiki/blob/master/algo/graph-theory/breadth-first-search.md",
+      "content_len": 46193
+    },
+    {
+      "id": "vnoi_dfs_tree",
+      "title": "Cây DFS (Depth-First Search Tree) và ứng dụng",
+      "author": "VNOI Community",
+      "category": "graph",
+      "keywords": [
+        "dfs",
+        "tìm kiếm theo chiều sâu",
+        "cây dfs",
+        "khớp cầu",
+        "thành phần liên thông"
+      ],
+      "summary": "---\ntitle: Cây DFS (Depth-First Search Tree) và ứng dụng\ndescription: \npublished: true\ndate: 2024-09-25T15:35:52.974Z\ntags: \neditor: markdown\ndateCreated: 2023-12-25T11:02:59.451Z\n---",
+      "source_url": "https://github.com/VNOI-Admin/vnoi_wiki/blob/master/algo/graph-theory/Depth-First-Search-Tree.md",
+      "content_len": 50934
+    },
+    {
+      "id": "vnoi_interview_google",
+      "title": "Kinh nghiệm phỏng vấn Google",
+      "author": "VNOI Community",
+      "category": "interview",
+      "keywords": [
+        "phỏng vấn google",
+        "kinh nghiệm google",
+        "faang interview",
+        "phỏng vấn big tech"
+      ],
+      "summary": "Trong bài viết này mình muốn chia sẻ kinh nghiệm phỏng vấn Google của mình. Mình tên là RR, hiện đang làm Software Engineer ở Google. Trong thời gian làm ở Google, mình đã refer (giới thiệu) hơn 100 bạn vào Google. Mình cũng đã từng phỏng vấn khoảng 60 ứng cử viên. Đứng ở cả 2 phía của quá trình phỏng vấn đã giúp cho mình có cái nhìn rõ ràng hơn về quy trình tuyển dụng của các công ty.",
+      "source_url": "https://github.com/VNOI-Admin/vnoi_wiki/blob/master/interview/Kinh-nghiem-phong-van-Google.md",
+      "content_len": 14011
+    },
+    {
+      "id": "vnoi_interview_practical",
+      "title": "Những lần phỏng vấn và những bài học rút ra",
+      "author": "Lê Trương Quốc Thắng",
+      "category": "interview",
+      "keywords": [
+        "kinh nghiệm phỏng vấn",
+        "phỏng vấn xin việc",
+        "bài học phỏng vấn",
+        "live coding"
+      ],
+      "summary": "Sau phần giới thiệu bản thân, câu hỏi đầu tiên như sau:",
+      "source_url": "https://github.com/VNOI-Admin/vnoi_wiki/blob/master/interview/Nhung-lan-phong-van-trong-thuc-te-va-bai-hoc-rut-ra.md",
+      "content_len": 2856
+    },
+    {
+      "id": "vnoi_interview_perspectives",
+      "title": "Kinh nghiệm phỏng vấn - Góc nhìn từ người phỏng vấn",
+      "author": "Nguyễn *RR* Thành Trung",
+      "category": "interview",
+      "keywords": [
+        "góc nhìn người phỏng vấn",
+        "lời khuyên nhà tuyển dụng",
+        "tiêu chí đánh giá"
+      ],
+      "summary": "Bạn đã bao giờ bước vào một cuộc phỏng vấn mà không biết phải chuẩn bị gì? Bạn đã bao giờ phỏng vấn xong, nghĩ mình trả lời cũng ổn, nhưng vẫn bị đánh trượt? Trong bài viết này, mình muốn chia sẻ về việc phỏng vấn từ góc nhìn của người *phía bên kia chiến tuyến*.",
+      "source_url": "https://github.com/VNOI-Admin/vnoi_wiki/blob/master/interview/experience-from-interviewer.md",
+      "content_len": 10368
+    }
+  ]
+}

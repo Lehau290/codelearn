@@ -186,6 +186,31 @@ def init_db():
         details     TEXT DEFAULT '',
         created_at  TEXT NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS ai_chat_messages (
+        id            TEXT PRIMARY KEY,
+        user_id       TEXT NOT NULL,
+        role          TEXT NOT NULL,
+        content       TEXT NOT NULL,
+        persona       TEXT DEFAULT 'tutor',
+        code_snippet  TEXT DEFAULT '',
+        lesson_id     TEXT DEFAULT '',
+        created_at    TEXT NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS vnoi_real_knowledge (
+        id          TEXT PRIMARY KEY,
+        title       TEXT NOT NULL,
+        category    TEXT NOT NULL,
+        author      TEXT DEFAULT '',
+        source_url  TEXT DEFAULT '',
+        keywords    TEXT NOT NULL,
+        summary     TEXT NOT NULL,
+        content     TEXT NOT NULL,
+        code_sample TEXT DEFAULT '',
+        updated_at  TEXT NOT NULL
+    );
     """)
     conn.commit()
 
