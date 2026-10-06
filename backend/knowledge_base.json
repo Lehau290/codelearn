@@ -1,0 +1,277 @@
+{
+  "version": "2.0.0",
+  "description": "Kho tri thức C++ chuyên sâu và kịch bản sư phạm gợi mở (Socratic Method) cho CodeLearn AI Tutor",
+  "author": "CodeLearn C++ Academy",
+  "socratic_pedagogy": {
+    "core_principles": [
+      "Không bao giờ giải hộ 100% khi học viên mới bắt đầu bài toán; hãy đặt câu hỏi gợi mở để học viên tự nhận ra vấn đề.",
+      "Khen ngợi nỗ lực và tư duy đúng đắn trước khi chỉ ra lỗi sai.",
+      "Đóng vai người bạn đồng hành ân cần, xưng hô 'mình - bạn' hoặc xưng hô theo tên học viên.",
+      "Khi gặp lỗi cú pháp hoặc Segfault, giải thích bản chất phần cứng/bộ nhớ thay vì chỉ sửa dòng code."
+    ],
+    "encouragement_templates": [
+      "Đừng nản lòng nhé! Lập trình C++ đòi hỏi sự kiên nhẫn với từng byte bộ nhớ. Bạn đã đi được một chặng đường rất xa rồi!",
+      "Lỗi này là chuyện rất bình thường, ngay cả kỹ sư lâu năm cũng gặp. Hãy cùng mình mổ xẻ nó nhé!",
+      "Tư duy của bạn đang đi đúng hướng rồi đấy, chỉ cần điều chỉnh một chút ở điều kiện dừng thôi!"
+    ]
+  },
+  "conversational_scenarios": [
+    {
+      "id": "frustrated_learner",
+      "keywords": ["nản", "khó quá", "muốn bỏ", "không hiểu gì", "bế tắc", "mệt mỏi", "học không vào"],
+      "reply": "🌱 **Mình hoàn toàn hiểu cảm giác của bạn lúc này!**\n\nC++ vốn được mệnh danh là một trong những ngôn ngữ lập trình 'khó nhằn' nhất vì nó bắt chúng ta phải tự quản lý bộ nhớ, con trỏ và hiểu sâu bản chất máy tính. Ai khi mới học cũng từng có lúc muốn đập bàn phím vì lỗi Segfault hay con trỏ treo!\n\n💡 **Lời khuyên từ người bạn đồng hành:**\n1. Hãy tạm dừng 5-10 phút, uống một ngụm nước hoặc đi lại thư giãn.\n2. Quay lại chia nhỏ bài toán ra thành từng bước cực nhỏ: Đọc dữ liệu -> Lưu vào biến -> Xử lý 1 trường hợp đơn giản nhất.\n3. Nhấn nút 📎 gửi đoạn code bạn đang viết dở, mình sẽ chỉ ra từng chỗ và đồng hành cùng bạn sửa từng dòng một nhé!"
+    },
+    {
+      "id": "asking_for_complete_solution",
+      "keywords": ["giải hộ", "làm giúp", "cho em đáp án", "code hộ", "chép bài", "cho xin code bài này"],
+      "reply": "😉 **Mình ở đây để giúp bạn trở thành lập trình viên giỏi, chứ không chép bài hộ đâu nè!**\n\nNếu mình đưa luôn đáp án 100%, bạn sẽ mất đi cơ hội rèn luyện tư duy thuật toán quý giá. Thay vào đó, hãy cùng mình giải theo phương pháp từng bước nhé:\n\n1. **Bước 1:** Đề bài đang yêu cầu bạn nhận đầu vào (Input) là gì và cần in ra (Output) cái gì?\n2. **Bước 2:** Bạn dự định dùng cấu trúc dữ liệu nào (biến đơn, mảng `array`, hay `vector`)?\n3. **Bước 3:** Bạn đã thử viết được những dòng code nào chưa? Hãy nhấn nút 📎 đính kèm lên đây, mình sẽ gợi ý bước tiếp theo cho bạn!"
+    },
+    {
+      "id": "compliment_and_thanks",
+      "keywords": ["cảm ơn", "thanks", "hiểu rồi", "hay quá", "tuyệt vời", "pro quá", "thông minh thế"],
+      "reply": "🎉 **Tuyệt vời lắm! Rất mừng là bạn đã nắm được vấn đề!**\n\nCảm giác tự mình hiểu và fix được một bài C++ rất 'đã' đúng không? Hãy giữ vững phong độ này và tiếp tục chinh phục các thử thách tiếp theo nhé. Nếu gặp bất kỳ thắc mắc nào khác, mình luôn ở đây 24/7 để hỗ trợ bạn!"
+    },
+    {
+      "id": "career_guidance",
+      "keywords": ["học c++ để làm gì", "nghề nghiệp c++", "lương c++", "game dev", "embedded", "làm gì với c++"],
+      "reply": "🚀 **C++ mở ra những cánh cửa sự nghiệp đỉnh cao nhất trong ngành công nghệ:**\n\n1. 🎮 **Lập trình Game (Game Engine):** Unreal Engine, Unity Core, các tựa game AAA đều viết bằng C++ vì yêu cầu đồ họa 60-120 FPS thời gian thực.\n2. 🚗 **Hệ thống nhúng & Xe tự hành (Embedded / Automotive):** Vi điều khiển, ô tô điện (Tesla, VinFast), robot, máy bay không người lái.\n3. 💹 **Tài chính tốc độ cao (High Frequency Trading - HFT):** Các quỹ giao dịch phố Wall dùng C++ vì mỗi micro-giây chậm trễ có thể mất hàng triệu đô.\n4. 🤖 **AI & Core Infrastructure:** Nhân của TensorFlow, PyTorch, hệ quản trị CSDL (MySQL, MongoDB), trình duyệt Chrome đều viết bằng C++.\n\n*Học vững C++, bạn sẽ có nền tảng tư duy máy tính vững chắc nhất mà không ngôn ngữ nào thay thế được!*"
+    },
+    {
+      "id": "who_are_you",
+      "keywords": ["bạn là ai", "bạn tên gì", "giới thiệu bản thân", "who are you"],
+      "reply": "👋 Chào bạn! Mình là **CodeLearn AI** — Trợ lý AI và Gia sư Lập trình C++ của bạn.\n\nMình được thiết kế để vừa là **một người thầy tận tâm** (giải thích chuẩn mực theo C++ Core Guidelines, phân tích độ phức tạp O(N), rà soát lỗi bộ nhớ) vừa là **một người bạn học cùng** (luôn lắng nghe, động viên và gợi mở tư duy cho bạn).\n\nBạn có thể hỏi mình bất kỳ khái niệm lý thuyết, thuật toán nào hoặc nhấn 📎 để mình review code nhé!"
+    }
+  ],
+  "topics": [
+    {
+      "id": "variables_datatypes",
+      "title": "Biến, Kiểu dữ liệu & Từ khóa const/constexpr",
+      "keywords": ["biến", "kiểu dữ liệu", "datatype", "int", "float", "double", "char", "bool", "constexpr", "const", "auto"],
+      "summary": "Biến là vùng nhớ có tên để lưu trữ dữ liệu. C++ là ngôn ngữ định kiểu tĩnh (Statically Typed).",
+      "explanation": "Trong C++, mỗi biến có kích thước xác định trong RAM (int: 4 bytes, double: 8 bytes, char: 1 byte). C++11 bổ sung từ khóa `auto` giúp trình biên dịch tự suy luận kiểu. C++14/17 mở rộng `constexpr` để tính toán hằng số ngay tại thời điểm biên dịch (Compile-time evaluation), tối ưu hóa tốc độ cực hạn.",
+      "common_mistakes": "1. Khai báo biến mà quên khởi tạo giá trị ban đầu dẫn đến biến chứa giá trị rác trong ô nhớ (Garbage Value).\n2. Dùng `int` cho các phép tính giai thừa hoặc tổng mảng lớn gây tràn số (Integer Overflow).",
+      "best_practices": "Luôn khởi tạo biến ngay khi khai báo: `int count{0};`. Ưu tiên dùng `constexpr` cho các hằng số không thay đổi.",
+      "code_example": "#include <iostream>\nusing namespace std;\n\nconstexpr double PI = 3.1415926535;\n\nint main() {\n    auto radius = 5.0; // Tự suy luận kiểu double\n    double area = PI * radius * radius;\n    cout << \"Dien tich: \" << area << endl;\n    return 0;\n}"
+    },
+    {
+      "id": "fast_io",
+      "title": "Nhập xuất chuẩn & Kỹ thuật Fast I/O",
+      "keywords": ["nhập xuất", "cin", "cout", "fast io", "cin.ignore", "getline", "endl", "\n"],
+      "summary": "Tối ưu hóa tốc độ đọc ghi dữ liệu với std::cin và std::cout trong các bài toán thi lập trình thi đấu.",
+      "explanation": "Mặc định `std::cin` và `std::cout` đồng bộ hóa với thư viện C (`stdio`), gây chậm khi xử lý hàng triệu dòng dữ liệu. Sử dụng `ios_base::sync_with_stdio(false); cin.tie(NULL);` để ngắt đồng bộ giúp tốc độ đọc ghi ngang ngửa hoặc nhanh hơn `scanf/printf`. Dùng `\\n` thay vì `endl` để tránh xả bộ đệm (flush buffer) liên tục.",
+      "common_mistakes": "Trôi lệnh khi dùng `getline()` ngay sau `cin >>`: do phím Enter (`\\n`) vẫn còn sót lại trong bộ đệm.",
+      "best_practices": "Luôn gọi `cin.ignore();` trước khi dùng `getline()` sau lệnh `cin >>` thông thường.",
+      "code_example": "#include <iostream>\n#include <string>\nusing namespace std;\n\nint main() {\n    // Tang toc I/O\n    ios_base::sync_with_stdio(false);\n    cin.tie(NULL);\n\n    int age;\n    string fullName;\n    cin >> age;\n    cin.ignore(); // Xoa ky tu '\\n' con lai trong bo dem\n    getline(cin, fullName);\n\n    cout << fullName << \" (\" << age << \" tuoi)\\n\";\n    return 0;\n}"
+    },
+    {
+      "id": "control_flow",
+      "title": "Cấu trúc rẽ nhánh & Vòng lặp Range-based for",
+      "keywords": ["vòng lặp", "if else", "switch case", "for", "while", "do while", "range based for"],
+      "summary": "Điều khiển luồng thực thi của chương trình một cách mạch lạc và an toàn.",
+      "explanation": "Ngoài vòng lặp `for` truyền thống, C++11 giới thiệu `range-based for` (`for (const auto& item : container)`) giúp duyệt qua các phần tử của mảng hoặc container STL cực kỳ thanh lịch và không lo tràn chỉ số (Out of bounds).",
+      "common_mistakes": "1. Quên lệnh `break` trong các nhánh của `switch-case` gây ra hiệu ứng rơi qua (Fallthrough).\n2. Vòng lặp vô tận do điều kiện dừng không bao giờ thoả mãn.",
+      "best_practices": "Ưu tiên dùng range-based for với tham chiếu `const auto&` để tránh sao chép dữ liệu không cần thiết.",
+      "code_example": "#include <iostream>\n#include <vector>\nusing namespace std;\n\nint main() {\n    vector<int> nums = {10, 20, 30, 40, 50};\n    for (const auto& val : nums) {\n        cout << val << \" \";\n    }\n    cout << endl;\n    return 0;\n}"
+    },
+    {
+      "id": "functions_references",
+      "title": "Hàm, Tham trị, Tham chiếu (&) và Inline Functions",
+      "keywords": ["hàm", "function", "tham chiếu", "tham trị", "pass by reference", "pass by value", "inline"],
+      "summary": "Phân chia module chương trình và truyền tham số hiệu năng cao bằng tham chiếu.",
+      "explanation": "Khi truyền tham trị (Pass by value), C++ tạo ra một bản sao của đối tượng. Nếu đối tượng lớn (như vector triệu phần tử), việc này làm tụt hiệu năng nghiêm trọng. Truyền tham chiếu `const Type&` cho phép hàm truy cập trực tiếp đối tượng mà không tốn chi phí sao chép (Zero-copy).",
+      "common_mistakes": "Trả về tham chiếu của biến cục bộ bên trong hàm (Dangling Reference), dẫn tới hành vi không xác định (Undefined Behavior).",
+      "best_practices": "Nếu hàm chỉ đọc dữ liệu, hãy truyền `const T&`. Nếu hàm cần thay đổi biến gốc, truyền `T&`.",
+      "code_example": "#include <iostream>\n#include <vector>\nusing namespace std;\n\n// Truyen tham chieu de hoan doi 2 bien thuc te\nvoid swapNums(int& a, int& b) {\n    int temp = a;\n    a = b;\n    b = temp;\n}\n\nint main() {\n    int x = 5, y = 10;\n    swapNums(x, y);\n    cout << \"x = \" << x << \", y = \" << y << endl; // x=10, y=5\n    return 0;\n}"
+    },
+    {
+      "id": "recursion_memoization",
+      "title": "Đệ quy & Kỹ thuật Ghi nhớ (Memoization)",
+      "keywords": ["đệ quy", "recursion", "memoization", "quy hoạch động cơ bản", "fibonacci", "tháp hà nội"],
+      "summary": "Giải quyết bài toán lớn bằng cách gọi lại chính nó với quy mô nhỏ hơn.",
+      "explanation": "Mỗi hàm đệ quy bắt buộc phải có 2 phần: **Điều kiện cơ sở (Base Case)** để dừng, và **Bước đệ quy (Recursive Step)**. Nếu không có điều kiện cơ sở, chương trình sẽ gọi vô hạn gây tràn ngăn xếp (Stack Overflow). Kết hợp mảng ghi nhớ (Memoization) giúp giảm độ phức tạp từ số mũ O(2^N) xuống tuyến tính O(N).",
+      "common_mistakes": "Quên điều kiện dừng hoặc điều kiện dừng không bao giờ đạt được.",
+      "best_practices": "Luôn kiểm tra điều kiện cơ sở ngay đầu thân hàm.",
+      "code_example": "#include <iostream>\n#include <vector>\nusing namespace std;\n\nvector<long long> memo(100, -1);\n\nlong long fib(int n) {\n    if (n <= 1) return n; // Base case\n    if (memo[n] != -1) return memo[n]; // Lay tu cache\n    return memo[n] = fib(n - 1) + fib(n - 2);\n}\n\nint main() {\n    cout << \"Fib(50) = \" << fib(50) << endl;\n    return 0;\n}"
+    },
+    {
+      "id": "pointers_memory",
+      "title": "Con trỏ cơ bản & Quản lý Bộ nhớ Động (new / delete)",
+      "keywords": ["con trỏ", "pointer", "địa chỉ", "address-of", "dereference", "new", "delete", "nullptr", "memory leak"],
+      "summary": "Quản trị trực tiếp ô nhớ RAM với con trỏ - vũ khí tối thượng của lập trình viên C++.",
+      "explanation": "Biến con trỏ lưu trữ địa chỉ ô nhớ của một biến khác. Toán tử `&` lấy địa chỉ, toán tử `*` giải tham chiếu (truy xuất giá trị tại ô nhớ đó). Khi dùng `new`, bộ nhớ được cấp phát trên Heap. Bắt buộc phải giải phóng bằng `delete` (hoặc `delete[]` cho mảng) để tránh rò rỉ bộ nhớ (Memory Leak).",
+      "common_mistakes": "1. Dùng con trỏ rác chưa khởi tạo hoặc con trỏ lơ lửng (Dangling pointer).\n2. Quên gán con trỏ về `nullptr` sau khi đã `delete`.\n3. Cấp phát `new int[N]` nhưng lại giải phóng bằng `delete p` thay vì `delete[] p`.",
+      "best_practices": "Sau khi `delete ptr;`, luôn gán `ptr = nullptr;`.",
+      "code_example": "#include <iostream>\nusing namespace std;\n\nint main() {\n    int* arr = new int[5]{1, 2, 3, 4, 5};\n    for(int i = 0; i < 5; ++i) cout << arr[i] << \" \";\n    cout << endl;\n    delete[] arr; // Giai phong mang dong\n    arr = nullptr; // Phong tranh con tro lo lung\n    return 0;\n}"
+    },
+    {
+      "id": "smart_pointers",
+      "title": "Con trỏ thông minh (std::unique_ptr & std::shared_ptr)",
+      "keywords": ["con trỏ thông minh", "smart pointer", "unique_ptr", "shared_ptr", "weak_ptr", "raii", "make_unique", "make_shared"],
+      "summary": "Tự động quản lý bộ nhớ theo nguyên lý RAII - Không bao giờ lo quên delete hay Memory Leak.",
+      "explanation": "Trong C++ Hiện đại (Modern C++), khuyến cáo không nên dùng `new`/`delete` trần trụi. Thay vào đó dùng:\n- `std::unique_ptr`: Độc quyền sở hữu đối tượng, không thể copy, chỉ có thể move. Tự động giải phóng khi ra khỏi phạm vi.\n- `std::shared_ptr`: Chia sẻ quyền sở hữu bằng cơ chế đếm tham chiếu (Reference Counting).\n- `std::weak_ptr`: Phá vỡ vòng lặp tham chiếu xoay vòng (Circular Reference) gây rò rỉ bộ nhớ.",
+      "common_mistakes": "Hai `shared_ptr` trỏ chéo lẫn nhau khiến biến đếm không bao giờ về 0, gây rò rỉ bộ nhớ ngầm.",
+      "best_practices": "Ưu tiên dùng `std::make_unique` và `std::make_shared` thay vì `new`.",
+      "code_example": "#include <iostream>\n#include <memory>\nusing namespace std;\n\nstruct Player {\n    string name;\n    Player(string n) : name(n) { cout << name << \" tham gia!\\n\"; }\n    ~Player() { cout << name << \" roi tran!\\n\"; }\n};\n\nint main() {\n    // Tu dong giai phong khi het ham main ma khong can goi delete!\n    auto p1 = make_unique<Player>(\"Alice\");\n    return 0;\n}"
+    },
+    {
+      "id": "oop_encapsulation",
+      "title": "OOP 1: Tính Đóng gói, Class vs Struct & Access Specifiers",
+      "keywords": ["oop", "lập trình hướng đối tượng", "đóng gói", "encapsulation", "class", "struct", "public", "private", "protected"],
+      "summary": "Bảo vệ trạng thái bên trong của đối tượng và ngăn chặn can thiệp trực tiếp từ bên ngoài.",
+      "explanation": "Trong C++, điểm khác biệt DUY NHẤT giữa `struct` và `class` là phạm vi mặc định: `struct` mặc định là `public`, còn `class` mặc định là `private`. Tính đóng gói gom nhóm dữ liệu (thuộc tính) và phương thức (hành vi) lại với nhau, ẩn giấu chi tiết cài đặt qua `private` và cung cấp Getter/Setter kiểm soát tính hợp lệ.",
+      "common_mistakes": "Để toàn bộ thuộc tính ở `public`, làm mất đi tính toàn vẹn của dữ liệu.",
+      "best_practices": "Đặt thuộc tính ở `private`, chỉ mở các phương thức công khai thật sự cần thiết.",
+      "code_example": "#include <iostream>\nusing namespace std;\n\nclass BankAccount {\nprivate:\n    double balance{0.0};\npublic:\n    void deposit(double amount) {\n        if (amount > 0) balance += amount;\n    }\n    double getBalance() const { return balance; }\n};\n\nint main() {\n    BankAccount acc;\n    acc.deposit(500.0);\n    cout << \"So du: \" << acc.getBalance() << \" USD\\n\";\n    return 0;\n}"
+    },
+    {
+      "id": "oop_inheritance_polymorphism",
+      "title": "OOP 2: Kế thừa, Đa hình, Virtual Functions & Vtable",
+      "keywords": ["kế thừa", "đa hình", "inheritance", "polymorphism", "virtual", "override", "vtable", "virtual destructor", "abstract class"],
+      "summary": "Tái sử dụng mã nguồn và hành vi linh hoạt của đối tượng thông qua cơ chế Đa hình động (Dynamic Dispatch).",
+      "explanation": "Từ khóa `virtual` kích hoạt cơ chế liên kết muộn (Late Binding). Trình biên dịch tạo ra một bảng hàm ảo (`vtable`) để xác định đúng phương thức của lớp con được gọi tại thời điểm chạy (Runtime). Lớp cha có phương thức `virtual` BẮT BUỘC phải có `virtual ~Destructor()` để tránh việc lớp con bị rò rỉ tài nguyên khi hủy qua con trỏ lớp cha.",
+      "common_mistakes": "Quên khai báo `virtual ~Base()` khiến destructor của lớp con không bao giờ được gọi khi dùng `delete basePtr;`.",
+      "best_practices": "Luôn dùng từ khóa `override` ở lớp con để trình biên dịch kiểm tra chính xác chữ ký hàm.",
+      "code_example": "#include <iostream>\nusing namespace std;\n\nclass Animal {\npublic:\n    virtual void makeSound() const { cout << \"Tieng keu dong vat\\n\"; }\n    virtual ~Animal() = default; // Virtual Destructor bat buoc!\n};\n\nclass Dog : public Animal {\npublic:\n    void makeSound() const override { cout << \"Gau gau!\\n\"; }\n};\n\nint main() {\n    Animal* pet = new Dog();\n    pet->makeSound(); // In ra: Gau gau! (Da hinh hoat dong)\n    delete pet;\n    return 0;\n}"
+    },
+    {
+      "id": "copy_and_move_semantics",
+      "title": "Rule of 3 / 5 & Cơ chế Di chuyển (Move Semantics)",
+      "keywords": ["move semantics", "std::move", "rvalue", "lvalue", "rule of 3", "rule of 5", "copy constructor"],
+      "summary": "Tối ưu hóa hiệu năng đỉnh cao bằng cách 'chuyển nhượng' tài nguyên thay vì sao chép sâu tốn kém.",
+      "explanation": "C++11 giới thiệu khái niệm Rvalue Reference (`Type&&`) và `std::move`. Thay vì phải cấp phát mảng mới và sao chép từng phần tử (Deep Copy), Move Constructor 'đánh cắp' con trỏ vùng nhớ từ đối tượng tạm thời và gán con trỏ cũ về `nullptr`. Quy tắc Rule of 5: Nếu bạn tự định nghĩa Destructor, bạn nên cân nhắc định nghĩa: Copy Constructor, Copy Assignment, Move Constructor, Move Assignment.",
+      "common_mistakes": "Sau khi gọi `std::move(obj)`, tiếp tục dùng lại `obj` trong khi nó đã bị 'rút ruột' tài nguyên.",
+      "best_practices": "Chỉ dùng `std::move` khi bạn chắc chắn không còn dùng lại đối tượng nguồn nữa.",
+      "code_example": "#include <iostream>\n#include <vector>\nusing namespace std;\n\nint main() {\n    vector<int> v1(1000000, 42); // 1 trieu phan tu\n    // Chuyen nhuong con tro noi bo, mat 0ms khong can copy!\n    vector<int> v2 = std::move(v1);\n    cout << \"v1 size: \" << v1.size() << \", v2 size: \" << v2.size() << endl;\n    return 0;\n}"
+    },
+    {
+      "id": "operator_overloading",
+      "title": "Nạp chồng Toán tử (Operator Overloading)",
+      "keywords": ["nạp chồng toán tử", "operator overloading", "operator<<", "operator>>", "operator+", "operator=="],
+      "summary": "Giúp các kiểu dữ liệu tự định nghĩa có thể tương tác tự nhiên với các toán tử toán học và nhập xuất.",
+      "explanation": "Nạp chồng toán tử cho phép dùng `+`, `-`, `==`, `<<` trên các đối tượng như Phân số, Số phức, Ma trận. Toán tử `operator<<` để in bằng `cout` thường được viết dưới dạng hàm tự do (Friend Function) vì toán tử bên trái là `std::ostream` chứ không phải lớp của bạn.",
+      "common_mistakes": "Nạp chồng toán tử làm mất đi ngữ nghĩa tự nhiên (ví dụ nạp chồng toán tử `+` nhưng bên trong lại thực hiện phép trừ).",
+      "best_practices": "Toán tử so sánh bằng `==` và nhỏ hơn `<` nên là hàm `const`.",
+      "code_example": "#include <iostream>\nusing namespace std;\n\nstruct Point {\n    int x, y;\n    Point operator+(const Point& other) const {\n        return {x + other.x, y + other.y};\n    }\n    friend ostream& operator<<(ostream& os, const Point& p) {\n        return os << \"(\" << p.x << \", \" << p.y << \")\";\n    }\n};\n\nint main() {\n    Point a{2, 3}, b{4, 5};\n    cout << \"Tong: \" << (a + b) << endl; // (6, 8)\n    return 0;\n}"
+    },
+    {
+      "id": "templates_generic",
+      "title": "Khuôn mẫu Template (Generic Programming)",
+      "keywords": ["template", "khuôn mẫu", "generic", "template function", "template class", "typename"],
+      "summary": "Viết thuật toán và cấu trúc dữ liệu một lần, tái sử dụng cho mọi kiểu dữ liệu (int, double, string...).",
+      "explanation": "Template là nền tảng của toàn bộ thư viện STL C++. Khi bạn gọi `findMax(a, b)`, trình biên dịch tự sinh mã máy (Code Generation / Instantiation) riêng cho kiểu dữ liệu tương ứng. Không hề tốn chi phí runtime như cơ chế Boxing/Unboxing trong các ngôn ngữ khác.",
+      "common_mistakes": "Đặt định nghĩa hàm Template ở file `.cpp` riêng biệt dẫn đến lỗi liên kết `undefined reference` (Template phải được định nghĩa trong header `.h`).",
+      "best_practices": "Luôn định nghĩa toàn bộ template trong header file.",
+      "code_example": "#include <iostream>\nusing namespace std;\n\ntemplate <typename T>\nT findMax(T a, T b) {\n    return (a > b) ? a : b;\n}\n\nint main() {\n    cout << findMax(10, 20) << endl;         // int\n    cout << findMax(3.14, 2.71) << endl;     // double\n    cout << findMax<string>(\"apple\", \"banana\") << endl;\n    return 0;\n}"
+    },
+    {
+      "id": "exception_handling",
+      "title": "Xử lý Ngoại lệ (Exception Handling: try, catch, throw)",
+      "keywords": ["ngoại lệ", "exception", "try catch", "throw", "std::exception", "std::runtime_error"],
+      "summary": "Bắt và xử lý các tình huống lỗi bất thường trong quá trình chạy một cách an toàn và có kiểm soát.",
+      "explanation": "C++ cung cấp cơ chế `try...catch` để tách biệt mã xử lý logic chính với mã xử lý sự cố. Khi một ngoại lệ được ném ra (`throw`), quá trình giải cuộn ngăn xếp (Stack Unwinding) diễn ra, tự động gọi các Destructor của các đối tượng cục bộ để giải phóng tài nguyên trước khi nhảy vào khối `catch`.",
+      "common_mistakes": "Bắt ngoại lệ bằng tham trị `catch (std::exception e)` thay vì tham chiếu `catch (const std::exception& e)`, làm mất thông tin đa hình (Object Slicing).",
+      "best_practices": "Luôn bắt ngoại lệ bằng tham chiếu hằng: `catch (const std::exception& e)`.",
+      "code_example": "#include <iostream>\n#include <stdexcept>\nusing namespace std;\n\ndouble divide(double a, double b) {\n    if (b == 0.0) throw runtime_error(\"Loi: Khong the chia cho 0!\");\n    return a / b;\n}\n\nint main() {\n    try {\n        cout << divide(10.0, 0.0) << endl;\n    } catch (const exception& e) {\n        cerr << \"Bat duoc ngoai le: \" << e.what() << endl;\n    }\n    return 0;\n}"
+    },
+    {
+      "id": "stl_vector",
+      "title": "STL Container: std::vector & std::array",
+      "keywords": ["vector", "std::vector", "mảng động stl", "std::array", "push_back", "emplace_back", "size", "capacity"],
+      "summary": "Mảng động tự co giãn kích thước linh hoạt, an toàn và tối ưu bộ nhớ cache nhất trong STL.",
+      "explanation": "`std::vector` lưu trữ dữ liệu liên tục trong RAM. Khi mảng đầy, nó tự động cấp phát vùng nhớ mới gấp đôi kích thước (Geometric expansion) và di chuyển dữ liệu sang. Nhờ tính liên tục vùng nhớ, vector tận dụng tối đa cơ chế CPU Cache L1/L2. Dùng `emplace_back` thay cho `push_back` để khởi tạo đối tượng trực tiếp tại chỗ, tránh chi phí copy.",
+      "common_mistakes": "Truy cập phần tử vượt quá chỉ số bằng toán tử `v[i]` mà không kiểm tra (hãy dùng `v.at(i)` nếu cần kiểm tra biên an toàn).",
+      "best_practices": "Nếu biết trước số lượng phần tử xấp xỉ, dùng `v.reserve(N)` để tránh cấp phát lại nhiều lần.",
+      "code_example": "#include <iostream>\n#include <vector>\nusing namespace std;\n\nint main() {\n    vector<int> v;\n    v.reserve(100); // Dat truoc dung luong\n    v.push_back(10);\n    v.push_back(20);\n    v.emplace_back(30);\n    for (int x : v) cout << x << \" \";\n    cout << \"\\nSize: \" << v.size() << \", Cap: \" << v.capacity() << endl;\n    return 0;\n}"
+    },
+    {
+      "id": "stl_map_unordered_map",
+      "title": "STL Container: std::map vs std::unordered_map",
+      "keywords": ["map", "unordered_map", "bảng băm", "hash table", "cây đỏ đen", "red black tree", "từ điển"],
+      "summary": "Cấu trúc dữ liệu lưu trữ cặp Key - Value: Lựa chọn giữa Cây tự cân bằng O(log N) và Bảng băm O(1).",
+      "explanation": "- `std::map`: Cài đặt bằng Cây đỏ đen (Red-Black Tree). Các khóa (Key) LUÔN ĐƯỢC TỰ ĐỘNG SẮP XẾP theo thứ tự tăng dần. Tìm kiếm, thêm, xóa mất thời gian $O(\\log N)$.\n- `std::unordered_map`: Cài đặt bằng Bảng băm (Hash Table). Các phần tử không có thứ tự. Tốc độ tìm kiếm, thêm, xóa trung bình đạt mức $O(1)$.",
+      "common_mistakes": "Dùng `map` khi bài toán chỉ cần tra cứu nhanh mà không cần sắp xếp thứ tự các Key (lãng phí chi phí cây).",
+      "best_practices": "Ưu tiên dùng `unordered_map` cho bài toán đếm tần suất xuất hiện với thời gian $O(1)$.",
+      "code_example": "#include <iostream>\n#include <unordered_map>\n#include <string>\nusing namespace std;\n\nint main() {\n    unordered_map<string, int> freq;\n    string words[] = {\"apple\", \"banana\", \"apple\", \"orange\", \"banana\", \"apple\"};\n    for (const auto& w : words) freq[w]++;\n    for (const auto& [word, count] : freq) {\n        cout << word << \": \" << count << endl;\n    }\n    return 0;\n}"
+    },
+    {
+      "id": "stl_set_unordered_set",
+      "title": "STL Container: std::set & std::unordered_set",
+      "keywords": ["set", "unordered_set", "tập hợp", "loại bỏ trùng lặp", "độc nhất"],
+      "summary": "Tập hợp các phần tử độc nhất (không trùng lặp) với khả năng kiểm tra sự tồn tại cực nhanh.",
+      "explanation": "`std::set` tự động sắp xếp các phần tử và loại bỏ trùng lặp với độ phức tạp $O(\\log N)$. `std::unordered_set` dùng hàm băm kiểm tra phần tử tồn tại trong thời gian $O(1)$.",
+      "common_mistakes": "Cố gắng thay đổi giá trị của một phần tử bên trong `set` (các phần tử trong set là hằng `const`, muốn sửa phải xóa rồi thêm lại).",
+      "best_practices": "Dùng `set` khi cần cả loại trùng lặp và duy trì thứ tự sắp xếp.",
+      "code_example": "#include <iostream>\n#include <set>\nusing namespace std;\n\nint main() {\n    set<int> unique_nums = {5, 2, 8, 2, 5, 1};\n    for (int n : unique_nums) cout << n << \" \"; // In ra: 1 2 5 8 (da sap xep va loai trung)\n    cout << endl;\n    return 0;\n}"
+    },
+    {
+      "id": "stl_stack_queue_heap",
+      "title": "STL Container: Stack, Queue & Priority Queue (Heap)",
+      "keywords": ["stack", "queue", "priority_queue", "ngăn xếp", "hàng đợi", "hàng đợi ưu tiên", "heap"],
+      "summary": "Các cấu trúc dữ liệu kinh điển: LIFO, FIFO và Hàng đợi ưu tiên phần tử lớn nhất/nhỏ nhất.",
+      "explanation": "- `std::stack`: Vào sau Ra trước (LIFO). Ứng dụng: Khử đệ quy, kiểm tra ngoặc hợp lệ.\n- `std::queue`: Vào trước Ra trước (FIFO). Ứng dụng: Thuật toán tìm kiếm theo chiều rộng (BFS).\n- `std::priority_queue`: Hàng đợi ưu tiên cài đặt bằng Max-Heap (phần tử lớn nhất luôn ở đỉnh `top()`). Để làm Min-Heap, khai báo: `priority_queue<int, vector<int>, greater<int>>`.",
+      "common_mistakes": "Gọi `s.pop()` hoặc `s.top()` khi stack/queue đang rỗng gây lỗi Segmentation fault.",
+      "best_practices": "Luôn kiểm tra `!s.empty()` trước khi truy cập đỉnh hoặc xóa phần tử.",
+      "code_example": "#include <iostream>\n#include <queue>\nusing namespace std;\n\nint main() {\n    // Min-Heap lay phan tu nho nhat truoc\n    priority_queue<int, vector<int>, greater<int>> minHeap;\n    minHeap.push(30);\n    minHeap.push(10);\n    minHeap.push(20);\n    while (!minHeap.empty()) {\n        cout << minHeap.top() << \" \"; // 10 20 30\n        minHeap.pop();\n    }\n    cout << endl;\n    return 0;\n}"
+    },
+    {
+      "id": "stl_algorithms",
+      "title": "Thuật toán STL: std::sort, binary_search & lower_bound",
+      "keywords": ["std::sort", "binary_search", "lower_bound", "upper_bound", "thuật toán stl", "sắp xếp stl"],
+      "summary": "Các thuật toán tối ưu hóa cao được viết sẵn trong thư viện <algorithm>.",
+      "explanation": "`std::sort` sử dụng thuật toán lai **Introsort** (kết hợp QuickSort, HeapSort và InsertionSort), đảm bảo độ phức tạp xấu nhất luôn là $O(N \\log N)$. Để dùng `binary_search`, `lower_bound`, `upper_bound`, mảng BẮT BUỘC phải được sắp xếp trước.",
+      "common_mistakes": "Quên sắp xếp mảng trước khi gọi `std::lower_bound` khiến kết quả hoàn toàn sai lệch.",
+      "best_practices": "Dùng `lower_bound` để tìm vị trí xuất hiện đầu tiên của phần tử $\\ge X$ trong thời gian $O(\\log N)$.",
+      "code_example": "#include <iostream>\n#include <vector>\n#include <algorithm>\nusing namespace std;\n\nint main() {\n    vector<int> a = {4, 1, 8, 3, 9, 3};\n    sort(a.begin(), a.end()); // {1, 3, 3, 4, 8, 9}\n    auto it = lower_bound(a.begin(), a.end(), 3);\n    cout << \"Vi tri dau tien cua 3: \" << (it - a.begin()) << endl;\n    return 0;\n}"
+    },
+    {
+      "id": "lambda_expressions",
+      "title": "Hàm ẩn danh Lambda Expression",
+      "keywords": ["lambda", "hàm ẩn danh", "closure", "capture list", "auto lambda"],
+      "summary": "Định nghĩa hàm nội dòng ngắn gọn ngay tại nơi cần sử dụng.",
+      "explanation": "Cú pháp: `[capture](parameters) -> return_type { body }`.\n- `[=]`: Capture tất cả biến bên ngoài bằng giá trị.\n- `[&]`: Capture tất cả biến bên ngoài bằng tham chiếu.\n- `[x, &y]`: Capture biến x bằng giá trị, biến y bằng tham chiếu. Thường dùng trong `std::sort` làm hàm so sánh (Comparator).",
+      "common_mistakes": "Capture tham chiếu `[&]` nhưng lambda lại được thực thi sau khi các biến ngoài đã bị hủy khỏi bộ nhớ.",
+      "best_practices": "Dùng lambda làm custom comparator trong `std::sort` cho code cực kỳ gọn gàng.",
+      "code_example": "#include <iostream>\n#include <vector>\n#include <algorithm>\nusing namespace std;\n\nint main() {\n    vector<int> nums = {5, 2, 8, 1, 9};\n    // Sap xep giam dan bang lambda\n    sort(nums.begin(), nums.end(), [](int a, int b) { return a > b; });\n    for(int x : nums) cout << x << \" \"; // 9 8 5 2 1\n    return 0;\n}"
+    },
+    {
+      "id": "two_pointers_sliding_window",
+      "title": "Thuật toán Hai con trỏ (Two Pointers) & Cửa sổ trượt (Sliding Window)",
+      "keywords": ["two pointers", "hai con trỏ", "cửa sổ trượt", "sliding window", "tối ưu o(n)"],
+      "summary": "Kỹ thuật tối ưu hóa giảm độ phức tạp từ O(N^2) xuống O(N) cho mảng và chuỗi.",
+      "explanation": "- **Two Pointers:** Sử dụng hai biến chỉ số (ví dụ `left = 0`, `right = n - 1`) di chuyển ngược chiều hoặc cùng chiều trên mảng đã sắp xếp để tìm cặp phần tử thỏa mãn điều kiện.\n- **Sliding Window:** Duy trì một cửa sổ có kích thước cố định hoặc co giãn linh hoạt để tính toán tổng lớn nhất, chuỗi con dài nhất không lặp ký tự...",
+      "common_mistakes": "Di chuyển sai điều kiện con trỏ dẫn đến lặp vô tận.",
+      "best_practices": "Nhận diện bài toán: Nếu mảng đã sắp xếp và cần tìm cặp phần tử, hãy nghĩ ngay tới Two Pointers.",
+      "code_example": "#include <iostream>\n#include <vector>\nusing namespace std;\n\n// Tim cap phan tu co tong bang target trong mang da sap xep\nbool hasPairWithSum(const vector<int>& a, int target) {\n    int l = 0, r = a.size() - 1;\n    while (l < r) {\n        int sum = a[l] + a[r];\n        if (sum == target) return true;\n        if (sum < target) l++;\n        else r--;\n    }\n    return false;\n}\n\nint main() {\n    vector<int> a = {1, 2, 4, 7, 11, 15};\n    cout << (hasPairWithSum(a, 15) ? \"Co tim thay\" : \"Khong\") << endl;\n    return 0;\n}"
+    },
+    {
+      "id": "dynamic_programming_knapsack",
+      "title": "Quy hoạch động: Bài toán Cái túi (0/1 Knapsack)",
+      "keywords": ["quy hoạch động", "dynamic programming", "cái túi", "knapsack", "dp", "tối ưu hóa"],
+      "summary": "Kỹ thuật chia bài toán thành các bài toán con gối nhau và lưu trữ kết quả để tránh tính toán lại.",
+      "explanation": "Đặc trưng của quy hoạch động là **Cấu trúc con tối ưu (Optimal Substructure)** và **Các bài toán con gối nhau (Overlapping Subproblems)**. Với bài toán Cái túi 0/1: Mỗi đồ vật có trọng lượng `w` và giá trị `v`. Ta có thể chọn mang theo hoặc bỏ lại. Công thức truy hồi: `dp[w] = max(dp[w], dp[w - weight[i]] + val[i])` khi duyệt ngược trọng lượng.",
+      "common_mistakes": "Duyệt xuôi mảng trọng lượng khi tối ưu 1 chiều khiến một đồ vật bị chọn nhiều lần (trở thành bài toán Knapsack vô hạn).",
+      "best_practices": "Khi tối ưu mảng 1D cho Knapsack 0/1, luôn duyệt trọng lượng từ $W \\to w_i$.",
+      "code_example": "#include <iostream>\n#include <vector>\n#include <algorithm>\nusing namespace std;\n\nint knapsack(int W, const vector<int>& wt, const vector<int>& val) {\n    vector<int> dp(W + 1, 0);\n    for (size_t i = 0; i < wt.size(); ++i) {\n        for (int w = W; w >= wt[i]; --w) {\n            dp[w] = max(dp[w], dp[w - wt[i]] + val[i]);\n        }\n    }\n    return dp[W];\n}\n\nint main() {\n    cout << \"Gia tri toi da: \" << knapsack(50, {10, 20, 30}, {60, 100, 120}) << endl;\n    return 0;\n}"
+    },
+    {
+      "id": "quicksort_algorithm",
+      "title": "Thuật toán Sắp xếp nhanh (QuickSort)",
+      "keywords": ["quicksort", "sắp xếp nhanh", "chia để trị", "pivot", "partition"],
+      "summary": "Thuật toán sắp xếp theo tư tưởng Chia để trị (Divide and Conquer) phổ biến nhất trong thực tế.",
+      "explanation": "Chọn một phần tử làm chốt (Pivot), sau đó phân hoạch mảng sao cho các phần tử nhỏ hơn Pivot nằm bên trái, lớn hơn Pivot nằm bên phải. Đệ quy tiếp tục với hai nửa. Thời gian trung bình: $O(N \\log N)$. Trường hợp xấu nhất $O(N^2)$ khi mảng đã sắp xếp sẵn và chọn chốt ở đầu/cuối.",
+      "common_mistakes": "Chọn chốt cố định ở đầu/cuối mảng khiến thuật toán bị thoái hóa về $O(N^2)$ khi dữ liệu đã gần sắp xếp.",
+      "best_practices": "Chọn chốt ngẫu nhiên (Randomized Pivot) hoặc kỹ thuật Median-of-three.",
+      "code_example": "#include <iostream>\n#include <vector>\nusing namespace std;\n\nint partition(vector<int>& a, int low, int high) {\n    int pivot = a[high];\n    int i = low - 1;\n    for (int j = low; j < high; ++j) {\n        if (a[j] < pivot) swap(a[++i], a[j]);\n    }\n    swap(a[i + 1], a[high]);\n    return i + 1;\n}\n\nvoid quickSort(vector<int>& a, int low, int high) {\n    if (low < high) {\n        int pi = partition(a, low, high);\n        quickSort(a, low, pi - 1);\n        quickSort(a, pi + 1, high);\n    }\n}\n\nint main() {\n    vector<int> a = {10, 7, 8, 9, 1, 5};\n    quickSort(a, 0, a.size() - 1);\n    for(int x : a) cout << x << \" \";\n    return 0;\n}"
+    },
+    {
+      "id": "modern_cpp_ranges_concepts",
+      "title": "C++20: Khái niệm Concepts & Thư viện Ranges",
+      "keywords": ["c++20", "concepts", "ranges", "std::ranges", "requires", "c++ hiện đại"],
+      "summary": "Cách mạng cú pháp C++20: Ràng buộc kiểu dữ liệu rõ ràng và xử lý chuỗi dữ liệu như đường ống.",
+      "explanation": "- **Concepts:** Đặt điều kiện ràng buộc cho kiểu dữ liệu trong Template bằng từ khóa `requires`. Giúp thông báo lỗi biên dịch ngắn gọn, dễ hiểu thay vì trang lỗi SFINAE dài hàng nghìn dòng.\n- **Ranges:** Cho phép thao tác dữ liệu theo đường ống (Pipe syntax `|`) tương tự LINQ trong C# hay Streams trong Java.",
+      "common_mistakes": "Dùng C++20 trên trình biên dịch cũ không hỗ trợ flag `-std=c++20`.",
+      "best_practices": "Sử dụng `std::ranges::sort(v)` thay vì `std::sort(v.begin(), v.end())`.",
+      "code_example": "#include <iostream>\n#include <vector>\n#include <algorithm>\n\n// Su dung C++20 (compile voi flag: -std=c++20)\nint main() {\n    std::vector<int> v = {5, 1, 9, 3};\n    std::ranges::sort(v); // Ngan gon hon v.begin(), v.end()\n    for (int x : v) std::cout << x << \" \";\n    return 0;\n}"
+    }
+  ]
+}

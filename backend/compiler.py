@@ -1255,6 +1255,35 @@ CPP_KNOWLEDGE_BASE = [
     }
 ]
 
+# =========================================================================
+# DYNAMIC KNOWLEDGE BASE LOADER (knowledge_base.json)
+# =========================================================================
+
+_KNOWLEDGE_CACHE = None
+_KNOWLEDGE_MTIME = 0
+
+def load_custom_knowledge_base() -> dict:
+    """
+    Tải động kho tri thức từ file backend/knowledge_base.json.
+    Tự động reload khi file bị chỉnh sửa mà không cần khởi động lại server.
+    """
+    global _KNOWLEDGE_CACHE, _KNOWLEDGE_MTIME
+    kb_path = os.path.join(os.path.dirname(__file__), "knowledge_base.json")
+    if not os.path.exists(kb_path):
+        return {"topics": [], "conversational_scenarios": []}
+    try:
+        mtime = os.path.getmtime(kb_path)
+        if _KNOWLEDGE_CACHE is not None and mtime == _KNOWLEDGE_MTIME:
+            return _KNOWLEDGE_CACHE
+        with open(kb_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            _KNOWLEDGE_CACHE = data
+            _KNOWLEDGE_MTIME = mtime
+            return data
+    except Exception as e:
+        print(f"[KnowledgeBase] Lỗi tải knowledge_base.json: {e}")
+        return _KNOWLEDGE_CACHE or {"topics": [], "conversational_scenarios": []}
+
 def generate_heuristic_response(
     message: str, 
     code: str = "", 
@@ -1367,7 +1396,18 @@ def generate_heuristic_response(
             "status": "greeting"
         }
 
-    # 3c. Xử lý phép tính toán học cơ bản (Math Query)
+    # 3c. Xử lý kịch bản tâm lý & giao tiếp sư phạm Socrate (Conversational Scenarios from knowledge_base.json)
+    custom_kb = load_custom_knowledge_base()
+    for scenario in custom_kb.get("conversational_scenarios", []):
+        for kw in scenario.get("keywords", []):
+            if kw.lower() in msg_lower:
+                return {
+                    "reply": (f"{name_prefix}\n\n" if name_prefix else "") + scenario.get("reply", ""),
+                    "has_error": False,
+                    "status": f"scenario_{scenario.get('id', 'custom')}"
+                }
+
+    # 3d. Xử lý phép tính toán học cơ bản (Math Query)
     import re
     math_match = re.search(r'(\d+(?:\.\d+)?)\s*([\+\-\*\/])\s*(\d+(?:\.\d+)?)', msg_clean)
     if math_match:
@@ -1404,7 +1444,50 @@ def generate_heuristic_response(
         except Exception:
             pass
 
-    # 4. Tra cứu Knowledge Base chủ đề C++
+    # 4a. Tra cứu Topics từ file mở rộng knowledge_base.json (chọn keyword khớp dài nhất & an toàn)
+    best_topic = None
+    best_match_len = 0
+    for topic in custom_kb.get("topics", []):
+        for kw in topic.get("keywords", []):
+            kw_l = kw.lower()
+            matched = False
+            if len(kw_l) <= 4:
+                # Word boundary để tránh 'int' khớp trong 'pointers'
+                if re.search(r'(?:\b|_)' + re.escape(kw_l) + r'(?:\b|_)', msg_lower):
+                    matched = True
+            else:
+                if kw_l in msg_lower:
+                    matched = True
+            if matched and len(kw_l) > best_match_len:
+                best_match_len = len(kw_l)
+                best_topic = topic
+
+    if best_topic:
+        topic = best_topic
+        reply_parts = [
+            f"### 📚 {topic.get('title', 'Chuyên đề C++')}\n",
+            f"{topic.get('summary', '')}\n",
+            f"#### 🔍 Bản chất & Giải thích chi tiết:\n{topic.get('explanation', '')}\n"
+        ]
+        if topic.get("common_mistakes"):
+            reply_parts.append(f"#### ⚠️ Cạm bẫy thường gặp (Common Pitfalls):\n{topic.get('common_mistakes')}\n")
+        if topic.get("best_practices"):
+            reply_parts.append(f"#### ✨ Chuẩn mực tối ưu (Best Practices):\n{topic.get('best_practices')}\n")
+        if topic.get("code_example"):
+            reply_parts.append(f"#### 💻 Code mẫu minh họa:\n```cpp\n{topic.get('code_example')}\n```\n")
+
+        if persona == "interviewer":
+            reply_parts.append("💼 *FAANG Tip: Khi được hỏi về chủ đề này trong phỏng vấn, hãy chủ động nêu ưu/nhược điểm và độ phức tạp thời gian O(N) trước khi viết code!*")
+        elif persona == "professor":
+            reply_parts.append("🎓 *Academic Note: Luôn đối chiếu với chuẩn C++ Core Guidelines để viết mã an toàn và tránh Undefined Behavior.*")
+
+        return {
+            "reply": (f"{name_prefix}\n\n" if name_prefix else "") + "\n".join(reply_parts),
+            "has_error": False,
+            "status": "custom_kb_hit"
+        }
+
+    # 4b. Tra cứu Knowledge Base chủ đề C++ tích hợp sẵn
     for item in CPP_KNOWLEDGE_BASE:
         for kw in item["keywords"]:
             if kw in msg_lower:
@@ -1426,7 +1509,7 @@ def generate_heuristic_response(
         streak = user_context.get("current_streak", 0)
         context_note = f"Bạn đang duy trì chuỗi học tập **{streak} ngày** và đã hoàn thành **{comp}/20 chuyên đề** C++! 🎉\n\n"
 
-    role_desc = "Gia sư kiên nhẫn"
+    role_desc = "Gia sư kiên nhẫn & Người bạn đồng hành"
     if persona == "interviewer":
         role_desc = "Chuyên gia Phỏng vấn FAANG"
     elif persona == "professor":
@@ -1457,7 +1540,7 @@ def get_ai_mentor_reply(
 ) -> dict:
     """
     Điểm truy cập chính cho AI Trợ giảng C++:
-    - Nếu có cấu hình API Key (Gemini / OpenAI / Groq): Sử dụng mô hình LLM tương tác đa lượt như ChatGPT thật.
+    - Nếu có cấu hình API Key (Gemini / OpenAI / Groq): Sử dụng mô hình LLM tương tác đa lượt theo phương pháp sư phạm Socrate.
     - Nếu không có API Key: Kích hoạt Hệ thống Tri thức Lập trình C++ chuyên sâu (Heuristic & Sandbox Evaluator).
     """
     code = (code or "").strip()
@@ -1474,29 +1557,47 @@ def get_ai_mentor_reply(
     # 2. Thử gọi LLM nếu có API Key
     provider, api_key = get_api_key_from_env_or_config()
     if provider and api_key:
-        role_prompt = "Bạn là Gia sư C++ kiên nhẫn, ân cần, giải thích chi tiết, dễ hiểu cho người mới học."
+        role_prompt = (
+            "Bạn là CodeLearn AI - Người bạn đồng hành và Thầy giáo Lập trình C++ kiên nhẫn, thấu hiểu và tận tâm. "
+            "PHƯƠNG PHÁP SƯ PHẠM SOCRATES (GỢI MỞ TƯ DUY): "
+            "1. Luôn xưng hô thân mật ('mình - bạn' hoặc xưng tên học viên nếu có), đóng vai người bạn cùng tiến chân thành. "
+            "2. Khi học viên nhờ giải hộ bài hoặc xin toàn bộ code: TUYỆT ĐỐI KHÔNG đưa ra bài giải 100% ngay từ đầu. Hãy khen ngợi tinh thần học, phân tích yêu cầu đề bài và đặt 1-2 câu hỏi gợi mở để học viên tự động não bước tiếp theo. "
+            "3. Khi học viên nản lòng, bế tắc: Hãy an ủi, chia sẻ rằng lỗi con trỏ/Segfault là chặng đường ai cũng phải đi qua, khích lệ từng tiến bộ nhỏ. "
+            "4. Khi phân tích lỗi code: Giải thích cặn kẽ bản chất máy tính (RAM, bộ nhớ Stack vs Heap, CPU Cache, con trỏ) thay vì chỉ sửa cú pháp. "
+            "5. Định dạng Markdown đẹp mắt, chia đề mục rõ ràng, code C++ sạch chuẩn ISO C++17/20 kèm chú thích dễ hiểu."
+        )
         if persona == "interviewer":
-            role_prompt = "Bạn là Chuyên gia Phỏng vấn Kỹ thuật tại các tập đoàn công nghệ lớn (FAANG). Hãy chú trọng độ phức tạp thuật toán O(N), không gian bộ nhớ O(1), các trường hợp biên (edge cases) và tối ưu hóa hiệu năng cao."
+            role_prompt += " Phong cách: Chuyên gia Phỏng vấn FAANG - Chú trọng độ phức tạp O(N), không gian O(1), các trường hợp biên (edge cases) và tối ưu hóa hiệu năng cao."
         elif persona == "professor":
-            role_prompt = "Bạn là Giáo sư Khoa học Máy tính khắt khe. Hãy phân tích chuyên sâu chuẩn C++17/20, an toàn bộ nhớ (RAII), const correctness, quy chuẩn mã nguồn sạch và cảnh báo Undefined Behavior."
+            role_prompt += " Phong cách: Giáo sư Khoa học Máy tính - Phân tích chuẩn C++ Core Guidelines, const correctness, RAII, cảnh báo Undefined Behavior."
 
-        prompt_parts = [
-            f"Bạn là CodeLearn AI - Trợ lý AI và Gia sư Lập trình C++ thông minh như ChatGPT của học viện CodeLearn. {role_prompt}",
-            "Hãy trả lời bằng tiếng Việt, dùng Markdown định dạng rõ ràng, đẹp mắt, chia đề mục, code C++ chuẩn mực có chú thích dễ hiểu."
-        ]
+        prompt_parts = [role_prompt]
+
         if user_context:
             u_name = user_context.get("full_name") or user_context.get("username") or "học viên"
-            prompt_parts.append(f"Học viên: {u_name}, Đã học: {user_context.get('completed_lessons', 0)}/20 bài, Điểm TB: {round(user_context.get('avg_score', 0), 1)}/100, Streak: {user_context.get('current_streak', 0)} ngày.")
+            prompt_parts.append(f"Thông tin học viên: Tên '{u_name}', đã hoàn thành {user_context.get('completed_lessons', 0)}/20 bài học, điểm trung bình {round(user_context.get('avg_score', 0), 1)}/100, streak chuỗi học {user_context.get('current_streak', 0)} ngày.")
 
         if lesson_info:
-            prompt_parts.append(f"Ngữ cảnh bài học: {lesson_info.get('title', '')} (Chương: {lesson_info.get('chapter', '')})")
+            prompt_parts.append(f"Ngữ cảnh bài học hiện tại: {lesson_info.get('title', '')} (Chương: {lesson_info.get('chapter', '')})")
             if lesson_info.get("content"):
                 prompt_parts.append(f"Tóm tắt lý thuyết bài học: {lesson_info.get('content')[:800]}...")
 
+        # Tra cứu RAG từ knowledge_base.json nếu có chủ đề khớp
+        custom_kb = load_custom_knowledge_base()
+        matched_kb = []
+        msg_l = message.lower()
+        for t in custom_kb.get("topics", []):
+            if any(k.lower() in msg_l for k in t.get("keywords", [])):
+                matched_kb.append(f"Kiến thức chuẩn về {t.get('title')}:\n- Tóm tắt: {t.get('summary')}\n- Bản chất: {t.get('explanation')}\n- Cạm bẫy: {t.get('common_mistakes')}\n- Best Practice: {t.get('best_practices')}")
+                if len(matched_kb) >= 2: break
+        if matched_kb:
+            prompt_parts.append("KHO TRI THỨC BỔ TRỢ (RAG KNOWLEDGE CONTEXT):\n" + "\n\n".join(matched_kb))
+
         if has_code:
-            prompt_parts.append(f"Mã nguồn C++ hiện tại của học viên:\n```cpp\n{code}\n```")
+            prompt_parts.append(f"Mã nguồn C++ hiện tại trong editor của học viên:\n```cpp\n{code}\n```")
             if compile_error:
                 prompt_parts.append(f"Lỗi biên dịch thực tế từ trình biên dịch g++:\n```text\n{compile_error}\n```")
+
         prompt_parts.append(f"Câu hỏi của học viên: {message}")
         full_prompt = "\n\n".join(prompt_parts)
 
