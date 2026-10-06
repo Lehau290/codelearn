@@ -248,7 +248,7 @@ def analyze_code_quality(code: str) -> dict:
 
     # Kiểm tra lồng nhau
     nested_loop = False
-    loop_matches = list(re.finditer(r'\b(?:for|while)\s*\([^{;]*\)\s*\{', code))
+    loop_matches = list(re.finditer(r'\b(?:for|while)\s*\([^)]*\)\s*\{', code))
     if len(loop_matches) >= 2:
         for i in range(len(loop_matches) - 1):
             start_pos = loop_matches[i].start()
