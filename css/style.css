@@ -2664,8 +2664,8 @@ main {
 .code-pre code {
     font-family: inherit;
     color: #e2e8f0;
-    white-space: pre-wrap;
-    word-break: break-word;
+    white-space: pre;
+    word-break: normal;
 }
 
 .typing-cursor {

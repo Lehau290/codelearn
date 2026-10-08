@@ -439,26 +439,58 @@ function initHeroLiveCodeTyping() {
 
     if (!codeElem || !statusElem) return;
 
-    const fullCode = `#include <iostream>
+    // Tokens định nghĩa cấu trúc cú pháp C++ chuẩn xác, tránh lỗi regex đè thuộc tính HTML
+    const TOKENS = [
+        { text: "#include ", cls: "c-keyword" },
+        { text: "<iostream>\n\n", cls: "c-string" },
+        { text: "int ", cls: "c-keyword" },
+        { text: "main", cls: "c-func" },
+        { text: "() {\n", cls: "" },
+        { text: "    ", cls: "" },
+        { text: "std", cls: "c-type" },
+        { text: "::", cls: "" },
+        { text: "cout", cls: "c-type" },
+        { text: " << ", cls: "" },
+        { text: '"Xin chào C++ Developer!"', cls: "c-string" },
+        { text: " << ", cls: "" },
+        { text: "std", cls: "c-type" },
+        { text: "::", cls: "" },
+        { text: "endl", cls: "c-type" },
+        { text: ";\n", cls: "" },
+        { text: "    ", cls: "" },
+        { text: "return ", cls: "c-keyword" },
+        { text: "0", cls: "c-num" },
+        { text: ";\n}", cls: "" }
+    ];
 
-int main() {
-    std::cout << "Xin chào C++ Developer!" << std::endl;
-    return 0;
-}`;
+    const fullCode = TOKENS.map(t => t.text).join("");
 
     let typingTimer = null;
     let loopTimer = null;
     let isTyping = false;
 
-    function highlightSyntax(text) {
-        return text
-            .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-            .replace(/(#include\s+&lt;iostream&gt;)/g, '<span class="c-keyword">#include</span> <span class="c-string">&lt;iostream&gt;</span>')
-            .replace(/\b(int|return)\b/g, '<span class="c-keyword">$1</span>')
-            .replace(/\b(main)\b/g, '<span class="c-func">main</span>')
-            .replace(/\b(std|cout|endl)\b/g, '<span class="c-type">$1</span>')
-            .replace(/(&quot;.*?&quot;|".*?")/g, '<span class="c-string">$1</span>')
-            .replace(/\b(0)\b/g, '<span class="c-num">0</span>');
+    // Hàm render an toàn: lấy chính xác số lượng ký tự từ mảng tokens, escape HTML và gán class highlight
+    function renderTokens(tokens, charCount) {
+        let remaining = charCount;
+        let html = "";
+        for (let i = 0; i < tokens.length; i++) {
+            if (remaining <= 0) break;
+            const token = tokens[i];
+            const take = token.text.substring(0, remaining);
+            remaining -= take.length;
+
+            const escaped = take
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+
+            if (token.cls) {
+                html += `<span class="${token.cls}">${escaped}</span>`;
+            } else {
+                html += escaped;
+            }
+        }
+        return html;
     }
 
     function runTypingAnimation() {
@@ -489,7 +521,7 @@ int main() {
         function typeNext() {
             if (charIndex <= fullCode.length) {
                 const currentText = fullCode.substring(0, charIndex);
-                codeElem.innerHTML = highlightSyntax(currentText);
+                codeElem.innerHTML = renderTokens(TOKENS, charIndex);
 
                 // Cập nhật số dòng động
                 if (linesElem) {
@@ -534,8 +566,8 @@ int main() {
                     successElem.textContent = "[Output]: Xin chào C++ Developer! ✨";
                 }
 
-                // Tự động lặp lại mô phỏng sau 10 giây nếu người dùng không tương tác
-                loopTimer = setTimeout(runTypingAnimation, 11000);
+                // Tự động lặp lại mô phỏng sau 12 giây nếu người dùng không tương tác
+                loopTimer = setTimeout(runTypingAnimation, 12000);
             }, 650);
         }
 
