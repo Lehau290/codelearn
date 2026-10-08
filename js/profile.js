@@ -224,6 +224,58 @@ function renderProfile(user) {
 
     // Cập nhật Avatar toàn diện
     updateAllAvatarsDisplay(user);
+
+    // Cá nhân hóa lời chào theo ngữ cảnh thời gian thực (Context-aware Greeting)
+    updateContextAwareGreeting(user);
+}
+
+// ============================================================
+// LỜI CHÀO NGỮ CẢNH THỜI GIAN THỰC (CONTEXT-AWARE GREETING)
+// ============================================================
+
+function updateContextAwareGreeting(user) {
+    const hour = new Date().getHours();
+    let period = "Chào buổi sáng";
+    let icon = "🌅";
+    let sub = "Khởi đầu ngày mới với những bài tập thuật toán C++ đỉnh cao nhé!";
+
+    if (hour >= 5 && hour < 11) {
+        period = "Chào buổi sáng";
+        icon = "🌅";
+        sub = "Khởi đầu ngày mới với những bài tập thuật toán C++ đỉnh cao nhé!";
+    } else if (hour >= 11 && hour < 13) {
+        period = "Chào buổi trưa";
+        icon = "☀️";
+        sub = "Nghỉ ngơi và nạp năng lượng để tiếp tục hành trình bứt phá C++ bạn nhé!";
+    } else if (hour >= 13 && hour < 18) {
+        period = "Chào buổi chiều";
+        icon = "🌇";
+        sub = "Buổi chiều tập trung cao độ để nâng cao điểm số và thứ hạng CodeLearn C++ nào!";
+    } else if (hour >= 18 && hour < 22) {
+        period = "Chào buổi tối";
+        icon = "🌆";
+        sub = "Thời điểm vàng để ôn luyện kiến thức và thực hành code C++ chuyên sâu!";
+    } else {
+        period = "Chào đêm khuya";
+        icon = "🌙";
+        sub = "Cú đêm chăm chỉ! Hãy nhớ nghỉ ngơi điều độ để giữ gìn sức khỏe nhé!";
+    }
+
+    const displayName = (user && (user.fullName || user.username)) ? (user.fullName || user.username) : "bạn";
+
+    const periodElem = document.getElementById("profileTimePeriod");
+    if (periodElem) periodElem.textContent = period;
+
+    const iconElem = document.getElementById("profileTimeIcon");
+    if (iconElem) iconElem.textContent = icon;
+
+    const headingElem = document.getElementById("profileGreetingHeading");
+    if (headingElem) {
+        headingElem.innerHTML = `${period}, <span class="greeting-highlight">${escapeHtml(displayName)}</span>!`;
+    }
+
+    const subElem = document.getElementById("profileGreetingSub");
+    if (subElem) subElem.textContent = sub;
 }
 
 

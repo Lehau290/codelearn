@@ -584,6 +584,60 @@ main {
     margin-bottom: 24px;
 }
 
+/* Context-Aware Greeting Card in Profile Hero */
+.profile-greeting-card {
+    background: rgba(30, 27, 75, 0.45);
+    border: 1px solid rgba(165, 180, 252, 0.22);
+    backdrop-filter: blur(16px);
+    border-radius: 18px;
+    padding: 20px 24px;
+    margin: 16px 0 20px 0;
+    max-width: 680px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    animation: profileFadeIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.profile-greeting-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(99, 102, 241, 0.2);
+    border: 1px solid rgba(165, 180, 252, 0.3);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #c7d2fe;
+    margin-bottom: 10px;
+}
+
+.profile-greeting-pill .greeting-icon {
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
+.profile-greeting-heading {
+    font-size: clamp(1.35rem, 3.2vw, 1.85rem) !important;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 6px;
+    line-height: 1.3;
+}
+
+.profile-greeting-heading .greeting-highlight {
+    background: linear-gradient(135deg, #a5b4fc 0%, #c084fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.profile-greeting-sub {
+    color: #e2e8f0 !important;
+    font-size: 0.95rem !important;
+    margin-bottom: 0 !important;
+    line-height: 1.5;
+}
+
+
 /* Profile Hero Tabs (ColorOS Squircle Tabs) */
 .profile-hero-tabs {
     display: inline-flex;
