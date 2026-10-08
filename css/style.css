@@ -2417,6 +2417,8 @@ main {
    ========================================================= */
 
 .home-hero {
+    --spotlight-x: 50%;
+    --spotlight-y: 35%;
     padding: 72px 0 84px;
     background:
         radial-gradient(circle at 15% 15%, rgba(160, 145, 255, 0.42) 0%, transparent 50%),
@@ -2437,6 +2439,23 @@ main {
     background-size: 24px 24px;
     opacity: 0.25;
     pointer-events: none;
+    z-index: 0;
+}
+
+/* Mouse Spotlight Glow Layer (Effect 2) */
+.home-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+        650px circle at var(--spotlight-x, 50%) var(--spotlight-y, 35%),
+        rgba(129, 140, 248, 0.25) 0%,
+        rgba(168, 85, 247, 0.12) 32%,
+        transparent 70%
+    );
+    z-index: 0;
+    transition: opacity 0.2s ease;
 }
 
 .hero-grid {
@@ -2618,15 +2637,49 @@ main {
     line-height: 1.65;
 }
 
+.live-editor-wrapper {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+}
+
+.live-editor-lines {
+    color: #475569;
+    font-family: var(--font-mono);
+    font-size: 0.84rem;
+    line-height: 1.65;
+    user-select: none;
+    text-align: right;
+    min-width: 16px;
+    padding-top: 1px;
+}
+
 .code-pre {
     margin: 0;
     overflow-x: auto;
     font-family: inherit;
+    flex: 1;
 }
 
 .code-pre code {
     font-family: inherit;
     color: #e2e8f0;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.typing-cursor {
+    display: inline-block;
+    color: #38bdf8;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    animation: typingBlink 0.8s infinite;
+    margin-left: 2px;
+}
+
+@keyframes typingBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
 }
 
 /* Syntax Highlighting */
@@ -2640,8 +2693,8 @@ main {
 /* Code Output Box */
 .code-output-preview {
     margin-top: 14px;
-    background: rgba(0, 0, 0, 0.45);
-    border: 1px solid rgba(164, 158, 242, 0.22);
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(164, 158, 242, 0.25);
     border-radius: 10px;
     padding: 10px 14px;
     font-size: 0.8rem;
@@ -2650,10 +2703,38 @@ main {
 .output-header {
     display: flex;
     align-items: center;
-    gap: 7px;
+    justify-content: space-between;
     color: #94a3b8;
     font-size: 0.72rem;
     font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.output-header-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.btn-rerun-code {
+    background: rgba(99, 102, 241, 0.2);
+    border: 1px solid rgba(165, 180, 252, 0.35);
+    color: #c7d2fe;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.btn-rerun-code:hover {
+    background: rgba(99, 102, 241, 0.45);
+    color: #ffffff;
+    transform: translateY(-1px);
+}
     letter-spacing: 0.06em;
     text-transform: uppercase;
     margin-bottom: 6px;

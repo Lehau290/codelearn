@@ -21,6 +21,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 5. Cập nhật bảng xếp hạng thi đua
     updateLeaderboardUser(currentUser);
+
+    // 6. Hiệu ứng Vầng sáng công nghệ lướt theo chuột (Mouse Spotlight Glow)
+    initHeroSpotlight();
+
+    // 7. Hiệu ứng Terminal giả lập gõ code C++ tự động (Live Code Typing Showcase)
+    initHeroLiveCodeTyping();
 });
 
 
@@ -414,3 +420,166 @@ function updateLeaderboardUser(user) {
     if (streakEl) streakEl.textContent = `${streakVal} ngày liên tục`;
     if (descEl) descEl.textContent = `Đã hoàn thành ${completedCount}/${lessons.length} bài học`;
 }
+
+
+// ============================================================
+// HIỆU ỨNG 1: TERMINAL GIẢ LẬP GÕ CODE C++ TỰ ĐỘNG
+// (LIVE CODE TYPING SHOWCASE)
+// ============================================================
+
+function initHeroLiveCodeTyping() {
+    const codeElem = document.getElementById("heroLiveCode");
+    const linesElem = document.getElementById("heroEditorLines");
+    const cursorElem = document.getElementById("heroTypingCursor");
+    const statusElem = document.getElementById("heroOutputStatus");
+    const successElem = document.getElementById("heroOutputSuccess");
+    const badgeElem = document.getElementById("heroRunBadge");
+    const dotElem = document.getElementById("heroOutputDot");
+    const rerunBtn = document.getElementById("btnRerunHeroCode");
+
+    if (!codeElem || !statusElem) return;
+
+    const fullCode = `#include <iostream>
+
+int main() {
+    std::cout << "Xin chào C++ Developer!" << std::endl;
+    return 0;
+}`;
+
+    let typingTimer = null;
+    let loopTimer = null;
+    let isTyping = false;
+
+    function highlightSyntax(text) {
+        return text
+            .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+            .replace(/(#include\s+&lt;iostream&gt;)/g, '<span class="c-keyword">#include</span> <span class="c-string">&lt;iostream&gt;</span>')
+            .replace(/\b(int|return)\b/g, '<span class="c-keyword">$1</span>')
+            .replace(/\b(main)\b/g, '<span class="c-func">main</span>')
+            .replace(/\b(std|cout|endl)\b/g, '<span class="c-type">$1</span>')
+            .replace(/(&quot;.*?&quot;|".*?")/g, '<span class="c-string">$1</span>')
+            .replace(/\b(0)\b/g, '<span class="c-num">0</span>');
+    }
+
+    function runTypingAnimation() {
+        if (typingTimer) clearTimeout(typingTimer);
+        if (loopTimer) clearTimeout(loopTimer);
+
+        isTyping = true;
+        let charIndex = 0;
+
+        codeElem.innerHTML = "";
+        if (cursorElem) cursorElem.style.display = "inline-block";
+        if (successElem) successElem.textContent = "";
+
+        if (badgeElem) {
+            badgeElem.textContent = "Đang gõ mã...";
+            badgeElem.style.background = "rgba(164, 158, 242, 0.2)";
+            badgeElem.style.color = "#c7d2fe";
+            badgeElem.style.borderColor = "rgba(164, 158, 242, 0.35)";
+        }
+
+        if (dotElem) {
+            dotElem.style.background = "#f59e0b";
+            dotElem.style.boxShadow = "0 0 8px #f59e0b";
+        }
+
+        statusElem.textContent = "[Compilation]: Đang nhập mã nguồn...";
+
+        function typeNext() {
+            if (charIndex <= fullCode.length) {
+                const currentText = fullCode.substring(0, charIndex);
+                codeElem.innerHTML = highlightSyntax(currentText);
+
+                // Cập nhật số dòng động
+                if (linesElem) {
+                    const lineCount = Math.max(1, currentText.split("\n").length);
+                    linesElem.innerHTML = Array.from({ length: lineCount }, (_, i) => i + 1).join("<br>");
+                }
+
+                charIndex++;
+                const delay = fullCode[charIndex - 1] === "\n" ? 120 : (Math.random() * 25 + 25);
+                typingTimer = setTimeout(typeNext, delay);
+            } else {
+                finishTyping();
+            }
+        }
+
+        function finishTyping() {
+            isTyping = false;
+            if (badgeElem) {
+                badgeElem.textContent = "Đang biên dịch...";
+                badgeElem.style.background = "rgba(245, 158, 11, 0.18)";
+                badgeElem.style.color = "#fbbf24";
+                badgeElem.style.borderColor = "rgba(245, 158, 11, 0.35)";
+            }
+
+            statusElem.textContent = "[Compilation]: gcc/g++ 13.2 -O2 main.cpp -o main.exe...";
+
+            setTimeout(() => {
+                if (badgeElem) {
+                    badgeElem.textContent = "Đã biên dịch ✓";
+                    badgeElem.style.background = "rgba(16, 185, 129, 0.2)";
+                    badgeElem.style.color = "#34d399";
+                    badgeElem.style.borderColor = "rgba(16, 185, 129, 0.35)";
+                }
+
+                if (dotElem) {
+                    dotElem.style.background = "#10b981";
+                    dotElem.style.boxShadow = "0 0 8px #10b981";
+                }
+
+                statusElem.innerHTML = '<span style="color:#34d399">[Compilation]: Success • g++ 13.2 (0.012s)</span>';
+                if (successElem) {
+                    successElem.textContent = "[Output]: Xin chào C++ Developer! ✨";
+                }
+
+                // Tự động lặp lại mô phỏng sau 10 giây nếu người dùng không tương tác
+                loopTimer = setTimeout(runTypingAnimation, 11000);
+            }, 650);
+        }
+
+        typeNext();
+    }
+
+    if (rerunBtn) {
+        rerunBtn.addEventListener("click", () => {
+            runTypingAnimation();
+            if (typeof window.showToast === "function") {
+                window.showToast("Đang chạy lại mô phỏng gõ mã C++!", "info", 1800);
+            }
+        });
+    }
+
+    // Khởi chạy lần đầu sau 400ms
+    setTimeout(runTypingAnimation, 400);
+}
+
+
+// ============================================================
+// HIỆU ỨNG 2: VẦNG SÁNG CÔNG NGHỆ LƯỚT THEO CHUỘT
+// (MOUSE SPOTLIGHT GLOW)
+// ============================================================
+
+function initHeroSpotlight() {
+    const hero = document.querySelector(".home-hero");
+    if (!hero) return;
+
+    let rafId = null;
+
+    hero.addEventListener("mousemove", (e) => {
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => {
+            const rect = hero.getBoundingClientRect();
+            const x = Math.round(e.clientX - rect.left);
+            const y = Math.round(e.clientY - rect.top);
+            hero.style.setProperty("--spotlight-x", `${x}px`);
+            hero.style.setProperty("--spotlight-y", `${y}px`);
+        });
+    });
+
+    hero.addEventListener("mouseleave", () => {
+        hero.style.setProperty("--spotlight-x", "50%");
+        hero.style.setProperty("--spotlight-y", "35%");
+    });
+}

@@ -230,7 +230,9 @@
 
                         <!-- Mockup C++ IDE Window -->
 
-                        <div class="hero-code-window">
+                        <!-- Mockup C++ IDE Window with Live Typing Effect -->
+
+                        <div class="hero-code-window" id="heroCodeWindow">
 
                             <div class="code-window-header">
 
@@ -245,35 +247,33 @@
                                 </div>
 
                                 <div class="code-window-action">
-                                    <span class="run-badge">Đã biên dịch</span>
+                                    <span class="run-badge" id="heroRunBadge">Đang biên dịch...</span>
                                 </div>
 
                             </div>
 
                             <div class="code-window-body">
 
-                                <pre class="code-pre"><code><span class="c-comment">// Chương trình C++ đầu tiên của bạn</span>
-<span class="c-keyword">#include</span> <span class="c-string">&lt;iostream&gt;</span>
-<span class="c-keyword">#include</span> <span class="c-string">&lt;string&gt;</span>
-<span class="c-keyword">using namespace</span> <span class="c-type">std</span>;
+                                <div class="live-editor-wrapper">
+                                    <div class="live-editor-lines" id="heroEditorLines">1<br>2<br>3<br>4<br>5<br>6<br>7</div>
+                                    <pre class="code-pre no-copy"><code id="heroLiveCode"></code><span class="typing-cursor" id="heroTypingCursor">|</span></pre>
+                                </div>
 
-<span class="c-type">int</span> <span class="c-func">main</span>() {
-    <span class="c-type">string</span> student = <span class="c-string">"Học viên CodeLearn"</span>;
-    <span class="c-func">cout</span> &lt;&lt; <span class="c-string">"Xin chào, "</span> &lt;&lt; student &lt;&lt; <span class="c-string">"!"</span> &lt;&lt; <span class="c-func">endl</span>;
-    <span class="c-func">cout</span> &lt;&lt; <span class="c-string">"Bắt đầu học C++ thật dễ dàng"</span> &lt;&lt; <span class="c-func">endl</span>;
-    <span class="c-keyword">return</span> <span class="c-num">0</span>;
-}</code></pre>
-
-                                <div class="code-output-preview">
+                                <div class="code-output-preview" id="heroOutputPreview">
 
                                     <div class="output-header">
-                                        <span class="output-dot"></span>
-                                        <span>Terminal / Console Output</span>
+                                        <div class="output-header-title">
+                                            <span class="output-dot" id="heroOutputDot"></span>
+                                            <span>Terminal • GNU GCC 13.2</span>
+                                        </div>
+                                        <button type="button" class="btn-rerun-code" id="btnRerunHeroCode" title="Chạy lại mô phỏng mã nguồn">
+                                            ▶ Chạy lại
+                                        </button>
                                     </div>
 
                                     <div class="output-body">
-                                        <div class="output-line">Xin chào, Học viên CodeLearn!</div>
-                                        <div class="output-line output-success">Bắt đầu học C++ thật dễ dàng</div>
+                                        <div class="output-line" id="heroOutputStatus">[Compilation]: Đang khởi tạo...</div>
+                                        <div class="output-line output-success" id="heroOutputSuccess"></div>
                                     </div>
 
                                 </div>
