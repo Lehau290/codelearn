@@ -1206,10 +1206,18 @@ function setupCertificateModal(user) {
             const verifyUrl = `${window.location.origin}/profile.html#verify=${encodeURIComponent(code)}`;
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(verifyUrl).then(() => {
-                    alert(`Đã sao chép liên kết xác thực chứng chỉ:\n${verifyUrl}`);
+                    if (typeof window.showToast === "function") {
+                        window.showToast("Đã sao chép liên kết xác thực chứng chỉ vào clipboard!", "success");
+                    } else {
+                        alert(`Đã sao chép liên kết xác thực chứng chỉ:\n${verifyUrl}`);
+                    }
                 });
             } else {
-                alert(`Mã xác thực của bạn là: ${code}`);
+                if (typeof window.showToast === "function") {
+                    window.showToast(`Mã xác thực của bạn: ${code}`, "info");
+                } else {
+                    alert(`Mã xác thực của bạn là: ${code}`);
+                }
             }
         });
     }

@@ -1248,6 +1248,24 @@ function showGradingResult(
         percentElem.textContent = `${result.comprehensionPercent || result.score}%`;
     }
 
+    // Hiệu ứng ăn mừng và thông báo tương tác
+    if (result.score >= 80) {
+        if (typeof window.triggerConfetti === "function") {
+            window.triggerConfetti();
+        }
+        if (typeof window.showToast === "function") {
+            window.showToast(`🎉 Xuất sắc! Bạn đạt ${result.score}/100 điểm cho bài tập này!`, "success");
+        }
+    } else if (result.score >= 60) {
+        if (typeof window.showToast === "function") {
+            window.showToast(`👍 Đạt yêu cầu (${result.score}/100 điểm). Hãy xem gợi ý AI để đạt điểm tuyệt đối nhé!`, "info");
+        }
+    } else {
+        if (typeof window.showToast === "function") {
+            window.showToast(`⚠️ Điểm số: ${result.score}/100. Hãy rà soát lại lỗi cú pháp và gợi ý của AI nhé!`, "warning");
+        }
+    }
+
     function renderFeedbackList(items, defaultText) {
         if (!items) return `<p>${defaultText}</p>`;
         if (typeof items === "string") return `<p>${formatLessonContent(items)}</p>`;

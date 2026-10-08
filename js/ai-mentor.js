@@ -274,10 +274,18 @@
                         if (window.CodeLearnApi && typeof CodeLearnApi.ai?.setConfig === "function") {
                             await CodeLearnApi.ai.setConfig({ geminiKey, openaiKey });
                         }
-                        alert("✓ Đã lưu cấu hình AI thành công!");
+                        if (typeof window.showToast === "function") {
+                            window.showToast("Đã lưu cấu hình AI thành công!", "success");
+                        } else {
+                            alert("✓ Đã lưu cấu hình AI thành công!");
+                        }
                         closeSettings();
                     } catch (err) {
-                        alert("Lỗi khi lưu cấu hình: " + (err.message || "Lỗi mạng"));
+                        if (typeof window.showToast === "function") {
+                            window.showToast("Lỗi khi lưu cấu hình: " + (err.message || "Lỗi mạng"), "error");
+                        } else {
+                            alert("Lỗi khi lưu cấu hình: " + (err.message || "Lỗi mạng"));
+                        }
                     } finally {
                         saveSettingsBtn.disabled = false;
                         saveSettingsBtn.textContent = "Lưu Cấu hình";

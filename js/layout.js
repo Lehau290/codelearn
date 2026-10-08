@@ -453,3 +453,166 @@ window.CppTheme = {
     set: applyTheme,
     toggle: toggleTheme
 };
+
+// ============================================================
+// HỆ THỐNG THÔNG BÁO TOAST TOÀN CỤC (GLOBAL TOAST NOTIFICATIONS)
+// ============================================================
+
+function showToast(message, type = "info", duration = 3200) {
+    let container = document.getElementById("toastContainer");
+    if (!container) {
+        container = document.createElement("div");
+        container.id = "toastContainer";
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement("div");
+    toast.className = `toast-item toast-${type}`;
+
+    const icons = {
+        success: "✓",
+        error: "✕",
+        warning: "⚠️",
+        info: "ℹ️"
+    };
+
+    const iconStr = icons[type] || "ℹ️";
+
+    toast.innerHTML = `
+        <span class="toast-icon">${iconStr}</span>
+        <span class="toast-message">${message}</span>
+        <button type="button" class="toast-close" aria-label="Đóng">&times;</button>
+    `;
+
+    const closeBtn = toast.querySelector(".toast-close");
+    let isRemoved = false;
+
+    function removeToast() {
+        if (isRemoved) return;
+        isRemoved = true;
+        toast.classList.add("toast-hiding");
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 320);
+    }
+
+    closeBtn.addEventListener("click", removeToast);
+    container.appendChild(toast);
+
+    if (duration > 0) {
+        setTimeout(removeToast, duration);
+    }
+}
+
+window.showToast = showToast;
+
+// ============================================================
+// HIỆU ỨNG PHÁO HOA ĂN MỪNG TOÀN CỤC (GLOBAL CONFETTI CELEBRATION)
+// ============================================================
+
+function triggerConfetti() {
+    let canvas = document.getElementById("globalConfettiCanvas");
+    if (!canvas) {
+        canvas = document.createElement("canvas");
+        canvas.id = "globalConfettiCanvas";
+        document.body.appendChild(canvas);
+    }
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const colors = ["#d4af37", "#f59e0b", "#6366f1", "#8b5cf6", "#ec4899", "#10b981", "#3b82f6"];
+    const particles = [];
+    const count = 120;
+
+    for (let i = 0; i < count; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * (canvas.height * 0.4) - 40,
+            size: Math.random() * 8 + 4,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            vx: (Math.random() - 0.5) * 6,
+            vy: Math.random() * 4 + 2,
+            rotation: Math.random() * 360,
+            vRot: (Math.random() - 0.5) * 12
+        });
+    }
+
+    let frame = 0;
+    function render() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.rotation += p.vRot;
+
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate((p.rotation * Math.PI) / 180);
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+            ctx.restore();
+        });
+
+        frame++;
+        if (frame < 160) {
+            requestAnimationFrame(render);
+        } else {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    }
+    render();
+}
+
+window.triggerConfetti = triggerConfetti;
+
+// ============================================================
+// TỰ ĐỘNG GẮN NÚT SAO CHÉP MÃ NGUỒN (AUTO COPY CODE BUTTONS)
+// ============================================================
+
+function setupCodeCopyButtons() {
+    const preBlocks = document.querySelectorAll("pre:not(.no-copy)");
+    preBlocks.forEach(pre => {
+        if (pre.querySelector(".copy-code-btn")) return;
+
+        // Bọc pre trong wrapper nếu chưa có
+        if (!pre.classList.contains("code-block-wrapper")) {
+            pre.classList.add("code-block-wrapper");
+        }
+
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "copy-code-btn";
+        btn.innerHTML = "Sao chép";
+        btn.setAttribute("title", "Sao chép mã nguồn");
+
+        btn.addEventListener("click", () => {
+            const code = pre.querySelector("code") ? pre.querySelector("code").innerText : pre.innerText;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(code).then(() => {
+                    btn.innerHTML = "Đã chép ✓";
+                    btn.classList.add("copied");
+                    showToast("Đã sao chép mã nguồn vào clipboard!", "success", 2000);
+                    setTimeout(() => {
+                        btn.innerHTML = "Sao chép";
+                        btn.classList.remove("copied");
+                    }, 2000);
+                }).catch(() => {
+                    showToast("Không thể sao chép tự động", "warning");
+                });
+            }
+        });
+
+        pre.appendChild(btn);
+    });
+}
+
+// Khởi chạy khi DOM sẵn sàng
+document.addEventListener("DOMContentLoaded", () => {
+    setupCodeCopyButtons();
+});

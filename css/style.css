@@ -7581,3 +7581,248 @@ body.dark-theme .rank-avatar {
         display: none;
     }
 }
+
+/* =========================================================
+   MODERN INTERACTIVE EFFECTS & MICRO-INTERACTIONS
+   (No house icon used)
+   ========================================================= */
+
+/* 1. Global Toast Notifications Container */
+#toastContainer {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: none;
+    max-width: 380px;
+    width: calc(100vw - 32px);
+}
+
+.toast-item {
+    pointer-events: auto;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+    border-left: 4px solid var(--primary, #6366f1);
+    color: var(--text-primary, #1e293b);
+    font-size: 0.92rem;
+    line-height: 1.45;
+    position: relative;
+    overflow: hidden;
+    animation: toastSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+body.dark-theme .toast-item {
+    background: #1e1b4b;
+    color: #f1f5f9;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-left: 4px solid var(--primary, #818cf8);
+}
+
+.toast-item.toast-success { border-left-color: #10b981; }
+.toast-item.toast-error { border-left-color: #ef4444; }
+.toast-item.toast-warning { border-left-color: #f59e0b; }
+.toast-item.toast-info { border-left-color: #3b82f6; }
+
+.toast-icon {
+    font-size: 1.25rem;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.toast-message {
+    flex: 1;
+    font-weight: 500;
+    word-break: break-word;
+}
+
+.toast-close {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 1.1rem;
+    line-height: 1;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: color 0.15s ease, background 0.15s ease;
+}
+
+.toast-close:hover {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.toast-item.toast-hiding {
+    animation: toastSlideOut 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes toastSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(60px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+@keyframes toastSlideOut {
+    from {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(60px) scale(0.92);
+    }
+}
+
+/* 2. Global Confetti Canvas */
+#globalConfettiCanvas {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 99998;
+}
+
+/* 3. Interactive Card Hover Effects & Stagger Animation */
+.lesson-card,
+.stat-card,
+.feature-card,
+.podium-card,
+.activity-card {
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.28s ease,
+                border-color 0.28s ease !important;
+}
+
+.lesson-card:hover,
+.stat-card:hover,
+.feature-card:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: 0 14px 30px rgba(99, 102, 241, 0.14), 0 4px 10px rgba(0, 0, 0, 0.04) !important;
+}
+
+body.dark-theme .lesson-card:hover,
+body.dark-theme .stat-card:hover,
+body.dark-theme .feature-card:hover {
+    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.5), 0 0 20px rgba(129, 140, 248, 0.2) !important;
+    border-color: rgba(129, 140, 248, 0.4) !important;
+}
+
+/* 4. Lesson Card Fade-In on Filter & Render */
+@keyframes cardFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.lesson-list-card {
+    animation: cardFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* 5. Animated Shimmer on Progress Bar */
+.progress-bar-fill,
+.progress-fill {
+    position: relative;
+    overflow: hidden;
+    transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.progress-bar-fill::after,
+.progress-fill::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.3) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    animation: progressShimmer 2.2s infinite;
+}
+
+@keyframes progressShimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* 6. Button Active Feedback */
+.btn:active,
+button:active {
+    transform: scale(0.97) !important;
+}
+
+/* 7. Copy Code Button Floating on Pre/Code */
+.code-block-wrapper {
+    position: relative;
+}
+
+.copy-code-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(30, 41, 59, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #e2e8f0;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+    z-index: 5;
+}
+
+.copy-code-btn:hover {
+    background: var(--primary, #6366f1);
+    color: #ffffff;
+    border-color: transparent;
+    transform: translateY(-1px);
+}
+
+.copy-code-btn.copied {
+    background: #10b981 !important;
+    color: #ffffff !important;
+    border-color: transparent !important;
+}
+
+/* 8. Pulsing Glow for AI Mentor */
+.ai-mentor-floating-btn {
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
+    animation: mentorFloatPulse 3s ease-in-out infinite;
+}
+
+@keyframes mentorFloatPulse {
+    0%, 100% {
+        box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
+    }
+    50% {
+        box-shadow: 0 12px 36px rgba(99, 102, 241, 0.65), 0 0 16px rgba(129, 140, 248, 0.4);
+    }
+}
+

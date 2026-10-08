@@ -804,12 +804,12 @@ function showAdminMessage(
     }
 
 
-    element.textContent =
-        message;
+    element.textContent = message;
+    element.className = `form-message ${type}`;
 
-
-    element.className =
-        `form-message ${type}`;
+    if (typeof window.showToast === "function") {
+        window.showToast(message, type);
+    }
 
 
     setTimeout(
