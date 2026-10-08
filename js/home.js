@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 5. Cập nhật bảng xếp hạng thi đua
     updateLeaderboardUser(currentUser);
+    initLeaderboardInteractions();
 
     // 6. Hiệu ứng Vầng sáng công nghệ lướt theo chuột (Mouse Spotlight Glow)
     initHeroSpotlight();
@@ -417,8 +418,122 @@ function updateLeaderboardUser(user) {
             if (parsed.streak) streakVal = parsed.streak;
         }
     } catch(e) {}
-    if (streakEl) streakEl.textContent = `${streakVal} ngày liên tục`;
+    if (streakEl) streakEl.textContent = `🔥 ${streakVal} ngày liên tục`;
     if (descEl) descEl.textContent = `Đã hoàn thành ${completedCount}/${lessons.length} bài học`;
+}
+
+function initLeaderboardInteractions() {
+    // 1. Click tương tác trên Podium (Cổ vũ & Bắn pháo hoa Confetti)
+    const cheerTargets = document.querySelectorAll(".podium-card, .btn-podium-cheer");
+    cheerTargets.forEach(item => {
+        item.addEventListener("click", (e) => {
+            // Tránh trigger 2 lần nếu click trúng button nằm trong card
+            if (e.currentTarget.classList.contains("podium-card") && e.target.closest(".btn-podium-cheer")) {
+                return;
+            }
+
+            const targetCard = e.currentTarget.classList.contains("podium-card") 
+                ? e.currentTarget 
+                : e.currentTarget.closest(".podium-card");
+
+            const name = targetCard?.getAttribute("data-podium-name") || "Học viên";
+            const rank = targetCard?.getAttribute("data-podium-rank") || "1";
+
+            // Bắn pháo hoa Confetti toàn màn hình
+            if (typeof window.triggerConfetti === "function") {
+                window.triggerConfetti();
+            }
+
+            // Hiệu ứng particle nổi bay lên từ vị trí chuột
+            spawnFloatingSparkle(e.clientX || (window.innerWidth / 2), e.clientY || (window.innerHeight / 2), rank === "1" ? "👑" : "⭐");
+
+            // Hiển thị Toast thông báo chúc mừng
+            if (typeof window.showToast === "function") {
+                if (rank === "1") {
+                    window.showToast(`🎉 Chúc mừng Quán Quân Tuần: ${name}! Bạn đã tặng 1 sao vinh danh ⭐`, "success", 2600);
+                } else {
+                    window.showToast(`👏 Bạn đã gửi tràng pháo tay cổ vũ tới ${name}! ✨`, "info", 2200);
+                }
+            }
+        });
+    });
+
+    // 2. Chuyển đổi bộ lọc chu kỳ thi đua (Tuần này / Tháng này / Mọi thời đại)
+    const filterTabs = document.querySelectorAll("#leaderboardPeriodTabs .filter-pill");
+    filterTabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+            if (tab.classList.contains("active")) return;
+            filterTabs.forEach(t => t.classList.remove("active"));
+            tab.classList.add("active");
+
+            const period = tab.getAttribute("data-period");
+            let multiplier = 1;
+            let periodName = "Tuần này";
+
+            if (period === "month") {
+                multiplier = 3.4;
+                periodName = "Tháng này";
+            } else if (period === "all") {
+                multiplier = 8.6;
+                periodName = "Mọi thời đại";
+            }
+
+            // Cập nhật các điểm số hiển thị với hiệu ứng đếm số mượt mà
+            document.querySelectorAll(".pts-val").forEach(el => {
+                const base = Number(el.getAttribute("data-base") || 1000);
+                const target = Math.round(base * multiplier);
+                animateNumber(el, target);
+            });
+
+            // Cập nhật điểm của user hiện tại
+            const userPtsEl = document.getElementById("currentUserRankPoints");
+            if (userPtsEl) {
+                const currentPts = Number(userPtsEl.textContent.replace(/,/g, "")) || 850;
+                let baseUserPts = userPtsEl.getAttribute("data-base-user");
+                if (!baseUserPts) {
+                    baseUserPts = currentPts;
+                    userPtsEl.setAttribute("data-base-user", baseUserPts);
+                } else {
+                    baseUserPts = Number(baseUserPts);
+                }
+                const targetUser = Math.round(baseUserPts * multiplier);
+                animateNumber(userPtsEl, targetUser);
+            }
+
+            if (typeof window.showToast === "function") {
+                window.showToast(`Đã chuyển sang bảng xếp hạng: ${periodName}`, "info", 1800);
+            }
+        });
+    });
+
+    function spawnFloatingSparkle(x, y, icon) {
+        const span = document.createElement("span");
+        span.className = "floating-sparkle";
+        span.textContent = icon;
+        span.style.left = `${x}px`;
+        span.style.top = `${y}px`;
+        document.body.appendChild(span);
+        setTimeout(() => span.remove(), 1200);
+    }
+
+    function animateNumber(element, targetVal) {
+        const startVal = Number(element.textContent.replace(/,/g, "")) || 0;
+        const duration = 650;
+        const startTime = performance.now();
+
+        function update(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const ease = 1 - Math.pow(1 - progress, 3);
+            const current = Math.round(startVal + (targetVal - startVal) * ease);
+            element.textContent = current.toLocaleString();
+
+            if (progress < 1) {
+                requestAnimationFrame(update);
+            }
+        }
+        requestAnimationFrame(update);
+    }
 }
 
 

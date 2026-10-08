@@ -639,42 +639,100 @@
                     <p>Thi đua lập trình mỗi ngày, duy trì chuỗi học tập (Streak) và tích lũy điểm kinh nghiệm để vinh danh trên bảng vàng.</p>
                 </div>
 
+                <!-- Thanh lọc chu kỳ thi đua & Realtime Badge -->
+                <div class="leaderboard-filter-bar">
+                    <div class="filter-pills" role="tablist" id="leaderboardPeriodTabs">
+                        <button type="button" class="filter-pill active" data-period="week">🔥 Tuần này</button>
+                        <button type="button" class="filter-pill" data-period="month">⚡ Tháng này</button>
+                        <button type="button" class="filter-pill" data-period="all">🏆 Mọi thời đại</button>
+                    </div>
+                    <div class="leaderboard-badge-live">
+                        <span class="live-indicator"></span> Bảng vàng tự động cập nhật
+                    </div>
+                </div>
+
                 <div class="leaderboard-card-wrapper">
-                    <!-- Top 3 Podium Highlights -->
+                    <!-- Top 3 Championship Podium Highlights -->
                     <div class="leaderboard-podium">
-                        <!-- Rank 2 -->
-                        <div class="podium-card podium-silver">
-                            <div class="podium-badge">Hạng 2</div>
-                            <div class="podium-avatar">LH</div>
-                            <h4 class="podium-name">Lê Trung Hậu</h4>
-                            <p class="podium-role">Học viên Xuất sắc</p>
-                            <div class="podium-stats">
-                                <span class="podium-points">1,720 PTS</span>
-                                <span class="podium-streak">9 ngày</span>
+                        <!-- Rank 2: Á Quân 1 (Bạc) -->
+                        <div class="podium-col podium-col-silver">
+                            <div class="podium-card podium-silver" data-podium-rank="2" data-podium-name="Lê Trung Hậu">
+                                <div class="podium-shimmer"></div>
+                                <div class="podium-badge podium-badge-silver">
+                                    <span class="podium-medal">🥈</span> Hạng 2 • Á Quân
+                                </div>
+                                <div class="podium-avatar-wrapper">
+                                    <div class="podium-avatar avatar-silver">LH</div>
+                                    <span class="avatar-rank-tag">#2</span>
+                                </div>
+                                <h4 class="podium-name">Lê Trung Hậu</h4>
+                                <p class="podium-role">Học viên Xuất sắc</p>
+                                <div class="podium-stats">
+                                    <span class="podium-points">⚡ <strong class="pts-val" data-base="1720">1,720</strong> <small>PTS</small></span>
+                                    <span class="podium-streak">🔥 9 ngày streak</span>
+                                </div>
+                                <button type="button" class="btn-podium-cheer" data-name="Lê Trung Hậu" title="Thả tim cổ vũ">
+                                    👏 Cổ vũ
+                                </button>
+                            </div>
+                            <div class="podium-stand stand-silver">
+                                <span class="stand-number">2</span>
                             </div>
                         </div>
 
-                        <!-- Rank 1 -->
-                        <div class="podium-card podium-gold">
-                            <div class="podium-badge">Hạng 1</div>
-                            <div class="podium-avatar">BN</div>
-                            <h4 class="podium-name">Nguyễn Thị Bảo Ngọc</h4>
-                            <p class="podium-role">Đại học Kinh Tế</p>
-                            <div class="podium-stats">
-                                <span class="podium-points">1,850 PTS</span>
-                                <span class="podium-streak">14 ngày</span>
+                        <!-- Rank 1: Quán Quân Tuần (Vàng) -->
+                        <div class="podium-col podium-col-gold">
+                            <div class="podium-card podium-gold" data-podium-rank="1" data-podium-name="Nguyễn Thị Bảo Ngọc">
+                                <div class="champion-glow-aura"></div>
+                                <div class="podium-crown" title="Quán quân tuần">👑</div>
+                                <div class="podium-shimmer"></div>
+                                <div class="podium-badge podium-badge-gold">
+                                    <span class="podium-medal">🥇</span> Quán Quân Tuần
+                                </div>
+                                <div class="podium-avatar-wrapper">
+                                    <div class="champion-halo-ring"></div>
+                                    <div class="podium-avatar avatar-gold">BN</div>
+                                    <span class="avatar-rank-tag tag-gold">#1</span>
+                                </div>
+                                <h4 class="podium-name">Nguyễn Thị Bảo Ngọc</h4>
+                                <p class="podium-role">Đại học Kinh Tế</p>
+                                <div class="podium-stats">
+                                    <span class="podium-points points-gold">⭐ <strong class="pts-val" data-base="1850">1,850</strong> <small>PTS</small></span>
+                                    <span class="podium-streak streak-gold">🔥 14 ngày chuỗi</span>
+                                </div>
+                                <button type="button" class="btn-podium-cheer btn-cheer-gold" data-name="Nguyễn Thị Bảo Ngọc" title="Tặng sao chúc mừng quán quân">
+                                    🎉 Chúc mừng
+                                </button>
+                            </div>
+                            <div class="podium-stand stand-gold">
+                                <span class="stand-number">1</span>
+                                <span class="stand-label">CHAMPION</span>
                             </div>
                         </div>
 
-                        <!-- Rank 3 -->
-                        <div class="podium-card podium-bronze">
-                            <div class="podium-badge">Hạng 3</div>
-                            <div class="podium-avatar">CT</div>
-                            <h4 class="podium-name">Trương Vũ Cát Tường</h4>
-                            <p class="podium-role">Đại Học Sư Phạm</p>
-                            <div class="podium-stats">
-                                <span class="podium-points">1,580 PTS</span>
-                                <span class="podium-streak">7 ngày</span>
+                        <!-- Rank 3: Á Quân 2 (Đồng) -->
+                        <div class="podium-col podium-col-bronze">
+                            <div class="podium-card podium-bronze" data-podium-rank="3" data-podium-name="Trương Vũ Cát Tường">
+                                <div class="podium-shimmer"></div>
+                                <div class="podium-badge podium-badge-bronze">
+                                    <span class="podium-medal">🥉</span> Hạng 3 • Top 3
+                                </div>
+                                <div class="podium-avatar-wrapper">
+                                    <div class="podium-avatar avatar-bronze">CT</div>
+                                    <span class="avatar-rank-tag">#3</span>
+                                </div>
+                                <h4 class="podium-name">Trương Vũ Cát Tường</h4>
+                                <p class="podium-role">Đại Học Sư Phạm</p>
+                                <div class="podium-stats">
+                                    <span class="podium-points">⚡ <strong class="pts-val" data-base="1580">1,580</strong> <small>PTS</small></span>
+                                    <span class="podium-streak">🔥 7 ngày streak</span>
+                                </div>
+                                <button type="button" class="btn-podium-cheer" data-name="Trương Vũ Cát Tường" title="Thả tim cổ vũ">
+                                    👏 Cổ vũ
+                                </button>
+                            </div>
+                            <div class="podium-stand stand-bronze">
+                                <span class="stand-number">3</span>
                             </div>
                         </div>
                     </div>
@@ -691,7 +749,7 @@
                                 </div>
                             </div>
                             <div class="streak-col">
-                                <span class="streak-pill">5 ngày liên tục</span>
+                                <span class="streak-pill">🔥 5 ngày liên tục</span>
                             </div>
                             <div class="score-col">
                                 <strong>1,420</strong> <small>PTS</small>
@@ -699,19 +757,29 @@
                         </div>
 
                         <div class="leaderboard-row highlight-current" id="leaderboardCurrentUserRow">
-                            <div class="rank-col"><span class="rank-num">5</span></div>
+                            <div class="rank-col">
+                                <span class="rank-num rank-current-num">5</span>
+                            </div>
                             <div class="user-col">
                                 <div class="rank-avatar" id="currentUserRankAvatar">U</div>
                                 <div class="rank-user-info">
-                                    <strong id="currentUserRankName">Bạn (Người học)</strong>
+                                    <div class="user-name-line">
+                                        <strong id="currentUserRankName">Bạn (Người học)</strong>
+                                        <span class="current-user-tag"><span class="pulse-dot"></span> Vị trí của bạn</span>
+                                    </div>
                                     <span id="currentUserRankDesc">Học viên C++ Basic</span>
                                 </div>
                             </div>
                             <div class="streak-col">
-                                <span class="streak-pill" id="currentUserRankStreak">3 ngày liên tục</span>
+                                <span class="streak-pill streak-pill-current" id="currentUserRankStreak">🔥 3 ngày liên tục</span>
                             </div>
                             <div class="score-col">
                                 <strong id="currentUserRankPoints">850</strong> <small>PTS</small>
+                            </div>
+                            <div class="action-col">
+                                <a href="lessons.html" class="btn-boost-rank" title="Luyện tập để tăng điểm và thăng hạng">
+                                    Luyện tập ↗
+                                </a>
                             </div>
                         </div>
                     </div>
