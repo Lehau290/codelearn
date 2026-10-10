@@ -395,49 +395,8 @@ function setupThemeToggle() {
     const current = getCurrentTheme();
     applyTheme(current);
 
-    // Tìm hoặc tự động tạo nút chuyển theme nếu chưa có trong DOM
-    let toggleButtons = document.querySelectorAll(".theme-toggle-btn, #themeToggleBtn");
-
-    if (toggleButtons.length === 0) {
-        const headerInner = document.querySelector(".header-inner");
-        if (headerInner) {
-            const btn = document.createElement("button");
-            btn.type = "button";
-            btn.className = "theme-toggle-btn";
-            btn.id = "themeToggleBtn";
-            btn.setAttribute(
-                "aria-label",
-                current === "dark" ? "Chuyển sang giao diện Sáng" : "Chuyển sang giao diện Tối"
-            );
-            btn.setAttribute(
-                "title",
-                current === "dark" ? "Chuyển sang giao diện Sáng" : "Chuyển sang giao diện Tối"
-            );
-            btn.innerHTML = `<span class="theme-text-light">Chế độ tối</span><span class="theme-text-dark">Chế độ sáng</span>`;
-
-            const headerUser = headerInner.querySelector(".header-user");
-            if (headerUser) {
-                headerInner.insertBefore(btn, headerUser);
-            } else {
-                headerInner.appendChild(btn);
-            }
-            toggleButtons = [btn];
-        } else {
-            const authPage = document.querySelector(".auth-page");
-            if (authPage) {
-                const wrapper = document.createElement("div");
-                wrapper.className = "auth-theme-toggle";
-                wrapper.innerHTML = `
-                    <button type="button" class="theme-toggle-btn" id="themeToggleBtn" aria-label="Chuyển chế độ sáng/tối" title="Chuyển chế độ sáng/tối">
-                        <span class="theme-text-light">Chế độ tối</span>
-                        <span class="theme-text-dark">Chế độ sáng</span>
-                    </button>
-                `;
-                document.body.appendChild(wrapper);
-                toggleButtons = wrapper.querySelectorAll(".theme-toggle-btn");
-            }
-        }
-    }
+    // Gán sự kiện chuyển theme cho các nút nếu có trong DOM
+    const toggleButtons = document.querySelectorAll(".theme-toggle-btn, #themeToggleBtn");
 
     toggleButtons.forEach(btn => {
         btn.removeEventListener("click", toggleTheme);
