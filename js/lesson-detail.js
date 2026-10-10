@@ -7,7 +7,44 @@ let currentLessonData = null;
 let currentLessonExercises = [];
 let activeExerciseIndex = 0;
 
-document.addEventListener("DOMContentLoaded", () => {
+function findLessonFlexible(lessonsList, targetId) {
+    if (!targetId || !Array.isArray(lessonsList) || lessonsList.length === 0) {
+        return null;
+    }
+    const cleanId = String(targetId).trim().toLowerCase();
+
+    // 1. So khớp chính xác ID (không phân biệt chữ hoa / thường)
+    let found = lessonsList.find(
+        l => l && String(l.id).toLowerCase() === cleanId
+    );
+    if (found) return found;
+
+    // 2. So khớp theo số bài học / thứ tự (ví dụ: "2", "lesson-2", "lesson-02", "bai-2")
+    const digits = cleanId.replace(/\D/g, "");
+    if (digits) {
+        const num = parseInt(digits, 10);
+        found = lessonsList.find(l => {
+            if (!l) return false;
+            const lDigits = String(l.id || "").replace(/\D/g, "");
+            const lNum = lDigits ? parseInt(lDigits, 10) : NaN;
+            const order = parseInt(l.order || l.order_num || 0, 10);
+            return lNum === num || order === num;
+        });
+        if (found) return found;
+    }
+
+    // 3. So khớp theo tiêu đề bài học
+    found = lessonsList.find(l => {
+        if (!l || !l.title) return false;
+        const title = String(l.title).toLowerCase();
+        return title.includes(cleanId) || cleanId.includes(title);
+    });
+    if (found) return found;
+
+    return null;
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
     const currentUser = CppStorage.getCurrentUser();
 
     if (!currentUser) {
@@ -17,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // --------------------------------------------------------
     // Lấy lesson ID từ URL
     // Ví dụ:
-    // lesson-detail.html?id=lesson-1
+    // lesson-detail.html?id=lesson-02 hoặc lesson-detail.html?id=2
     // --------------------------------------------------------
 
     const params = new URLSearchParams(
@@ -26,17 +63,65 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const lessonId = params.get("id");
 
-    const lessons = CppStorage.getLessons();
+    let lessons = CppStorage.getLessons();
+    if (!lessons || lessons.length === 0) {
+        if (typeof CppStorage.resetLessons === "function") {
+            CppStorage.resetLessons();
+        }
+        lessons = CppStorage.getLessons();
+    }
 
     let lesson = null;
     if (lessonId) {
-        lesson = lessons.find(
-            item => String(item.id) === String(lessonId)
-        );
+        lesson = findLessonFlexible(lessons, lessonId);
     }
 
-    if (!lesson && lessons.length > 0) {
+    // Nếu chưa tìm thấy và backend API khả dụng, thử đồng bộ danh sách bài học
+    if (!lesson && window.CodeLearnApi && typeof CodeLearnApi.lessons?.getAll === "function") {
+        try {
+            const res = await CodeLearnApi.lessons.getAll();
+            const apiLessons = (res && Array.isArray(res.lessons)) ? res.lessons : (Array.isArray(res) ? res : null);
+            if (apiLessons && apiLessons.length > 0) {
+                const storageMap = new Map((lessons || []).map(l => [String(l.id), l]));
+                const mergedLessons = apiLessons.map(apiL => {
+                    const localL = storageMap.get(String(apiL.id)) || {};
+                    return {
+                        ...localL,
+                        ...apiL,
+                        content: apiL.content || localL.content || localL.theory || "",
+                        theory: apiL.content || localL.theory || localL.content || "",
+                        starterCode: apiL.starterCode || localL.starterCode || "",
+                        example: apiL.example || localL.example || ""
+                    };
+                }).sort((a, b) => Number(a.order || 0) - Number(b.order || 0));
+
+                lessons = mergedLessons;
+                CppStorage.saveLessons(mergedLessons);
+
+                if (lessonId) {
+                    lesson = findLessonFlexible(lessons, lessonId);
+                }
+            }
+        } catch (_) {}
+    }
+
+    // Nếu vẫn chưa tìm thấy theo ID, gọi trực tiếp API chi tiết bài học
+    if (!lesson && lessonId && window.CodeLearnApi && typeof CodeLearnApi.lessons?.getById === "function") {
+        try {
+            const singleRes = await CodeLearnApi.lessons.getById(lessonId);
+            if (singleRes && singleRes.lesson) {
+                lesson = singleRes.lesson;
+            }
+        } catch (_) {}
+    }
+
+    // Nếu người dùng KHÔNG truyền tham số ID (vào thẳng trang lesson-detail.html)
+    // thì mới mở bài học đầu tiên (Bài 1)
+    if (!lesson && !lessonId && lessons.length > 0) {
         lesson = lessons[0];
+    } else if (!lesson && lessons.length > 0) {
+        // Nếu truyền ID nhưng không tìm thấy, thử lại với findLessonFlexible hoặc fallback bài đầu tiên
+        lesson = findLessonFlexible(lessons, lessonId) || lessons[0];
     }
 
     if (!lesson) {
@@ -44,6 +129,17 @@ document.addEventListener("DOMContentLoaded", () => {
             "Chưa có bài học nào trong hệ thống."
         );
         return;
+    }
+
+    // Chuẩn hoá URL trên thanh địa chỉ sang đúng ID của bài học hiện tại
+    if (lesson.id && window.history && window.history.replaceState) {
+        try {
+            const currentUrl = new URL(window.location.href);
+            if (currentUrl.searchParams.get("id") !== String(lesson.id)) {
+                currentUrl.searchParams.set("id", lesson.id);
+                window.history.replaceState({}, "", currentUrl.toString());
+            }
+        } catch (_) {}
     }
 
     currentLessonData = lesson;
@@ -1531,8 +1627,8 @@ function renderCourseNavigation(
 
 
                     const active =
-                        String(lesson.id) ===
-                        String(currentId);
+                        String(lesson.id).toLowerCase() === String(currentId).toLowerCase() ||
+                        (lesson.id && currentId && String(lesson.id).replace(/\D/g, "") === String(currentId).replace(/\D/g, ""));
 
 
                     return `
@@ -1582,12 +1678,19 @@ function setupLessonNavigation(
     currentLesson,
     lessons
 ) {
-    const currentIndex =
-        lessons.findIndex(
-            lesson =>
-                String(lesson.id) ===
-                String(currentLesson.id)
-        );
+    let currentIndex = -1;
+    if (currentLesson && Array.isArray(lessons)) {
+        currentIndex = lessons.findIndex(lesson => {
+            if (!lesson) return false;
+            if (String(lesson.id).toLowerCase() === String(currentLesson.id).toLowerCase()) return true;
+            const lDigits = String(lesson.id || "").replace(/\D/g, "");
+            const cDigits = String(currentLesson.id || "").replace(/\D/g, "");
+            if (lDigits && cDigits && lDigits === cDigits) return true;
+            const lOrder = Number(lesson.order || lesson.order_num || 0);
+            const cOrder = Number(currentLesson.order || currentLesson.order_num || 0);
+            return lOrder > 0 && lOrder === cOrder;
+        });
+    }
 
 
     const previousLesson =

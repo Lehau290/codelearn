@@ -1447,13 +1447,20 @@ int main() {
         }
 
         return lessons
-            .map(lesson => ({
-                ...lesson,
-                theory: lesson.theory || lesson.content || "",
-                content: lesson.content || lesson.theory || "",
-                example: lesson.example || lesson.exampleCode || "",
-                exampleCode: lesson.exampleCode || lesson.example || ""
-            }))
+            .map(lesson => {
+                let id = lesson.id;
+                if (typeof id === "string" && /^lesson-\d$/.test(id)) {
+                    id = `lesson-0${id.slice(7)}`;
+                }
+                return {
+                    ...lesson,
+                    id: id || lesson.id,
+                    theory: lesson.theory || lesson.content || "",
+                    content: lesson.content || lesson.theory || "",
+                    example: lesson.example || lesson.exampleCode || "",
+                    exampleCode: lesson.exampleCode || lesson.example || ""
+                };
+            })
             .sort(
                 (a, b) =>
                     Number(a.order || 0) -
@@ -1482,10 +1489,29 @@ int main() {
             return null;
         }
 
-        return getLessons().find(
-            lesson =>
-                String(lesson.id) === String(id)
-        ) || null;
+        const cleanId = String(id).trim().toLowerCase();
+        const allLessons = getLessons();
+
+        // 1. So khớp chính xác ID (không phân biệt hoa thường)
+        let found = allLessons.find(
+            lesson => String(lesson.id).toLowerCase() === cleanId
+        );
+        if (found) return found;
+
+        // 2. So khớp theo số / thứ tự bài học (ví dụ: "2", "lesson-2", "lesson-02")
+        const digits = cleanId.replace(/\D/g, "");
+        if (digits) {
+            const num = parseInt(digits, 10);
+            found = allLessons.find(l => {
+                const lDigits = String(l.id || "").replace(/\D/g, "");
+                const lNum = lDigits ? parseInt(lDigits, 10) : NaN;
+                const order = parseInt(l.order || l.order_num || 0, 10);
+                return lNum === num || order === num;
+            });
+            if (found) return found;
+        }
+
+        return null;
     }
 
 

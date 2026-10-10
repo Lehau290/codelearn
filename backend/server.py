@@ -369,8 +369,18 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
             lesson = cursor.fetchone()
 
             if not lesson:
+                digits = "".join(ch for ch in lesson_id if ch.isdigit())
+                if digits:
+                    padded_id = f"lesson-{int(digits):02d}"
+                    order_val = int(digits)
+                    cursor.execute("SELECT * FROM lessons WHERE id = ? OR order_num = ?", (padded_id, order_val))
+                    lesson = cursor.fetchone()
+
+            if not lesson:
                 conn.close()
                 return self.send_json(404, {"error": "Không tìm thấy bài học."})
+
+            lesson_id = lesson["id"]
 
             # Fetch 3 exercises
             cursor.execute("SELECT * FROM exercises WHERE lesson_id = ? ORDER BY order_num ASC", (lesson_id,))

@@ -685,8 +685,17 @@ window.getLessonExercises = function(lesson) {
     if (!lesson) return [];
 
     // 1. Kiểm tra trong kho dữ liệu bài tập
-    if (window.CppExercisesData && window.CppExercisesData[lesson.id]) {
-        return window.CppExercisesData[lesson.id];
+    if (window.CppExercisesData) {
+        if (window.CppExercisesData[lesson.id]) {
+            return window.CppExercisesData[lesson.id];
+        }
+        const digits = String(lesson.id || "").replace(/\D/g, "");
+        if (digits) {
+            const paddedKey = `lesson-${String(digits).padStart(2, "0")}`;
+            if (window.CppExercisesData[paddedKey]) {
+                return window.CppExercisesData[paddedKey];
+            }
+        }
     }
 
     // 2. Nếu lesson đã có sẵn mảng exercises với 3 bài

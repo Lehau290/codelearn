@@ -179,6 +179,21 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
         });
     }
+
+    // 5. Điều hướng trực tiếp khi click vào bất kỳ vị trí nào trên thẻ bài học
+    if (lessonList) {
+        lessonList.addEventListener("click", (e) => {
+            if (e.target.closest("a, button")) {
+                return;
+            }
+            const card = e.target.closest(".lesson-list-card");
+            if (!card) return;
+            const targetLessonId = card.getAttribute("data-lesson-id");
+            if (targetLessonId) {
+                window.location.href = `lesson-detail.html?id=${encodeURIComponent(targetLessonId)}`;
+            }
+        });
+    }
 });
 
 
@@ -373,18 +388,24 @@ function createLessonCard(
     progress,
     index
 ) {
-    const lessonProgress = progress[lesson.id] || {};
+    const rawId = lesson.id || (lesson.order ? `lesson-${String(lesson.order).padStart(2, "0")}` : `lesson-${String(index + 1).padStart(2, "0")}`);
+    const safeLessonId = (typeof rawId === "string" && /^lesson-\d$/.test(rawId))
+        ? `lesson-0${rawId.slice(7)}`
+        : String(rawId);
+
+    const lessonProgress = progress[safeLessonId] || progress[lesson.id] || {};
     const completed = lessonProgress.completed === true;
     const statusClass = completed ? "completed" : "not-completed";
     const level = lesson.level || "Cơ bản";
     const duration = lesson.duration || "15 phút";
+    const lessonOrderNumber = lesson.order || (index + 1);
 
     return `
-        <article class="lesson-card lesson-list-card ${statusClass}" style="--item-idx: ${index};">
+        <article class="lesson-card lesson-list-card ${statusClass}" data-lesson-id="${safeLessonId}" style="--item-idx: ${index}; cursor: pointer;">
 
             <div class="lesson-card-top">
                 <span class="lesson-number">
-                    ${String(index + 1).padStart(2, "0")}
+                    ${String(lessonOrderNumber).padStart(2, "0")}
                 </span>
                 <span class="lesson-status ${completed ? 'completed' : ''}">
                     ${completed ? "✓" : "○"}
@@ -409,7 +430,9 @@ function createLessonCard(
                 </div>
 
                 <h3>
-                    ${escapeHtml(lesson.title || "Bài học C++")}
+                    <a href="lesson-detail.html?id=${encodeURIComponent(safeLessonId)}" style="color: inherit; text-decoration: none;">
+                        ${escapeHtml(lesson.title || "Bài học C++")}
+                    </a>
                 </h3>
 
                 <p>
@@ -424,8 +447,10 @@ function createLessonCard(
 
             <div class="lesson-card-action">
                 <a
-                    href="lesson-detail.html?id=${encodeURIComponent(lesson.id)}"
+                    href="lesson-detail.html?id=${encodeURIComponent(safeLessonId)}"
                     class="btn-lesson-interactive ${completed ? 'btn-relearn' : ''}"
+                    data-lesson-id="${safeLessonId}"
+                    title="${completed ? "Học lại bài này" : "Bắt đầu học bài này"}"
                 >
                     <span>${completed ? "Học lại" : "Bắt đầu học"}</span>
                     <span class="btn-arrow">→</span>
