@@ -138,46 +138,131 @@
              PROFILE HERO
         ====================================== -->
 
-        <section class="profile-hero">
+        <section class="profile-hero" id="profileHeroSection">
+
+            <!-- Cyber Grid Background & Floating C++ Glyphs -->
+            <div class="profile-hero-cyber-grid" aria-hidden="true"></div>
+            <div class="profile-floating-glyphs" aria-hidden="true">
+                <span class="p-glyph g1">++</span>
+                <span class="p-glyph g2">{ }</span>
+                <span class="p-glyph g3">std::cout</span>
+                <span class="p-glyph g4">*ptr</span>
+                <span class="p-glyph g5">&amp;ref</span>
+                <span class="p-glyph g6">template&lt;T&gt;</span>
+                <span class="p-glyph g7">0101</span>
+                <span class="p-glyph g8">-&gt;</span>
+            </div>
 
             <div class="container">
 
-                <div class="profile-hero-content">
+                <div class="profile-hero-grid">
 
-                    <div class="hero-badge">
-                        HỒ SƠ HỌC VIÊN • CODELEARN C++
-                    </div>
+                    <!-- Left Column: Greeting & Summary -->
+                    <div class="profile-hero-content">
 
-                    <h1>
-                        Hồ sơ cá nhân &amp; Thành tích
-                    </h1>
-
-                    <!-- Context-aware Time-based Greeting Banner -->
-                    <div class="profile-greeting-card" id="profileGreetingCard">
-                        <div class="profile-greeting-pill">
-                            <span class="greeting-icon" id="profileTimeIcon">🌅</span>
-                            <span class="greeting-period" id="profileTimePeriod">Chào buổi sáng</span>
+                        <div class="hero-badge">
+                            <span class="badge-pulse-dot"></span>
+                            HỒ SƠ HỌC VIÊN • CODELEARN C++
                         </div>
-                        <h2 class="profile-greeting-heading" id="profileGreetingHeading">
-                            Chào buổi sáng, <span class="greeting-highlight" id="profileGreetingName">bạn</span>!
-                        </h2>
-                        <p class="profile-greeting-sub" id="profileGreetingSub">
-                            Chúc bạn một ngày học tập và luyện code C++ tràn đầy năng lượng!
-                        </p>
+
+                        <h1>
+                            Hồ sơ cá nhân &amp; Thành tích
+                        </h1>
+
+                        <!-- Context-aware Time-based Greeting Banner -->
+                        <div class="profile-greeting-card" id="profileGreetingCard">
+                            <div class="profile-greeting-pill">
+                                <span class="greeting-icon" id="profileTimeIcon">🌅</span>
+                                <span class="greeting-period" id="profileTimePeriod">Chào buổi sáng</span>
+                                <span class="greeting-status-pulse" title="Học viên đang kết nối">• Đang trực tuyến</span>
+                            </div>
+                            <h2 class="profile-greeting-heading" id="profileGreetingHeading">
+                                Chào buổi sáng, <span class="greeting-highlight" id="profileGreetingName">bạn</span>!
+                            </h2>
+                            <p class="profile-greeting-sub" id="profileGreetingSub">
+                                Chúc bạn một ngày học tập và luyện code C++ tràn đầy năng lượng!
+                            </p>
+                        </div>
+
+                        <div class="profile-hero-actions-bar" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-top: 14px;">
+                            <p style="margin: 0; max-width: 580px;">
+                                Theo dõi tiến độ học tập, quản lý huy hiệu, chuỗi streak và chứng chỉ tốt nghiệp C++ của bạn.
+                            </p>
+                            <button
+                                type="button"
+                                class="btn-profile-settings-pill"
+                                id="btnOpenProfileSettingsMenu"
+                                title="Mở menu cài đặt tài khoản & tùy chọn"
+                            >
+                                <span>⚙️</span> Cài đặt &amp; Tùy chọn
+                            </button>
+                        </div>
+
                     </div>
 
-                    <div class="profile-hero-actions-bar" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-top: 14px;">
-                        <p style="margin: 0; max-width: 580px;">
-                            Theo dõi tiến độ học tập, quản lý huy hiệu, chuỗi streak và chứng chỉ tốt nghiệp C++ của bạn.
-                        </p>
-                        <button
-                            type="button"
-                            class="btn-profile-settings-pill"
-                            id="btnOpenProfileSettingsMenu"
-                            title="Mở menu cài đặt tài khoản & tùy chọn"
-                        >
-                            <span>⚙️</span> Cài đặt &amp; Tùy chọn
-                        </button>
+                    <!-- Right Column: 3D Holographic Developer Passport Card -->
+                    <div class="profile-hero-showcase" id="profileHeroShowcase">
+                        <div class="hologram-card-wrapper" id="hologramCardWrapper">
+                            <div class="hologram-dev-card" id="hologramDevCard">
+                                <!-- Foil Shimmer Overlays -->
+                                <div class="card-shimmer-sheen"></div>
+                                <div class="card-glass-reflection"></div>
+
+                                <!-- Card Header: EMV Chip & Standard -->
+                                <div class="card-top-row">
+                                    <div class="emv-gold-chip" title="C++ Academy Smart Core">
+                                        <div class="chip-line c-horiz"></div>
+                                        <div class="chip-line c-vert"></div>
+                                        <div class="chip-core"></div>
+                                    </div>
+                                    <div class="card-brand-badge">
+                                        <span class="badge-cpp-text">C++20</span>
+                                        <span class="badge-sub-text">PASSPORT</span>
+                                    </div>
+                                </div>
+
+                                <!-- Card Center: Avatar & Identity -->
+                                <div class="card-identity-row">
+                                    <div class="card-avatar-ring">
+                                        <div class="card-avatar" id="hologramCardAvatar">U</div>
+                                        <div class="card-avatar-glow"></div>
+                                    </div>
+                                    <div class="card-meta">
+                                        <div class="card-student-label">CERTIFIED DEVELOPER</div>
+                                        <h3 class="card-student-name" id="hologramCardName">Học viên</h3>
+                                        <div class="card-student-rank" id="hologramCardRank">
+                                            <span class="rank-icon">⚡</span>
+                                            <span id="hologramCardRankText">Học viên C++</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Card Live Metrics Row -->
+                                <div class="card-metrics-grid">
+                                    <div class="card-metric-box">
+                                        <div class="metric-label">TIẾN ĐỘ KHÓA</div>
+                                        <div class="metric-val" id="hologramCardProgress">0%</div>
+                                        <div class="mini-bar-track">
+                                            <div class="mini-bar-fill" id="hologramMiniBar" style="width: 0%;"></div>
+                                        </div>
+                                    </div>
+                                    <div class="card-metric-box">
+                                        <div class="metric-label">CHUỖI STREAK</div>
+                                        <div class="metric-val" id="hologramCardStreak">🔥 0 Ngày</div>
+                                    </div>
+                                    <div class="card-metric-box">
+                                        <div class="metric-label">ĐIỂM TB</div>
+                                        <div class="metric-val" id="hologramCardScore">0/100</div>
+                                    </div>
+                                </div>
+
+                                <!-- Card Bottom Code Watermark & Security ID -->
+                                <div class="card-bottom-row">
+                                    <div class="card-serial-code" id="hologramCardSerial">ID: CPP-2026-DEV</div>
+                                    <div class="card-code-watermark">template&lt;typename T&gt;</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                 </div>

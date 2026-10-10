@@ -94,6 +94,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // 12. Account & Settings Dropdown Menu (Screenshot style)
     initAccountDropdown(currentUser);
 
+    // 13. Hiệu ứng Spotlight & Thẻ Học Viên 3D Holographic Developer Card
+    initProfileHeroEffects(currentUser);
+
     // Redirect to separate settings page if hash is #settings
     if (window.location.hash === "#settings") {
         window.location.href = "settings.html";
@@ -536,6 +539,16 @@ function updateAllAvatarsDisplay(user) {
             el.classList.remove("has-avatar-img");
         }
     });
+
+    // 4. Hologram Dev Card Avatar
+    const holoAvatar = document.getElementById("hologramCardAvatar");
+    if (holoAvatar) {
+        if (user.avatar) {
+            holoAvatar.innerHTML = `<img src="${user.avatar}" alt="Avatar">`;
+        } else {
+            holoAvatar.textContent = firstLetter;
+        }
+    }
 }
 
 // Nén ảnh qua Canvas sang Base64
@@ -1442,4 +1455,107 @@ function renderProfileStreak(user) {
     if (streakEl) {
         streakEl.textContent = `${streakData.streak} ngày`;
     }
+}
+
+// ============================================================
+// HIỆU ỨNG PROFILE HERO: SPOTLIGHT & THẺ HỌC VIÊN 3D HOLOGRAM
+// ============================================================
+
+function initProfileHeroEffects(user) {
+    const hero = document.getElementById("profileHeroSection");
+    const card = document.getElementById("hologramDevCard");
+    const nameEl = document.getElementById("hologramCardName");
+    const avatarEl = document.getElementById("hologramCardAvatar");
+    const rankEl = document.getElementById("hologramCardRankText");
+    const progressVal = document.getElementById("hologramCardProgress");
+    const miniBar = document.getElementById("hologramMiniBar");
+    const streakVal = document.getElementById("hologramCardStreak");
+    const scoreVal = document.getElementById("hologramCardScore");
+    const serialEl = document.getElementById("hologramCardSerial");
+
+    if (!hero) return;
+
+    // 1. Cập nhật dữ liệu học viên lên thẻ
+    if (nameEl) nameEl.textContent = user.username || "Học viên";
+    if (serialEl) serialEl.textContent = `ID: CPP-2026-${(user.id || "STUDENT").toString().toUpperCase().slice(0, 8)}`;
+
+    // Avatar
+    if (avatarEl) {
+        if (user.avatar) {
+            avatarEl.innerHTML = `<img src="${user.avatar}" alt="Avatar">`;
+        } else {
+            avatarEl.textContent = (user.username || "U").charAt(0).toUpperCase();
+        }
+    }
+
+    // Tiến độ & Điểm số
+    const lessons = CppStorage.getLessons();
+    const progress = CppStorage.getUserProgress(user.id);
+    const total = lessons.length;
+    const completed = lessons.filter(l => progress[l.id]?.completed === true).length;
+    const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+    const scores = lessons
+        .map(l => progress[l.id]?.score)
+        .filter(score => typeof score === "number");
+    const averageScore = scores.length > 0
+        ? Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length)
+        : 0;
+
+    if (progressVal) progressVal.textContent = `${percent}%`;
+    if (miniBar) miniBar.style.width = `${percent}%`;
+    if (scoreVal) scoreVal.textContent = `${averageScore}/100`;
+
+    // Streak
+    const streakData = getOrUpdateLearningStreak(user);
+    if (streakVal) streakVal.textContent = `🔥 ${streakData.streak || 1} Ngày`;
+
+    // Cấp bậc
+    if (rankEl) {
+        if (percent >= 80) {
+            rankEl.textContent = "C++ Master";
+        } else if (percent >= 50) {
+            rankEl.textContent = "Lập trình viên";
+        } else if (percent >= 20) {
+            rankEl.textContent = "Coder Tập sự";
+        } else {
+            rankEl.textContent = "Học viên C++";
+        }
+    }
+
+    // 2. Vầng sáng Neon theo chuột (Mouse Spotlight) & Nghiêng 3D Parallax Tilt
+    let rafId = null;
+
+    hero.addEventListener("mousemove", (e) => {
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => {
+            const rect = hero.getBoundingClientRect();
+            const x = Math.round(e.clientX - rect.left);
+            const y = Math.round(e.clientY - rect.top);
+            hero.style.setProperty("--profile-spotlight-x", `${x}px`);
+            hero.style.setProperty("--profile-spotlight-y", `${y}px`);
+
+            // Nghiêng 3D Parallax cho Thẻ Học viên Hologram
+            if (card) {
+                const cardRect = card.getBoundingClientRect();
+                const cardCenterX = cardRect.left + cardRect.width / 2;
+                const cardCenterY = cardRect.top + cardRect.height / 2;
+                const deltaX = (e.clientX - cardCenterX) / (cardRect.width / 2);
+                const deltaY = (e.clientY - cardCenterY) / (cardRect.height / 2);
+
+                const rotateY = Math.max(-14, Math.min(14, deltaX * 14)).toFixed(1);
+                const rotateX = Math.max(-14, Math.min(14, -deltaY * 14)).toFixed(1);
+
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+            }
+        });
+    });
+
+    hero.addEventListener("mouseleave", () => {
+        hero.style.setProperty("--profile-spotlight-x", "50%");
+        hero.style.setProperty("--profile-spotlight-y", "35%");
+        if (card) {
+            card.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)";
+        }
+    });
 }
