@@ -120,6 +120,65 @@ document.addEventListener("DOMContentLoaded", async () => {
             triggerFilter();
         });
     }
+
+    // 3. Hiệu ứng Mouse Spotlight Glow trên Banner Lộ trình
+    const lessonsHero = document.getElementById("lessonsHeroSection");
+    if (lessonsHero) {
+        let heroRaf = null;
+        lessonsHero.addEventListener("mousemove", (e) => {
+            if (heroRaf) cancelAnimationFrame(heroRaf);
+            heroRaf = requestAnimationFrame(() => {
+                const rect = lessonsHero.getBoundingClientRect();
+                const x = Math.round(e.clientX - rect.left);
+                const y = Math.round(e.clientY - rect.top);
+                lessonsHero.style.setProperty("--lessons-spotlight-x", `${x}px`);
+                lessonsHero.style.setProperty("--lessons-spotlight-y", `${y}px`);
+            });
+        });
+        lessonsHero.addEventListener("mouseleave", () => {
+            lessonsHero.style.setProperty("--lessons-spotlight-x", "50%");
+            lessonsHero.style.setProperty("--lessons-spotlight-y", "40%");
+        });
+    }
+
+    // 4. Quick Chapter Filter Pills
+    const pills = document.querySelectorAll(".chapter-pill");
+    pills.forEach(pill => {
+        pill.addEventListener("click", () => {
+            pills.forEach(p => p.classList.remove("active"));
+            pill.classList.add("active");
+            const targetChap = pill.getAttribute("data-chapter");
+            if (chapterFilter) {
+                if (targetChap === "all") {
+                    chapterFilter.value = "all";
+                } else {
+                    const matchedOption = Array.from(chapterFilter.options).find(opt => 
+                        opt.value.toLowerCase().includes(targetChap.toLowerCase())
+                    );
+                    if (matchedOption) {
+                        chapterFilter.value = matchedOption.value;
+                    }
+                }
+                triggerFilter();
+            }
+        });
+    });
+
+    if (chapterFilter) {
+        chapterFilter.addEventListener("change", () => {
+            const val = chapterFilter.value.toLowerCase();
+            pills.forEach(p => {
+                const pChap = (p.getAttribute("data-chapter") || "").toLowerCase();
+                if (val === "all" && pChap === "all") {
+                    p.classList.add("active");
+                } else if (val !== "all" && val.includes(pChap)) {
+                    p.classList.add("active");
+                } else {
+                    p.classList.remove("active");
+                }
+            });
+        });
+    }
 });
 
 
@@ -314,127 +373,63 @@ function createLessonCard(
     progress,
     index
 ) {
-    const lessonProgress =
-        progress[lesson.id] || {};
-
-    const completed =
-        lessonProgress.completed === true;
-
-    const statusClass =
-        completed
-            ? "completed"
-            : "not-completed";
-
-    const statusText =
-        completed
-            ? "Đã hoàn thành"
-            : "Chưa hoàn thành";
-
-    const level =
-        lesson.level || "Cơ bản";
-
-    const duration =
-        lesson.duration || "15 phút";
-
+    const lessonProgress = progress[lesson.id] || {};
+    const completed = lessonProgress.completed === true;
+    const statusClass = completed ? "completed" : "not-completed";
+    const level = lesson.level || "Cơ bản";
+    const duration = lesson.duration || "15 phút";
 
     return `
-        <article class="
-            lesson-card
-            lesson-list-card
-            ${statusClass}
-        ">
+        <article class="lesson-card lesson-list-card ${statusClass}" style="--item-idx: ${index};">
 
             <div class="lesson-card-top">
-
                 <span class="lesson-number">
                     ${String(index + 1).padStart(2, "0")}
                 </span>
-
-                <span class="lesson-status">
-                    ${
-                        completed
-                            ? "✓"
-                            : "○"
-                    }
+                <span class="lesson-status ${completed ? 'completed' : ''}">
+                    ${completed ? "✓" : "○"}
                 </span>
-
             </div>
-
 
             <div class="lesson-card-icon">
                 ${getLessonIcon(index)}
             </div>
 
-
             <div class="lesson-card-content">
-
                 <div class="lesson-card-meta">
-
                     <span class="lesson-chapter">
-                        ${escapeHtml(
-                            lesson.chapter ||
-                            "C++ Cơ bản"
-                        )}
+                        ${escapeHtml(lesson.chapter || "C++ Cơ bản")}
                     </span>
-
                     <span class="lesson-level">
                         ${escapeHtml(level)}
                     </span>
-
+                    <span class="status-badge-pill ${completed ? 'completed' : 'pending'}">
+                        ${completed ? '<span class="status-dot-pulse"></span> Hoàn thành' : 'Chưa học'}
+                    </span>
                 </div>
-
 
                 <h3>
-                    ${escapeHtml(
-                        lesson.title ||
-                        "Bài học C++"
-                    )}
+                    ${escapeHtml(lesson.title || "Bài học C++")}
                 </h3>
 
-
                 <p>
-                    ${escapeHtml(
-                        lesson.description ||
-                        "Học kiến thức C++ cơ bản."
-                    )}
+                    ${escapeHtml(lesson.description || "Học kiến thức C++ cơ bản.")}
                 </p>
 
-
                 <div class="lesson-card-info">
-
-                    <span>
-                        ⏱ ${escapeHtml(duration)}
-                    </span>
-
-                    <span>
-                        ${
-                            completed
-                                ? "✓ Hoàn thành"
-                                : "○ Chưa học"
-                        }
-                    </span>
-
+                    <span>⏱ ${escapeHtml(duration)}</span>
+                    <span>${completed ? '✓ Đã đạt: ' + (lessonProgress.score || 100) + '/100 điểm' : '⚡ 3 Bài tập thực hành'}</span>
                 </div>
-
             </div>
 
-
             <div class="lesson-card-action">
-
                 <a
-                    href="lesson-detail.html?id=${encodeURIComponent(
-                        lesson.id
-                    )}"
-                    class="btn btn-primary"
+                    href="lesson-detail.html?id=${encodeURIComponent(lesson.id)}"
+                    class="btn-lesson-interactive ${completed ? 'btn-relearn' : ''}"
                 >
-                    ${
-                        completed
-                            ? "Học lại"
-                            : "Bắt đầu học"
-                    }
-                    →
+                    <span>${completed ? "Học lại" : "Bắt đầu học"}</span>
+                    <span class="btn-arrow">→</span>
                 </a>
-
             </div>
 
         </article>
@@ -457,7 +452,6 @@ function updateOverallProgress(
             progress[lesson.id]?.completed === true
     ).length;
 
-
     const percent =
         total > 0
             ? Math.round(
@@ -465,6 +459,11 @@ function updateOverallProgress(
             )
             : 0;
 
+    // Cập nhật widget tiến độ trên Hero banner
+    const heroLabel = document.getElementById("heroProgressLabel");
+    const heroFill = document.getElementById("heroProgressFill");
+    if (heroLabel) heroLabel.textContent = `${completed}/${total} bài (${percent}%)`;
+    if (heroFill) heroFill.style.width = `${percent}%`;
 
     // Phần trăm
     setText(

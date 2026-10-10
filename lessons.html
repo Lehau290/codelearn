@@ -132,25 +132,74 @@
     <main>
 
         <!-- =====================================
-             PAGE HERO
+             PAGE HERO (CYBER ROADMAP WITH SPOTLIGHT & FLOATING GLYPHS)
         ====================================== -->
 
-        <section class="page-hero">
+        <section class="page-hero" id="lessonsHeroSection">
+
+            <!-- Cyber Grid Background & Floating C++ Glyphs -->
+            <div class="lessons-cyber-grid" aria-hidden="true"></div>
+            <div class="lessons-floating-glyphs" aria-hidden="true">
+                <span class="l-glyph lg1">int main()</span>
+                <span class="l-glyph lg2">std::vector&lt;int&gt;</span>
+                <span class="l-glyph lg3">cout &lt;&lt;</span>
+                <span class="l-glyph lg4">*ptr = &amp;x</span>
+                <span class="l-glyph lg5">class Solution</span>
+                <span class="l-glyph lg6">template&lt;typename T&gt;</span>
+                <span class="l-glyph lg7">0x7FFF</span>
+                <span class="l-glyph lg8">auto&amp;</span>
+            </div>
 
             <div class="container">
 
                 <span class="hero-badge">
-                    C++ LEARNING PATH
+                    <span class="badge-pulse-dot"></span>
+                    LỘ TRÌNH CHUẨN HOÁ • 20 CHUYÊN ĐỀ
                 </span>
 
                 <h1>
-                    Lộ trình học C++
+                    Lộ trình học C++ Toàn diện
                 </h1>
 
                 <p>
-                    Học từng bước từ kiến thức nền tảng
-                    đến lập trình C++ thực hành.
+                    Từ kiến thức cú pháp cốt lõi đến Cấu trúc dữ liệu, Thuật toán tối ưu &amp; Lập trình hướng đối tượng chuyên sâu.
                 </p>
+
+                <!-- Mini Metric Capsules -->
+                <div class="hero-metric-capsules">
+                    <div class="metric-capsule">
+                        <span class="capsule-icon">📚</span>
+                        <div class="capsule-text">
+                            <strong>20 Chuyên đề</strong>
+                            <span>Chuẩn học viện C++</span>
+                        </div>
+                    </div>
+                    <div class="metric-capsule">
+                        <span class="capsule-icon">💻</span>
+                        <div class="capsule-text">
+                            <strong>60 Bài thực hành</strong>
+                            <span>Biên dịch g++ Sandbox</span>
+                        </div>
+                    </div>
+                    <div class="metric-capsule">
+                        <span class="capsule-icon">🏆</span>
+                        <div class="capsule-text">
+                            <strong>Văn bằng C++ Master</strong>
+                            <span>Chứng thực Quốc tế</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hero Live User Progress Pill -->
+                <div class="hero-user-progress-bar" id="heroUserProgressBar">
+                    <div class="hero-user-progress-info">
+                        <span>Tiến độ học tập của bạn:</span>
+                        <strong id="heroProgressLabel">0/20 bài (0%)</strong>
+                    </div>
+                    <div class="hero-progress-track">
+                        <div class="hero-progress-fill" id="heroProgressFill" style="width: 0%;"></div>
+                    </div>
+                </div>
 
             </div>
 
@@ -164,6 +213,15 @@
         <section class="lesson-controls-section">
 
             <div class="container">
+
+                <!-- Quick Chapter Filter Pills -->
+                <div class="chapter-pills-bar" id="chapterPillsBar">
+                    <button type="button" class="chapter-pill active" data-chapter="all">Tất cả bài học</button>
+                    <button type="button" class="chapter-pill" data-chapter="Chương 1">Chương 1: Bắt đầu</button>
+                    <button type="button" class="chapter-pill" data-chapter="Chương 2">Chương 2: Rẽ nhánh &amp; Vòng lặp</button>
+                    <button type="button" class="chapter-pill" data-chapter="Chương 3">Chương 3: Mảng &amp; Con trỏ</button>
+                    <button type="button" class="chapter-pill" data-chapter="Chương 4">Chương 4: OOP &amp; Nâng cao</button>
+                </div>
 
                 <div class="lesson-controls">
 
