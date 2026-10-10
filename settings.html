@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cài đặt tài khoản và tùy chọn cá nhân - CodeLearn C++">
+    <title>Cài đặt | CodeLearn C++</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css?v=2.2.0">
+    <script>
+        (function() {
+            var t = localStorage.getItem("cpp_theme");
+            if (t === "dark" || (!t && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+                document.documentElement.classList.add("dark-theme");
+            }
+        })();
+    </script>
+</head>
+
+<body>
+
+    <!-- =========================================
+         HEADER
+    ========================================== -->
+    <header class="site-header">
+        <div class="container header-inner">
+            <!-- Logo -->
+            <a href="home.html" class="site-logo">
+                <div class="site-logo-mark">C++</div>
+                <div class="site-logo-text">
+                    <strong>CodeLearn</strong>
+                    <span>C++</span>
+                </div>
+            </a>
+
+            <!-- Navigation -->
+            <nav class="main-nav" id="mainNav" aria-label="Menu chính">
+                <a href="home.html" class="nav-link">Trang chủ</a>
+                <a href="lessons.html" class="nav-link">Bài học</a>
+                <a href="profile.html" class="nav-link">Hồ sơ</a>
+                <a href="settings.html" class="nav-link active">Cài đặt</a>
+                <a href="admin.html" class="nav-link admin-nav-link" id="adminNavLink" hidden>Quản trị</a>
+            </nav>
+
+            <!-- Theme Toggle Button -->
+            <button
+                type="button"
+                class="theme-toggle-btn"
+                id="themeToggleBtn"
+                aria-label="Chuyển chế độ sáng/tối"
+                title="Chuyển chế độ sáng/tối"
+            >
+                <span class="theme-text-light">Chế độ tối</span>
+                <span class="theme-text-dark">Chế độ sáng</span>
+            </button>
+
+            <!-- User Menu Trigger -->
+            <div class="header-user">
+                <button type="button" class="header-user-link btn-open-account-menu" id="headerUserBtn" title="Mở menu tài khoản & tùy chọn">
+                    <div class="header-user-info">
+                        <span id="headerUsername" class="header-username">Người học</span>
+                        <span class="header-role">Học viên</span>
+                    </div>
+                    <div id="headerAvatar" class="header-avatar">U</div>
+                </button>
+                <button type="button" id="logoutButton" class="logout-button" title="Đăng xuất">↪</button>
+            </div>
+
+            <!-- Mobile menu button -->
+            <button type="button" class="mobile-menu-button" id="mobileMenuButton" aria-label="Mở menu" aria-expanded="false">☰</button>
+        </div>
+    </header>
+
+    <main id="mainContent">
+
+        <!-- =========================================
+             SETTINGS HERO / BANNER
+        ========================================== -->
+        <section class="profile-hero">
+            <div class="container">
+                <div class="profile-hero-inner">
+                    <div class="profile-hero-content">
+                        <a href="profile.html" class="settings-back-link" style="color: #c7d2fe; margin-bottom: 8px;">
+                            ← Quay lại Hồ sơ cá nhân
+                        </a>
+                        <h1>Cài đặt tài khoản &amp; Quyền riêng tư</h1>
+                        <p>Tùy chỉnh thông tin cá nhân, ảnh đại diện, mật khẩu bảo mật và phong cách giao diện hiển thị.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================
+             SETTINGS BODY CONTENT
+        ========================================== -->
+        <section class="profile-section">
+            <div class="container" style="max-width: 900px;">
+
+                <div id="settingsMessage" class="form-message" hidden></div>
+
+                <!-- 1. AVATAR SETTINGS CARD -->
+                <section class="profile-content-card settings-card" style="margin-bottom: 24px;">
+                    <div class="profile-content-header">
+                        <div>
+                            <span class="section-label">AVATAR MANAGEMENT</span>
+                            <h2>Ảnh đại diện (Avatar)</h2>
+                        </div>
+                    </div>
+
+                    <div class="avatar-settings-layout">
+                        <!-- Current Avatar Preview -->
+                        <div class="avatar-preview-box">
+                            <div class="avatar-preview-frame" id="settingsAvatarPreview">U</div>
+                            <span class="avatar-preview-label">Xem trước ảnh đại diện</span>
+                        </div>
+
+                        <!-- Upload Controls -->
+                        <div class="avatar-upload-controls">
+                            <p class="avatar-hint-text">
+                                Tải ảnh từ máy tính của bạn (JPG, PNG, WebP) hoặc chọn một trong các mẫu avatar C++ bên dưới:
+                            </p>
+
+                            <input
+                                type="file"
+                                id="avatarFileInput"
+                                accept="image/png, image/jpeg, image/webp"
+                                style="display: none;"
+                            >
+
+                            <div class="avatar-buttons-group">
+                                <button type="button" id="btnTriggerUpload" class="btn btn-primary">
+                                    Tải ảnh từ máy
+                                </button>
+                                <button type="button" id="btnRemoveAvatar" class="btn btn-secondary">
+                                    Gỡ ảnh đại diện
+                                </button>
+                            </div>
+
+                            <!-- Preset Avatars -->
+                            <div class="preset-avatars-section">
+                                <span class="preset-title">Hoặc chọn avatar C++ có sẵn:</span>
+                                <div class="preset-avatars-grid" id="presetAvatarsGrid">
+                                    <!-- Rendered dynamically by settings.js -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. PERSONAL INFORMATION FORM -->
+                <section class="profile-content-card settings-card">
+                    <div class="profile-content-header">
+                        <div>
+                            <span class="section-label">PERSONAL INFORMATION</span>
+                            <h2>Thông tin cá nhân &amp; Bảo mật</h2>
+                        </div>
+                    </div>
+
+                    <form id="settingsForm" class="profile-form" novalidate>
+                        <div class="form-grid-2col">
+                            <!-- Username -->
+                            <div class="form-group">
+                                <label for="settingsUsernameInput">
+                                    Tên hiển thị / Tài khoản <span class="required-star">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    id="settingsUsernameInput"
+                                    class="profile-input"
+                                    minlength="3"
+                                    maxlength="30"
+                                    required
+                                    placeholder="Nhập tên của bạn"
+                                >
+                                <small class="input-help">Tên sẽ hiển thị trên bảng vàng và hồ sơ học viên.</small>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="form-group">
+                                <label for="settingsEmailInput">
+                                    Địa chỉ Email <span class="required-star">*</span>
+                                </label>
+                                <input
+                                    type="email"
+                                    id="settingsEmailInput"
+                                    class="profile-input"
+                                    required
+                                    placeholder="email@example.com"
+                                >
+                                <small class="input-help">Dùng để nhận thông báo và hỗ trợ tài khoản.</small>
+                            </div>
+                        </div>
+
+                        <!-- 3. SECURITY & PASSWORD -->
+                        <div class="settings-subheading" style="margin-top: 24px;">
+                            <h3>Bảo mật &amp; Mật khẩu</h3>
+                            <p>Chỉ nhập nếu bạn muốn thay đổi mật khẩu hiện tại.</p>
+                        </div>
+
+                        <div class="form-grid-2col">
+                            <div class="form-group">
+                                <label for="settingsPasswordInput">Mật khẩu mới</label>
+                                <div class="input-password-wrapper">
+                                    <input
+                                        type="password"
+                                        id="settingsPasswordInput"
+                                        class="profile-input"
+                                        minlength="6"
+                                        placeholder="Để trống nếu không đổi"
+                                    >
+                                    <button type="button" class="btn-toggle-pwd" id="btnTogglePwd1" tabindex="-1" title="Ẩn/hiện mật khẩu">Hiện</button>
+                                </div>
+                                <small class="input-help">Tối thiểu 6 ký tự.</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="settingsPasswordConfirmInput">Xác nhận mật khẩu mới</label>
+                                <div class="input-password-wrapper">
+                                    <input
+                                        type="password"
+                                        id="settingsPasswordConfirmInput"
+                                        class="profile-input"
+                                        minlength="6"
+                                        placeholder="Nhập lại mật khẩu mới"
+                                    >
+                                    <button type="button" class="btn-toggle-pwd" id="btnTogglePwd2" tabindex="-1" title="Ẩn/hiện mật khẩu">Hiện</button>
+                                </div>
+                                <small class="input-help">Cần khớp với mật khẩu mới đã nhập.</small>
+                            </div>
+                        </div>
+
+                        <!-- 4. THEME & PREFERENCES -->
+                        <div class="settings-subheading" style="margin-top: 24px;">
+                            <h3>Giao diện hiển thị</h3>
+                            <p>Tùy chỉnh phong cách hiển thị màu sắc theo sở thích của bạn.</p>
+                        </div>
+
+                        <div class="theme-options-group">
+                            <button type="button" class="theme-option-card" id="themeOptionLight">
+                                <div>
+                                    <strong>Giao diện Sáng (Light)</strong>
+                                    <small>Thanh lịch, nền sáng tinh tế</small>
+                                </div>
+                            </button>
+
+                            <button type="button" class="theme-option-card" id="themeOptionDark">
+                                <div>
+                                    <strong>Giao diện Tối (Dark)</strong>
+                                    <small>Hiện đại, dịu mắt ban đêm</small>
+                                </div>
+                            </button>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="profile-form-actions" style="margin-top: 32px;">
+                            <button type="submit" class="btn btn-primary btn-save-settings" id="btnSaveSettings">
+                                Lưu toàn bộ thay đổi
+                            </button>
+                            <a href="profile.html" class="btn btn-secondary">
+                                Hủy thay đổi
+                            </a>
+                        </div>
+                    </form>
+                </section>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- =========================================
+         FOOTER
+    ========================================== -->
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <div class="footer-brand">
+                <div class="site-logo">
+                    <div class="site-logo-mark">C++</div>
+                    <div class="site-logo-text">
+                        <strong>CodeLearn</strong>
+                        <span>C++</span>
+                    </div>
+                </div>
+                <p>Nền tảng học lập trình C++ thực chiến &amp; trực quan.</p>
+            </div>
+            <div class="footer-links">
+                <a href="home.html">Trang chủ</a>
+                <a href="lessons.html">Bài học</a>
+                <a href="profile.html">Hồ sơ</a>
+                <a href="settings.html">Cài đặt</a>
+            </div>
+            <p class="copyright">© 2026 CodeLearn C++. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Dropdown Account Menu (Matching Screenshot) -->
+    <div class="account-menu-backdrop" id="accountMenuBackdrop"></div>
+    <div class="account-menu-popover" id="accountMenuPopover">
+        <div class="account-menu-header">
+            <div class="account-menu-user-row">
+                <div class="account-menu-avatar" id="accountMenuAvatar">U</div>
+                <div class="account-menu-user-meta">
+                    <strong id="accountMenuName">Học viên</strong>
+                </div>
+            </div>
+            <div class="account-menu-divider"></div>
+            <a href="profile.html" class="btn-account-view-profile">
+                <span>👤 Xem tất cả trang cá nhân</span>
+            </a>
+        </div>
+
+        <div class="account-menu-list">
+            <a href="settings.html" class="account-menu-item">
+                <div class="menu-item-icon">⚙️</div>
+                <div class="menu-item-content">
+                    <span class="menu-item-title">Cài đặt và quyền riêng tư</span>
+                </div>
+                <div class="menu-item-arrow">›</div>
+            </a>
+
+            <button type="button" class="account-menu-item" id="btnAccountHelp">
+                <div class="menu-item-icon">❓</div>
+                <div class="menu-item-content">
+                    <span class="menu-item-title">Trợ giúp và hỗ trợ</span>
+                </div>
+                <div class="menu-item-arrow">›</div>
+            </button>
+
+            <button type="button" class="account-menu-item" id="btnAccountReport">
+                <div class="menu-item-icon">💬</div>
+                <div class="menu-item-content">
+                    <span class="menu-item-title">Báo cáo sự cố</span>
+                    <span class="menu-item-sub">CTRL B</span>
+                </div>
+                <div class="menu-item-arrow">›</div>
+            </button>
+
+            <div class="account-menu-item menu-item-theme" id="accountMenuThemeToggle">
+                <div class="menu-item-icon">🌙</div>
+                <div class="menu-item-content">
+                    <span class="menu-item-title">Màn hình và trợ năng</span>
+                    <span class="menu-item-sub" id="accountThemeStatus">Chuyển chế độ sáng / tối</span>
+                </div>
+                <div class="menu-theme-switch">
+                    <label class="switch-toggle" title="Chuyển chế độ sáng/tối">
+                        <input type="checkbox" id="accountMenuThemeCheckbox">
+                        <span class="slider-round"></span>
+                    </label>
+                </div>
+            </div>
+
+            <button type="button" class="account-menu-item menu-item-logout" id="btnAccountLogout">
+                <div class="menu-item-icon">🚪</div>
+                <div class="menu-item-content">
+                    <span class="menu-item-title">Đăng xuất</span>
+                </div>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modals for Help & Bug Report -->
+    <div class="account-modal-overlay" id="modalHelpSupport">
+        <div class="account-modal-box">
+            <div class="account-modal-header">
+                <h3>❓ Trợ Giúp & Hỗ Trợ Học Tập</h3>
+                <button type="button" class="btn-close-modal" id="btnCloseHelpModal">✕</button>
+            </div>
+            <div class="account-modal-body">
+                <p style="margin-bottom: 14px; color: var(--text-secondary); line-height: 1.6;">
+                    Bạn gặp khó khăn trong quá trình học tập hoặc cấu hình tài khoản C++? Chúng tôi luôn sẵn sàng hỗ trợ!
+                </p>
+                <div style="background: var(--bg-hover, #f8fafc); padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border, #e2e8f0); margin-bottom: 14px;">
+                    <strong>🤖 Trợ lý AI Mentor:</strong>
+                    <p style="margin: 4px 0 0; font-size: 0.9rem; color: var(--text-secondary);">Nhấp vào biểu tượng AI ở góc phải màn hình để được giải thích code và gợi ý sửa lỗi ngay lập tức.</p>
+                </div>
+                <div style="background: var(--bg-hover, #f8fafc); padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border, #e2e8f0); margin-bottom: 16px;">
+                    <strong>📧 Email Hỗ Trợ Kỹ Thuật:</strong>
+                    <p style="margin: 4px 0 0; font-size: 0.9rem; color: var(--primary); font-weight: 600;">support@codelearn.cpp</p>
+                </div>
+                <button type="button" class="btn btn-primary" id="btnDismissHelpModal" style="width: 100%;">Đã hiểu</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="account-modal-overlay" id="modalBugReport">
+        <div class="account-modal-box">
+            <div class="account-modal-header">
+                <h3>💬 Báo Cáo Sự Cố Kỹ Thuật (Ctrl + B)</h3>
+                <button type="button" class="btn-close-modal" id="btnCloseBugModal">✕</button>
+            </div>
+            <div class="account-modal-body">
+                <p style="margin-bottom: 14px; color: var(--text-secondary); font-size: 0.92rem;">
+                    Vui lòng mô tả chi tiết sự cố bạn gặp phải (lỗi biên dịch C++, giao diện, âm thanh, v.v.):
+                </p>
+                <form id="bugReportForm">
+                    <div style="margin-bottom: 14px;">
+                        <textarea id="bugReportContent" rows="4" style="width: 100%; border-radius: 10px; border: 1px solid var(--border, #cbd5e1); padding: 10px 12px; font-family: inherit; font-size: 0.92rem; background: var(--bg-card, #ffffff); color: var(--text-primary);" placeholder="Mô tả sự cố bạn gặp phải..." required></textarea>
+                    </div>
+                    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                        <button type="button" class="btn btn-secondary" id="btnCancelBugModal">Hủy</button>
+                        <button type="submit" class="btn btn-primary">Gửi báo cáo sự cố</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/layout.js"></script>
+    <script src="js/settings.js"></script>
+    <script src="js/ai-mentor.js"></script>
+</body>
+</html>

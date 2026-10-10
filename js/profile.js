@@ -67,16 +67,16 @@ document.addEventListener("DOMContentLoaded", () => {
     renderRecentLessons(currentUser);
     renderAchievements(currentUser);
 
-    // 4. Tab Navigation (Tổng quan vs Cài đặt)
+    // 4. Tab Navigation & Shortcut Events
     setupProfileTabs();
 
-    // 5. Cài đặt Avatar (Tải ảnh lên & Presets)
+    // 5. Cài đặt Avatar (Tải ảnh lên & Presets - if present)
     setupAvatarManagement(currentUser);
 
-    // 6. Form cập nhật thông tin & mật khẩu
+    // 6. Form cập nhật thông tin & mật khẩu (if present)
     setupProfileForm(currentUser);
 
-    // 7. Toggle hiển thị mật khẩu
+    // 7. Toggle hiển thị mật khẩu (if present)
     setupPasswordToggles();
 
     // 8. Tùy chọn giao diện (Light / Dark)
@@ -91,105 +91,206 @@ document.addEventListener("DOMContentLoaded", () => {
     // 11. Chuỗi học tập (Streak)
     renderProfileStreak(currentUser);
 
-    // Check URL Hash (#settings)
+    // 12. Account & Settings Dropdown Menu (Screenshot style)
+    initAccountDropdown(currentUser);
+
+    // Redirect to separate settings page if hash is #settings
     if (window.location.hash === "#settings") {
-        switchTab("settings");
+        window.location.href = "settings.html";
     }
 });
 
 
 // ============================================================
-// CHUYỂN TAB TỔNG QUAN / CÀI ĐẶT
+// CHUYỂN TAB & NÚT MỞ MENU CÀI ĐẶT
 // ============================================================
 
 function setupProfileTabs() {
     const tabOverviewBtn = document.getElementById("tabOverviewBtn");
-    const tabSettingsBtn = document.getElementById("tabSettingsBtn");
     const sideNavOverviewBtn = document.getElementById("sideNavOverviewBtn");
     const sideNavSettingsBtn = document.getElementById("sideNavSettingsBtn");
+    const btnOpenProfileSettingsMenu = document.getElementById("btnOpenProfileSettingsMenu");
     const btnAvatarEditShortcut = document.getElementById("btnAvatarEditShortcut");
 
     if (tabOverviewBtn) {
-        tabOverviewBtn.addEventListener("click", () => switchTab("overview"));
-    }
-    if (tabSettingsBtn) {
-        tabSettingsBtn.addEventListener("click", () => switchTab("settings"));
-    }
-    if (sideNavOverviewBtn) {
-        sideNavOverviewBtn.addEventListener("click", () => switchTab("overview"));
-    }
-    if (sideNavSettingsBtn) {
-        sideNavSettingsBtn.addEventListener("click", () => switchTab("settings"));
+        tabOverviewBtn.addEventListener("click", () => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
     }
 
-    if (btnAvatarEditShortcut) {
-        btnAvatarEditShortcut.addEventListener("click", () => {
-            switchTab("settings");
-            const avatarBox = document.querySelector(".avatar-settings-layout");
-            if (avatarBox) {
-                avatarBox.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (sideNavOverviewBtn) {
+        sideNavOverviewBtn.addEventListener("click", () => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+    }
+
+    // Nút Cài đặt & Tùy chọn mở dropdown menu tương tác theo giao diện hình ảnh
+    if (sideNavSettingsBtn) {
+        sideNavSettingsBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (typeof window.toggleAccountMenu === "function") {
+                window.toggleAccountMenu();
             }
         });
     }
 
-    // Lắng nghe thay đổi hash
-    window.addEventListener("hashchange", () => {
-        if (window.location.hash === "#settings") {
-            switchTab("settings");
-        } else if (window.location.hash === "#overview" || window.location.hash === "") {
-            switchTab("overview");
-        }
-    });
+    if (btnOpenProfileSettingsMenu) {
+        btnOpenProfileSettingsMenu.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (typeof window.toggleAccountMenu === "function") {
+                window.toggleAccountMenu();
+            }
+        });
+    }
+
+    if (btnAvatarEditShortcut) {
+        btnAvatarEditShortcut.addEventListener("click", () => {
+            window.location.href = "settings.html#avatar";
+        });
+    }
 }
 
-function switchTab(tabName) {
-    const panelOverview = document.getElementById("panelOverview");
-    const panelSettings = document.getElementById("panelSettings");
+// ============================================================
+// MENU TÀI KHOẢN & CÀI ĐẶT DROPDOWN (CHUẨN HÌNH ẢNH YÊU CẦU)
+// ============================================================
 
-    const tabOverviewBtn = document.getElementById("tabOverviewBtn");
-    const tabSettingsBtn = document.getElementById("tabSettingsBtn");
-    const sideNavOverviewBtn = document.getElementById("sideNavOverviewBtn");
-    const sideNavSettingsBtn = document.getElementById("sideNavSettingsBtn");
+function initAccountDropdown(user) {
+    const popover = document.getElementById("accountMenuPopover");
+    const backdrop = document.getElementById("accountMenuBackdrop");
+    const nameEl = document.getElementById("accountMenuName");
+    const avatarEl = document.getElementById("accountMenuAvatar");
+    const themeCheckbox = document.getElementById("accountMenuThemeCheckbox");
+    const themeStatus = document.getElementById("accountThemeStatus");
+    const logoutBtn = document.getElementById("btnAccountLogout");
 
-    if (tabName === "settings") {
-        if (panelOverview) panelOverview.hidden = true;
-        if (panelSettings) panelSettings.hidden = false;
-
-        if (tabOverviewBtn) {
-            tabOverviewBtn.classList.remove("active");
-            tabOverviewBtn.setAttribute("aria-selected", "false");
-        }
-        if (tabSettingsBtn) {
-            tabSettingsBtn.classList.add("active");
-            tabSettingsBtn.setAttribute("aria-selected", "true");
-        }
-
-        if (sideNavOverviewBtn) sideNavOverviewBtn.classList.remove("active");
-        if (sideNavSettingsBtn) sideNavSettingsBtn.classList.add("active");
-
-        if (window.location.hash !== "#settings") {
-            history.replaceState(null, "", "#settings");
-        }
-    } else {
-        if (panelOverview) panelOverview.hidden = false;
-        if (panelSettings) panelSettings.hidden = true;
-
-        if (tabOverviewBtn) {
-            tabOverviewBtn.classList.add("active");
-            tabOverviewBtn.setAttribute("aria-selected", "true");
-        }
-        if (tabSettingsBtn) {
-            tabSettingsBtn.classList.remove("active");
-            tabSettingsBtn.setAttribute("aria-selected", "false");
-        }
-
-        if (sideNavOverviewBtn) sideNavOverviewBtn.classList.add("active");
-        if (sideNavSettingsBtn) sideNavSettingsBtn.classList.remove("active");
-
-        if (window.location.hash === "#settings") {
-            history.replaceState(null, "", "#overview");
+    if (nameEl) nameEl.textContent = user.username || "Học viên";
+    if (avatarEl) {
+        if (user.avatar) {
+            avatarEl.innerHTML = `<img src="${user.avatar}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+        } else {
+            avatarEl.textContent = (user.username || "U").charAt(0).toUpperCase();
         }
     }
+
+    window.toggleAccountMenu = function(show) {
+        if (!popover || !backdrop) return;
+        const isOpen = show !== undefined ? show : !popover.classList.contains("active");
+        popover.classList.toggle("active", isOpen);
+        backdrop.classList.toggle("active", isOpen);
+    };
+
+    if (backdrop) {
+        backdrop.addEventListener("click", () => window.toggleAccountMenu(false));
+    }
+
+    // Click vào Header user link cũng có thể kích hoạt menu
+    const headerUserBtn = document.getElementById("headerUserBtn") || document.querySelector(".header-user-link");
+    if (headerUserBtn) {
+        headerUserBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            window.toggleAccountMenu();
+        });
+    }
+
+    // Theme Switch in Dropdown
+    const isDark = document.documentElement.classList.contains("dark-theme");
+    if (themeCheckbox) {
+        themeCheckbox.checked = isDark;
+        if (themeStatus) themeStatus.textContent = isDark ? "Chế độ tối đang bật" : "Chế độ sáng đang bật";
+
+        themeCheckbox.addEventListener("change", () => {
+            const dark = themeCheckbox.checked;
+            document.documentElement.classList.toggle("dark-theme", dark);
+            document.body.classList.toggle("dark-theme", dark);
+            localStorage.setItem("cpp_theme", dark ? "dark" : "light");
+            if (themeStatus) themeStatus.textContent = dark ? "Chế độ tối đang bật" : "Chế độ sáng đang bật";
+            if (typeof window.showToast === "function") {
+                window.showToast(`Đã chuyển sang ${dark ? "Chế độ tối" : "Chế độ sáng"}!`, "info");
+            }
+        });
+    }
+
+    // Logout
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+            CppStorage.logout();
+            window.location.href = "login.html";
+        });
+    }
+
+    // Help & Support Modal
+    const btnHelp = document.getElementById("btnAccountHelp");
+    const modalHelp = document.getElementById("modalHelpSupport");
+    const btnCloseHelp = document.getElementById("btnCloseHelpModal");
+    const btnDismissHelp = document.getElementById("btnDismissHelpModal");
+
+    function openHelpModal() {
+        window.toggleAccountMenu(false);
+        if (modalHelp) modalHelp.classList.add("active");
+    }
+    function closeHelpModal() {
+        if (modalHelp) modalHelp.classList.remove("active");
+    }
+
+    if (btnHelp) btnHelp.addEventListener("click", openHelpModal);
+    if (btnCloseHelp) btnCloseHelp.addEventListener("click", closeHelpModal);
+    if (btnDismissHelp) btnDismissHelp.addEventListener("click", closeHelpModal);
+    if (modalHelp) {
+        modalHelp.addEventListener("click", (e) => {
+            if (e.target === modalHelp) closeHelpModal();
+        });
+    }
+
+    // Bug Report Modal (with Ctrl + B hotkey)
+    const btnReport = document.getElementById("btnAccountReport");
+    const modalBug = document.getElementById("modalBugReport");
+    const btnCloseBug = document.getElementById("btnCloseBugModal");
+    const btnCancelBug = document.getElementById("btnCancelBugModal");
+    const bugForm = document.getElementById("bugReportForm");
+    const bugContent = document.getElementById("bugReportContent");
+
+    function openBugModal() {
+        window.toggleAccountMenu(false);
+        if (modalBug) {
+            modalBug.classList.add("active");
+            if (bugContent) setTimeout(() => bugContent.focus(), 100);
+        }
+    }
+    function closeBugModal() {
+        if (modalBug) modalBug.classList.remove("active");
+    }
+
+    if (btnReport) btnReport.addEventListener("click", openBugModal);
+    if (btnCloseBug) btnCloseBug.addEventListener("click", closeBugModal);
+    if (btnCancelBug) btnCancelBug.addEventListener("click", closeBugModal);
+    if (modalBug) {
+        modalBug.addEventListener("click", (e) => {
+            if (e.target === modalBug) closeBugModal();
+        });
+    }
+
+    if (bugForm) {
+        bugForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const text = bugContent ? bugContent.value.trim() : "";
+            if (!text) return;
+            closeBugModal();
+            if (bugContent) bugContent.value = "";
+            if (typeof window.showToast === "function") {
+                window.showToast("Đã gửi phản hồi sự cố! Đội ngũ kỹ thuật sẽ hỗ trợ bạn sớm nhất.", "success", 3000);
+            } else {
+                alert("Đã gửi phản hồi sự cố!");
+            }
+        });
+    }
+
+    // Shortcut Ctrl + B for Bug Report
+    window.addEventListener("keydown", (e) => {
+        if ((e.ctrlKey || e.metaKey) && (e.key === "b" || e.key === "B")) {
+            e.preventDefault();
+            openBugModal();
+        }
+    });
 }
 
 
