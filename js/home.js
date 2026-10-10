@@ -1,4 +1,5 @@
-// ============================================================
+// =
+// ===========================================================
 // CODELEARN C++ - HOME PAGE
 // File: js/home.js
 // ============================================================
@@ -377,7 +378,7 @@ function updateLeaderboardUser(user) {
     if (nameEl) nameEl.textContent = `${user.fullName || user.username} (Bạn)`;
     if (avatarEl) {
         if (user.avatar) {
-            avatarEl.innerHTML = `<img src="${user.avatar}" alt="Avatar" style="width: 100%; height: 100%; border-radius: inherit; object-fit: cover;">`;
+            avatarEl.innerHTML = `<img src="${user.avatar}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block;">`;
         } else {
             avatarEl.textContent = (user.username || "U").charAt(0).toUpperCase();
         }
@@ -729,4 +730,4 @@ function initHeroSpotlight() {
         hero.style.setProperty("--spotlight-x", "50%");
         hero.style.setProperty("--spotlight-y", "35%");
     });
-}
+}
