@@ -273,7 +273,7 @@ function setupContinueLearning(user) {
     const lessons = CppStorage.getLessons();
 
     if (!user) {
-        button.href = "lessons.html";
+        button.href = "lesson-detail.html?id=lesson-01";
         button.textContent = "Bắt đầu học ngay →";
         return;
     }

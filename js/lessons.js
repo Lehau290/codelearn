@@ -180,12 +180,23 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    // 5. Điều hướng trực tiếp khi click vào bất kỳ vị trí nào trên thẻ bài học
+    // 5. Điều hướng trực tiếp khi click vào nút "Bắt đầu học" hoặc bất kỳ vị trí nào trên thẻ bài học
     if (lessonList) {
         lessonList.addEventListener("click", (e) => {
-            if (e.target.closest("a, button")) {
+            const actionBtn = e.target.closest(".btn-lesson-interactive, a[href*='lesson-detail.html']");
+            if (actionBtn) {
+                e.preventDefault();
+                e.stopPropagation();
+                const lessonId = actionBtn.getAttribute("data-lesson-id") || actionBtn.getAttribute("href")?.split("id=")[1];
+                if (lessonId) {
+                    window.location.href = `lesson-detail.html?id=${encodeURIComponent(lessonId)}`;
+                } else {
+                    const href = actionBtn.getAttribute("href");
+                    if (href) window.location.href = href;
+                }
                 return;
             }
+
             const card = e.target.closest(".lesson-list-card");
             if (!card) return;
             const targetLessonId = card.getAttribute("data-lesson-id");

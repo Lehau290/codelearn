@@ -45,10 +45,15 @@ function findLessonFlexible(lessonsList, targetId) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-    const currentUser = CppStorage.getCurrentUser();
-
+    let currentUser = CppStorage.getCurrentUser();
     if (!currentUser) {
-        return;
+        currentUser = {
+            id: "guest",
+            username: "Khách",
+            name: "Học viên",
+            fullName: "Khách tham quan",
+            role: "student"
+        };
     }
 
     // --------------------------------------------------------
@@ -76,43 +81,53 @@ document.addEventListener("DOMContentLoaded", async () => {
         lesson = findLessonFlexible(lessons, lessonId);
     }
 
-    // Nếu chưa tìm thấy và backend API khả dụng, thử đồng bộ danh sách bài học
-    if (!lesson && window.CodeLearnApi && typeof CodeLearnApi.lessons?.getAll === "function") {
-        try {
-            const res = await CodeLearnApi.lessons.getAll();
-            const apiLessons = (res && Array.isArray(res.lessons)) ? res.lessons : (Array.isArray(res) ? res : null);
-            if (apiLessons && apiLessons.length > 0) {
-                const storageMap = new Map((lessons || []).map(l => [String(l.id), l]));
-                const mergedLessons = apiLessons.map(apiL => {
-                    const localL = storageMap.get(String(apiL.id)) || {};
-                    return {
-                        ...localL,
-                        ...apiL,
-                        content: apiL.content || localL.content || localL.theory || "",
-                        theory: apiL.content || localL.theory || localL.content || "",
-                        starterCode: apiL.starterCode || localL.starterCode || "",
-                        example: apiL.example || localL.example || ""
+    // Luôn ưu tiên nạp chi tiết đầy đủ từ Backend API nếu bài học chưa tìm thấy hoặc thiếu lý thuyết
+    if ((!lesson || !lesson.content || lesson.content.trim() === "") && window.CodeLearnApi) {
+        const queryId = (lesson && lesson.id) ? lesson.id : lessonId;
+        if (queryId && typeof CodeLearnApi.lessons?.getById === "function") {
+            try {
+                const singleRes = await CodeLearnApi.lessons.getById(queryId);
+                if (singleRes && singleRes.lesson) {
+                    lesson = {
+                        ...(lesson || {}),
+                        ...singleRes.lesson,
+                        content: singleRes.lesson.content || (lesson && lesson.content) || "",
+                        theory: singleRes.lesson.content || (lesson && lesson.theory) || "",
+                        example: singleRes.lesson.example || (lesson && lesson.example) || "",
+                        starterCode: singleRes.lesson.starterCode || (lesson && lesson.starterCode) || "",
+                        exercises: singleRes.lesson.exercises || (lesson && lesson.exercises) || []
                     };
-                }).sort((a, b) => Number(a.order || 0) - Number(b.order || 0));
-
-                lessons = mergedLessons;
-                CppStorage.saveLessons(mergedLessons);
-
-                if (lessonId) {
-                    lesson = findLessonFlexible(lessons, lessonId);
                 }
-            }
-        } catch (_) {}
-    }
+            } catch (_) {}
+        }
 
-    // Nếu vẫn chưa tìm thấy theo ID, gọi trực tiếp API chi tiết bài học
-    if (!lesson && lessonId && window.CodeLearnApi && typeof CodeLearnApi.lessons?.getById === "function") {
-        try {
-            const singleRes = await CodeLearnApi.lessons.getById(lessonId);
-            if (singleRes && singleRes.lesson) {
-                lesson = singleRes.lesson;
-            }
-        } catch (_) {}
+        if (!lesson && typeof CodeLearnApi.lessons?.getAll === "function") {
+            try {
+                const res = await CodeLearnApi.lessons.getAll();
+                const apiLessons = (res && Array.isArray(res.lessons)) ? res.lessons : (Array.isArray(res) ? res : null);
+                if (apiLessons && apiLessons.length > 0) {
+                    const storageMap = new Map((lessons || []).map(l => [String(l.id), l]));
+                    const mergedLessons = apiLessons.map(apiL => {
+                        const localL = storageMap.get(String(apiL.id)) || {};
+                        return {
+                            ...localL,
+                            ...apiL,
+                            content: apiL.content || localL.content || localL.theory || "",
+                            theory: apiL.content || localL.theory || localL.content || "",
+                            starterCode: apiL.starterCode || localL.starterCode || "",
+                            example: apiL.example || localL.example || ""
+                        };
+                    }).sort((a, b) => Number(a.order || 0) - Number(b.order || 0));
+
+                    lessons = mergedLessons;
+                    CppStorage.saveLessons(mergedLessons);
+
+                    if (lessonId) {
+                        lesson = findLessonFlexible(lessons, lessonId);
+                    }
+                }
+            } catch (_) {}
+        }
     }
 
     // Nếu người dùng KHÔNG truyền tham số ID (vào thẳng trang lesson-detail.html)
@@ -120,7 +135,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!lesson && !lessonId && lessons.length > 0) {
         lesson = lessons[0];
     } else if (!lesson && lessons.length > 0) {
-        // Nếu truyền ID nhưng không tìm thấy, thử lại với findLessonFlexible hoặc fallback bài đầu tiên
         lesson = findLessonFlexible(lessons, lessonId) || lessons[0];
     }
 
@@ -140,6 +154,15 @@ document.addEventListener("DOMContentLoaded", async () => {
                 window.history.replaceState({}, "", currentUrl.toString());
             }
         } catch (_) {}
+    }
+
+    // Tự động đánh dấu bài học đã bắt đầu khi người dùng vào học
+    if (currentUser && currentUser.id !== "guest" && lesson && lesson.id) {
+        if (window.CppStorage && typeof CppStorage.markLessonStarted === "function") {
+            try {
+                CppStorage.markLessonStarted(currentUser.id, lesson.id);
+            } catch (_) {}
+        }
     }
 
     currentLessonData = lesson;

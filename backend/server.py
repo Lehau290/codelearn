@@ -332,6 +332,12 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
                     "description": r["description"],
                     "level": r["level"],
                     "duration": r["duration"],
+                    "content": r["content"] or "",
+                    "theory": r["content"] or "",
+                    "example": r["example"] or "",
+                    "starterCode": r["starter_code"] or "",
+                    "exerciseTitle": r["exercise_title"] or "",
+                    "exerciseDescription": r["exercise_description"] or "",
                     "order": r["order_num"],
                     "createdAt": r["created_at"]
                 }
