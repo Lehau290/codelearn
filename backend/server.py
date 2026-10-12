@@ -561,6 +561,169 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
             integ = dbm.check_integrity()
             return self.send_json(200, {"stats": stats, "integrity": integ})
 
+        # 9b. Admin Exercises list (/api/admin/exercises?lessonId=...)
+        if path == "/api/admin/exercises":
+            if not user or user["role"] != "admin":
+                return self.send_json(403, {"error": "Chỉ dành cho Quản trị viên."})
+            lesson_filter = query.get("lessonId", [""])[0].strip()
+            conn = get_connection()
+            cursor = conn.cursor()
+            if lesson_filter:
+                cursor.execute("""
+                    SELECT e.*, l.title as lesson_title 
+                    FROM exercises e 
+                    JOIN lessons l ON e.lesson_id = l.id 
+                    WHERE e.lesson_id = ? 
+                    ORDER BY e.order_num ASC
+                """, (lesson_filter,))
+            else:
+                cursor.execute("""
+                    SELECT e.*, l.title as lesson_title 
+                    FROM exercises e 
+                    JOIN lessons l ON e.lesson_id = l.id 
+                    ORDER BY l.order_num ASC, e.order_num ASC
+                """)
+            rows = cursor.fetchall()
+            exercises_list = []
+            for r in rows:
+                exercises_list.append({
+                    "id": r["id"],
+                    "lessonId": r["lesson_id"],
+                    "lessonTitle": r["lesson_title"],
+                    "title": r["title"],
+                    "level": r["level"],
+                    "difficulty": r["difficulty"],
+                    "points": r["points"],
+                    "description": r["description"],
+                    "starterCode": r["starter_code"],
+                    "expectedOutput": r["expected_output"] or "",
+                    "hint": r["hint"] or "",
+                    "testKeywords": r["test_keywords"] or "[]",
+                    "orderNum": r["order_num"]
+                })
+            conn.close()
+            return self.send_json(200, {"exercises": exercises_list})
+
+        # 9c. Admin Submissions log (/api/admin/submissions?limit=50)
+        if path == "/api/admin/submissions":
+            if not user or user["role"] != "admin":
+                return self.send_json(403, {"error": "Chỉ dành cho Quản trị viên."})
+            limit_val = 50
+            try:
+                limit_val = min(100, max(10, int(query.get("limit", ["50"])[0])))
+            except Exception:
+                pass
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT s.id, s.user_id, s.lesson_id, s.exercise_id, s.code, s.output, s.passed, 
+                       s.score, s.execution_time_ms, s.ai_feedback, s.submitted_at,
+                       u.username, u.full_name, u.role as user_role, u.avatar,
+                       l.title as lesson_title,
+                       e.title as exercise_title
+                FROM submissions s
+                LEFT JOIN users u ON s.user_id = u.id
+                LEFT JOIN lessons l ON s.lesson_id = l.id
+                LEFT JOIN exercises e ON s.lesson_id = e.lesson_id AND s.exercise_id = e.id
+                ORDER BY s.submitted_at DESC
+                LIMIT ?
+            """, (limit_val,))
+            rows = cursor.fetchall()
+            conn.close()
+            subs_list = []
+            for r in rows:
+                subs_list.append({
+                    "id": r["id"],
+                    "userId": r["user_id"],
+                    "username": r["username"] or "Khách",
+                    "fullName": r["full_name"] or r["username"] or "Học viên",
+                    "userRole": r["user_role"] or "student",
+                    "avatar": r["avatar"] or "",
+                    "lessonId": r["lesson_id"],
+                    "lessonTitle": r["lesson_title"] or r["lesson_id"],
+                    "exerciseId": r["exercise_id"],
+                    "exerciseTitle": r["exercise_title"] or r["exercise_id"],
+                    "code": r["code"],
+                    "output": r["output"],
+                    "passed": bool(r["passed"]),
+                    "score": r["score"],
+                    "executionTimeMs": r["execution_time_ms"],
+                    "aiFeedback": r["ai_feedback"] or "",
+                    "submittedAt": r["submitted_at"]
+                })
+            return self.send_json(200, {"submissions": subs_list})
+
+        # 9d. Admin AI Chats log (/api/admin/ai-chats?limit=50)
+        if path == "/api/admin/ai-chats":
+            if not user or user["role"] != "admin":
+                return self.send_json(403, {"error": "Chỉ dành cho Quản trị viên."})
+            limit_val = 50
+            try:
+                limit_val = min(100, max(10, int(query.get("limit", ["50"])[0])))
+            except Exception:
+                pass
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT c.id, c.user_id, c.role, c.content, c.persona, c.code_snippet, c.lesson_id, c.created_at,
+                       u.username, u.full_name, u.avatar,
+                       l.title as lesson_title
+                FROM ai_chat_messages c
+                LEFT JOIN users u ON c.user_id = u.id
+                LEFT JOIN lessons l ON c.lesson_id = l.id
+                ORDER BY c.created_at DESC
+                LIMIT ?
+            """, (limit_val,))
+            rows = cursor.fetchall()
+            conn.close()
+            chats_list = []
+            for r in rows:
+                chats_list.append({
+                    "id": r["id"],
+                    "userId": r["user_id"],
+                    "username": r["username"] or "Ẩn danh",
+                    "fullName": r["full_name"] or r["username"] or "Học viên",
+                    "avatar": r["avatar"] or "",
+                    "role": r["role"],
+                    "content": r["content"],
+                    "persona": r["persona"] or "tutor",
+                    "codeSnippet": r["code_snippet"] or "",
+                    "lessonId": r["lesson_id"] or "",
+                    "lessonTitle": r["lesson_title"] or "",
+                    "createdAt": r["created_at"]
+                })
+            return self.send_json(200, {"messages": chats_list})
+
+        # 9e. Admin AI Knowledge summary (/api/admin/ai-knowledge)
+        if path == "/api/admin/ai-knowledge":
+            if not user or user["role"] != "admin":
+                return self.send_json(403, {"error": "Chỉ dành cho Quản trị viên."})
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT COUNT(*) as cnt FROM vnoi_real_knowledge")
+            vnoi_cnt = cursor.fetchone()["cnt"]
+            cursor.execute("SELECT COUNT(*) as cnt FROM lessons")
+            lesson_cnt = cursor.fetchone()["cnt"]
+            cursor.execute("SELECT COUNT(*) as cnt FROM exercises")
+            ex_cnt = cursor.fetchone()["cnt"]
+            cursor.execute("SELECT COUNT(*) as cnt FROM submissions")
+            sub_cnt = cursor.fetchone()["cnt"]
+            cursor.execute("SELECT COUNT(*) as cnt FROM ai_chat_messages")
+            chat_cnt = cursor.fetchone()["cnt"]
+
+            cursor.execute("SELECT id, title, category, author, source_url, updated_at FROM vnoi_real_knowledge ORDER BY title ASC")
+            articles = [dict(r) for r in cursor.fetchall()]
+            conn.close()
+
+            return self.send_json(200, {
+                "vnoiCount": vnoi_cnt,
+                "lessonCount": lesson_cnt,
+                "exerciseCount": ex_cnt,
+                "submissionsLearned": sub_cnt,
+                "chatsRecorded": chat_cnt,
+                "articles": articles
+            })
+
         # 10. Verify Certificate (/api/certificates/verify?code=...)
         if path == "/api/certificates/verify":
             code = query.get("code", [""])[0].strip()
@@ -1101,6 +1264,83 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
             except Exception as e:
                 return self.send_json(500, {"error": f"Lỗi đồng bộ dữ liệu VNOI: {str(e)}"})
 
+        # 10c. Admin Create Exercise (/api/admin/exercises)
+        if path == "/api/admin/exercises":
+            if not user or user["role"] != "admin":
+                return self.send_json(403, {"error": "Chỉ Quản trị viên mới có quyền tạo bài tập."})
+
+            lesson_id = body.get("lessonId", "").strip()
+            title = body.get("title", "").strip()
+            if not lesson_id or not title:
+                return self.send_json(400, {"error": "Mã bài học (lessonId) và Tiêu đề bài tập không được để trống."})
+
+            conn = get_connection()
+            cursor = conn.cursor()
+            
+            # Check lesson exists
+            cursor.execute("SELECT id FROM lessons WHERE id = ?", (lesson_id,))
+            if not cursor.fetchone():
+                conn.close()
+                return self.send_json(404, {"error": f"Không tìm thấy bài học '{lesson_id}'."})
+
+            # Calculate order_num and exercise ID
+            cursor.execute("SELECT MAX(order_num) as max_order FROM exercises WHERE lesson_id = ?", (lesson_id,))
+            max_order = cursor.fetchone()["max_order"] or 0
+            order_num = body.get("orderNum", max_order + 1)
+            ex_id = body.get("id", "").strip() or f"ex-{order_num:02d}"
+
+            # Check if (lesson_id, id) already exists
+            cursor.execute("SELECT id FROM exercises WHERE lesson_id = ? AND id = ?", (lesson_id, ex_id))
+            if cursor.fetchone():
+                ex_id = f"ex-{order_num:02d}-{int(time.time())}"
+
+            level = body.get("level", "Cơ bản")
+            difficulty = body.get("difficulty", "easy")
+            try:
+                points = int(body.get("points", 100))
+            except Exception:
+                points = 100
+            description = body.get("description", "").strip()
+            starter_code = body.get("starterCode", "#include <iostream>\nusing namespace std;\n\nint main() {\n    // Viết code tại đây\n    return 0;\n}")
+            expected_output = body.get("expectedOutput", "")
+            hint = body.get("hint", "")
+            test_keywords = body.get("testKeywords", "[]")
+            if isinstance(test_keywords, list):
+                test_keywords = json.dumps(test_keywords, ensure_ascii=False)
+
+            cursor.execute("""
+                INSERT INTO exercises (id, lesson_id, title, level, difficulty, points, description, starter_code, expected_output, hint, test_keywords, order_num)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (ex_id, lesson_id, title, level, difficulty, points, description, starter_code, expected_output, hint, test_keywords, order_num))
+            conn.commit()
+            conn.close()
+            return self.send_json(201, {
+                "message": "Tạo bài tập mới thành công!",
+                "exercise": {
+                    "id": ex_id,
+                    "lessonId": lesson_id,
+                    "title": title,
+                    "level": level,
+                    "difficulty": difficulty,
+                    "points": points
+                }
+            })
+
+        # 10d. Admin Sync AI Knowledge (/api/admin/ai-knowledge/sync)
+        if path == "/api/admin/ai-knowledge/sync":
+            if not user or user["role"] != "admin":
+                return self.send_json(403, {"error": "Chỉ Quản trị viên mới có quyền đồng bộ tri thức AI."})
+            try:
+                from backend.real_data_sync import sync_real_data
+                count = sync_real_data()
+                return self.send_json(200, {
+                    "success": True,
+                    "count": count,
+                    "message": f"Đã đồng bộ thành công tri thức AI: {count} chuyên đề học thuật VNOI Wiki và toàn bộ bài giảng C++."
+                })
+            except Exception as e:
+                return self.send_json(500, {"error": f"Lỗi đồng bộ tri thức AI: {str(e)}"})
+
         # 11. Claim Certificate (/api/certificates/claim)
         if path == "/api/certificates/claim":
             if not user:
@@ -1388,6 +1628,115 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
             conn.close()
             return self.send_json(200, {"message": "Cập nhật bài học thành công!"})
 
+        # 4. Admin Update User Role (/api/admin/users/<id>/role)
+        if path.startswith("/api/admin/users/") and path.endswith("/role"):
+            if not user or user["role"] != "admin":
+                return self.send_json(403, {"error": "Chỉ Quản trị viên mới có quyền thay đổi vai trò người dùng."})
+
+            parts = path.split("/")
+            # /api/admin/users/<id>/role -> parts: ['', 'api', 'admin', 'users', '<id>', 'role']
+            target_uid = parts[4].strip() if len(parts) >= 6 else ""
+            new_role = body.get("role", "").strip().lower()
+
+            if new_role not in ["student", "admin", "moderator"]:
+                return self.send_json(400, {"error": "Vai trò không hợp lệ. Chỉ chấp nhận: 'student', 'moderator', 'admin'."})
+
+            if target_uid == user["id"] and new_role != "admin":
+                return self.send_json(400, {"error": "Bạn không thể tự hạ quyền Admin của chính mình."})
+
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT id, username, role FROM users WHERE id = ?", (target_uid,))
+            target_user = cursor.fetchone()
+            if not target_user:
+                conn.close()
+                return self.send_json(404, {"error": "Không tìm thấy người dùng."})
+
+            now = datetime.now().isoformat()
+            cursor.execute("UPDATE users SET role = ?, updated_at = ? WHERE id = ?", (new_role, now, target_uid))
+            conn.commit()
+            conn.close()
+            return self.send_json(200, {
+                "message": f"Đã cập nhật quyền thành viên '{target_user['username']}' thành: {new_role}.",
+                "userId": target_uid,
+                "role": new_role
+            })
+
+        # 5. Admin Update Exercise (/api/admin/exercises/<id>)
+        if path.startswith("/api/admin/exercises/"):
+            if not user or user["role"] != "admin":
+                return self.send_json(403, {"error": "Chỉ Quản trị viên mới có quyền cập nhật bài tập."})
+
+            ex_id = path[len("/api/admin/exercises/"):].strip()
+            lesson_id = body.get("lessonId", "").strip()
+
+            conn = get_connection()
+            cursor = conn.cursor()
+
+            test_keywords = body.get("testKeywords")
+            if isinstance(test_keywords, list):
+                test_keywords = json.dumps(test_keywords, ensure_ascii=False)
+
+            if lesson_id:
+                cursor.execute("""
+                    UPDATE exercises
+                    SET title = COALESCE(?, title),
+                        level = COALESCE(?, level),
+                        difficulty = COALESCE(?, difficulty),
+                        points = COALESCE(?, points),
+                        description = COALESCE(?, description),
+                        starter_code = COALESCE(?, starter_code),
+                        expected_output = COALESCE(?, expected_output),
+                        hint = COALESCE(?, hint),
+                        test_keywords = COALESCE(?, test_keywords),
+                        order_num = COALESCE(?, order_num)
+                    WHERE id = ? AND lesson_id = ?
+                """, (
+                    body.get("title"),
+                    body.get("level"),
+                    body.get("difficulty"),
+                    body.get("points"),
+                    body.get("description"),
+                    body.get("starterCode"),
+                    body.get("expectedOutput"),
+                    body.get("hint"),
+                    test_keywords,
+                    body.get("orderNum"),
+                    ex_id,
+                    lesson_id
+                ))
+            else:
+                cursor.execute("""
+                    UPDATE exercises
+                    SET title = COALESCE(?, title),
+                        level = COALESCE(?, level),
+                        difficulty = COALESCE(?, difficulty),
+                        points = COALESCE(?, points),
+                        description = COALESCE(?, description),
+                        starter_code = COALESCE(?, starter_code),
+                        expected_output = COALESCE(?, expected_output),
+                        hint = COALESCE(?, hint),
+                        test_keywords = COALESCE(?, test_keywords),
+                        order_num = COALESCE(?, order_num)
+                    WHERE id = ?
+                """, (
+                    body.get("title"),
+                    body.get("level"),
+                    body.get("difficulty"),
+                    body.get("points"),
+                    body.get("description"),
+                    body.get("starterCode"),
+                    body.get("expectedOutput"),
+                    body.get("hint"),
+                    test_keywords,
+                    body.get("orderNum"),
+                    ex_id
+                ))
+
+            conn.commit()
+            conn.close()
+            return self.send_json(200, {"message": "Cập nhật bài tập thành công!"})
+
         return self.send_json(404, {"error": "Endpoint PUT không tồn tại."})
 
     # ---------------------------------------------------------
@@ -1396,6 +1745,7 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
     def do_DELETE(self):
         parsed = urllib.parse.urlparse(self.path)
         path = parsed.path
+        query = urllib.parse.parse_qs(parsed.query)
         user = self.get_auth_user()
 
         # Clear AI Chat History (/api/ai/history)
@@ -1421,6 +1771,24 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
             conn.commit()
             conn.close()
             return self.send_json(200, {"message": "Đã xóa bài học thành công."})
+
+        # Admin delete exercise (/api/admin/exercises/<id>?lessonId=...)
+        if path.startswith("/api/admin/exercises/"):
+            if not user or user["role"] != "admin":
+                return self.send_json(403, {"error": "Chỉ Quản trị viên mới có quyền xóa bài tập."})
+
+            ex_id = path[len("/api/admin/exercises/"):].strip()
+            lesson_id = query.get("lessonId", [""])[0].strip()
+
+            conn = get_connection()
+            cursor = conn.cursor()
+            if lesson_id:
+                cursor.execute("DELETE FROM exercises WHERE id = ? AND lesson_id = ?", (ex_id, lesson_id))
+            else:
+                cursor.execute("DELETE FROM exercises WHERE id = ?", (ex_id,))
+            conn.commit()
+            conn.close()
+            return self.send_json(200, {"message": "Đã xóa bài tập thành công."})
 
         # Admin delete user (/api/admin/users/<id>)
         if path.startswith("/api/admin/users/"):

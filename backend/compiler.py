@@ -1427,6 +1427,70 @@ def search_real_vnoi_knowledge(query: str, limit: int = 2) -> list:
         print(f"[VNOI Real Search] Lỗi tra cứu VNOI: {e}")
         return []
 
+def search_lessons_and_exercises_db(query: str) -> dict | None:
+    """
+    Tra cứu động từ CSDL SQLite thật (bảng lessons & exercises) khi học viên hỏi về bài học, bài tập.
+    """
+    if not query:
+        return None
+    db_path = os.path.join(os.path.dirname(__file__), "database.db")
+    if not os.path.exists(db_path):
+        return None
+    q_lower = query.strip().lower()
+    try:
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+
+        # 1. Nhận diện số bài học: "bài 1", "bài 02", "bài 15", "lesson 3"
+        num_match = re.search(r'(?:bài|lesson)\s*(\d{1,2})', q_lower)
+        if num_match:
+            order_val = int(num_match.group(1))
+            cursor.execute("SELECT * FROM lessons WHERE order_num = ? OR id = ?", (order_val, f"lesson-{order_val:02d}"))
+            lesson_row = cursor.fetchone()
+            if lesson_row:
+                lid = lesson_row["id"]
+                cursor.execute("SELECT * FROM exercises WHERE lesson_id = ? ORDER BY order_num ASC", (lid,))
+                ex_rows = cursor.fetchall()
+                conn.close()
+                return {
+                    "lesson": dict(lesson_row),
+                    "exercises": [dict(e) for e in ex_rows]
+                }
+
+        # 2. Tìm theo từ khóa trong tiêu đề hoặc chương
+        cursor.execute("SELECT * FROM lessons")
+        all_lessons = cursor.fetchall()
+        best_lesson = None
+        best_score = 0
+        for l in all_lessons:
+            l_title = (l["title"] or "").lower()
+            l_chap = (l["chapter"] or "").lower()
+            score = 0
+            for word in q_lower.split():
+                w = word.strip(".,?!:;()")
+                if len(w) >= 3 and (w in l_title or w in l_chap):
+                    score += 15
+            if score > best_score:
+                best_score = score
+                best_lesson = l
+
+        if best_lesson and best_score >= 15:
+            lid = best_lesson["id"]
+            cursor.execute("SELECT * FROM exercises WHERE lesson_id = ? ORDER BY order_num ASC", (lid,))
+            ex_rows = cursor.fetchall()
+            conn.close()
+            return {
+                "lesson": dict(best_lesson),
+                "exercises": [dict(e) for e in ex_rows]
+            }
+
+        conn.close()
+        return None
+    except Exception as e:
+        print(f"[DB Lesson Search] Lỗi tra cứu bài học: {e}")
+        return None
+
 def generate_heuristic_response(
     message: str, 
     code: str = "", 
@@ -1687,6 +1751,36 @@ def generate_heuristic_response(
                     "has_error": False,
                     "status": "knowledge_hit"
                 }
+
+    # 4c. Tra cứu DỮ LIỆU THẬT từ CSDL SQLite (Lessons & Exercises)
+    if any(k in msg_lower for k in ["bài", "lesson", "chuyên đề", "bài tập", "thực hành", "chương"]):
+        db_hit = search_lessons_and_exercises_db(msg_clean)
+        if db_hit:
+            l = db_hit["lesson"]
+            exs = db_hit["exercises"]
+            res_parts = [
+                f"### 📖 {l.get('title')} ({l.get('chapter')})\n",
+                f"- **Độ khó:** `{l.get('level', 'Cơ bản')}` | ⏱️ **Thời lượng:** `{l.get('duration', '20 phút')}`\n",
+                f"#### 💡 Tóm tắt nội dung bài học:\n{l.get('description', '')}\n"
+            ]
+            if exs:
+                res_parts.append("#### 📝 Danh sách bài tập thực hành trong chuyên đề này:")
+                for ex in exs:
+                    res_parts.append(f"- **{ex.get('title')}** ({ex.get('level')}, {ex.get('points', 100)} điểm): {ex.get('description', '')[:100]}...")
+                res_parts.append("")
+            if l.get('starter_code'):
+                res_parts.append(f"#### 💻 Code khởi đầu mẫu:\n```cpp\n{l.get('starter_code')}\n```\n")
+
+            if persona == "interviewer":
+                res_parts.append("💼 *Góc nhìn FAANG: Hãy hoàn thành cả 3 bài tập từ Cơ bản đến Thử thách để rèn luyện kỹ năng giải quyết vấn đề dưới áp lực thời gian!*")
+            elif persona == "professor":
+                res_parts.append("🎓 *Khuyến nghị Học thuật: Nắm chắc lý thuyết và tự tay gõ code ví dụ trước khi chuyển sang phần bài tập thực hành.*")
+
+            return {
+                "reply": (f"{name_prefix}\n\n" if name_prefix else "") + "\n".join(res_parts),
+                "has_error": False,
+                "status": "db_lesson_hit"
+            }
 
     # 5. Phản hồi tự nhiên thân thiện (Friendly conversational fallback)
     context_note = ""

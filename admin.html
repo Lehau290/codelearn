@@ -210,8 +210,28 @@
             </div>
 
 
-            <!-- ================= ADMIN GRID ================= -->
-            <div class="admin-layout">
+            <!-- ================= ADMIN NAVIGATION TABS ================= -->
+            <div class="admin-tabs-nav" id="adminTabsNav">
+                <button type="button" class="admin-tab-btn active" data-tab="tab-lessons">
+                    <span>📚</span> Quản lý Bài giảng
+                </button>
+                <button type="button" class="admin-tab-btn" data-tab="tab-exercises">
+                    <span>📝</span> Quản lý Bài tập
+                </button>
+                <button type="button" class="admin-tab-btn" data-tab="tab-users">
+                    <span>👥</span> Thành viên &amp; Cấp quyền
+                </button>
+                <button type="button" class="admin-tab-btn" data-tab="tab-monitor">
+                    <span>📊</span> Nhật ký Nộp bài &amp; AI
+                </button>
+                <button type="button" class="admin-tab-btn" data-tab="tab-database">
+                    <span>🧠</span> CSDL &amp; Tri thức AI
+                </button>
+            </div>
+
+            <!-- ================= TAB 1: BÀI GIẢNG (LESSONS) ================= -->
+            <div id="tab-lessons" class="admin-tab-pane active">
+                <div class="admin-layout">
 
 
                 <!-- ================= LESSON LIST ================= -->
@@ -602,71 +622,434 @@ int main() {
                 </section>
 
             </div>
+            <!-- End of Tab 1: tab-lessons -->
+            </div>
 
-            <!-- ================= DATABASE MANAGEMENT SECTION ================= -->
-            <section class="profile-content-card" style="margin-top: 24px;">
-                <div class="profile-content-header">
-                    <div>
-                        <span class="section-label">DATABASE MANAGEMENT</span>
-                        <h2>Quản lý Cơ sở dữ liệu (SQLite)</h2>
+            <!-- ================= TAB 2: BÀI TẬP (EXERCISES) ================= -->
+            <div id="tab-exercises" class="admin-tab-pane">
+                <div class="admin-layout">
+                    <!-- Exercise List Card -->
+                    <section class="profile-content-card admin-lessons-card">
+                        <div class="profile-content-header">
+                            <div>
+                                <span class="section-label">EXERCISE REPOSITORY</span>
+                                <h2>Kho bài tập thực hành</h2>
+                            </div>
+                            <button type="button" id="btnOpenAddExercise" class="btn btn-primary">
+                                + Thêm bài tập
+                            </button>
+                        </div>
+
+                        <!-- Filter by Lesson -->
+                        <div style="margin-bottom: 14px;">
+                            <label for="exerciseLessonFilter" style="font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); display: block; margin-bottom: 6px;">
+                                Lọc theo chuyên đề bài học:
+                            </label>
+                            <select id="exerciseLessonFilter" class="profile-input" style="font-weight: 600;">
+                                <option value="">-- Tất cả bài học (60 bài tập) --</option>
+                            </select>
+                        </div>
+
+                        <!-- Search -->
+                        <div class="admin-search">
+                            <input type="search" id="adminExerciseSearch" class="profile-input" placeholder="Tìm kiếm bài tập theo tiêu đề, yêu cầu...">
+                        </div>
+
+                        <!-- Message -->
+                        <div id="exerciseActionMessage" class="form-message" hidden></div>
+
+                        <!-- Exercise List Container -->
+                        <div id="exercisesAdminList" class="admin-lessons-list" style="max-height: 650px; overflow-y: auto;">
+                            <!-- Rendered by JS -->
+                        </div>
+                    </section>
+
+                    <!-- Exercise Editor Form -->
+                    <section class="profile-content-card admin-form-card" id="adminExerciseFormSection">
+                        <div class="profile-content-header">
+                            <div>
+                                <span class="section-label">EXERCISE EDITOR</span>
+                                <h2 id="adminExerciseFormTitle">Thêm bài tập mới</h2>
+                            </div>
+                        </div>
+
+                        <form id="adminExerciseForm" class="profile-form" novalidate>
+                            <input type="hidden" id="editExerciseId" value="">
+
+                            <div class="admin-form-section">
+                                <h3>1. Thông tin bài tập</h3>
+                                <div class="form-group">
+                                    <label for="exerciseTargetLesson">Thuộc chuyên đề bài học <span style="color:red;">*</span></label>
+                                    <select id="exerciseTargetLesson" class="profile-input" required>
+                                        <!-- Lessons options -->
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="exerciseTitle">Tên bài tập <span style="color:red;">*</span></label>
+                                    <input type="text" id="exerciseTitle" class="profile-input" placeholder="Ví dụ: Kiểm tra số nguyên tố" maxlength="150" required>
+                                </div>
+
+                                <div class="admin-form-row">
+                                    <div class="form-group">
+                                        <label for="exerciseLevel">Phân loại cấp độ</label>
+                                        <select id="exerciseLevel" class="profile-input">
+                                            <option value="Cơ bản">Cơ bản</option>
+                                            <option value="Vận dụng">Vận dụng</option>
+                                            <option value="Thử thách">Thử thách</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="exerciseDifficulty">Độ khó hệ thống</label>
+                                        <select id="exerciseDifficulty" class="profile-input">
+                                            <option value="easy">Dễ (Easy)</option>
+                                            <option value="medium">Trung bình (Medium)</option>
+                                            <option value="hard">Khó (Hard)</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="admin-form-row">
+                                    <div class="form-group">
+                                        <label for="exercisePoints">Điểm số tối đa</label>
+                                        <input type="number" id="exercisePoints" class="profile-input" value="100" min="10" max="1000">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="exerciseOrderNum">Thứ tự trong bài (1, 2, 3)</label>
+                                        <input type="number" id="exerciseOrderNum" class="profile-input" value="1" min="1" max="10">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="admin-form-section">
+                                <h3>2. Đề bài &amp; Code khởi tạo</h3>
+                                <div class="form-group">
+                                    <label for="exerciseDescription">Đề bài &amp; Yêu cầu chi tiết <span style="color:red;">*</span></label>
+                                    <textarea id="exerciseDescription" class="profile-input" rows="5" placeholder="Mô tả đề bài, định dạng input/output..." required></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="exerciseStarterCode">Mã nguồn khởi đầu (Starter Code)</label>
+                                    <textarea id="exerciseStarterCode" class="profile-input code-textarea" rows="7" spellcheck="false" placeholder="#include <iostream>&#10;using namespace std;&#10;&#10;int main() {&#10;    // Code của bạn&#10;    return 0;&#10;}"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="admin-form-section">
+                                <h3>3. Tiêu chí AI Chấm &amp; Gợi ý</h3>
+                                <div class="form-group">
+                                    <label for="exerciseExpectedOutput">Đầu ra mong đợi mẫu (Expected Output)</label>
+                                    <input type="text" id="exerciseExpectedOutput" class="profile-input" placeholder="Ví dụ: Hello World hoặc 15">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="exerciseHint">Gợi ý thuật toán (Hint)</label>
+                                    <textarea id="exerciseHint" class="profile-input" rows="3" placeholder="Gợi ý cách tiếp cận cho học viên..."></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="exerciseTestKeywords">Từ khóa C++ bắt buộc (phân tách bởi dấu phẩy)</label>
+                                    <input type="text" id="exerciseTestKeywords" class="profile-input" placeholder="Ví dụ: for, while, cin, cout, if">
+                                </div>
+                            </div>
+
+                            <div class="profile-form-actions">
+                                <button type="submit" id="saveExerciseButton" class="btn btn-primary">Lưu bài tập</button>
+                                <button type="button" id="cancelExerciseEdit" class="btn btn-secondary">Hủy</button>
+                            </div>
+                        </form>
+                    </section>
+                </div>
+            </div>
+
+            <!-- ================= TAB 3: THÀNH VIÊN & CẤP QUYỀN (USERS) ================= -->
+            <div id="tab-users" class="admin-tab-pane">
+                <section class="profile-content-card">
+                    <div class="profile-content-header">
+                        <div>
+                            <span class="section-label">MEMBERSHIP &amp; ROLES</span>
+                            <h2>Quản lý Thành viên &amp; Cấp quyền</h2>
+                        </div>
+                        <button type="button" id="btnRefreshUsers" class="btn btn-secondary" title="Làm mới danh sách">
+                            🔄 Làm mới
+                        </button>
                     </div>
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                        <button type="button" id="btnDbBackup" class="btn btn-primary" title="Tạo bản sao lưu ngay">
-                            Sao lưu Database
+
+                    <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 0.95rem;">
+                        Quản lý toàn bộ tài khoản người dùng thật từ CSDL SQLite. Quản trị viên có thể thay đổi vai trò (Học viên, Trợ giảng, Quản trị viên) hoặc xóa tài khoản.
+                    </p>
+
+                    <!-- Toolbar -->
+                    <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
+                        <input type="search" id="adminUserSearch" class="profile-input" style="flex: 1; min-width: 200px;" placeholder="Tìm theo họ tên, username, email...">
+                        <select id="adminUserRoleFilter" class="profile-input" style="width: 200px;">
+                            <option value="">-- Tất cả vai trò --</option>
+                            <option value="student">Học viên (student)</option>
+                            <option value="moderator">Trợ giảng (moderator)</option>
+                            <option value="admin">Quản trị viên (admin)</option>
+                        </select>
+                    </div>
+
+                    <div id="adminUserMessage" class="form-message" hidden></div>
+
+                    <!-- Users Table -->
+                    <div class="admin-table-container">
+                        <table class="admin-table" id="adminUsersTable">
+                            <thead>
+                                <tr>
+                                    <th>Thành viên</th>
+                                    <th>Email</th>
+                                    <th>Vai trò</th>
+                                    <th>Ngày tham gia</th>
+                                    <th>Cấp quyền &amp; Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminUsersTableBody">
+                                <!-- Rendered by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ================= TAB 4: NHẬT KÝ NỘP BÀI & AI (MONITOR) ================= -->
+            <div id="tab-monitor" class="admin-tab-pane">
+                <!-- Submissions Log -->
+                <section class="profile-content-card" style="margin-bottom: 24px;">
+                    <div class="profile-content-header">
+                        <div>
+                            <span class="section-label">CODE SUBMISSION LOGS</span>
+                            <h2>Lịch sử nộp bài code của học viên</h2>
+                        </div>
+                        <button type="button" id="btnRefreshSubmissions" class="btn btn-secondary" title="Làm mới bài nộp">
+                            🔄 Tải lại bài nộp
                         </button>
-                        <button type="button" id="btnDbExport" class="btn btn-secondary" title="Xuất dữ liệu SQL & JSON">
-                            Xuất SQL &amp; JSON
+                    </div>
+
+                    <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 0.95rem;">
+                        Theo dõi thời gian thực các bài code C++ do học viên nộp lên, điểm số AI chấm, và kết quả biên dịch g++.
+                    </p>
+
+                    <div class="admin-table-container">
+                        <table class="admin-table" id="adminSubmissionsTable">
+                            <thead>
+                                <tr>
+                                    <th>Thời gian</th>
+                                    <th>Học viên</th>
+                                    <th>Bài học &amp; Bài tập</th>
+                                    <th>Điểm số</th>
+                                    <th>Trạng thái</th>
+                                    <th>Thời gian chạy</th>
+                                    <th>Chi tiết</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminSubmissionsTableBody">
+                                <!-- Rendered by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- AI Chat Logs -->
+                <section class="profile-content-card">
+                    <div class="profile-content-header">
+                        <div>
+                            <span class="section-label">AI MENTOR INTERACTIONS</span>
+                            <h2>Lịch sử hỏi đáp AI của học viên</h2>
+                        </div>
+                        <button type="button" id="btnRefreshAiChats" class="btn btn-secondary" title="Làm mới log AI">
+                            🔄 Tải lại chat
                         </button>
+                    </div>
+
+                    <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 0.95rem;">
+                        Nhật ký các câu hỏi học viên gửi tới AI Trợ giảng và câu trả lời AI sinh ra dựa trên kho tri thức C++.
+                    </p>
+
+                    <div class="admin-table-container">
+                        <table class="admin-table" id="adminAiChatsTable">
+                            <thead>
+                                <tr>
+                                    <th>Thời gian</th>
+                                    <th>Học viên</th>
+                                    <th>Chế độ AI</th>
+                                    <th>Câu hỏi của học viên</th>
+                                    <th>Chi tiết phản hồi AI</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminAiChatsTableBody">
+                                <!-- Rendered by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ================= TAB 5: CSDL & TRI THỨC AI (DATABASE) ================= -->
+            <div id="tab-database" class="admin-tab-pane">
+                <!-- Database Management Section -->
+                <section class="profile-content-card" style="margin-bottom: 24px;">
+                    <div class="profile-content-header">
+                        <div>
+                            <span class="section-label">DATABASE MANAGEMENT</span>
+                            <h2>Quản lý Cơ sở dữ liệu SQLite</h2>
+                        </div>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button type="button" id="btnDbBackup" class="btn btn-primary" title="Tạo bản sao lưu ngay">
+                                Sao lưu Database
+                            </button>
+                            <button type="button" id="btnDbExport" class="btn btn-secondary" title="Xuất dữ liệu SQL & JSON">
+                                Xuất SQL &amp; JSON
+                            </button>
+                        </div>
+                    </div>
+
+                    <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 0.95rem;">
+                        Hệ thống lưu trữ trên SQLite tại <code>backend/database.db</code>. Bạn có thể theo dõi số lượng bản ghi các bảng, tạo bản sao lưu dự phòng vào <code>backend/backups/</code> và xuất toàn bộ dữ liệu chỉ với 1 click.
+                    </p>
+
+                    <!-- Stats Grid -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px;">
+                        <div class="profile-stat-card" style="padding: 14px;">
+                            <div>
+                                <strong id="dbCountLessons">20</strong>
+                                <span style="font-size: 0.85rem;">Bài học (Lessons)</span>
+                            </div>
+                        </div>
+                        <div class="profile-stat-card" style="padding: 14px;">
+                            <div>
+                                <strong id="dbCountExercises">60</strong>
+                                <span style="font-size: 0.85rem;">Bài tập (Exercises)</span>
+                            </div>
+                        </div>
+                        <div class="profile-stat-card" style="padding: 14px;">
+                            <div>
+                                <strong id="dbCountUsers">2</strong>
+                                <span style="font-size: 0.85rem;">Tài khoản (Users)</span>
+                            </div>
+                        </div>
+                        <div class="profile-stat-card" style="padding: 14px;">
+                            <div>
+                                <strong id="dbCountSubmissions">0</strong>
+                                <span style="font-size: 0.85rem;">Lượt nộp code</span>
+                            </div>
+                        </div>
+                        <div class="profile-stat-card" style="padding: 14px;">
+                            <div>
+                                <strong id="dbSizeKb">144 KB</strong>
+                                <span style="font-size: 0.85rem;">Dung lượng DB</span>
+                            </div>
+                        </div>
+                        <div class="profile-stat-card" style="padding: 14px;">
+                            <div>
+                                <strong id="dbStatus">HEALTHY</strong>
+                                <span style="font-size: 0.85rem;">Trạng thái (ACID)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="dbActionMessage" class="form-message" hidden></div>
+                </section>
+
+                <!-- AI Real Knowledge Base Section -->
+                <section class="profile-content-card">
+                    <div class="profile-content-header">
+                        <div>
+                            <span class="section-label">AI REAL KNOWLEDGE BASE</span>
+                            <h2>Kho Tri thức Huấn luyện AI (Dữ liệu Thật)</h2>
+                        </div>
+                        <button type="button" id="btnSyncAiKnowledge" class="btn btn-primary" title="Đồng bộ lại toàn bộ tài liệu học thuật">
+                            ⚡ Đồng bộ tri thức vào AI
+                        </button>
+                    </div>
+
+                    <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 0.95rem;">
+                        Để AI Mentor &amp; AI Chấm bài hướng dẫn học viên chuẩn xác, hệ thống liên kết trực tiếp dữ liệu thật gồm <strong>20 chuyên đề C++</strong>, <strong>60 bài tập mẫu</strong>, <strong>19 bài viết học thuật chuyên sâu VNOI Wiki</strong>, cùng toàn bộ lịch sử code nộp và lỗi sai của học viên.
+                    </p>
+
+                    <!-- Knowledge Stats -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 20px;">
+                        <div class="profile-stat-card" style="padding: 14px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(168, 85, 247, 0.08));">
+                            <div>
+                                <strong id="aiStatVnoi">19</strong>
+                                <span style="font-size: 0.85rem;">Tài liệu VNOI Wiki</span>
+                            </div>
+                        </div>
+                        <div class="profile-stat-card" style="padding: 14px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(5, 150, 105, 0.08));">
+                            <div>
+                                <strong id="aiStatLessons">20</strong>
+                                <span style="font-size: 0.85rem;">Chuyên đề C++ nạp AI</span>
+                            </div>
+                        </div>
+                        <div class="profile-stat-card" style="padding: 14px; background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(217, 119, 6, 0.08));">
+                            <div>
+                                <strong id="aiStatExercises">60</strong>
+                                <span style="font-size: 0.85rem;">Bài tập mẫu &amp; Testcases</span>
+                            </div>
+                        </div>
+                        <div class="profile-stat-card" style="padding: 14px; background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(220, 38, 38, 0.08));">
+                            <div>
+                                <strong id="aiStatLearned">0</strong>
+                                <span style="font-size: 0.85rem;">Lỗi sai &amp; Code đã học</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="aiKnowledgeMessage" class="form-message" hidden></div>
+
+                    <!-- Real Documents Table -->
+                    <h3 style="font-size: 1.05rem; margin-top: 24px; margin-bottom: 12px; color: var(--text-primary);">
+                        Danh mục 19 bài viết học thuật VNOI Wiki đang nạp cho AI:
+                    </h3>
+                    <div class="admin-table-container">
+                        <table class="admin-table" id="adminVnoiTable">
+                            <thead>
+                                <tr>
+                                    <th>Chuyên đề</th>
+                                    <th>Chuyên mục</th>
+                                    <th>Tác giả / Biên soạn</th>
+                                    <th>Nguồn chính thức</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminVnoiTableBody">
+                                <!-- Rendered by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- AI Mentor Testing Box -->
+                    <div style="margin-top: 28px; padding: 20px; border-radius: 14px; background: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.2);">
+                        <h4 style="margin-bottom: 8px; color: var(--primary);">🧪 Thử nghiệm năng lực AI Mentor với dữ liệu thật</h4>
+                        <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 12px;">
+                            Nhập câu hỏi bất kỳ (ví dụ: <em>"Con trỏ là gì?", "Thuật toán tìm kiếm nhị phân", "Bài 5 học gì?"</em>) để kiểm tra khả năng trích xuất tri thức từ CSDL của AI:
+                        </p>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="aiTestQuestionInput" class="profile-input" placeholder="Nhập câu hỏi thử nghiệm cho AI..." value="Con trỏ trong C++ hoạt động thế nào?">
+                            <button type="button" id="btnTestAiQuery" class="btn btn-primary" style="white-space: nowrap;">
+                                Gửi AI thử nghiệm
+                            </button>
+                        </div>
+                        <div id="aiTestResponseBox" style="margin-top: 14px; padding: 14px; border-radius: 10px; background: var(--bg-card); border: 1px solid var(--border-light); font-size: 0.9rem; line-height: 1.6; display: none;">
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ================= MODAL XEM CHI TIẾT CODE & AI ================= -->
+            <div id="adminDetailModal" class="admin-modal-backdrop" style="display: none;">
+                <div class="admin-modal-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h3 id="adminModalTitle" style="margin: 0; font-size: 1.2rem;">Chi tiết bài nộp</h3>
+                        <button type="button" id="btnCloseDetailModal" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;">
+                            ✕ Đóng
+                        </button>
+                    </div>
+                    <div id="adminModalBody">
+                        <!-- Rendered by JS -->
                     </div>
                 </div>
-
-                <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 0.95rem;">
-                    Hệ thống lưu trữ trên SQLite tại <code>backend/database.db</code>. Bạn có thể theo dõi số lượng bản ghi các bảng, tạo bản sao lưu dự phòng vào <code>backend/backups/</code> và xuất toàn bộ dữ liệu chỉ với 1 click.
-                </p>
-
-                <!-- Grid hiển thị các bảng dữ liệu -->
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px;">
-                    <div class="profile-stat-card" style="padding: 14px;">
-                        <div>
-                            <strong id="dbCountLessons">20</strong>
-                            <span style="font-size: 0.85rem;">Bài học (Lessons)</span>
-                        </div>
-                    </div>
-                    <div class="profile-stat-card" style="padding: 14px;">
-                        <div>
-                            <strong id="dbCountExercises">60</strong>
-                            <span style="font-size: 0.85rem;">Bài tập (Exercises)</span>
-                        </div>
-                    </div>
-                    <div class="profile-stat-card" style="padding: 14px;">
-                        <div>
-                            <strong id="dbCountUsers">2</strong>
-                            <span style="font-size: 0.85rem;">Tài khoản (Users)</span>
-                        </div>
-                    </div>
-                    <div class="profile-stat-card" style="padding: 14px;">
-                        <div>
-                            <strong id="dbCountSubmissions">0</strong>
-                            <span style="font-size: 0.85rem;">Lượt nộp code</span>
-                        </div>
-                    </div>
-                    <div class="profile-stat-card" style="padding: 14px;">
-                        <div>
-                            <strong id="dbSizeKb">144 KB</strong>
-                            <span style="font-size: 0.85rem;">Dung lượng DB</span>
-                        </div>
-                    </div>
-                    <div class="profile-stat-card" style="padding: 14px;">
-                        <div>
-                            <strong id="dbStatus">HEALTHY</strong>
-                            <span style="font-size: 0.85rem;">Trạng thái (ACID)</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Database Message Feedback -->
-                <div id="dbActionMessage" class="form-message" hidden></div>
-            </section>
+            </div>
 
         </div>
 

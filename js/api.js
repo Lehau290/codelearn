@@ -282,6 +282,81 @@
                 return request("/admin/users");
             },
 
+            async changeUserRole(userId, role) {
+                return request(`/admin/users/${encodeURIComponent(userId)}/role`, {
+                    method: "PUT",
+                    body: JSON.stringify({ role })
+                });
+            },
+
+            async deleteUser(userId) {
+                return request(`/admin/users/${encodeURIComponent(userId)}`, {
+                    method: "DELETE"
+                });
+            },
+
+            async getExercises(lessonId = "") {
+                const q = lessonId ? `?lessonId=${encodeURIComponent(lessonId)}` : "";
+                return request(`/admin/exercises${q}`);
+            },
+
+            async createExercise(data) {
+                return request("/admin/exercises", {
+                    method: "POST",
+                    body: JSON.stringify(data)
+                });
+            },
+
+            async updateExercise(id, data) {
+                return request(`/admin/exercises/${encodeURIComponent(id)}`, {
+                    method: "PUT",
+                    body: JSON.stringify(data)
+                });
+            },
+
+            async deleteExercise(id, lessonId = "") {
+                const q = lessonId ? `?lessonId=${encodeURIComponent(lessonId)}` : "";
+                return request(`/admin/exercises/${encodeURIComponent(id)}${q}`, {
+                    method: "DELETE"
+                });
+            },
+
+            async getSubmissions(limit = 50) {
+                return request(`/admin/submissions?limit=${limit}`);
+            },
+
+            async getAiChats(limit = 50) {
+                return request(`/admin/ai-chats?limit=${limit}`);
+            },
+
+            async getAiKnowledge() {
+                return request("/admin/ai-knowledge");
+            },
+
+            async syncAiKnowledge() {
+                return request("/admin/ai-knowledge/sync", { method: "POST" });
+            },
+
+            async createLesson(data) {
+                return request("/lessons", {
+                    method: "POST",
+                    body: JSON.stringify(data)
+                });
+            },
+
+            async updateLesson(id, data) {
+                return request(`/lessons/${encodeURIComponent(id)}`, {
+                    method: "PUT",
+                    body: JSON.stringify(data)
+                });
+            },
+
+            async deleteLesson(id) {
+                return request(`/lessons/${encodeURIComponent(id)}`, {
+                    method: "DELETE"
+                });
+            },
+
             database: {
                 async getStats() {
                     return request("/admin/database/stats");
