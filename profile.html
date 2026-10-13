@@ -590,7 +590,7 @@
                             ====================================== -->
                             <section class="profile-content-card" id="profileChapterRoadmapSection">
 
-                                <div class="profile-content-header">
+                                <div class="profile-content-header" style="flex-wrap: wrap; gap: 12px;">
                                     <div>
                                         <span class="section-label">
                                             CURRICULUM MASTERY • 7 CHƯƠNG HỌC
@@ -600,13 +600,47 @@
                                         </h2>
                                     </div>
 
-                                    <a href="lessons.html" class="link-more">
-                                        Mở trang Bài học →
-                                    </a>
+                                    <div class="profile-chapters-header-actions">
+                                        <button
+                                            type="button"
+                                            class="btn-toggle-profile-chapters btn-toggle-lessons-only"
+                                            id="btnToggleAllChapterLessons"
+                                            title="Ẩn hoặc hiện danh sách các bài học bên trong từng chương"
+                                        >
+                                            <span class="toggle-icon" id="toggleAllLessonsIcon">🔼</span>
+                                            <span id="toggleAllLessonsText">Ẩn danh sách bài</span>
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            class="btn-toggle-profile-chapters"
+                                            id="btnToggleProfileChapters"
+                                            aria-expanded="true"
+                                            aria-controls="profileChaptersCollapsibleBody"
+                                            title="Ẩn hoặc hiện toàn bộ bảng tiến độ 7 chương học"
+                                        >
+                                            <span class="toggle-icon" id="toggleProfileChaptersIcon">👁️</span>
+                                            <span id="toggleProfileChaptersText">Ẩn 7 chương</span>
+                                        </button>
+
+                                        <a href="lessons.html" class="link-more">
+                                            Mở trang Bài học →
+                                        </a>
+                                    </div>
                                 </div>
 
-                                <div class="profile-chapters-grid" id="profileChaptersBreakdown">
-                                    <!-- Được render tự động bởi js/profile.js với tiến độ thực của học viên -->
+                                <!-- Thanh thông báo tóm tắt khi đang ẩn 7 chương -->
+                                <div class="profile-chapters-collapsed-notice" id="profileChaptersCollapsedNotice" hidden>
+                                    <span>📦 Đang ẩn chi tiết 7 chương học (Bài 1 → Bài 20).</span>
+                                    <button type="button" class="btn-quick-expand-chapters" id="btnQuickExpandChapters">
+                                        Hiện lại ngay ↓
+                                    </button>
+                                </div>
+
+                                <div id="profileChaptersCollapsibleBody" class="profile-chapters-collapsible-body">
+                                    <div class="profile-chapters-grid" id="profileChaptersBreakdown">
+                                        <!-- Được render tự động bởi js/profile.js với tiến độ thực của học viên -->
+                                    </div>
                                 </div>
 
                             </section>

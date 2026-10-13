@@ -11865,6 +11865,206 @@ body.dark-theme .achievement-icon-orb {
     border-color: rgba(165, 180, 252, 0.25);
 }
 
+/* =========================================================================
+   PROFILE 7-CHAPTER SHOW / HIDE TOGGLES & COLLAPSIBLE STATES
+========================================================================= */
+
+.profile-chapters-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn-toggle-profile-chapters {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 15px;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 800;
+    cursor: pointer;
+    background: rgba(99, 102, 241, 0.1);
+    color: #4f46e5;
+    border: 1px solid rgba(99, 102, 241, 0.28);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    user-select: none;
+}
+
+.btn-toggle-profile-chapters:hover {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #ffffff;
+    border-color: transparent;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3);
+}
+
+.btn-toggle-profile-chapters.is-collapsed-state {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.28);
+}
+
+.btn-toggle-profile-chapters.btn-toggle-lessons-only {
+    background: rgba(148, 163, 184, 0.12);
+    color: var(--text-secondary, #475569);
+    border-color: rgba(148, 163, 184, 0.3);
+}
+
+.btn-toggle-profile-chapters.btn-toggle-lessons-only:hover,
+.btn-toggle-profile-chapters.btn-toggle-lessons-only.is-collapsed-state {
+    background: rgba(99, 102, 241, 0.16);
+    color: #4f46e5;
+    border-color: rgba(99, 102, 241, 0.4);
+}
+
+html.dark-theme .btn-toggle-profile-chapters,
+body.dark-theme .btn-toggle-profile-chapters {
+    background: rgba(99, 102, 241, 0.2);
+    color: #c7d2fe;
+    border-color: rgba(165, 180, 252, 0.3);
+}
+
+html.dark-theme .btn-toggle-profile-chapters:hover,
+body.dark-theme .btn-toggle-profile-chapters:hover,
+html.dark-theme .btn-toggle-profile-chapters.is-collapsed-state,
+body.dark-theme .btn-toggle-profile-chapters.is-collapsed-state {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #ffffff;
+    border-color: transparent;
+}
+
+html.dark-theme .btn-toggle-profile-chapters.btn-toggle-lessons-only,
+body.dark-theme .btn-toggle-profile-chapters.btn-toggle-lessons-only {
+    background: rgba(255, 255, 255, 0.06);
+    color: #cbd5e1;
+    border-color: rgba(255, 255, 255, 0.14);
+}
+
+html.dark-theme .btn-toggle-profile-chapters.btn-toggle-lessons-only:hover,
+body.dark-theme .btn-toggle-profile-chapters.btn-toggle-lessons-only:hover,
+html.dark-theme .btn-toggle-profile-chapters.btn-toggle-lessons-only.is-collapsed-state,
+body.dark-theme .btn-toggle-profile-chapters.btn-toggle-lessons-only.is-collapsed-state {
+    background: rgba(99, 102, 241, 0.26);
+    color: #ffffff;
+    border-color: rgba(129, 140, 248, 0.45);
+}
+
+/* Collapsed Notice Banner when 7 Chapters are Hidden */
+.profile-chapters-collapsed-notice {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 14px 18px;
+    margin-top: 8px;
+    border-radius: 14px;
+    background: linear-gradient(90deg, rgba(99, 102, 241, 0.08), rgba(168, 85, 247, 0.08));
+    border: 1px dashed rgba(99, 102, 241, 0.35);
+    color: var(--text-secondary, #475569);
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+.profile-chapters-collapsed-notice[hidden] {
+    display: none !important;
+}
+
+html.dark-theme .profile-chapters-collapsed-notice,
+body.dark-theme .profile-chapters-collapsed-notice {
+    background: rgba(30, 41, 59, 0.7);
+    border-color: rgba(165, 180, 252, 0.3);
+    color: #cbd5e1;
+}
+
+.btn-quick-expand-chapters {
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 800;
+    cursor: pointer;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.28);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.btn-quick-expand-chapters:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+}
+
+/* Collapsible Body for 7 Chapters */
+.profile-chapters-collapsible-body {
+    overflow: hidden;
+    transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+    opacity: 1;
+}
+
+.profile-chapters-collapsible-body.is-collapsed {
+    display: none;
+    opacity: 0;
+}
+
+/* Individual Chapter Header Right & Toggle Button */
+.p-chap-header-right {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-toggle-single-chap {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 0.7rem;
+    font-weight: 800;
+    cursor: pointer;
+    background: rgba(148, 163, 184, 0.14);
+    color: var(--text-secondary, #64748b);
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    transition: all 0.18s ease;
+}
+
+.btn-toggle-single-chap:hover {
+    background: var(--p-chap-soft);
+    color: var(--p-chap-color);
+    border-color: var(--p-chap-color);
+}
+
+html.dark-theme .btn-toggle-single-chap,
+body.dark-theme .btn-toggle-single-chap {
+    background: rgba(255, 255, 255, 0.08);
+    color: #cbd5e1;
+    border-color: rgba(255, 255, 255, 0.14);
+}
+
+html.dark-theme .btn-toggle-single-chap:hover,
+body.dark-theme .btn-toggle-single-chap:hover {
+    background: rgba(99, 102, 241, 0.28);
+    color: #ffffff;
+    border-color: #818cf8;
+}
+
+.btn-toggle-single-chap .chap-chevron {
+    font-size: 0.62rem;
+    line-height: 1;
+}
+
+/* Hide lesson chips inside a chapter card when lessons-collapsed is active */
+.p-chapter-card.lessons-collapsed .p-chap-lessons-grid {
+    display: none;
+}
+
 
 
 
