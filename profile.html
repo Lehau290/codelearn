@@ -138,7 +138,12 @@
              PROFILE HERO
         ====================================== -->
 
-        <section class="profile-hero" id="profileHeroSection">
+        <section class="profile-hero profile-hero-upgraded" id="profileHeroSection">
+
+            <!-- Animated Aurora Orbs -->
+            <div class="profile-aurora-orb p-orb-1" aria-hidden="true"></div>
+            <div class="profile-aurora-orb p-orb-2" aria-hidden="true"></div>
+            <div class="profile-aurora-orb p-orb-3" aria-hidden="true"></div>
 
             <!-- Cyber Grid Background & Floating C++ Glyphs -->
             <div class="profile-hero-cyber-grid" aria-hidden="true"></div>
@@ -162,7 +167,7 @@
 
                         <div class="hero-badge">
                             <span class="badge-pulse-dot"></span>
-                            HỒ SƠ HỌC VIÊN • CODELEARN C++
+                            HỒ SƠ HỌC VIÊN • CODELEARN C++ (7 CHƯƠNG • 20 BÀI HỌC)
                         </div>
 
                         <h1>
@@ -186,16 +191,26 @@
 
                         <div class="profile-hero-actions-bar" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-top: 14px;">
                             <p style="margin: 0; max-width: 580px;">
-                                Theo dõi tiến độ học tập, quản lý huy hiệu, chuỗi streak và chứng chỉ tốt nghiệp C++ của bạn.
+                                Theo dõi tiến độ 7 chương học chuẩn hóa (Bài 1 → Bài 20), quản lý huy hiệu, chuỗi streak và chứng chỉ tốt nghiệp C++ của bạn.
                             </p>
-                            <button
-                                type="button"
-                                class="btn-profile-settings-pill"
-                                id="btnOpenProfileSettingsMenu"
-                                title="Mở menu cài đặt tài khoản & tùy chọn"
-                            >
-                                <span>⚙️</span> Cài đặt &amp; Tùy chọn
-                            </button>
+                            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                                <a
+                                    href="settings.html"
+                                    class="btn-profile-settings-pill"
+                                    title="Đi tới trang Cài đặt tài khoản"
+                                    style="text-decoration: none;"
+                                >
+                                    <span>🛠️</span> Trang Cài đặt
+                                </a>
+                                <button
+                                    type="button"
+                                    class="btn-profile-settings-pill"
+                                    id="btnOpenProfileSettingsMenu"
+                                    title="Mở menu cài đặt tài khoản & tùy chọn nhanh"
+                                >
+                                    <span>⚙️</span> Tùy chọn nhanh
+                                </button>
+                            </div>
                         </div>
 
                     </div>
@@ -288,7 +303,7 @@
 
                     <aside class="profile-sidebar">
 
-                        <div class="profile-card">
+                        <div class="profile-card profile-card-upgraded">
 
                             <!-- Avatar with Camera edit button -->
                             <div class="profile-avatar-wrapper">
@@ -330,6 +345,14 @@
                                 </span>
                             </div>
 
+                            <div class="profile-xp-box" id="profileSidebarXpBox">
+                                <div class="xp-box-top">
+                                    <span class="xp-label">⚡ Điểm Kinh Nghiệm (XP)</span>
+                                    <strong class="xp-val" id="profileTotalXp">0 XP</strong>
+                                </div>
+                                <div class="xp-box-sub" id="profileChaptersDoneSummary">Đã hoàn thành 0/7 chương học</div>
+                            </div>
+
                             <div class="profile-divider"></div>
 
                             <div class="profile-joined">
@@ -354,12 +377,36 @@
                                 id="sideNavOverviewBtn"
                             >
                                 <span>
-                                    Tổng quan học tập
+                                    📊 Tổng quan học tập
                                 </span>
                                 <span class="action-arrow">
                                     →
                                 </span>
                             </button>
+
+                            <a
+                                href="#profileChapterRoadmapSection"
+                                class="profile-action"
+                            >
+                                <span>
+                                    🗺️ Tiến độ 7 Chương học
+                                </span>
+                                <span class="action-arrow">
+                                    ↓
+                                </span>
+                            </a>
+
+                            <a
+                                href="settings.html"
+                                class="profile-action"
+                            >
+                                <span>
+                                    🛠️ Trang Cài đặt tài khoản
+                                </span>
+                                <span class="action-arrow">
+                                    →
+                                </span>
+                            </a>
 
                             <button
                                 type="button"
@@ -367,7 +414,7 @@
                                 id="sideNavSettingsBtn"
                             >
                                 <span>
-                                    ⚙️ Cài đặt &amp; Tùy chọn
+                                    ⚙️ Menu Tùy chọn nhanh
                                 </span>
                                 <span class="action-arrow">
                                     ›
@@ -380,7 +427,7 @@
                                 class="profile-action"
                             >
                                 <span>
-                                    Tiếp tục học C++
+                                    🚀 Tiếp tục học C++
                                 </span>
                                 <span class="action-arrow">
                                     →
@@ -394,7 +441,7 @@
                                 style="display: none;"
                             >
                                 <span>
-                                    Bảng Quản trị
+                                    🛡️ Bảng Quản trị
                                 </span>
                                 <span class="action-arrow">
                                     →
@@ -407,7 +454,7 @@
                                 class="profile-action logout-action"
                             >
                                 <span>
-                                    Đăng xuất
+                                    🚪 Đăng xuất
                                 </span>
                                 <span class="action-arrow">
                                     →
@@ -431,23 +478,25 @@
 
                         <div id="panelOverview" class="profile-tab-panel active">
 
-                            <!-- STATISTICS -->
+                            <!-- STATISTICS (BENTO GRID) -->
 
-                            <div class="profile-stats">
+                            <div class="profile-stats profile-stats-bento">
 
-                                <div class="profile-stat-card">
-                                    <div>
+                                <div class="profile-stat-card" data-stat-color="indigo">
+                                    <div class="p-stat-icon">📚</div>
+                                    <div class="p-stat-body">
                                         <strong id="profileTotalLessons">
-                                            0
+                                            20
                                         </strong>
                                         <span>
-                                            Tổng bài học
+                                            Tổng bài học (7 Chương)
                                         </span>
                                     </div>
                                 </div>
 
-                                <div class="profile-stat-card">
-                                    <div>
+                                <div class="profile-stat-card" data-stat-color="emerald">
+                                    <div class="p-stat-icon">✅</div>
+                                    <div class="p-stat-body">
                                         <strong id="profileCompletedLessons">
                                             0
                                         </strong>
@@ -457,8 +506,9 @@
                                     </div>
                                 </div>
 
-                                <div class="profile-stat-card">
-                                    <div>
+                                <div class="profile-stat-card" data-stat-color="amber">
+                                    <div class="p-stat-icon">🏆</div>
+                                    <div class="p-stat-body">
                                         <strong id="profileAverageScore">
                                             0/100
                                         </strong>
@@ -468,19 +518,21 @@
                                     </div>
                                 </div>
 
-                                <div class="profile-stat-card">
-                                    <div>
+                                <div class="profile-stat-card" data-stat-color="violet">
+                                    <div class="p-stat-icon">📈</div>
+                                    <div class="p-stat-body">
                                         <strong id="profileProgress">
                                             0%
                                         </strong>
                                         <span>
-                                            Tiến độ khóa học
+                                            Tiến độ toàn khóa
                                         </span>
                                     </div>
                                 </div>
 
-                                <div class="profile-stat-card profile-stat-streak">
-                                    <div>
+                                <div class="profile-stat-card profile-stat-streak" data-stat-color="orange">
+                                    <div class="p-stat-icon">🔥</div>
+                                    <div class="p-stat-body">
                                         <strong id="profileLearningStreak" style="color: #ea580c;">
                                             3 ngày
                                         </strong>
@@ -495,19 +547,19 @@
 
                             <!-- PROGRESS CARD -->
 
-                            <section class="profile-content-card">
+                            <section class="profile-content-card profile-progress-master-card">
 
                                 <div class="profile-content-header">
                                     <div>
                                         <span class="section-label">
-                                            LEARNING ROADMAP
+                                            OVERALL COURSE MASTERY
                                         </span>
                                         <h2>
-                                            Tiến độ khóa học C++
+                                            Tiến độ khóa học C++ (20 Bài học)
                                         </h2>
                                     </div>
 
-                                    <strong id="profileProgressPercent">
+                                    <strong id="profileProgressPercent" class="profile-percent-pill">
                                         0%
                                     </strong>
                                 </div>
@@ -531,6 +583,34 @@
                                 </div>
 
                             </section>
+
+
+                            <!-- =====================================
+                                 7-CHAPTER LEARNING ROADMAP BREAKDOWN
+                            ====================================== -->
+                            <section class="profile-content-card" id="profileChapterRoadmapSection">
+
+                                <div class="profile-content-header">
+                                    <div>
+                                        <span class="section-label">
+                                            CURRICULUM MASTERY • 7 CHƯƠNG HỌC
+                                        </span>
+                                        <h2>
+                                            Tiến độ chi tiết theo 7 Chương học (Bài 1 → Bài 20)
+                                        </h2>
+                                    </div>
+
+                                    <a href="lessons.html" class="link-more">
+                                        Mở trang Bài học →
+                                    </a>
+                                </div>
+
+                                <div class="profile-chapters-grid" id="profileChaptersBreakdown">
+                                    <!-- Được render tự động bởi js/profile.js với tiến độ thực của học viên -->
+                                </div>
+
+                            </section>
+
 
                             <!-- =====================================
                                  CERTIFICATE OF COMPLETION CARD

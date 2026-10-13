@@ -62,6 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // 2. Thống kê & Tiến độ
     renderProfileStats(currentUser);
     renderProfileProgress(currentUser);
+    renderProfileChapterBreakdown(currentUser);
 
     // 3. Bài học gần đây & Thành tích
     renderRecentLessons(currentUser);
@@ -703,6 +704,181 @@ function renderProfileProgress(user) {
 
 
 // ============================================================
+// TIẾN ĐỘ CHI TIẾT THEO 7 CHƯƠNG HỌC (BÀI 1 -> BÀI 20)
+// ============================================================
+
+const PROFILE_CHAPTERS_STRUCTURE = [
+    {
+        chapterId: 1,
+        label: "Chương 1",
+        title: "Nhập môn & Biến trong C++",
+        rangeText: "Bài 1, 2, 3, 4",
+        lessonOrders: [1, 2, 3, 4],
+        accent: "indigo",
+        icon: "🚀"
+    },
+    {
+        chapterId: 2,
+        label: "Chương 2",
+        title: "Toán tử & Biểu thức",
+        rangeText: "Bài 5, 6",
+        lessonOrders: [5, 6],
+        accent: "cyan",
+        icon: "⚡"
+    },
+    {
+        chapterId: 3,
+        label: "Chương 3",
+        title: "Cấu trúc rẽ nhánh",
+        rangeText: "Bài 7, 8, 9",
+        lessonOrders: [7, 8, 9],
+        accent: "emerald",
+        icon: "🔀"
+    },
+    {
+        chapterId: 4,
+        label: "Chương 4",
+        title: "Cấu trúc vòng lặp",
+        rangeText: "Bài 10, 11",
+        lessonOrders: [10, 11],
+        accent: "amber",
+        icon: "🔄"
+    },
+    {
+        chapterId: 5,
+        label: "Chương 5",
+        title: "Hàm, Mảng & Chuỗi ký tự",
+        rangeText: "Bài 12, 13, 14, 15",
+        lessonOrders: [12, 13, 14, 15],
+        accent: "violet",
+        icon: "🧩"
+    },
+    {
+        chapterId: 6,
+        label: "Chương 6",
+        title: "Con trỏ & Kiểu cấu trúc",
+        rangeText: "Bài 16, 17",
+        lessonOrders: [16, 17],
+        accent: "rose",
+        icon: "🎯"
+    },
+    {
+        chapterId: 7,
+        label: "Chương 7",
+        title: "OOP, File I/O & Dự án tổng hợp",
+        rangeText: "Bài 18, 19, 20",
+        lessonOrders: [18, 19, 20],
+        accent: "fuchsia",
+        icon: "🏆"
+    }
+];
+
+function getProfileLessonNumericOrder(lesson, fallbackIndex) {
+    if (typeof lesson.order === "number" && !Number.isNaN(lesson.order)) {
+        return lesson.order;
+    }
+    const idMatch = String(lesson.id || "").match(/(\d+)/);
+    if (idMatch) {
+        return parseInt(idMatch[1], 10);
+    }
+    return fallbackIndex + 1;
+}
+
+function renderProfileChapterBreakdown(user) {
+    const container = document.getElementById("profileChaptersBreakdown");
+    const xpElem = document.getElementById("profileTotalXp");
+    const chapDoneElem = document.getElementById("profileChaptersDoneSummary");
+
+    const lessons = CppStorage.getLessons() || [];
+    const progress = CppStorage.getUserProgress(user.id) || {};
+
+    let completedChaptersCount = 0;
+    let totalXp = 0;
+
+    // Tính XP từ các bài hoàn thành + điểm thưởng
+    lessons.forEach(lesson => {
+        const p = progress[lesson.id];
+        if (p && p.completed) {
+            totalXp += 150 + (typeof p.score === "number" ? p.score : 100);
+        }
+    });
+
+    const cardsHtml = PROFILE_CHAPTERS_STRUCTURE.map(chap => {
+        const chapLessons = chap.lessonOrders.map(orderNum => {
+            const found = lessons.find((l, idx) => getProfileLessonNumericOrder(l, idx) === orderNum);
+            return found || {
+                id: `lesson-${String(orderNum).padStart(2, "0")}`,
+                order: orderNum,
+                title: `Bài ${orderNum}: Chuyên đề C++`
+            };
+        });
+
+        const totalInChap = chapLessons.length;
+        const doneInChap = chapLessons.filter(l => progress[l.id]?.completed === true).length;
+        const pct = totalInChap > 0 ? Math.round((doneInChap / totalInChap) * 100) : 0;
+
+        if (doneInChap === totalInChap && totalInChap > 0) {
+            completedChaptersCount++;
+        }
+
+        const nextTarget = chapLessons.find(l => !progress[l.id]?.completed) || chapLessons[0];
+        const nextUrl = `lesson-detail.html?id=${encodeURIComponent(nextTarget.id)}`;
+
+        const lessonChips = chapLessons.map(l => {
+            const isDone = progress[l.id]?.completed === true;
+            const orderNum = l.order || getProfileLessonNumericOrder(l, 0);
+            const cleanTitle = String(l.title || "").replace(/^Bài\s*\d+\s*:\s*/i, "");
+            const url = `lesson-detail.html?id=${encodeURIComponent(l.id)}`;
+            return `
+                <a href="${url}" class="p-chap-lesson-chip ${isDone ? 'done' : ''}" title="${escapeHtml(l.title)}">
+                    <span class="p-chip-num">${isDone ? '✓' : orderNum}</span>
+                    <span class="p-chip-text">Bài ${orderNum}: ${escapeHtml(cleanTitle)}</span>
+                </a>
+            `;
+        }).join("");
+
+        return `
+            <div class="p-chapter-card ${doneInChap === totalInChap ? 'chapter-completed' : ''}" data-accent="${chap.accent}">
+                <div class="p-chap-header">
+                    <div class="p-chap-badge-row">
+                        <span class="p-chap-pill">${chap.icon} ${escapeHtml(chap.label)}</span>
+                        <span class="p-chap-range">${escapeHtml(chap.rangeText)}</span>
+                    </div>
+                    <span class="p-chap-pct">${doneInChap}/${totalInChap} bài (${pct}%)</span>
+                </div>
+                <h3 class="p-chap-title">${escapeHtml(chap.title)}</h3>
+                <div class="p-chap-bar-track">
+                    <div class="p-chap-bar-fill" style="width: ${pct}%"></div>
+                </div>
+                <div class="p-chap-lessons-grid">
+                    ${lessonChips}
+                </div>
+                <div class="p-chap-footer">
+                    <span class="p-chap-status-text">
+                        ${doneInChap === totalInChap ? '🌟 Đã hoàn thành chương' : (doneInChap > 0 ? '⚡ Đang học dở' : '🔓 Sẵn sàng học')}
+                    </span>
+                    <a href="${nextUrl}" class="p-chap-action-btn">
+                        ${doneInChap === totalInChap ? 'Ôn tập →' : (doneInChap > 0 ? `Học tiếp Bài ${nextTarget.order} →` : `Học Bài ${chap.lessonOrders[0]} →`)}
+                    </a>
+                </div>
+            </div>
+        `;
+    }).join("");
+
+    if (container) {
+        container.innerHTML = cardsHtml;
+    }
+
+    if (xpElem) {
+        xpElem.textContent = `${totalXp.toLocaleString("vi-VN")} XP`;
+    }
+    if (chapDoneElem) {
+        chapDoneElem.textContent = `Đã hoàn thành ${completedChaptersCount}/7 chương học`;
+    }
+}
+
+
+// ============================================================
 // BÀI HỌC HOÀN THÀNH GẦN ĐÂY
 // ============================================================
 
@@ -765,17 +941,20 @@ async function renderAchievements(user) {
     const container = document.getElementById("achievementsList");
     if (!container) return;
 
+    const badgeIcons = ["🚀", "⚡", "🔥", "🎯", "💎", "👑"];
+
     // Check if backend achievements are available
     if (window.CodeLearnApi && CodeLearnApi.achievements) {
         try {
             const res = await CodeLearnApi.achievements.get();
             if (res && res.achievements && res.achievements.length > 0) {
-                container.innerHTML = res.achievements.map(ach => `
-                    <div class="achievement-card ${ach.unlocked ? '' : 'locked'}">
+                container.innerHTML = res.achievements.map((ach, idx) => `
+                    <div class="achievement-card ${ach.unlocked ? 'unlocked' : 'locked'}">
+                        <div class="achievement-icon-orb">${badgeIcons[idx % badgeIcons.length]}</div>
                         <div class="achievement-info">
                             <strong>${escapeHtml(ach.title)}</strong>
                             <p>${escapeHtml(ach.description)}</p>
-                            <small>${ach.unlocked ? 'Đã mở khóa' : 'Chưa mở khóa'}</small>
+                            <small>${ach.unlocked ? '✨ Đã mở khóa' : '🔒 Chưa mở khóa'}</small>
                         </div>
                     </div>
                 `).join("");
@@ -799,48 +978,55 @@ async function renderAchievements(user) {
     const achievements = [
         {
             id: "first-lesson",
+            icon: "🚀",
             title: "Bắt đầu hành trình",
-            description: "Hoàn thành bài học C++ đầu tiên.",
+            description: "Hoàn thành bài học C++ đầu tiên (Chương 1).",
             unlocked: completed >= 1
         },
         {
             id: "three-lessons",
-            title: "Tăng tốc kiến thức",
-            description: "Hoàn thành 3 bài học C++.",
-            unlocked: completed >= 3
+            icon: "⚡",
+            title: "Chinh phục Chương 1",
+            description: "Hoàn thành 4 bài học nền tảng đầu tiên.",
+            unlocked: completed >= 4
         },
         {
             id: "five-lessons",
+            icon: "🔥",
             title: "Chăm chỉ rèn luyện",
-            description: "Hoàn thành 5 bài học C++.",
-            unlocked: completed >= 5
+            description: "Hoàn thành ít nhất 6 bài học C++.",
+            unlocked: completed >= 6
         },
         {
             id: "high-score",
+            icon: "🎯",
             title: "Thiện xạ C++",
             description: "Đạt từ 90 điểm trở lên trong một bài tập.",
             unlocked: hasHighScore
         },
         {
             id: "half-way",
+            icon: "💎",
             title: "Vượt qua nửa chặng",
-            description: `Hoàn thành ít nhất ${Math.ceil(lessons.length / 2)} bài học.`,
+            description: `Hoàn thành ít nhất ${Math.ceil(lessons.length / 2)}/20 bài học.`,
             unlocked: completed >= Math.ceil(lessons.length / 2) && lessons.length > 0
         },
         {
             id: "all-lessons",
+            icon: "👑",
             title: "C++ Master Tinh anh",
-            description: "Hoàn thành xuất sắc toàn bộ khóa học C++.",
+            description: "Hoàn thành xuất sắc toàn bộ 7 Chương (20 bài học).",
             unlocked: completed >= lessons.length && lessons.length > 0
         }
     ];
 
     container.innerHTML = achievements.map(ach => `
-        <div class="achievement-card ${ach.unlocked ? '' : 'locked'}">
+        <div class="achievement-card ${ach.unlocked ? 'unlocked' : 'locked'}">
+            <div class="achievement-icon-orb">${ach.icon}</div>
             <div class="achievement-info">
                 <strong>${escapeHtml(ach.title)}</strong>
                 <p>${escapeHtml(ach.description)}</p>
-                <small>${ach.unlocked ? 'Đã mở khóa' : 'Chưa mở khóa'}</small>
+                <small>${ach.unlocked ? '✨ Đã mở khóa' : '🔒 Chưa mở khóa'}</small>
             </div>
         </div>
     `).join("");

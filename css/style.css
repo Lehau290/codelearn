@@ -11436,6 +11436,436 @@ body.dark-theme .home-chap-tab.active {
 }
 
 
+/* =========================================================================
+   UPGRADED PROFILE PAGE: AURORA HERO, BENTO STATS, 7-CHAPTER MASTERY GRID
+========================================================================= */
+
+.profile-hero-upgraded {
+    position: relative;
+    overflow: hidden;
+}
+
+.profile-aurora-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(88px);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.38;
+    animation: pulseAuroraOrb 10s ease-in-out infinite alternate;
+}
+
+.profile-aurora-orb.p-orb-1 {
+    width: 390px;
+    height: 390px;
+    top: -120px;
+    left: -90px;
+    background: radial-gradient(circle, #6366f1 0%, transparent 70%);
+}
+
+.profile-aurora-orb.p-orb-2 {
+    width: 430px;
+    height: 430px;
+    top: 15%;
+    right: -120px;
+    background: radial-gradient(circle, #a855f7 0%, transparent 70%);
+    animation-delay: -3.5s;
+}
+
+.profile-aurora-orb.p-orb-3 {
+    width: 340px;
+    height: 340px;
+    bottom: -140px;
+    left: 38%;
+    background: radial-gradient(circle, #06b6d4 0%, transparent 70%);
+    animation-delay: -7s;
+}
+
+/* Sidebar XP Box */
+.profile-xp-box {
+    margin-top: 16px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1));
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    text-align: left;
+}
+
+html.dark-theme .profile-xp-box,
+body.dark-theme .profile-xp-box {
+    background: rgba(99, 102, 241, 0.16);
+    border-color: rgba(165, 180, 252, 0.25);
+}
+
+.xp-box-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.xp-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-secondary, #64748b);
+}
+
+html.dark-theme .xp-label,
+body.dark-theme .xp-label {
+    color: #cbd5e1;
+}
+
+.xp-val {
+    font-size: 0.92rem;
+    font-weight: 900;
+    color: #4f46e5;
+}
+
+html.dark-theme .xp-val,
+body.dark-theme .xp-val {
+    color: #a5b4fc;
+}
+
+.xp-box-sub {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary, #64748b);
+}
+
+html.dark-theme .xp-box-sub,
+body.dark-theme .xp-box-sub {
+    color: #94a3b8;
+}
+
+/* Profile Bento Stat Cards */
+.profile-stats-bento .profile-stat-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 20px 18px;
+    border-radius: 18px;
+    border-top: 4px solid #6366f1;
+    transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.24s ease;
+}
+
+.profile-stats-bento .profile-stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 30px rgba(99, 102, 241, 0.14);
+}
+
+.profile-stats-bento .profile-stat-card[data-stat-color="indigo"] { border-top-color: #6366f1; }
+.profile-stats-bento .profile-stat-card[data-stat-color="emerald"] { border-top-color: #10b981; }
+.profile-stats-bento .profile-stat-card[data-stat-color="amber"] { border-top-color: #f59e0b; }
+.profile-stats-bento .profile-stat-card[data-stat-color="violet"] { border-top-color: #8b5cf6; }
+.profile-stats-bento .profile-stat-card[data-stat-color="orange"] { border-top-color: #f97316; }
+
+.p-stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(168, 85, 247, 0.12));
+    border: 1px solid rgba(99, 102, 241, 0.22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.45rem;
+    flex-shrink: 0;
+}
+
+html.dark-theme .p-stat-icon,
+body.dark-theme .p-stat-icon {
+    background: rgba(99, 102, 241, 0.2);
+    border-color: rgba(165, 180, 252, 0.28);
+}
+
+.p-stat-body {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.profile-percent-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #ffffff !important;
+    font-size: 0.95rem;
+    font-weight: 900;
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.32);
+}
+
+/* 7-Chapter Learning Breakdown Grid on Profile Page */
+.profile-chapters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 18px;
+    margin-top: 10px;
+}
+
+.p-chapter-card {
+    --p-chap-color: #6366f1;
+    --p-chap-soft: rgba(99, 102, 241, 0.12);
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+    padding: 20px;
+    border-radius: 20px;
+    background: var(--bg-card, #ffffff);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    border-top: 4px solid var(--p-chap-color);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+    transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.24s ease;
+}
+
+.p-chapter-card[data-accent="indigo"] { --p-chap-color: #6366f1; --p-chap-soft: rgba(99, 102, 241, 0.14); }
+.p-chapter-card[data-accent="cyan"] { --p-chap-color: #06b6d4; --p-chap-soft: rgba(6, 182, 212, 0.14); }
+.p-chapter-card[data-accent="emerald"] { --p-chap-color: #10b981; --p-chap-soft: rgba(16, 185, 129, 0.14); }
+.p-chapter-card[data-accent="amber"] { --p-chap-color: #f59e0b; --p-chap-soft: rgba(245, 158, 11, 0.14); }
+.p-chapter-card[data-accent="violet"] { --p-chap-color: #8b5cf6; --p-chap-soft: rgba(139, 92, 246, 0.14); }
+.p-chapter-card[data-accent="rose"] { --p-chap-color: #f43f5e; --p-chap-soft: rgba(244, 63, 94, 0.14); }
+.p-chapter-card[data-accent="fuchsia"] { --p-chap-color: #d946ef; --p-chap-soft: rgba(217, 70, 239, 0.14); }
+
+.p-chapter-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 34px rgba(99, 102, 241, 0.15);
+}
+
+html.dark-theme .p-chapter-card,
+body.dark-theme .p-chapter-card {
+    background: rgba(15, 23, 42, 0.65);
+    border-color: rgba(255, 255, 255, 0.1);
+    border-top-color: var(--p-chap-color);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+}
+
+.p-chap-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.p-chap-badge-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.p-chap-pill {
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--p-chap-color);
+    color: #ffffff;
+    letter-spacing: 0.04em;
+}
+
+.p-chap-range {
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: var(--p-chap-soft);
+    color: var(--p-chap-color);
+}
+
+html.dark-theme .p-chap-range,
+body.dark-theme .p-chap-range {
+    color: #e2e8f0;
+}
+
+.p-chap-pct {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--text-secondary, #64748b);
+}
+
+html.dark-theme .p-chap-pct,
+body.dark-theme .p-chap-pct {
+    color: #cbd5e1;
+}
+
+.p-chap-title {
+    font-size: 1.02rem;
+    font-weight: 800;
+    color: var(--text-primary, #0f172a);
+    margin: 0;
+}
+
+html.dark-theme .p-chap-title,
+body.dark-theme .p-chap-title {
+    color: #f8fafc;
+}
+
+.p-chap-bar-track {
+    width: 100%;
+    height: 7px;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.22);
+    overflow: hidden;
+}
+
+.p-chap-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--p-chap-color), #10b981);
+    transition: width 0.5s ease;
+}
+
+.p-chap-lessons-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 2px 0;
+}
+
+.p-chap-lesson-chip {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 10px;
+    border-radius: 10px;
+    background: rgba(241, 245, 249, 0.85);
+    border: 1px solid rgba(148, 163, 184, 0.24);
+    color: var(--text-primary, #1e293b);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.18s ease;
+}
+
+.p-chap-lesson-chip:hover {
+    background: #eef2ff;
+    border-color: var(--p-chap-color);
+    transform: translateX(3px);
+    color: #312e81;
+}
+
+.p-chip-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 22px;
+    border-radius: 6px;
+    background: var(--p-chap-color);
+    color: #ffffff;
+    font-size: 0.7rem;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.p-chap-lesson-chip.done {
+    background: rgba(16, 185, 129, 0.12);
+    border-color: rgba(16, 185, 129, 0.4);
+}
+
+.p-chap-lesson-chip.done .p-chip-num {
+    background: #10b981;
+}
+
+html.dark-theme .p-chap-lesson-chip,
+body.dark-theme .p-chap-lesson-chip {
+    background: rgba(15, 23, 42, 0.82);
+    border-color: rgba(255, 255, 255, 0.09);
+    color: #e2e8f0;
+}
+
+html.dark-theme .p-chap-lesson-chip:hover,
+body.dark-theme .p-chap-lesson-chip:hover {
+    background: rgba(99, 102, 241, 0.25);
+    border-color: #818cf8;
+    color: #ffffff;
+}
+
+.p-chap-footer {
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px dashed rgba(148, 163, 184, 0.24);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+html.dark-theme .p-chap-footer,
+body.dark-theme .p-chap-footer {
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+.p-chap-status-text {
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: var(--text-secondary, #64748b);
+}
+
+html.dark-theme .p-chap-status-text,
+body.dark-theme .p-chap-status-text {
+    color: #94a3b8;
+}
+
+.p-chap-action-btn {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--p-chap-color);
+    text-decoration: none;
+}
+
+.p-chap-action-btn:hover {
+    text-decoration: underline;
+}
+
+html.dark-theme .p-chap-action-btn,
+body.dark-theme .p-chap-action-btn {
+    color: #a5b4fc;
+}
+
+/* Upgraded Achievement Cards with Icon Orbs */
+.achievements-grid .achievement-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px 20px;
+    border-radius: 18px;
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.achievements-grid .achievement-card:hover {
+    transform: translateY(-4px);
+}
+
+.achievement-icon-orb {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.14), rgba(168, 85, 247, 0.14));
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+}
+
+.achievement-card.unlocked .achievement-icon-orb {
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    color: #ffffff;
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.32);
+}
+
+html.dark-theme .achievement-icon-orb,
+body.dark-theme .achievement-icon-orb {
+    background: rgba(99, 102, 241, 0.18);
+    border-color: rgba(165, 180, 252, 0.25);
+}
+
+
 
 
 
