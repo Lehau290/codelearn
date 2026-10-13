@@ -15,6 +15,13 @@
         name="keywords"
         content="C++, học C++, lập trình C++, CodeLearn C++"
     >
+    <meta http-equiv="refresh" content="0; url=home.html">
+    <script>
+        // Chuyển hướng ngay lập tức sang Trang chủ (home.html)
+        if (typeof window !== "undefined" && window.location) {
+            window.location.replace("home.html");
+        }
+    </script>
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=JetBrains+Mono:wght@700&display=swap">
     <style>
@@ -108,6 +115,10 @@
         <p>Đang tải CodeLearn C++...</p>
 
         <div class="spinner"></div>
+
+        <a href="home.html" style="display: inline-block; margin-top: 10px; padding: 10px 22px; background: linear-gradient(135deg, #8b7cf8, #6351e8); color: #fff; text-decoration: none; border-radius: 12px; font-weight: 700; font-size: 14px; box-shadow: 0 10px 25px rgba(99, 81, 232, 0.4);">
+            Vào Trang Chủ Ngay →
+        </a>
 
         <noscript>
             <p><a href="home.html" style="color: #847de8; text-decoration: underline;">Nhấn vào đây để vào Trang chủ</a></p>
