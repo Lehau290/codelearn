@@ -143,6 +143,11 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
         if path == "/" or path == "":
             self.path = "/home.html"
 
+        if path == "/favicon.ico":
+            self.send_response(204)
+            self.end_headers()
+            return
+
         return super().do_GET()
 
     def handle_api_get(self, path: str, query: dict):

@@ -295,7 +295,7 @@ def seed_lessons_and_exercises(conn):
             if idx + 1 < len(lesson_matches):
                 end_pos = lesson_matches[idx + 1].start()
             else:
-                end_m = re.search(r'\n\s*\]\s*;', exercises_code[start_pos:])
+                end_m = re.search(r'\n\s*\]', exercises_code[start_pos:])
                 end_pos = start_pos + end_m.start() if end_m else len(exercises_code)
 
             block = exercises_code[start_pos:end_pos]
