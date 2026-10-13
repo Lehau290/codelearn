@@ -482,11 +482,31 @@
                             <h3>Tổng quan 7 Chương học (Bao gồm Bài 1 đến Bài 20)</h3>
                             <p>Bấm trực tiếp vào từng bài học bên dưới để vào học ngay, hoặc chọn chương để xem chi tiết.</p>
                         </div>
-                        <div class="curriculum-header-actions">
+                        <div class="curriculum-header-actions" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <button
+                                type="button"
+                                class="btn-toggle-profile-chapters"
+                                id="btnToggleCurriculumChapters"
+                                aria-expanded="true"
+                                aria-controls="curriculumChaptersCollapsibleBody"
+                                title="Ẩn hoặc hiện hết tất cả 7 chương học"
+                            >
+                                <span class="toggle-icon" id="toggleCurriculumChaptersIcon">🔼</span>
+                                <span id="toggleCurriculumChaptersText">Ẩn tất cả các chương</span>
+                            </button>
                             <a href="lesson-detail.html?id=lesson-01" class="btn btn-primary btn-sm">Học từ Bài 1 →</a>
                         </div>
                     </div>
 
+                    <!-- Thanh thông báo tóm tắt khi đang ẩn tất cả 7 chương trên trang Bài học -->
+                    <div class="profile-chapters-collapsed-notice" id="curriculumChaptersCollapsedNotice" hidden>
+                        <span>📦 Đã ẩn tất cả 7 chương học (Bao gồm Bài 1 đến Bài 20).</span>
+                        <button type="button" class="btn-quick-expand-chapters" id="btnQuickExpandCurriculumChapters">
+                            🔽 Hiện tất cả các chương
+                        </button>
+                    </div>
+
+                    <div id="curriculumChaptersCollapsibleBody" class="profile-chapters-collapsible-body">
                     <div class="curriculum-overview-grid">
                         <!-- Chương 1 -->
                         <div class="curriculum-chapter-box" data-chapter-target="Chương 1" data-accent="indigo">
@@ -619,6 +639,7 @@
                                 <a href="lesson-detail.html?id=lesson-18" class="curr-chap-go">Vào học Chương 7 →</a>
                             </div>
                         </div>
+                    </div>
                     </div>
                 </div>
 

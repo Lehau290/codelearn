@@ -356,7 +356,60 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         });
     }
+
+    // 9. Nút Ẩn / Hiện tất cả 7 chương trên khung Tổng quan Chương trình học
+    setupCurriculumOverviewToggle();
 });
+
+function setupCurriculumOverviewToggle() {
+    const btnToggle = document.getElementById("btnToggleCurriculumChapters");
+    const bodyEl = document.getElementById("curriculumChaptersCollapsibleBody");
+    const noticeEl = document.getElementById("curriculumChaptersCollapsedNotice");
+    const btnQuickExpand = document.getElementById("btnQuickExpandCurriculumChapters");
+    const iconEl = document.getElementById("toggleCurriculumChaptersIcon");
+    const textEl = document.getElementById("toggleCurriculumChaptersText");
+
+    const STORAGE_KEY = "cpp_lessons_curriculum_hidden";
+
+    function applyVisibility(isHidden) {
+        if (!bodyEl) return;
+        bodyEl.classList.toggle("is-collapsed", isHidden);
+        if (noticeEl) {
+            noticeEl.hidden = !isHidden;
+        }
+        if (btnToggle) {
+            btnToggle.setAttribute("aria-expanded", String(!isHidden));
+            btnToggle.classList.toggle("is-collapsed-state", isHidden);
+        }
+        if (iconEl) {
+            iconEl.textContent = isHidden ? "🔽" : "🔼";
+        }
+        if (textEl) {
+            textEl.textContent = isHidden ? "Hiện tất cả các chương" : "Ẩn tất cả các chương";
+        }
+    }
+
+    const savedHidden = localStorage.getItem(STORAGE_KEY) === "true";
+    applyVisibility(savedHidden);
+
+    if (btnToggle && !btnToggle.dataset.bound) {
+        btnToggle.dataset.bound = "true";
+        btnToggle.addEventListener("click", () => {
+            const currentlyHidden = bodyEl && bodyEl.classList.contains("is-collapsed");
+            const nextHidden = !currentlyHidden;
+            localStorage.setItem(STORAGE_KEY, String(nextHidden));
+            applyVisibility(nextHidden);
+        });
+    }
+
+    if (btnQuickExpand && !btnQuickExpand.dataset.bound) {
+        btnQuickExpand.dataset.bound = "true";
+        btnQuickExpand.addEventListener("click", () => {
+            localStorage.setItem(STORAGE_KEY, "false");
+            applyVisibility(false);
+        });
+    }
+}
 
 
 // ============================================================
