@@ -274,10 +274,67 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    // 5. Điều hướng trực tiếp khi click vào nút "Bắt đầu học" hoặc bất kỳ vị trí nào trên thẻ bài học
+    // 5. Chuyển đổi chế độ hiển thị (Danh sách / Lưới thẻ 2 cột)
+    const viewListBtn = document.getElementById("viewModeListBtn");
+    const viewGridBtn = document.getElementById("viewModeGridBtn");
+    if (viewListBtn && viewGridBtn && lessonList) {
+        const savedView = localStorage.getItem("cpp_lessons_view_mode") || "list";
+        if (savedView === "grid") {
+            lessonList.classList.add("grid-view-mode");
+            viewGridBtn.classList.add("active");
+            viewListBtn.classList.remove("active");
+        }
+        viewListBtn.addEventListener("click", () => {
+            lessonList.classList.remove("grid-view-mode");
+            viewListBtn.classList.add("active");
+            viewGridBtn.classList.remove("active");
+            localStorage.setItem("cpp_lessons_view_mode", "list");
+        });
+        viewGridBtn.addEventListener("click", () => {
+            lessonList.classList.add("grid-view-mode");
+            viewGridBtn.classList.add("active");
+            viewListBtn.classList.remove("active");
+            localStorage.setItem("cpp_lessons_view_mode", "grid");
+        });
+    }
+
+    // 6. Điều hướng nhanh khi bấm vào thanh Stepper 7 Chương trên Hero
+    const stepperNodes = document.querySelectorAll(".stepper-node");
+    stepperNodes.forEach(node => {
+        node.addEventListener("click", (e) => {
+            const targetId = (node.getAttribute("href") || "").replace("#", "");
+            let targetEl = targetId ? document.getElementById(targetId) : null;
+            if (!targetEl) {
+                // Nếu đang lọc chương khác khiến chương này ẩn, mở lại toàn bộ để cuộn tới
+                isUserFiltering = false;
+                userTypedSearchKeydown = false;
+                if (searchInput) searchInput.value = "";
+                if (chapterFilter) chapterFilter.value = "all";
+                if (statusFilter) statusFilter.value = "all";
+                pills.forEach(p => p.classList.toggle("active", p.getAttribute("data-chapter") === "all"));
+                renderLessons(allLessons, userProgress, lessonList);
+                targetEl = targetId ? document.getElementById(targetId) : null;
+            }
+            if (targetEl) {
+                e.preventDefault();
+                targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+        });
+    });
+
+    // 7. Hiệu ứng ánh sáng Spotlight theo chuột trên thẻ bài học & thẻ chương
+    document.addEventListener("mousemove", (e) => {
+        const hoverCard = e.target.closest(".lesson-list-card, .curriculum-chapter-box");
+        if (!hoverCard) return;
+        const rect = hoverCard.getBoundingClientRect();
+        hoverCard.style.setProperty("--card-mouse-x", `${Math.round(e.clientX - rect.left)}px`);
+        hoverCard.style.setProperty("--card-mouse-y", `${Math.round(e.clientY - rect.top)}px`);
+    });
+
+    // 8. Điều hướng trực tiếp khi click vào nút "Bắt đầu học" hoặc bất kỳ vị trí nào trên thẻ bài học
     if (lessonList) {
         lessonList.addEventListener("click", (e) => {
-            const actionBtn = e.target.closest(".btn-lesson-interactive, a[href*='lesson-detail.html']");
+            const actionBtn = e.target.closest(".btn-lesson-interactive, .chapter-start-btn, a[href*='lesson-detail.html']");
             if (actionBtn) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -312,49 +369,63 @@ const CURRICULUM_CHAPTERS_META = [
         fullTitle: "Chương 1: Bắt đầu với C++",
         lessonRangeText: "Bao gồm Bài 1, Bài 2, Bài 3, Bài 4",
         summary: "Làm quen ngôn ngữ C++, biến, kiểu dữ liệu, nhập xuất cin/cout và các toán tử cơ bản",
-        orders: [1, 2, 3, 4]
+        orders: [1, 2, 3, 4],
+        accent: "indigo",
+        icon: "🚀"
     },
     {
         key: "Chương 2",
         fullTitle: "Chương 2: Cấu trúc rẽ nhánh",
         lessonRangeText: "Bao gồm Bài 5, Bài 6",
         summary: "Điều khiển luồng thực thi chương trình với cấu trúc điều kiện if - else và switch - case",
-        orders: [5, 6]
+        orders: [5, 6],
+        accent: "cyan",
+        icon: "🔀"
     },
     {
         key: "Chương 3",
         fullTitle: "Chương 3: Cấu trúc vòng lặp",
         lessonRangeText: "Bao gồm Bài 7, Bài 8, Bài 9",
         summary: "Tự động hóa các thao tác lặp với vòng lặp for, while, do-while và lệnh break, continue",
-        orders: [7, 8, 9]
+        orders: [7, 8, 9],
+        accent: "emerald",
+        icon: "🔁"
     },
     {
         key: "Chương 4",
         fullTitle: "Chương 4: Hàm & Tổ chức mã nguồn",
         lessonRangeText: "Bao gồm Bài 10, Bài 11",
         summary: "Chia nhỏ chương trình thành hàm (Functions), truyền tham số, nạp chồng hàm và đệ quy",
-        orders: [10, 11]
+        orders: [10, 11],
+        accent: "amber",
+        icon: "🧩"
     },
     {
         key: "Chương 5",
         fullTitle: "Chương 5: Mảng & Chuỗi ký tự",
         lessonRangeText: "Bao gồm Bài 12, Bài 13, Bài 14, Bài 15",
         summary: "Mảng một chiều, các thuật toán mảng cơ bản, chuỗi ký tự std::string và mảng hai chiều (Ma trận)",
-        orders: [12, 13, 14, 15]
+        orders: [12, 13, 14, 15],
+        accent: "violet",
+        icon: "📦"
     },
     {
         key: "Chương 6",
         fullTitle: "Chương 6: Con trỏ & Quản lý bộ nhớ",
         lessonRangeText: "Bao gồm Bài 16, Bài 17",
         summary: "Làm chủ địa chỉ bộ nhớ, con trỏ (Pointers) và cấp phát bộ nhớ động với new & delete",
-        orders: [16, 17]
+        orders: [16, 17],
+        accent: "rose",
+        icon: "🎯"
     },
     {
         key: "Chương 7",
         fullTitle: "Chương 7: Lập trình Hướng đối tượng (OOP)",
         lessonRangeText: "Bao gồm Bài 18, Bài 19, Bài 20",
         summary: "Kiểu dữ liệu cấu trúc (struct), Lớp (Class) & Đối tượng (Object), Constructor, Destructor và Kế thừa",
-        orders: [18, 19, 20]
+        orders: [18, 19, 20],
+        accent: "fuchsia",
+        icon: "👑"
     }
 ];
 
@@ -586,22 +657,44 @@ function renderLessons(
         chapLessons.forEach(l => usedLessonIds.add(l.id));
 
         const completedInChap = chapLessons.filter(l => progress && progress[l.id]?.completed === true).length;
+        const chapPercent = Math.round((completedInChap / chapLessons.length) * 100);
+        const firstUnfinished = chapLessons.find(l => !(progress && progress[l.id]?.completed)) || chapLessons[0];
+        const firstTargetId = firstUnfinished ? firstUnfinished.id : `lesson-0${chapMeta.orders[0]}`;
+
         const cardsHtml = chapLessons
-            .map((lesson, idx) => createLessonCard(lesson, progress, (lesson.order ? lesson.order - 1 : idx)))
+            .map((lesson, idx) => createLessonCard(lesson, progress, (lesson.order ? lesson.order - 1 : idx), chapMeta.accent))
             .join("");
 
         groupedHtml.push(`
-            <div class="chapter-group-section" data-chapter-group="${escapeHtml(chapMeta.key)}">
+            <div class="chapter-group-section" id="chapter-sec-${chapIdx + 1}" data-chapter-group="${escapeHtml(chapMeta.key)}" data-accent="${chapMeta.accent}">
                 <div class="chapter-group-header">
                     <div class="chapter-group-title-wrap">
-                        <span class="chapter-group-badge">CHƯƠNG ${chapIdx + 1}</span>
-                        <div>
-                            <h3>${escapeHtml(chapMeta.fullTitle)}</h3>
-                            <p><strong>${escapeHtml(chapMeta.lessonRangeText)}</strong> — ${escapeHtml(chapMeta.summary)}</p>
+                        <div class="chapter-orb-badge">
+                            <span class="orb-icon">${chapMeta.icon}</span>
+                            <span class="orb-label">CHƯƠNG 0${chapIdx + 1}</span>
+                        </div>
+                        <div class="chapter-title-text">
+                            <div class="chapter-title-row">
+                                <h3>${escapeHtml(chapMeta.fullTitle)}</h3>
+                                <span class="chapter-range-pill">${escapeHtml(chapMeta.lessonRangeText)}</span>
+                            </div>
+                            <p>${escapeHtml(chapMeta.summary)}</p>
                         </div>
                     </div>
                     <div class="chapter-group-right">
-                        <span class="chapter-group-count">${completedInChap}/${chapLessons.length} bài hoàn thành</span>
+                        <div class="chapter-mini-progress">
+                            <div class="chapter-mini-progress-label">
+                                <span>Tiến độ chương</span>
+                                <strong>${completedInChap}/${chapLessons.length} bài (${chapPercent}%)</strong>
+                            </div>
+                            <div class="chapter-mini-progress-track">
+                                <div class="chapter-mini-progress-fill" style="width: ${chapPercent}%"></div>
+                            </div>
+                        </div>
+                        <a href="lesson-detail.html?id=${encodeURIComponent(firstTargetId)}" class="chapter-start-btn" data-lesson-id="${escapeHtml(firstTargetId)}">
+                            <span>Học Chương ${chapIdx + 1}</span>
+                            <span>→</span>
+                        </a>
                     </div>
                 </div>
                 <div class="chapter-group-lessons">
@@ -615,14 +708,17 @@ function renderLessons(
     const extraLessons = lessons.filter(l => !usedLessonIds.has(l.id));
     if (extraLessons.length > 0) {
         const extraCardsHtml = extraLessons
-            .map((lesson, idx) => createLessonCard(lesson, progress, (lesson.order ? lesson.order - 1 : 20 + idx)))
+            .map((lesson, idx) => createLessonCard(lesson, progress, (lesson.order ? lesson.order - 1 : 20 + idx), "indigo"))
             .join("");
         groupedHtml.push(`
-            <div class="chapter-group-section" data-chapter-group="Chương mở rộng">
+            <div class="chapter-group-section" data-chapter-group="Chương mở rộng" data-accent="indigo">
                 <div class="chapter-group-header">
                     <div class="chapter-group-title-wrap">
-                        <span class="chapter-group-badge">MỞ RỘNG</span>
-                        <div>
+                        <div class="chapter-orb-badge">
+                            <span class="orb-icon">✨</span>
+                            <span class="orb-label">MỞ RỘNG</span>
+                        </div>
+                        <div class="chapter-title-text">
                             <h3>Chuyên đề nâng cao &amp; Bổ sung</h3>
                             <p>Các bài giảng bổ sung do Quản trị viên cập nhật</p>
                         </div>
@@ -649,7 +745,8 @@ function renderLessons(
 function createLessonCard(
     lesson,
     progress,
-    index
+    index,
+    accent = "indigo"
 ) {
     const rawId = lesson.id || (lesson.order ? `lesson-${String(lesson.order).padStart(2, "0")}` : `lesson-${String(index + 1).padStart(2, "0")}`);
     const safeLessonId = (typeof rawId === "string" && /^lesson-\d$/.test(rawId))
@@ -660,7 +757,12 @@ function createLessonCard(
     const completed = lessonProgress.completed === true;
     const statusClass = completed ? "completed" : "not-completed";
     const level = lesson.level || "Cơ bản";
-    const duration = lesson.duration || "15 phút";
+    const levelLower = level.toLowerCase();
+    const levelColorClass = levelLower.includes("nâng cao")
+        ? "level-hard"
+        : (levelLower.includes("trung bình") ? "level-medium" : "level-easy");
+
+    const duration = lesson.duration || "25 phút";
     const lessonOrderNumber = lesson.order || (index + 1);
     const rawTitle = String(lesson.title || "Bài học C++").trim();
     const displayTitle = /^bài\s+\d+/i.test(rawTitle)
@@ -668,14 +770,15 @@ function createLessonCard(
         : `Bài ${lessonOrderNumber}: ${rawTitle}`;
 
     return `
-        <article class="lesson-card lesson-list-card ${statusClass}" data-lesson-id="${safeLessonId}" style="--item-idx: ${index}; cursor: pointer;">
+        <article class="lesson-card lesson-list-card ${statusClass}" data-lesson-id="${safeLessonId}" data-accent="${accent}" style="--item-idx: ${index}; cursor: pointer;">
 
             <div class="lesson-card-top">
+                <span class="lesson-number-label">BÀI</span>
                 <span class="lesson-number">
                     ${String(lessonOrderNumber).padStart(2, "0")}
                 </span>
                 <span class="lesson-status ${completed ? 'completed' : ''}">
-                    ${completed ? "✓" : "○"}
+                    ${completed ? "✓" : "●"}
                 </span>
             </div>
 
@@ -688,11 +791,11 @@ function createLessonCard(
                     <span class="lesson-chapter">
                         ${escapeHtml(lesson.chapter || "C++ Cơ bản")}
                     </span>
-                    <span class="lesson-level">
+                    <span class="lesson-level ${levelColorClass}">
                         ${escapeHtml(level)}
                     </span>
                     <span class="status-badge-pill ${completed ? 'completed' : 'pending'}">
-                        ${completed ? '<span class="status-dot-pulse"></span> Hoàn thành' : `Bài ${lessonOrderNumber}`}
+                        ${completed ? '<span class="status-dot-pulse"></span> Đã hoàn thành' : `Bài ${lessonOrderNumber} / 20`}
                     </span>
                 </div>
 
@@ -707,8 +810,9 @@ function createLessonCard(
                 </p>
 
                 <div class="lesson-card-info">
-                    <span>⏱ ${escapeHtml(duration)}</span>
-                    <span>${completed ? '✓ Đã đạt: ' + (lessonProgress.score || 100) + '/100 điểm' : '⚡ 3 Bài tập thực hành'}</span>
+                    <span class="info-pill">⏱ ${escapeHtml(duration)}</span>
+                    <span class="info-pill">💻 3 Bài tập g++</span>
+                    <span class="info-pill xp-pill">${completed ? '🏆 Đạt ' + (lessonProgress.score || 100) + '/100 điểm' : '✨ +100 XP'}</span>
                 </div>
             </div>
 
@@ -719,7 +823,7 @@ function createLessonCard(
                     data-lesson-id="${safeLessonId}"
                     title="${completed ? "Học lại bài này" : "Bắt đầu học bài này"}"
                 >
-                    <span>${completed ? "Học lại" : "Bắt đầu học"}</span>
+                    <span>${completed ? "Ôn tập lại" : "Bắt đầu học"}</span>
                     <span class="btn-arrow">→</span>
                 </a>
             </div>
