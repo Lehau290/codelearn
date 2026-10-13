@@ -1,0 +1,3 @@
+# CodeLearn C++ Backend
+# Hệ thống sử dụng 100% thư viện chuẩn của Python (Python Standard Library: http.server, sqlite3, threading, subprocess).
+# Không cần cài thêm thư viện pip bên thứ ba, đảm bảo bảo mật cao và vận hành ổn định.
