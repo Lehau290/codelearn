@@ -47,6 +47,24 @@ def init_schema():
     conn.close()
     print("✓ Đã khởi tạo cấu trúc các bảng từ schema.sql thành công.")
 
+ALL_TABLES = [
+    "users",
+    "sessions",
+    "lessons",
+    "exercises",
+    "progress",
+    "submissions",
+    "settings",
+    "certificates",
+    "test_cases",
+    "achievements",
+    "user_achievements",
+    "comments",
+    "activity_logs",
+    "ai_chat_messages",
+    "vnoi_real_knowledge"
+]
+
 def get_stats():
     """Lấy thống kê tổng thể của database."""
     if not os.path.exists(DB_PATH):
@@ -55,10 +73,9 @@ def get_stats():
     conn = get_connection()
     cursor = conn.cursor()
 
-    tables = ["users", "sessions", "lessons", "exercises", "progress", "submissions", "settings"]
     table_stats = {}
 
-    for t in tables:
+    for t in ALL_TABLES:
         try:
             cursor.execute(f"SELECT COUNT(*) as count FROM {t}")
             table_stats[t] = cursor.fetchone()["count"]
@@ -144,7 +161,6 @@ def export_json(output_path=DUMP_JSON_PATH):
     conn = get_connection()
     cursor = conn.cursor()
 
-    tables = ["users", "sessions", "lessons", "exercises", "progress", "submissions", "settings"]
     data = {
         "_metadata": {
             "exported_at": datetime.now().isoformat(),
@@ -153,7 +169,7 @@ def export_json(output_path=DUMP_JSON_PATH):
         }
     }
 
-    for t in tables:
+    for t in ALL_TABLES:
         cursor.execute(f"SELECT * FROM {t}")
         rows = [dict(r) for r in cursor.fetchall()]
         data[t] = rows
@@ -171,7 +187,7 @@ def export_sql(output_path=SEED_SQL_PATH):
     conn = get_connection()
     cursor = conn.cursor()
 
-    tables = ["users", "lessons", "exercises", "settings", "progress"]
+    tables = ALL_TABLES
     lines = [
         "-- ==============================================================================",
         "-- CODELEARN C++ ACADEMY - SEED DATA & DUMP",

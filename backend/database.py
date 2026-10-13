@@ -3,12 +3,20 @@ CodeLearn C++ - SQLite Database & Models
 File: backend/database.py
 """
 import os
+import sys
 import sqlite3
 import hashlib
 import json
 import uuid
 import re
 from datetime import datetime, timedelta
+
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "database.db")
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -240,6 +248,13 @@ def init_db():
     if needs_reseed:
         seed_lessons_and_exercises(conn)
 
+    # Seed remaining tables if empty
+    seed_settings(conn)
+    seed_achievements(conn)
+    seed_test_cases(conn)
+    seed_comments(conn)
+    seed_ai_chat_messages(conn)
+
     conn.close()
 
 def seed_lessons_and_exercises(conn):
@@ -355,6 +370,181 @@ def seed_lessons_and_exercises(conn):
 
         conn.commit()
     print("Database seeding completed successfully!")
+
+def seed_settings(conn):
+    """Nạp cấu hình mặc định cho bảng settings nếu chưa có."""
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) as count FROM settings")
+    if cursor.fetchone()["count"] > 0:
+        return
+
+    settings_data = [
+        ("site_name", "CodeLearn C++ Academy"),
+        ("site_tagline", "Nền tảng Học Lập Trình C++ Chuẩn Đại Học & Olympic Tin Học"),
+        ("site_version", "2.5.0"),
+        ("compiler_default", "g++ 13.2.0 (C++17 / C++20)"),
+        ("compiler_timeout_sec", "5"),
+        ("max_execution_time_ms", "2000"),
+        ("pass_score_percentage", "70"),
+        ("maintenance_mode", "false"),
+        ("ai_mentor_model", "CodeLearn C++ Neural Tutor (VNOI Enhanced)"),
+        ("allow_guest_compilation", "true"),
+        ("certificate_min_score", "80")
+    ]
+    cursor.executemany("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", settings_data)
+    conn.commit()
+    print("✓ Đã nạp cấu hình hệ thống bảng settings thành công.")
+
+def seed_achievements(conn):
+    """Nạp danh hiệu thành tựu nếu bảng rỗng."""
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) as count FROM achievements")
+    if cursor.fetchone()["count"] > 0:
+        return
+
+    sample_achievements = [
+        ("ach-1", "first_lesson", "Bắt đầu hành trình", "Hoàn thành bài học C++ đầu tiên.", 50, 1),
+        ("ach-2", "three_lessons", "Tăng tốc kiến thức", "Hoàn thành 3 bài học C++.", 100, 2),
+        ("ach-3", "five_lessons", "Chăm chỉ rèn luyện", "Hoàn thành 5 bài học C++.", 150, 3),
+        ("ach-4", "high_score", "Thiện xạ C++", "Đạt từ 90 điểm trở lên trong một bài tập.", 100, 4),
+        ("ach-5", "half_way", "Vượt qua nửa chặng", "Hoàn thành ít nhất 10 bài học C++.", 200, 5),
+        ("ach-6", "master", "C++ Master Tinh anh", "Hoàn thành xuất sắc toàn bộ khóa học C++.", 500, 6)
+    ]
+    cursor.executemany("""
+        INSERT OR REPLACE INTO achievements (id, code, title, description, points, order_num)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """, sample_achievements)
+    conn.commit()
+    print("✓ Đã nạp danh hiệu bảng achievements thành công.")
+
+def seed_test_cases(conn):
+    """Nạp test cases (công khai và ẩn) cho toàn bộ 60 bài tập vào bảng test_cases."""
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) as count FROM test_cases")
+    if cursor.fetchone()["count"] > 0:
+        return
+
+    cursor.execute("SELECT lesson_id, id, expected_output, points FROM exercises ORDER BY lesson_id, order_num")
+    exercises = cursor.fetchall()
+
+    tc_records = []
+    for ex in exercises:
+        lid = ex["lesson_id"]
+        eid = ex["id"]
+        expected = ex["expected_output"] or ""
+
+        # Test case 1: Công khai (is_hidden = 0, weight_points = 50, order_num = 1)
+        tc_records.append((
+            f"tc-{lid}-{eid}-1",
+            lid,
+            eid,
+            "",
+            expected,
+            0,
+            50,
+            1
+        ))
+
+        # Test case 2: Ẩn kiểm thử đối chiếu (is_hidden = 1, weight_points = 50, order_num = 2)
+        tc_records.append((
+            f"tc-{lid}-{eid}-2",
+            lid,
+            eid,
+            "",
+            expected,
+            1,
+            50,
+            2
+        ))
+
+    cursor.executemany("""
+        INSERT OR REPLACE INTO test_cases (id, lesson_id, exercise_id, input_data, expected_output, is_hidden, weight_points, order_num)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """, tc_records)
+    conn.commit()
+    print(f"✓ Đã nạp {len(tc_records)} test cases vào bảng test_cases thành công.")
+
+def seed_comments(conn):
+    """Nạp bình luận thảo luận bài học mẫu vào bảng comments."""
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) as count FROM comments")
+    if cursor.fetchone()["count"] > 0:
+        return
+
+    sample_comments = [
+        ("cm-01", "lesson-01", "user-student", None, "Cho em hỏi tại sao trong C++ luôn phải có hàm main() và return 0 ở cuối ạ?", "2026-03-01T08:30:00"),
+        ("cm-02", "lesson-01", "user-admin", "cm-01", "Chào Trung Hậu! Hàm main() là điểm khởi đầu (entry point) của mọi chương trình C/C++. Lệnh return 0 báo cho hệ điều hành biết chương trình kết thúc trọn vẹn và an toàn nhé!", "2026-03-01T08:45:00"),
+        ("cm-03", "lesson-03", "user-student", None, "Lúc em dùng `cin >> n` rồi dùng `getline(cin, s)` thì bị trôi dòng không nhập được chuỗi, khắc phục thế nào ạ?", "2026-03-02T10:15:00"),
+        ("cm-04", "lesson-03", "user-admin", "cm-03", "Lỗi kinh điển do ký tự Enter (`\\n`) còn sót lại trong bộ đệm cin! Em chỉ cần thêm `cin.ignore();` ngay sau lệnh `cin >> n;` là xử lý xong ngay nhé.", "2026-03-02T10:20:00"),
+        ("cm-05", "lesson-07", "user-student", None, "Con trỏ (Pointer) và tham chiếu (Reference) khác nhau lớn nhất ở điểm nào khi truyền tham số vào hàm ạ?", "2026-03-03T14:00:00"),
+        ("cm-06", "lesson-07", "user-admin", "cm-05", "Tham chiếu `int &x` bản chất là một bí danh an toàn, không thể NULL và không cần dùng toán tử `*`. Khi chỉ cần sửa trực tiếp giá trị biến thì nên ưu tiên dùng reference theo chuẩn C++ hiện đại nhé!", "2026-03-03T14:15:00"),
+        ("cm-07", "lesson-10", "user-student", None, "Trong C++, Struct và Class khác nhau cơ bản nhất là gì vậy thầy?", "2026-03-04T09:00:00"),
+        ("cm-08", "lesson-10", "user-admin", "cm-07", "Điểm khác biệt duy nhất là phạm vi truy cập mặc định: các thuộc tính của Struct mặc định là `public`, còn của Class mặc định là `private`.", "2026-03-04T09:10:00"),
+        ("cm-09", "lesson-16", "user-student", None, "Khi sắp xếp bằng `std::sort`, làm sao để viết hàm so sánh (Comparator) giảm dần gọn nhất ạ?", "2026-03-05T16:20:00"),
+        ("cm-10", "lesson-16", "user-admin", "cm-09", "Em có thể dùng Lambda biểu thức hiện đại: `sort(a.begin(), a.end(), [](int x, int y){ return x > y; });` hoặc dùng `greater<int>()` trong `<functional>` nhé!", "2026-03-05T16:30:00")
+    ]
+    cursor.executemany("""
+        INSERT OR REPLACE INTO comments (id, lesson_id, user_id, parent_id, content, created_at)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """, sample_comments)
+    conn.commit()
+    print(f"✓ Đã nạp {len(sample_comments)} bình luận vào bảng comments thành công.")
+
+def seed_ai_chat_messages(conn):
+    """Nạp hội thoại lịch sử tư vấn AI mẫu vào bảng ai_chat_messages."""
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) as count FROM ai_chat_messages")
+    if cursor.fetchone()["count"] > 0:
+        return
+
+    sample_chats = [
+        (
+            "msg-01",
+            "user-student",
+            "user",
+            "Chào AI Mentor, em là học viên mới bắt đầu học C++. Em nên đi theo lộ trình như thế nào để vững nền tảng nhất?",
+            "tutor",
+            "",
+            "lesson-01",
+            "2026-03-01T08:00:00"
+        ),
+        (
+            "msg-02",
+            "user-student",
+            "assistant",
+            "Chào Trung Hậu! Rất vui được đồng hành cùng bạn trên chặng đường chinh phục C++. Lộ trình tối ưu tại CodeLearn C++ Academy gồm 4 chặng:\n1. Nền tảng cú pháp và luồng điều khiển (Bài 1-6)\n2. Mảng, Con trỏ và Chuỗi ký tự (Bài 7-10)\n3. Cấu trúc dữ liệu và Hàm đệ quy (Bài 11-15)\n4. Thư viện STL và Lập trình hướng đối tượng OOP (Bài 16-20).\nHãy bắt đầu thực hành ngay từ Bài 1 và làm trọn vẹn 3 bài tập mỗi chuyên đề nhé!",
+            "tutor",
+            "",
+            "lesson-01",
+            "2026-03-01T08:00:05"
+        ),
+        (
+            "msg-03",
+            "user-student",
+            "user",
+            "Cho em xin ví dụ về cách viết hàm hoán vị (swap) 2 số bằng con trỏ và tham chiếu trong C++ được không ạ?",
+            "tutor",
+            "",
+            "lesson-07",
+            "2026-03-03T14:05:00"
+        ),
+        (
+            "msg-04",
+            "user-student",
+            "assistant",
+            "Tuyệt vời! Dưới đây là 2 cách triển khai kinh điển trong C++:\n\n1. Dùng con trỏ (Pointer):\n```cpp\nvoid swapPointer(int* a, int* b) {\n    int temp = *a;\n    *a = *b;\n    *b = temp;\n}\n```\n\n2. Dùng tham chiếu (Reference - Chuẩn C++ hiện đại):\n```cpp\nvoid swapRef(int& a, int& b) {\n    int temp = a;\n    a = b;\n    b = temp;\n}\n```\nCách dùng tham chiếu được khuyến khích vì cú pháp trong sáng và an toàn, không lo lỗi con trỏ NULL!",
+            "tutor",
+            "#include <iostream>\nusing namespace std;\n\nvoid swapRef(int& a, int& b) {\n    int temp = a;\n    a = b;\n    b = temp;\n}\n\nint main() {\n    int x = 5, y = 10;\n    swapRef(x, y);\n    cout << x << \" \" << y << endl;\n    return 0;\n}",
+            "lesson-07",
+            "2026-03-03T14:05:10"
+        )
+    ]
+    cursor.executemany("""
+        INSERT OR REPLACE INTO ai_chat_messages (id, user_id, role, content, persona, code_snippet, lesson_id, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """, sample_chats)
+    conn.commit()
+    print(f"✓ Đã nạp {len(sample_chats)} tin nhắn AI vào bảng ai_chat_messages thành công.")
 
 if __name__ == "__main__":
     init_db()
