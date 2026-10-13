@@ -14,8 +14,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // 2. Hiển thị thống kê học tập
     updateLearningStats(currentUser);
 
-    // 3. Hiển thị danh sách bài học
-    renderFeaturedLessons(currentUser);
+    // 3. Hiển thị danh sách bài học tiêu biểu & gắn sự kiện chọn Chương 1..7 ngay trên Trang chủ
+    renderFeaturedLessons(currentUser, "featured");
+    initHomeChapterTabs(currentUser);
 
     // 4. Nút tiếp tục học
     setupContinueLearning(currentUser);
@@ -76,7 +77,7 @@ function updateLearningStats(user) {
     const lessons = CppStorage.getLessons();
     const progress = user ? CppStorage.getUserProgress(user.id) : {};
 
-    const totalLessons = lessons.length;
+    const totalLessons = lessons.length || 20;
 
     const completedLessons = lessons.filter(
         lesson => progress[lesson.id]?.completed
@@ -111,10 +112,10 @@ function updateLearningStats(user) {
     setText("progressPercent", `${progressPercent}%`);
     setText("progressCircleText", `${progressPercent}%`);
 
-    // Stats section
+    // Stats section (20 bài học, 60 bài tập thực hành)
     setText("statLessons", totalLessons);
     setText("statCompleted", completedLessons);
-    setText("statExercises", totalLessons);
+    setText("statExercises", totalLessons * 3);
     setText("statScore", `${averageScore}/100`);
 
 
@@ -127,14 +128,46 @@ function updateLearningStats(user) {
     document.querySelectorAll(".progress-bar-fill, .progress-fill").forEach(bar => {
         bar.style.width = `${progressPercent}%`;
     });
+
+    // Đồng bộ dấu hoàn thành trên thẻ 7 Chương ở Trang chủ
+    document.querySelectorAll(".home-chap-lesson-item").forEach(link => {
+        const href = link.getAttribute("href") || "";
+        const idMatch = href.split("id=")[1];
+        if (idMatch && progress[idMatch]?.completed) {
+            link.classList.add("completed");
+        }
+    });
 }
 
 
 // ============================================================
-// HIỂN THỊ BÀI HỌC NỔI BẬT
+// HIỂN THỊ BÀI HỌC NỔI BẬT & CHỌN CHƯƠNG TRÊN TRANG CHỦ
 // ============================================================
 
-function renderFeaturedLessons(user) {
+const HOME_CHAPTER_ORDERS = {
+    "Chương 1": [1, 2, 3, 4],
+    "Chương 2": [5, 6],
+    "Chương 3": [7, 8, 9],
+    "Chương 4": [10, 11],
+    "Chương 5": [12, 13, 14, 15],
+    "Chương 6": [16, 17],
+    "Chương 7": [18, 19, 20]
+};
+
+function initHomeChapterTabs(user) {
+    const tabs = document.querySelectorAll("#homeChapterTabs .home-chap-tab");
+    if (!tabs.length) return;
+    tabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+            tabs.forEach(t => t.classList.remove("active"));
+            tab.classList.add("active");
+            const selectedChap = tab.getAttribute("data-home-chap") || "featured";
+            renderFeaturedLessons(user, selectedChap);
+        });
+    });
+}
+
+function renderFeaturedLessons(user, selectedChap = "featured") {
     const container = document.getElementById(
         "homeLessons"
     );
@@ -143,7 +176,12 @@ function renderFeaturedLessons(user) {
         return;
     }
 
-    const lessons = CppStorage.getLessons();
+    let lessons = CppStorage.getLessons();
+    if (!lessons || lessons.length < 20) {
+        if (typeof CppStorage.resetLessons === "function") {
+            lessons = CppStorage.resetLessons();
+        }
+    }
     const progress = user ? CppStorage.getUserProgress(user.id) : {};
 
     if (!lessons.length) {
@@ -160,61 +198,59 @@ function renderFeaturedLessons(user) {
         return;
     }
 
+    let targetLessons = [];
+    if (selectedChap === "featured" || !HOME_CHAPTER_ORDERS[selectedChap]) {
+        targetLessons = lessons.slice(0, 6);
+    } else {
+        const orders = HOME_CHAPTER_ORDERS[selectedChap];
+        targetLessons = lessons.filter((l, i) => {
+            const ord = Number(l.order || (i + 1));
+            return orders.includes(ord) || String(l.chapter || "").startsWith(selectedChap);
+        });
+    }
 
-    // Chỉ hiển thị tối đa 6 bài học trên trang chủ
-    const featuredLessons = lessons.slice(0, 6);
+    container.innerHTML = targetLessons
+        .map((lesson, idx) => {
+            const orderNum = Number(lesson.order || (idx + 1));
+            const rawId = lesson.id || `lesson-${String(orderNum).padStart(2, "0")}`;
+            const safeId = /^lesson-\d$/.test(rawId) ? `lesson-0${rawId.slice(7)}` : String(rawId);
 
-    container.innerHTML = featuredLessons
-        .map((lesson, index) => {
-
-            const lessonProgress =
-                progress[lesson.id];
-
-            const completed =
-                lessonProgress?.completed === true;
-
-            const statusClass =
-                completed
-                    ? "completed"
-                    : "";
-
-            const statusText =
-                completed
-                    ? "Đã hoàn thành"
-                    : "Chưa học";
-
+            const lessonProgress = progress[safeId] || progress[lesson.id];
+            const completed = lessonProgress?.completed === true;
+            const statusClass = completed ? "completed" : "";
+            const level = lesson.level || "Cơ bản";
+            const rawTitle = String(lesson.title || "Bài học C++").trim();
+            const displayTitle = /^bài\s+\d+/i.test(rawTitle) ? rawTitle : `Bài ${orderNum}: ${rawTitle}`;
 
             return `
-                <article class="lesson-card ${statusClass}" data-lesson-id="${escapeHtml(lesson.id)}" style="cursor: pointer;" onclick="window.location.href='lesson-detail.html?id=${encodeURIComponent(lesson.id)}'">
+                <article class="lesson-card home-featured-card ${statusClass}" data-lesson-id="${escapeHtml(safeId)}" style="cursor: pointer;" onclick="window.location.href='lesson-detail.html?id=${encodeURIComponent(safeId)}'">
                     
                     <div class="lesson-card-top">
                         <span class="lesson-number">
-                            Bài ${String(index + 1).padStart(2, "0")}
+                            Bài ${String(orderNum).padStart(2, "0")}
                         </span>
 
                         <span class="lesson-status ${completed ? "completed" : ""}">
-                            ${completed ? "✓ Đã hoàn thành" : "○ Chưa học"}
+                            ${completed ? "✓ Đã hoàn thành" : `○ ${escapeHtml(level)}`}
                         </span>
                     </div>
 
                     <div class="lesson-card-header">
                         <div class="lesson-card-icon">
-                            ${getLessonIcon(index)}
+                            ${getLessonIcon(orderNum - 1)}
                         </div>
 
                         <span class="lesson-chapter">
                             ${escapeHtml(
                                 lesson.chapter ||
-                                "C++ Cơ bản"
+                                "Chương 1: Bắt đầu với C++"
                             )}
                         </span>
                     </div>
 
                     <div class="lesson-card-content">
                         <h3>
-                            ${escapeHtml(
-                                lesson.title
-                            )}
+                            ${escapeHtml(displayTitle)}
                         </h3>
 
                         <p>
@@ -229,8 +265,8 @@ function renderFeaturedLessons(user) {
                         <span class="lesson-duration">
                             ⏱ ${escapeHtml(
                                 lesson.duration ||
-                                "15 phút"
-                            )}
+                                "25 phút"
+                            )} • 💻 3 Bài tập
                         </span>
 
                         <span class="lesson-action-pill ${completed ? "completed" : ""}">
@@ -239,15 +275,11 @@ function renderFeaturedLessons(user) {
                     </div>
 
                     <a
-                        href="lesson-detail.html?id=${encodeURIComponent(
-                            lesson.id
-                        )}"
+                        href="lesson-detail.html?id=${encodeURIComponent(safeId)}"
                         class="lesson-card-link"
-                        aria-label="Học bài ${escapeHtml(
-                            lesson.title
-                        )}"
+                        aria-label="Học ${escapeHtml(displayTitle)}"
                     >
-                        <span class="sr-only">Học bài ${escapeHtml(lesson.title)}</span>
+                        <span class="sr-only">Học ${escapeHtml(displayTitle)}</span>
                     </a>
 
                 </article>

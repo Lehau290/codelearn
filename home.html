@@ -135,7 +135,12 @@
              HERO
         ====================================== -->
 
-        <section class="home-hero">
+        <section class="home-hero home-hero-upgraded">
+
+            <!-- Floating Aurora Orbs & Syntax Badges -->
+            <div class="home-aurora-orb h-orb-1" aria-hidden="true"></div>
+            <div class="home-aurora-orb h-orb-2" aria-hidden="true"></div>
+            <div class="home-aurora-orb h-orb-3" aria-hidden="true"></div>
 
             <div class="container">
 
@@ -146,6 +151,7 @@
                     <div class="hero-content">
 
                         <div class="hero-badge">
+                            <span class="badge-pulse-dot"></span>
                             <span id="homeGreeting">Chào mừng</span>
                             <span id="welcomeUsername"> bạn đến với CodeLearn C++</span>
                         </div>
@@ -156,8 +162,8 @@
                         </h1>
 
                         <p class="hero-description">
-                            Nền tảng học C++ trực quan &amp; tương tác số 1 dành cho người mới bắt đầu.
-                            Học lý thuyết cô đọng, viết code trực tiếp trên trình duyệt và tự động kiểm tra bài tập ngay sau mỗi bài học.
+                            Làm chủ ngôn ngữ C++ qua <strong>7 Chương bài bản (20 Bài học &amp; 60 Bài tập thực hành)</strong>.
+                            Học lý thuyết trực quan, biên dịch <code>g++</code> trực tiếp trên trình duyệt và nhận gợi ý chấm bài tức thì từ Trợ giảng AI.
                         </p>
 
                         <div class="hero-actions">
@@ -165,9 +171,9 @@
                             <a
                                 href="lesson-detail.html?id=lesson-01"
                                 id="continueLearningButton"
-                                class="btn btn-primary btn-lg"
+                                class="btn btn-primary btn-lg home-cta-primary"
                             >
-                                Bắt đầu học ngay
+                                <span>Bắt đầu học ngay</span>
                                 <span>→</span>
                             </a>
 
@@ -175,7 +181,14 @@
                                 href="#roadmap"
                                 class="btn btn-secondary btn-lg"
                             >
-                                Xem lộ trình 4 chặng
+                                Khám phá 7 Chương học ↓
+                            </a>
+
+                            <a
+                                href="lessons.html"
+                                class="btn btn-secondary btn-lg"
+                            >
+                                Danh sách 20 Bài →
                             </a>
 
                         </div>
@@ -183,15 +196,15 @@
                         <div class="hero-perks">
 
                             <span class="perk-item">
-                                100% Miễn phí
+                                ✨ 7 Chương • 20 Bài chuẩn hóa
                             </span>
 
                             <span class="perk-item">
-                                Trình biên dịch C++ trực tiếp
+                                ⚡ Biên dịch C++17 trực tiếp
                             </span>
 
                             <span class="perk-item">
-                                Chấm điểm tự động
+                                🤖 AI Chấm điểm &amp; Gợi ý VNOI
                             </span>
 
                         </div>
@@ -202,8 +215,6 @@
                     <!-- Cột bên phải: C++ Code Window + Tiến độ -->
 
                     <div class="hero-visual-wrapper">
-
-                        <!-- Mockup C++ IDE Window -->
 
                         <!-- Mockup C++ IDE Window with Live Typing Effect -->
 
@@ -218,7 +229,7 @@
                                 </div>
 
                                 <div class="code-window-tab">
-                                    <span class="tab-title">main.cpp</span>
+                                    <span class="tab-title">main.cpp • C++17</span>
                                 </div>
 
                                 <div class="code-window-action">
@@ -267,7 +278,7 @@
                                 <div>
 
                                     <span class="small-label">
-                                        TIẾN ĐỘ HỌC TẬP
+                                        TIẾN ĐỘ HỌC TẬP CỦA BẠN
                                     </span>
 
                                     <h2 id="progressPercent">
@@ -307,9 +318,9 @@
 
                                 <span>
                                     <strong id="totalLessons">
-                                        0
+                                        20
                                     </strong>
-                                    bài học
+                                    bài học (7 Chương)
                                 </span>
 
                             </div>
@@ -334,73 +345,38 @@
 
             <div class="container">
 
-                <div class="stats-grid">
+                <div class="stats-grid home-stats-upgraded">
 
-                    <div class="stat-card">
-
-                        <div>
-
-                            <strong id="statLessons">
-                                0
-                            </strong>
-
-                            <span>
-                                Bài học
-                            </span>
-
+                    <div class="stat-card" data-stat-accent="indigo">
+                        <div class="stat-card-icon-box">📚</div>
+                        <div class="stat-card-info">
+                            <strong id="statLessons">20</strong>
+                            <span>Bài học (7 Chương)</span>
                         </div>
-
                     </div>
 
-
-                    <div class="stat-card">
-
-                        <div>
-
-                            <strong id="statCompleted">
-                                0
-                            </strong>
-
-                            <span>
-                                Đã hoàn thành
-                            </span>
-
+                    <div class="stat-card" data-stat-accent="emerald">
+                        <div class="stat-card-icon-box">✅</div>
+                        <div class="stat-card-info">
+                            <strong id="statCompleted">0</strong>
+                            <span>Bài đã hoàn thành</span>
                         </div>
-
                     </div>
 
-
-                    <div class="stat-card">
-
-                        <div>
-
-                            <strong id="statExercises">
-                                0
-                            </strong>
-
-                            <span>
-                                Bài tập
-                            </span>
-
+                    <div class="stat-card" data-stat-accent="amber">
+                        <div class="stat-card-icon-box">💻</div>
+                        <div class="stat-card-info">
+                            <strong id="statExercises">60</strong>
+                            <span>Bài tập thực hành g++</span>
                         </div>
-
                     </div>
 
-
-                    <div class="stat-card">
-
-                        <div>
-
-                            <strong id="statScore">
-                                0
-                            </strong>
-
-                            <span>
-                                Điểm trung bình
-                            </span>
-
+                    <div class="stat-card" data-stat-accent="fuchsia">
+                        <div class="stat-card-icon-box">🏆</div>
+                        <div class="stat-card-info">
+                            <strong id="statScore">0/100</strong>
+                            <span>Điểm trung bình</span>
                         </div>
-
                     </div>
 
                 </div>
@@ -419,31 +395,47 @@
             <div class="container">
 
                 <div class="section-heading-center">
-                    <span class="section-label">ƯU ĐIỂM NỔI BẬT</span>
+                    <span class="section-label">ƯU ĐIỂM VƯỢT TRỘI</span>
                     <h2>Tại Sao Nên Học C++ Tại CodeLearn?</h2>
-                    <p>Thiết kế tối ưu cho người mới bắt đầu, giúp bạn tiếp cận ngôn ngữ C++ một cách nhẹ nhàng và hiệu quả nhất.</p>
+                    <p>Sự kết hợp hoàn hảo giữa giáo trình 7 Chương chuẩn hóa, trình biên dịch g++ thực tế và trí tuệ nhân tạo hỗ trợ học tập 24/7.</p>
                 </div>
 
-                <div class="feature-grid">
+                <div class="feature-grid home-feature-grid-upgraded">
 
-                    <div class="feature-card">
-                        <h3>Trình Biên Dịch Trực Tiếp</h3>
-                        <p>Viết mã và chạy thử ngay trên trình duyệt mà không cần cài đặt phần mềm nặng như Visual Studio, Dev-C++ hay cấu hình compiler phức tạp.</p>
+                    <div class="feature-card" data-feat-accent="indigo">
+                        <div class="feature-card-top">
+                            <span class="feature-icon-orb">⚡</span>
+                            <span class="feature-tag-pill">GCC 13.2 Sandbox</span>
+                        </div>
+                        <h3>Trình Biên Dịch C++17 Trực Tiếp</h3>
+                        <p>Viết mã, truyền dữ liệu đầu vào (stdin) và biên dịch chạy thử ngay trên trình duyệt mà không cần cài đặt phần mềm nặng nề.</p>
                     </div>
 
-                    <div class="feature-card">
-                        <h3>Bài Học Trực Quan &amp; Ngắn Gọn</h3>
-                        <p>Lý thuyết được chắt lọc theo từng bài ngắn gọn (Micro-learning) kèm code mẫu trực quan, giúp bạn nhanh chóng hiểu bản chất câu lệnh.</p>
+                    <div class="feature-card" data-feat-accent="cyan">
+                        <div class="feature-card-top">
+                            <span class="feature-icon-orb">🗂️</span>
+                            <span class="feature-tag-pill">7 Chương • 20 Bài</span>
+                        </div>
+                        <h3>Lộ Trình 7 Chương Chuẩn Hóa</h3>
+                        <p>Chia nhỏ từ Chương 1 (Nhập môn) đến Chương 7 (OOP), mỗi bài học đều có lý thuyết cô đọng, sơ đồ bộ nhớ và code mẫu chạy được ngay.</p>
                     </div>
 
-                    <div class="feature-card">
-                        <h3>Luyện Tập &amp; Chấm Điểm Tức Thì</h3>
-                        <p>Sau mỗi bài học đều có trắc nghiệm kiểm tra độ hiểu bài và bài tập lập trình thực hành, hệ thống chấm điểm tự động ngay khi nộp.</p>
+                    <div class="feature-card" data-feat-accent="emerald">
+                        <div class="feature-card-top">
+                            <span class="feature-icon-orb">🤖</span>
+                            <span class="feature-tag-pill">AI Grader + VNOI</span>
+                        </div>
+                        <h3>Chấm Điểm AI &amp; Tri Thức VNOI</h3>
+                        <p>60 bài tập chia 3 cấp độ (Dễ • Trung bình • Khó) được chấm tự động kèm phân tích độ phức tạp Big-O và gợi ý từ kho học thuật VNOI.</p>
                     </div>
 
-                    <div class="feature-card">
-                        <h3>Tự Động Lưu Tiến Độ Học</h3>
-                        <p>Toàn bộ tiến độ học tập, bài đã hoàn thành và điểm số đều được lưu trữ an toàn trên tài khoản để bạn có thể tiếp tục bất kỳ lúc nào.</p>
+                    <div class="feature-card" data-feat-accent="fuchsia">
+                        <div class="feature-card-top">
+                            <span class="feature-icon-orb">📈</span>
+                            <span class="feature-tag-pill">Realtime Sync</span>
+                        </div>
+                        <h3>Đồng Bộ Tiến Độ &amp; Bảng Vàng</h3>
+                        <p>Toàn bộ bài nộp, điểm số, chuỗi ngày học (Streak) và huy hiệu được lưu trữ trực tiếp vào CSDL để bạn theo dõi sự tiến bộ mỗi ngày.</p>
                     </div>
 
                 </div>
@@ -454,7 +446,7 @@
 
 
         <!-- =====================================
-             LEARNING ROADMAP (4 CHẶNG)
+             LEARNING ROADMAP (7 CHƯƠNG - 20 BÀI HỌC)
         ====================================== -->
 
         <section class="roadmap-section" id="roadmap">
@@ -462,67 +454,143 @@
             <div class="container">
 
                 <div class="section-heading-center">
-                    <span class="section-label">LỘ TRÌNH 4 CHẶNG</span>
-                    <h2>Lộ Trình Chinh Phục C++ Từ Cơ Bản Đến Nâng Cao</h2>
-                    <p>Chương trình học bài bản từng bước, phù hợp cho học sinh, sinh viên và người chuyển ngành.</p>
+                    <span class="section-label">CHƯƠNG TRÌNH HỌC TOÀN DIỆN</span>
+                    <h2>Lộ Trình 7 Chương Chinh Phục C++ (Bài 1 → Bài 20)</h2>
+                    <p>Bấm trực tiếp vào từng bài học hoặc chọn chương bạn muốn khám phá để bắt đầu viết code ngay.</p>
                 </div>
 
-                <div class="roadmap-grid">
+                <div class="home-roadmap-7-grid">
 
-                    <!-- Chặng 1 -->
-                    <div class="roadmap-card">
-                        <div class="roadmap-step-pill">Chặng 01</div>
-                        <h3>Nhập Môn &amp; Cú Pháp Cơ Bản</h3>
-                        <p class="roadmap-desc">Làm quen với cấu trúc một chương trình C++ và những khái niệm nền móng đầu tiên.</p>
-                        <ul class="roadmap-list">
-                            <li>Cấu trúc file C++ &amp; hàm main()</li>
-                            <li>Biến &amp; kiểu dữ liệu căn bản</li>
-                            <li>Nhập xuất dữ liệu với cin, cout</li>
-                            <li>Toán tử số học &amp; gán giá trị</li>
-                        </ul>
-                        <div class="roadmap-badge">Cấp độ: Khởi động</div>
+                    <!-- Chương 1: Bài 1, 2, 3, 4 -->
+                    <div class="roadmap-card home-chap-card" data-accent="indigo">
+                        <div class="home-chap-card-top">
+                            <span class="roadmap-step-pill">🚀 Chương 01</span>
+                            <span class="home-chap-range">Bao gồm Bài 1, 2, 3, 4</span>
+                        </div>
+                        <h3>Bắt Đầu Với C++</h3>
+                        <p class="roadmap-desc">Làm quen cấu trúc chương trình C++, biến, kiểu dữ liệu, nhập xuất cin/cout và các toán tử cơ bản.</p>
+                        <div class="home-chap-lessons-list">
+                            <a href="lesson-detail.html?id=lesson-01" class="home-chap-lesson-item"><span>01</span> Giới thiệu về C++ &amp; Cấu trúc chương trình</a>
+                            <a href="lesson-detail.html?id=lesson-02" class="home-chap-lesson-item"><span>02</span> Biến, Kiểu dữ liệu &amp; Hằng số</a>
+                            <a href="lesson-detail.html?id=lesson-03" class="home-chap-lesson-item"><span>03</span> Nhập &amp; Xuất dữ liệu với cin, cout</a>
+                            <a href="lesson-detail.html?id=lesson-04" class="home-chap-lesson-item"><span>04</span> Các toán tử trong C++</a>
+                        </div>
+                        <div class="home-chap-card-footer">
+                            <span class="roadmap-badge">4 Bài học • 12 Bài tập</span>
+                            <a href="lesson-detail.html?id=lesson-01" class="home-chap-start-link">Học Chương 1 →</a>
+                        </div>
                     </div>
 
-                    <!-- Chặng 2 -->
-                    <div class="roadmap-card">
-                        <div class="roadmap-step-pill">Chặng 02</div>
-                        <h3>Cấu Trúc Rẽ Nhánh &amp; Vòng Lặp</h3>
-                        <p class="roadmap-desc">Hình thành tư duy logic và điều khiển luồng thực thi trong chương trình.</p>
-                        <ul class="roadmap-list">
-                            <li>Câu lệnh điều kiện if - else</li>
-                            <li>Cấu trúc rẽ nhánh switch - case</li>
-                            <li>Vòng lặp for, while, do-while</li>
-                            <li>Kỹ thuật break &amp; continue</li>
-                        </ul>
-                        <div class="roadmap-badge">Cấp độ: Xây dựng tư duy</div>
+                    <!-- Chương 2: Bài 5, 6 -->
+                    <div class="roadmap-card home-chap-card" data-accent="cyan">
+                        <div class="home-chap-card-top">
+                            <span class="roadmap-step-pill">🔀 Chương 02</span>
+                            <span class="home-chap-range">Bao gồm Bài 5, 6</span>
+                        </div>
+                        <h3>Cấu Trúc Rẽ Nhánh</h3>
+                        <p class="roadmap-desc">Hình thành tư duy logic và điều khiển luồng thực thi chương trình bằng if-else và switch-case.</p>
+                        <div class="home-chap-lessons-list">
+                            <a href="lesson-detail.html?id=lesson-05" class="home-chap-lesson-item"><span>05</span> Cấu trúc điều kiện if, else if, else</a>
+                            <a href="lesson-detail.html?id=lesson-06" class="home-chap-lesson-item"><span>06</span> Cấu trúc rẽ nhánh switch - case</a>
+                        </div>
+                        <div class="home-chap-card-footer">
+                            <span class="roadmap-badge">2 Bài học • 6 Bài tập</span>
+                            <a href="lesson-detail.html?id=lesson-05" class="home-chap-start-link">Học Chương 2 →</a>
+                        </div>
                     </div>
 
-                    <!-- Chặng 3 -->
-                    <div class="roadmap-card">
-                        <div class="roadmap-step-pill">Chặng 03</div>
-                        <h3>Mảng, Chuỗi &amp; Xây Dựng Hàm</h3>
-                        <p class="roadmap-desc">Tổ chức mã nguồn sạch sẽ, tái sử dụng và xử lý các tập dữ liệu phức hợp.</p>
-                        <ul class="roadmap-list">
-                            <li>Mảng 1 chiều &amp; mảng 2 chiều</li>
-                            <li>Xử lý chuỗi ký tự std::string</li>
-                            <li>Viết hàm (Functions) &amp; tham số</li>
-                            <li>Phạm vi biến (Scope) toàn cục/cục bộ</li>
-                        </ul>
-                        <div class="roadmap-badge">Cấp độ: Kỹ năng thực chiến</div>
+                    <!-- Chương 3: Bài 7, 8, 9 -->
+                    <div class="roadmap-card home-chap-card" data-accent="emerald">
+                        <div class="home-chap-card-top">
+                            <span class="roadmap-step-pill">🔁 Chương 03</span>
+                            <span class="home-chap-range">Bao gồm Bài 7, 8, 9</span>
+                        </div>
+                        <h3>Cấu Trúc Vòng Lặp</h3>
+                        <p class="roadmap-desc">Tự động hóa các thao tác lặp đi lặp lại với vòng lặp for, while, do-while và lệnh break, continue.</p>
+                        <div class="home-chap-lessons-list">
+                            <a href="lesson-detail.html?id=lesson-07" class="home-chap-lesson-item"><span>07</span> Vòng lặp for cơ bản &amp; nâng cao</a>
+                            <a href="lesson-detail.html?id=lesson-08" class="home-chap-lesson-item"><span>08</span> Vòng lặp while và do-while</a>
+                            <a href="lesson-detail.html?id=lesson-09" class="home-chap-lesson-item"><span>09</span> Lệnh điều khiển break &amp; continue</a>
+                        </div>
+                        <div class="home-chap-card-footer">
+                            <span class="roadmap-badge">3 Bài học • 9 Bài tập</span>
+                            <a href="lesson-detail.html?id=lesson-07" class="home-chap-start-link">Học Chương 3 →</a>
+                        </div>
                     </div>
 
-                    <!-- Chặng 4 -->
-                    <div class="roadmap-card">
-                        <div class="roadmap-step-pill">Chặng 04</div>
+                    <!-- Chương 4: Bài 10, 11 -->
+                    <div class="roadmap-card home-chap-card" data-accent="amber">
+                        <div class="home-chap-card-top">
+                            <span class="roadmap-step-pill">🧩 Chương 04</span>
+                            <span class="home-chap-range">Bao gồm Bài 10, 11</span>
+                        </div>
+                        <h3>Hàm &amp; Tổ Chức Mã Nguồn</h3>
+                        <p class="roadmap-desc">Chia nhỏ chương trình thành các module tái sử dụng được, truyền tham trị/tham chiếu và Đệ quy.</p>
+                        <div class="home-chap-lessons-list">
+                            <a href="lesson-detail.html?id=lesson-10" class="home-chap-lesson-item"><span>10</span> Hàm (Functions) &amp; Truyền tham số</a>
+                            <a href="lesson-detail.html?id=lesson-11" class="home-chap-lesson-item"><span>11</span> Nạp chồng hàm &amp; Đệ quy (Recursion)</a>
+                        </div>
+                        <div class="home-chap-card-footer">
+                            <span class="roadmap-badge">2 Bài học • 6 Bài tập</span>
+                            <a href="lesson-detail.html?id=lesson-10" class="home-chap-start-link">Học Chương 4 →</a>
+                        </div>
+                    </div>
+
+                    <!-- Chương 5: Bài 12, 13, 14, 15 -->
+                    <div class="roadmap-card home-chap-card" data-accent="violet">
+                        <div class="home-chap-card-top">
+                            <span class="roadmap-step-pill">📦 Chương 05</span>
+                            <span class="home-chap-range">Bao gồm Bài 12, 13, 14, 15</span>
+                        </div>
+                        <h3>Mảng &amp; Chuỗi Ký Tự</h3>
+                        <p class="roadmap-desc">Lưu trữ và xử lý tập dữ liệu lớn với mảng 1 chiều, thuật toán mảng, chuỗi std::string và ma trận 2D.</p>
+                        <div class="home-chap-lessons-list">
+                            <a href="lesson-detail.html?id=lesson-12" class="home-chap-lesson-item"><span>12</span> Mảng một chiều (1D Array)</a>
+                            <a href="lesson-detail.html?id=lesson-13" class="home-chap-lesson-item"><span>13</span> Các thuật toán mảng cơ bản</a>
+                            <a href="lesson-detail.html?id=lesson-14" class="home-chap-lesson-item"><span>14</span> Chuỗi ký tự std::string</a>
+                            <a href="lesson-detail.html?id=lesson-15" class="home-chap-lesson-item"><span>15</span> Mảng hai chiều (Ma trận 2D)</a>
+                        </div>
+                        <div class="home-chap-card-footer">
+                            <span class="roadmap-badge">4 Bài học • 12 Bài tập</span>
+                            <a href="lesson-detail.html?id=lesson-12" class="home-chap-start-link">Học Chương 5 →</a>
+                        </div>
+                    </div>
+
+                    <!-- Chương 6: Bài 16, 17 -->
+                    <div class="roadmap-card home-chap-card" data-accent="rose">
+                        <div class="home-chap-card-top">
+                            <span class="roadmap-step-pill">🎯 Chương 06</span>
+                            <span class="home-chap-range">Bao gồm Bài 16, 17</span>
+                        </div>
                         <h3>Con Trỏ &amp; Quản Lý Bộ Nhớ</h3>
-                        <p class="roadmap-desc">Nắm vững vũ khí mạnh nhất của C++: Quản trị ô nhớ và tối ưu hiệu năng.</p>
-                        <ul class="roadmap-list">
-                            <li>Khái niệm địa chỉ ô nhớ (&amp;)</li>
-                            <li>Bản chất con trỏ Pointer (*)</li>
-                            <li>Truyền tham chiếu (Pass by reference)</li>
-                            <li>Cấp phát động new &amp; delete</li>
-                        </ul>
-                        <div class="roadmap-badge">Cấp độ: Nâng cao &amp; Cốt lõi</div>
+                        <p class="roadmap-desc">Nắm vững vũ khí mạnh nhất của C++: Địa chỉ ô nhớ (&amp;), con trỏ (*) và cấp phát động new/delete.</p>
+                        <div class="home-chap-lessons-list">
+                            <a href="lesson-detail.html?id=lesson-16" class="home-chap-lesson-item"><span>16</span> Con trỏ (Pointers) trong C++</a>
+                            <a href="lesson-detail.html?id=lesson-17" class="home-chap-lesson-item"><span>17</span> Cấp phát bộ nhớ động (new &amp; delete)</a>
+                        </div>
+                        <div class="home-chap-card-footer">
+                            <span class="roadmap-badge">2 Bài học • 6 Bài tập</span>
+                            <a href="lesson-detail.html?id=lesson-16" class="home-chap-start-link">Học Chương 6 →</a>
+                        </div>
+                    </div>
+
+                    <!-- Chương 7: Bài 18, 19, 20 -->
+                    <div class="roadmap-card home-chap-card" data-accent="fuchsia">
+                        <div class="home-chap-card-top">
+                            <span class="roadmap-step-pill">👑 Chương 07</span>
+                            <span class="home-chap-range">Bao gồm Bài 18, 19, 20</span>
+                        </div>
+                        <h3>Lập Trình Hướng Đối Tượng (OOP)</h3>
+                        <p class="roadmap-desc">Hoàn thiện tư duy phát triển phần mềm hiện đại với struct, Lớp (Class), Object, Constructor &amp; Kế thừa.</p>
+                        <div class="home-chap-lessons-list">
+                            <a href="lesson-detail.html?id=lesson-18" class="home-chap-lesson-item"><span>18</span> Kiểu dữ liệu cấu trúc (struct)</a>
+                            <a href="lesson-detail.html?id=lesson-19" class="home-chap-lesson-item"><span>19</span> Lớp (Class) &amp; Đối tượng (Object)</a>
+                            <a href="lesson-detail.html?id=lesson-20" class="home-chap-lesson-item"><span>20</span> Constructor, Destructor &amp; Kế thừa (OOP)</a>
+                        </div>
+                        <div class="home-chap-card-footer">
+                            <span class="roadmap-badge">3 Bài học • 9 Bài tập</span>
+                            <a href="lesson-detail.html?id=lesson-18" class="home-chap-start-link">Học Chương 7 →</a>
+                        </div>
                     </div>
 
                 </div>
@@ -533,7 +601,7 @@
 
 
         <!-- =====================================
-             LESSONS (LOADED DYNAMICALLY)
+             LESSONS (LOADED DYNAMICALLY WITH CHAPTER TABS)
         ====================================== -->
 
         <section
@@ -548,16 +616,15 @@
                     <div>
 
                         <span class="section-label">
-                            BÀI HỌC TIÊU BIỂU
+                            DANH SÁCH BÀI HỌC THEO CHƯƠNG
                         </span>
 
                         <h2>
-                            Bắt đầu với C++ cơ bản
+                            Khám Phá Các Bài Học C++ Tiêu Biểu
                         </h2>
 
                         <p>
-                            Học từng bước từ kiến thức nền tảng
-                            đến lập trình thực tế.
+                            Chọn nhanh từng chương bên dưới hoặc bấm vào bài học bất kỳ để bắt đầu thực hành ngay.
                         </p>
 
                     </div>
@@ -567,10 +634,22 @@
                         href="lessons.html"
                         class="section-link"
                     >
-                        Xem tất cả bài học
+                        Xem toàn bộ 7 Chương (20 Bài)
                         <span>→</span>
                     </a>
 
+                </div>
+
+                <!-- Thanh chọn chương nhanh ngay trên Trang Chủ -->
+                <div class="home-lessons-chapter-tabs" id="homeChapterTabs">
+                    <button type="button" class="home-chap-tab active" data-home-chap="featured">✨ Tiêu biểu (6 bài đầu)</button>
+                    <button type="button" class="home-chap-tab" data-home-chap="Chương 1">🚀 Chương 1 (Bài 1-4)</button>
+                    <button type="button" class="home-chap-tab" data-home-chap="Chương 2">🔀 Chương 2 (Bài 5-6)</button>
+                    <button type="button" class="home-chap-tab" data-home-chap="Chương 3">🔁 Chương 3 (Bài 7-9)</button>
+                    <button type="button" class="home-chap-tab" data-home-chap="Chương 4">🧩 Chương 4 (Bài 10-11)</button>
+                    <button type="button" class="home-chap-tab" data-home-chap="Chương 5">📦 Chương 5 (Bài 12-15)</button>
+                    <button type="button" class="home-chap-tab" data-home-chap="Chương 6">🎯 Chương 6 (Bài 16-17)</button>
+                    <button type="button" class="home-chap-tab" data-home-chap="Chương 7">👑 Chương 7 (Bài 18-20)</button>
                 </div>
 
 
@@ -580,8 +659,6 @@
                     id="homeLessons"
                     class="lesson-grid"
                 >
-
-                    <!-- JavaScript sẽ tạo bài học -->
 
                     <div class="loading-card">
 
