@@ -844,19 +844,7 @@ function renderProfileChapterBreakdown(user) {
                         <span class="p-chap-pill">${chap.icon} ${escapeHtml(chap.label)}</span>
                         <span class="p-chap-range">${escapeHtml(chap.rangeText)}</span>
                     </div>
-                    <div class="p-chap-header-right">
-                        <span class="p-chap-pct">${doneInChap}/${totalInChap} bài (${pct}%)</span>
-                        <button
-                            type="button"
-                            class="btn-toggle-single-chap"
-                            data-target-chap="${chap.chapterId}"
-                            title="Ẩn / Hiện danh sách bài của ${escapeHtml(chap.label)}"
-                            aria-expanded="true"
-                        >
-                            <span>Ẩn bài</span>
-                            <span class="chap-chevron">▲</span>
-                        </button>
-                    </div>
+                    <span class="p-chap-pct">${doneInChap}/${totalInChap} bài (${pct}%)</span>
                 </div>
                 <h3 class="p-chap-title">${escapeHtml(chap.title)}</h3>
                 <div class="p-chap-bar-track">
@@ -888,7 +876,7 @@ function renderProfileChapterBreakdown(user) {
         chapDoneElem.textContent = `Đã hoàn thành ${completedChaptersCount}/7 chương học`;
     }
 
-    // Khởi tạo các nút Ẩn / Hiện cho phần Tiến độ 7 Chương học
+    // Khởi tạo nút Ẩn / Hiện tất cả các chương
     setupProfileChapterToggles();
 }
 
@@ -900,13 +888,7 @@ function setupProfileChapterToggles() {
     const toggleIcon = document.getElementById("toggleProfileChaptersIcon");
     const toggleText = document.getElementById("toggleProfileChaptersText");
 
-    const btnToggleAllLessons = document.getElementById("btnToggleAllChapterLessons");
-    const toggleAllLessonsIcon = document.getElementById("toggleAllLessonsIcon");
-    const toggleAllLessonsText = document.getElementById("toggleAllLessonsText");
-    const container = document.getElementById("profileChaptersBreakdown");
-
     const STORAGE_KEY_SECTION = "cpp_profile_chapters_hidden";
-    const STORAGE_KEY_LESSONS = "cpp_profile_chap_lessons_hidden";
 
     function applySectionVisibility(isHidden) {
         if (!sectionBody) return;
@@ -919,46 +901,16 @@ function setupProfileChapterToggles() {
             btnToggleSection.classList.toggle("is-collapsed-state", isHidden);
         }
         if (toggleIcon) {
-            toggleIcon.textContent = isHidden ? "👁️‍🗨️" : "👁️";
+            toggleIcon.textContent = isHidden ? "🔽" : "🔼";
         }
         if (toggleText) {
-            toggleText.textContent = isHidden ? "Hiện 7 chương" : "Ẩn 7 chương";
-        }
-        if (btnToggleAllLessons) {
-            btnToggleAllLessons.style.display = isHidden ? "none" : "inline-flex";
-        }
-    }
-
-    function applyAllLessonsVisibility(lessonsHidden) {
-        if (!container) return;
-        const cards = container.querySelectorAll(".p-chapter-card");
-        cards.forEach(card => {
-            card.classList.toggle("lessons-collapsed", lessonsHidden);
-            const singleBtn = card.querySelector(".btn-toggle-single-chap");
-            if (singleBtn) {
-                singleBtn.setAttribute("aria-expanded", String(!lessonsHidden));
-                singleBtn.innerHTML = lessonsHidden
-                    ? `<span>Hiện bài</span><span class="chap-chevron">▼</span>`
-                    : `<span>Ẩn bài</span><span class="chap-chevron">▲</span>`;
-            }
-        });
-        if (toggleAllLessonsIcon) {
-            toggleAllLessonsIcon.textContent = lessonsHidden ? "🔽" : "🔼";
-        }
-        if (toggleAllLessonsText) {
-            toggleAllLessonsText.textContent = lessonsHidden ? "Hiện danh sách bài" : "Ẩn danh sách bài";
-        }
-        if (btnToggleAllLessons) {
-            btnToggleAllLessons.classList.toggle("is-collapsed-state", lessonsHidden);
+            toggleText.textContent = isHidden ? "Hiện tất cả các chương" : "Ẩn tất cả các chương";
         }
     }
 
     // Khôi phục trạng thái đã lưu
     const savedSectionHidden = localStorage.getItem(STORAGE_KEY_SECTION) === "true";
-    const savedLessonsHidden = localStorage.getItem(STORAGE_KEY_LESSONS) === "true";
-
     applySectionVisibility(savedSectionHidden);
-    applyAllLessonsVisibility(savedLessonsHidden);
 
     if (btnToggleSection && !btnToggleSection.dataset.bound) {
         btnToggleSection.dataset.bound = "true";
@@ -975,44 +927,6 @@ function setupProfileChapterToggles() {
         btnQuickExpand.addEventListener("click", () => {
             localStorage.setItem(STORAGE_KEY_SECTION, "false");
             applySectionVisibility(false);
-        });
-    }
-
-    if (btnToggleAllLessons && !btnToggleAllLessons.dataset.bound) {
-        btnToggleAllLessons.dataset.bound = "true";
-        btnToggleAllLessons.addEventListener("click", () => {
-            const anyExpanded = container && Array.from(container.querySelectorAll(".p-chapter-card")).some(c => !c.classList.contains("lessons-collapsed"));
-            const nextLessonsHidden = anyExpanded;
-            localStorage.setItem(STORAGE_KEY_LESSONS, String(nextLessonsHidden));
-            applyAllLessonsVisibility(nextLessonsHidden);
-        });
-    }
-
-    // Nút Ẩn / Hiện bài học trên từng chương riêng lẻ
-    if (container) {
-        container.querySelectorAll(".btn-toggle-single-chap").forEach(btn => {
-            btn.addEventListener("click", () => {
-                const card = btn.closest(".p-chapter-card");
-                if (!card) return;
-                const isCollapsed = card.classList.toggle("lessons-collapsed");
-                btn.setAttribute("aria-expanded", String(!isCollapsed));
-                btn.innerHTML = isCollapsed
-                    ? `<span>Hiện bài</span><span class="chap-chevron">▼</span>`
-                    : `<span>Ẩn bài</span><span class="chap-chevron">▲</span>`;
-
-                // Đồng bộ nút "Ẩn/Hiện danh sách bài" tổng trên header
-                const allCards = Array.from(container.querySelectorAll(".p-chapter-card"));
-                const allCollapsed = allCards.every(c => c.classList.contains("lessons-collapsed"));
-                if (toggleAllLessonsIcon) {
-                    toggleAllLessonsIcon.textContent = allCollapsed ? "🔽" : "🔼";
-                }
-                if (toggleAllLessonsText) {
-                    toggleAllLessonsText.textContent = allCollapsed ? "Hiện danh sách bài" : "Ẩn danh sách bài";
-                }
-                if (btnToggleAllLessons) {
-                    btnToggleAllLessons.classList.toggle("is-collapsed-state", allCollapsed);
-                }
-            });
         });
     }
 }
