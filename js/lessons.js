@@ -18,15 +18,22 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Chặn trình duyệt tự động điền (autofill username/admin) vào ô tìm kiếm bài học
     let isUserFiltering = false;
-    let userFocusedSearch = false;
+    let userTypedSearchKeydown = false;
     if (searchInput) {
         searchInput.value = "";
-        searchInput.addEventListener("focus", () => {
-            userFocusedSearch = true;
+        searchInput.addEventListener("keydown", (e) => {
+            if (e.key && e.key !== "Tab" && e.key !== "Shift" && e.key !== "Control" && e.key !== "Alt") {
+                userTypedSearchKeydown = true;
+                isUserFiltering = true;
+            }
         });
-        searchInput.addEventListener("keydown", () => {
-            userFocusedSearch = true;
-            isUserFiltering = true;
+        // Xóa ngay nếu trình duyệt tự động điền "admin" sau khi trang tải
+        [50, 150, 400, 900].forEach(delay => {
+            setTimeout(() => {
+                if (!userTypedSearchKeydown && searchInput.value) {
+                    searchInput.value = "";
+                }
+            }, delay);
         });
     }
     if (chapterFilter) chapterFilter.value = "all";
@@ -43,6 +50,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
         allLessons = CppStorage.getLessons();
     }
+
+    // Chuẩn hóa chương cho 20 bài học theo đúng cấu trúc 7 Chương (Chương 1..7)
+    allLessons = normalizeCurriculumChapters(allLessons);
 
     // Cập nhật nút Bắt đầu học ngay trên Hero của trang Bài học
     function updateHeroStartButton(lessons, progress) {
@@ -61,12 +71,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Hiển thị bộ lọc chương
     renderChapterFilter(allLessons, chapterFilter);
 
-    // Hiển thị danh sách ban đầu ngay
+    // Hiển thị danh sách ban đầu ngay theo 7 Chương
     renderLessons(
         allLessons,
         userProgress,
         lessonList
     );
+
+    // Đồng bộ trạng thái trên khung Chương trình học (7 Chương - 20 Bài)
+    updateCurriculumOverviewChips(allLessons, userProgress);
 
     // Cập nhật tổng tiến độ & nút bắt đầu học
     updateOverallProgress(
@@ -103,14 +116,15 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }).sort((a, b) => Number(a.order || 0) - Number(b.order || 0));
 
                 if (mergedLessons.length > 0) {
-                    allLessons = mergedLessons;
-                    CppStorage.saveLessons(mergedLessons);
+                    allLessons = normalizeCurriculumChapters(mergedLessons);
+                    CppStorage.saveLessons(allLessons);
                 }
 
                 renderChapterFilter(allLessons, chapterFilter);
+                updateCurriculumOverviewChips(allLessons, userProgress);
 
                 if (!isUserFiltering) {
-                    if (searchInput) searchInput.value = "";
+                    if (searchInput && !userTypedSearchKeydown) searchInput.value = "";
                     if (chapterFilter) chapterFilter.value = "all";
                     if (statusFilter) statusFilter.value = "all";
                     renderLessons(allLessons, userProgress, lessonList);
@@ -121,7 +135,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                         lessonList,
                         searchInput,
                         chapterFilter,
-                        statusFilter
+                        statusFilter,
+                        userTypedSearchKeydown
                     );
                 }
                 updateOverallProgress(allLessons, userProgress);
@@ -135,7 +150,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Helper kích hoạt lọc
     function triggerFilter() {
         if (!allLessons || allLessons.length === 0) {
-            allLessons = CppStorage.getLessons();
+            allLessons = normalizeCurriculumChapters(CppStorage.getLessons());
         }
         filterLessons(
             allLessons,
@@ -143,19 +158,24 @@ document.addEventListener("DOMContentLoaded", async () => {
             lessonList,
             searchInput,
             chapterFilter,
-            statusFilter
+            statusFilter,
+            userTypedSearchKeydown
         );
     }
 
     // Tìm kiếm
     if (searchInput) {
         searchInput.addEventListener("input", () => {
-            if (!userFocusedSearch && document.activeElement !== searchInput) {
-                // Bỏ qua giá trị autofill tự động của trình duyệt
+            const val = (searchInput.value || "").trim().toLowerCase();
+            // Chặn hoàn toàn nếu trình duyệt tự động điền tài khoản admin
+            if (!userTypedSearchKeydown && (val === "admin" || val === "letrunghau" || document.activeElement !== searchInput)) {
                 searchInput.value = "";
                 return;
             }
-            isUserFiltering = true;
+            if (val === "") {
+                userTypedSearchKeydown = false;
+            }
+            isUserFiltering = Boolean(val) || (chapterFilter && chapterFilter.value !== "all") || (statusFilter && statusFilter.value !== "all");
             triggerFilter();
         });
     }
@@ -163,7 +183,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Lọc chương
     if (chapterFilter) {
         chapterFilter.addEventListener("change", () => {
-            isUserFiltering = true;
+            isUserFiltering = (chapterFilter.value !== "all") || userTypedSearchKeydown || (statusFilter && statusFilter.value !== "all");
             triggerFilter();
         });
     }
@@ -171,7 +191,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Lọc trạng thái
     if (statusFilter) {
         statusFilter.addEventListener("change", () => {
-            isUserFiltering = true;
+            isUserFiltering = (statusFilter.value !== "all") || userTypedSearchKeydown || (chapterFilter && chapterFilter.value !== "all");
             triggerFilter();
         });
     }
@@ -180,6 +200,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (clearFiltersButton) {
         clearFiltersButton.addEventListener("click", () => {
             isUserFiltering = false;
+            userTypedSearchKeydown = false;
             if (searchInput) searchInput.value = "";
             if (chapterFilter) chapterFilter.value = "all";
             if (statusFilter) statusFilter.value = "all";
@@ -282,6 +303,87 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
 // ============================================================
+// ĐỊNH NGHĨA CHUẨN 7 CHƯƠNG CỦA CHƯƠNG TRÌNH HỌC (20 BÀI)
+// ============================================================
+
+const CURRICULUM_CHAPTERS_META = [
+    {
+        key: "Chương 1",
+        fullTitle: "Chương 1: Bắt đầu với C++",
+        lessonRangeText: "Bao gồm Bài 1, Bài 2, Bài 3, Bài 4",
+        summary: "Làm quen ngôn ngữ C++, biến, kiểu dữ liệu, nhập xuất cin/cout và các toán tử cơ bản",
+        orders: [1, 2, 3, 4]
+    },
+    {
+        key: "Chương 2",
+        fullTitle: "Chương 2: Cấu trúc rẽ nhánh",
+        lessonRangeText: "Bao gồm Bài 5, Bài 6",
+        summary: "Điều khiển luồng thực thi chương trình với cấu trúc điều kiện if - else và switch - case",
+        orders: [5, 6]
+    },
+    {
+        key: "Chương 3",
+        fullTitle: "Chương 3: Cấu trúc vòng lặp",
+        lessonRangeText: "Bao gồm Bài 7, Bài 8, Bài 9",
+        summary: "Tự động hóa các thao tác lặp với vòng lặp for, while, do-while và lệnh break, continue",
+        orders: [7, 8, 9]
+    },
+    {
+        key: "Chương 4",
+        fullTitle: "Chương 4: Hàm & Tổ chức mã nguồn",
+        lessonRangeText: "Bao gồm Bài 10, Bài 11",
+        summary: "Chia nhỏ chương trình thành hàm (Functions), truyền tham số, nạp chồng hàm và đệ quy",
+        orders: [10, 11]
+    },
+    {
+        key: "Chương 5",
+        fullTitle: "Chương 5: Mảng & Chuỗi ký tự",
+        lessonRangeText: "Bao gồm Bài 12, Bài 13, Bài 14, Bài 15",
+        summary: "Mảng một chiều, các thuật toán mảng cơ bản, chuỗi ký tự std::string và mảng hai chiều (Ma trận)",
+        orders: [12, 13, 14, 15]
+    },
+    {
+        key: "Chương 6",
+        fullTitle: "Chương 6: Con trỏ & Quản lý bộ nhớ",
+        lessonRangeText: "Bao gồm Bài 16, Bài 17",
+        summary: "Làm chủ địa chỉ bộ nhớ, con trỏ (Pointers) và cấp phát bộ nhớ động với new & delete",
+        orders: [16, 17]
+    },
+    {
+        key: "Chương 7",
+        fullTitle: "Chương 7: Lập trình Hướng đối tượng (OOP)",
+        lessonRangeText: "Bao gồm Bài 18, Bài 19, Bài 20",
+        summary: "Kiểu dữ liệu cấu trúc (struct), Lớp (Class) & Đối tượng (Object), Constructor, Destructor và Kế thừa",
+        orders: [18, 19, 20]
+    }
+];
+
+function normalizeCurriculumChapters(lessons) {
+    if (!Array.isArray(lessons)) return [];
+    return lessons.map((lesson, idx) => {
+        const orderNum = Number(lesson.order || (idx + 1));
+        const matchedMeta = CURRICULUM_CHAPTERS_META.find(c => c.orders.includes(orderNum));
+        return {
+            ...lesson,
+            order: orderNum,
+            chapter: matchedMeta ? matchedMeta.fullTitle : (lesson.chapter || "Chương 1: Bắt đầu với C++")
+        };
+    }).sort((a, b) => Number(a.order || 0) - Number(b.order || 0));
+}
+
+function updateCurriculumOverviewChips(lessons, progress) {
+    const chips = document.querySelectorAll(".curr-lesson-chip");
+    if (!chips.length) return;
+    chips.forEach(chip => {
+        const lessonId = chip.getAttribute("data-lesson-id");
+        if (!lessonId) return;
+        const isDone = progress && progress[lessonId]?.completed === true;
+        chip.classList.toggle("completed", isDone);
+    });
+}
+
+
+// ============================================================
 // HIỂN THỊ BỘ LỌC CHƯƠNG
 // ============================================================
 
@@ -292,26 +394,33 @@ function renderChapterFilter(lessons, select) {
 
     const currentVal = select.value;
 
-    const chapters = [
-        ...new Set(
-            (lessons || [])
-                .map(lesson => lesson.chapter)
-                .filter(Boolean)
-        )
-    ];
-
     select.innerHTML = `
         <option value="all">
-            Tất cả chương
+            Tất cả chương (Chương 1 - Chương 7)
         </option>
     `;
 
-    chapters.forEach(chapter => {
+    CURRICULUM_CHAPTERS_META.forEach(meta => {
         const option = document.createElement("option");
+        option.value = meta.fullTitle;
+        const nums = meta.orders.join(", ");
+        option.textContent = `${meta.fullTitle} (Bài ${nums})`;
+        select.appendChild(option);
+    });
 
+    // Thêm các chương tùy chỉnh nếu Admin tạo thêm chương mới ngoài 7 chương chuẩn
+    const extraChapters = [
+        ...new Set(
+            (lessons || [])
+                .map(lesson => lesson.chapter)
+                .filter(ch => ch && !CURRICULUM_CHAPTERS_META.some(m => m.fullTitle === ch))
+        )
+    ];
+
+    extraChapters.forEach(chapter => {
+        const option = document.createElement("option");
         option.value = chapter;
         option.textContent = chapter;
-
         select.appendChild(option);
     });
 
@@ -333,7 +442,8 @@ function filterLessons(
     container,
     searchInput,
     chapterFilter,
-    statusFilter
+    statusFilter,
+    userTypedSearchKeydown = false
 ) {
     if (!container) {
         return;
@@ -349,11 +459,14 @@ function filterLessons(
         }
     }
 
-    const searchText = searchInput
-        ? searchInput.value
-            .trim()
-            .toLowerCase()
-        : "";
+    currentLessons = normalizeCurriculumChapters(currentLessons);
+
+    let searchText = "";
+    if (searchInput && userTypedSearchKeydown) {
+        searchText = searchInput.value.trim().toLowerCase();
+    } else if (searchInput && searchInput.value) {
+        searchInput.value = "";
+    }
 
     const selectedChapter = (chapterFilter && chapterFilter.value)
         ? chapterFilter.value
@@ -368,23 +481,20 @@ function filterLessons(
         // --------------------------------------------
         // Tìm kiếm
         // --------------------------------------------
-        const title = String(
-            lesson.title || ""
-        ).toLowerCase();
-
-        const description = String(
-            lesson.description || ""
-        ).toLowerCase();
-
-        const chapter = String(
-            lesson.chapter || ""
-        ).toLowerCase();
+        const orderNum = lesson.order || 1;
+        const title = String(lesson.title || "").toLowerCase();
+        const description = String(lesson.description || "").toLowerCase();
+        const chapter = String(lesson.chapter || "").toLowerCase();
+        const baiLabel = `bài ${orderNum}`;
+        const baiLabelPad = `bài 0${orderNum}`;
 
         const matchesSearch =
             !searchText ||
             title.includes(searchText) ||
             description.includes(searchText) ||
-            chapter.includes(searchText);
+            chapter.includes(searchText) ||
+            baiLabel.includes(searchText) ||
+            baiLabelPad.includes(searchText);
 
 
         // --------------------------------------------
@@ -431,7 +541,7 @@ function filterLessons(
 
 
 // ============================================================
-// HIỂN THỊ DANH SÁCH BÀI HỌC
+// HIỂN THỊ DANH SÁCH BÀI HỌC THEO 7 CHƯƠNG (CHƯƠNG 1..7)
 // ============================================================
 
 function renderLessons(
@@ -451,7 +561,6 @@ function renderLessons(
             noLessons.hidden = false;
             noLessons.style.display = "";
         }
-        // Giữ container trống, KHÔNG hiển thị thêm thẻ empty-state thứ 2 để tránh trùng lặp
         container.innerHTML = "";
         return;
     }
@@ -461,16 +570,75 @@ function renderLessons(
         noLessons.style.display = "none";
     }
 
+    // Gom nhóm bài học theo 7 Chương chuẩn
+    const groupedHtml = [];
+    const usedLessonIds = new Set();
 
-    container.innerHTML = lessons
-        .map((lesson, index) => {
-            return createLessonCard(
-                lesson,
-                progress,
-                index
-            );
-        })
-        .join("");
+    CURRICULUM_CHAPTERS_META.forEach((chapMeta, chapIdx) => {
+        const chapLessons = lessons.filter(l => {
+            const ord = Number(l.order || 0);
+            const chapStr = String(l.chapter || "");
+            return chapMeta.orders.includes(ord) || chapStr.startsWith(chapMeta.key);
+        });
+
+        if (chapLessons.length === 0) return;
+
+        chapLessons.forEach(l => usedLessonIds.add(l.id));
+
+        const completedInChap = chapLessons.filter(l => progress && progress[l.id]?.completed === true).length;
+        const cardsHtml = chapLessons
+            .map((lesson, idx) => createLessonCard(lesson, progress, (lesson.order ? lesson.order - 1 : idx)))
+            .join("");
+
+        groupedHtml.push(`
+            <div class="chapter-group-section" data-chapter-group="${escapeHtml(chapMeta.key)}">
+                <div class="chapter-group-header">
+                    <div class="chapter-group-title-wrap">
+                        <span class="chapter-group-badge">CHƯƠNG ${chapIdx + 1}</span>
+                        <div>
+                            <h3>${escapeHtml(chapMeta.fullTitle)}</h3>
+                            <p><strong>${escapeHtml(chapMeta.lessonRangeText)}</strong> — ${escapeHtml(chapMeta.summary)}</p>
+                        </div>
+                    </div>
+                    <div class="chapter-group-right">
+                        <span class="chapter-group-count">${completedInChap}/${chapLessons.length} bài hoàn thành</span>
+                    </div>
+                </div>
+                <div class="chapter-group-lessons">
+                    ${cardsHtml}
+                </div>
+            </div>
+        `);
+    });
+
+    // Hiển thị các bài học bổ sung (nếu Admin thêm bài thứ 21+)
+    const extraLessons = lessons.filter(l => !usedLessonIds.has(l.id));
+    if (extraLessons.length > 0) {
+        const extraCardsHtml = extraLessons
+            .map((lesson, idx) => createLessonCard(lesson, progress, (lesson.order ? lesson.order - 1 : 20 + idx)))
+            .join("");
+        groupedHtml.push(`
+            <div class="chapter-group-section" data-chapter-group="Chương mở rộng">
+                <div class="chapter-group-header">
+                    <div class="chapter-group-title-wrap">
+                        <span class="chapter-group-badge">MỞ RỘNG</span>
+                        <div>
+                            <h3>Chuyên đề nâng cao &amp; Bổ sung</h3>
+                            <p>Các bài giảng bổ sung do Quản trị viên cập nhật</p>
+                        </div>
+                    </div>
+                    <div class="chapter-group-right">
+                        <span class="chapter-group-count">${extraLessons.length} bài học</span>
+                    </div>
+                </div>
+                <div class="chapter-group-lessons">
+                    ${extraCardsHtml}
+                </div>
+            </div>
+        `);
+    }
+
+    container.innerHTML = groupedHtml.join("");
 }
 
 
@@ -494,6 +662,10 @@ function createLessonCard(
     const level = lesson.level || "Cơ bản";
     const duration = lesson.duration || "15 phút";
     const lessonOrderNumber = lesson.order || (index + 1);
+    const rawTitle = String(lesson.title || "Bài học C++").trim();
+    const displayTitle = /^bài\s+\d+/i.test(rawTitle)
+        ? rawTitle
+        : `Bài ${lessonOrderNumber}: ${rawTitle}`;
 
     return `
         <article class="lesson-card lesson-list-card ${statusClass}" data-lesson-id="${safeLessonId}" style="--item-idx: ${index}; cursor: pointer;">
@@ -520,13 +692,13 @@ function createLessonCard(
                         ${escapeHtml(level)}
                     </span>
                     <span class="status-badge-pill ${completed ? 'completed' : 'pending'}">
-                        ${completed ? '<span class="status-dot-pulse"></span> Hoàn thành' : 'Chưa học'}
+                        ${completed ? '<span class="status-dot-pulse"></span> Hoàn thành' : `Bài ${lessonOrderNumber}`}
                     </span>
                 </div>
 
                 <h3>
                     <a href="lesson-detail.html?id=${encodeURIComponent(safeLessonId)}" style="color: inherit; text-decoration: none;">
-                        ${escapeHtml(lesson.title || "Bài học C++")}
+                        ${escapeHtml(displayTitle)}
                     </a>
                 </h3>
 

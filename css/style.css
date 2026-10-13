@@ -9931,6 +9931,348 @@ body.dark-theme .admin-modal-card {
     to { opacity: 1; }
 }
 
+/* =========================================================================
+   CHƯƠNG TRÌNH HỌC (7 CHƯƠNG - 20 BÀI) & DANH SÁCH BÀI HỌC THEO CHƯƠNG
+========================================================================= */
+
+/* Ngăn Chrome Autofill đổi màu trắng ô tìm kiếm bài học */
+#lessonSearch:-webkit-autofill,
+#lessonSearch:-webkit-autofill:hover,
+#lessonSearch:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--text, #0f172a);
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+html.dark-theme #lessonSearch:-webkit-autofill,
+body.dark-theme #lessonSearch:-webkit-autofill {
+    -webkit-text-fill-color: #f8fafc;
+    -webkit-box-shadow: 0 0 0px 1000px #0f172a inset !important;
+}
+
+/* Khung Tổng Quan Chương Trình Học (7 Chương - 20 Bài) */
+.curriculum-overview-panel {
+    margin: 24px 0 32px;
+    padding: 24px;
+    border-radius: 20px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(248, 250, 252, 0.94));
+    border: 1px solid rgba(99, 102, 241, 0.18);
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
+}
+
+html.dark-theme .curriculum-overview-panel,
+body.dark-theme .curriculum-overview-panel {
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(30, 41, 59, 0.88));
+    border-color: rgba(99, 102, 241, 0.28);
+    box-shadow: 0 16px 38px rgba(0, 0, 0, 0.35);
+}
+
+.curriculum-overview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px dashed rgba(99, 102, 241, 0.22);
+}
+
+.curriculum-badge-tag {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #6366f1;
+    background: rgba(99, 102, 241, 0.12);
+    padding: 4px 12px;
+    border-radius: 999px;
+    margin-bottom: 6px;
+}
+
+html.dark-theme .curriculum-badge-tag,
+body.dark-theme .curriculum-badge-tag {
+    color: #a5b4fc;
+    background: rgba(99, 102, 241, 0.2);
+}
+
+.curriculum-overview-header h3 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--text, #0f172a);
+    margin: 0 0 4px;
+}
+
+html.dark-theme .curriculum-overview-header h3,
+body.dark-theme .curriculum-overview-header h3 {
+    color: #f8fafc;
+}
+
+.curriculum-overview-header p {
+    font-size: 0.9rem;
+    color: var(--text-secondary, #64748b);
+    margin: 0;
+}
+
+html.dark-theme .curriculum-overview-header p,
+body.dark-theme .curriculum-overview-header p {
+    color: #94a3b8;
+}
+
+.curriculum-overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.curriculum-chapter-box {
+    background: #ffffff;
+    border: 1px solid rgba(148, 163, 184, 0.24);
+    border-radius: 16px;
+    padding: 16px 18px;
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.curriculum-chapter-box:hover {
+    transform: translateY(-3px);
+    border-color: rgba(99, 102, 241, 0.45);
+    box-shadow: 0 10px 24px rgba(99, 102, 241, 0.12);
+}
+
+html.dark-theme .curriculum-chapter-box,
+body.dark-theme .curriculum-chapter-box {
+    background: rgba(15, 23, 42, 0.78);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+html.dark-theme .curriculum-chapter-box:hover,
+body.dark-theme .curriculum-chapter-box:hover {
+    border-color: rgba(129, 140, 248, 0.5);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+}
+
+.curr-chap-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.curr-chap-num {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #ffffff;
+}
+
+.curr-chap-lessons-range {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #4f46e5;
+    background: rgba(99, 102, 241, 0.1);
+    padding: 3px 10px;
+    border-radius: 999px;
+}
+
+html.dark-theme .curr-chap-lessons-range,
+body.dark-theme .curr-chap-lessons-range {
+    color: #c7d2fe;
+    background: rgba(99, 102, 241, 0.22);
+}
+
+.curriculum-chapter-box h4 {
+    font-size: 1.02rem;
+    font-weight: 800;
+    color: var(--text, #0f172a);
+    margin: 0;
+}
+
+html.dark-theme .curriculum-chapter-box h4,
+body.dark-theme .curriculum-chapter-box h4 {
+    color: #f1f5f9;
+}
+
+.curr-chap-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 2px;
+}
+
+.curr-lesson-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text, #1e293b);
+    background: #f1f5f9;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    padding: 5px 10px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.18s ease;
+}
+
+.curr-lesson-chip strong {
+    color: #4f46e5;
+    font-weight: 800;
+}
+
+.curr-lesson-chip:hover {
+    background: #eef2ff;
+    border-color: #6366f1;
+    color: #312e81;
+    transform: translateY(-1px);
+}
+
+.curr-lesson-chip.completed {
+    background: rgba(16, 185, 129, 0.12);
+    border-color: rgba(16, 185, 129, 0.4);
+    color: #065f46;
+}
+
+.curr-lesson-chip.completed strong {
+    color: #059669;
+}
+
+html.dark-theme .curr-lesson-chip,
+body.dark-theme .curr-lesson-chip {
+    background: rgba(30, 41, 59, 0.9);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+}
+
+html.dark-theme .curr-lesson-chip strong,
+body.dark-theme .curr-lesson-chip strong {
+    color: #a5b4fc;
+}
+
+html.dark-theme .curr-lesson-chip:hover,
+body.dark-theme .curr-lesson-chip:hover {
+    background: rgba(99, 102, 241, 0.25);
+    border-color: #818cf8;
+    color: #ffffff;
+}
+
+html.dark-theme .curr-lesson-chip.completed,
+body.dark-theme .curr-lesson-chip.completed {
+    background: rgba(16, 185, 129, 0.18);
+    border-color: rgba(16, 185, 129, 0.45);
+    color: #a7f3d0;
+}
+
+/* Nhóm Bài học theo từng Chương trong #lessonsContainer */
+.chapter-group-section {
+    margin-bottom: 32px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.65);
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    padding: 22px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+}
+
+html.dark-theme .chapter-group-section,
+body.dark-theme .chapter-group-section {
+    background: rgba(15, 23, 42, 0.6);
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+}
+
+.chapter-group-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 16px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+    flex-wrap: wrap;
+}
+
+html.dark-theme .chapter-group-header,
+body.dark-theme .chapter-group-header {
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.chapter-group-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.chapter-group-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 14px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #ffffff;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.28);
+}
+
+.chapter-group-title-wrap h3 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--text, #0f172a);
+    margin: 0 0 4px;
+}
+
+html.dark-theme .chapter-group-title-wrap h3,
+body.dark-theme .chapter-group-title-wrap h3 {
+    color: #f8fafc;
+}
+
+.chapter-group-title-wrap p {
+    font-size: 0.88rem;
+    color: var(--text-secondary, #64748b);
+    margin: 0;
+}
+
+html.dark-theme .chapter-group-title-wrap p,
+body.dark-theme .chapter-group-title-wrap p {
+    color: #94a3b8;
+}
+
+.chapter-group-count {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    background: rgba(99, 102, 241, 0.1);
+    color: #4f46e5;
+    border: 1px solid rgba(99, 102, 241, 0.22);
+    white-space: nowrap;
+}
+
+html.dark-theme .chapter-group-count,
+body.dark-theme .chapter-group-count {
+    background: rgba(99, 102, 241, 0.18);
+    color: #c7d2fe;
+    border-color: rgba(99, 102, 241, 0.35);
+}
+
+.chapter-group-lessons {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+
 
 
 

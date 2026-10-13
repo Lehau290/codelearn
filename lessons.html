@@ -240,18 +240,26 @@
 
                 <div class="lesson-controls">
 
+                    <!-- Hidden honeypot to absorb browser password manager autofill -->
+                    <div style="position: absolute; width: 0; height: 0; overflow: hidden; opacity: 0; pointer-events: none;" aria-hidden="true">
+                        <input type="text" name="fake_autofill_username" tabindex="-1" autocomplete="username">
+                        <input type="password" name="fake_autofill_password" tabindex="-1" autocomplete="current-password">
+                    </div>
+
                     <!-- Search -->
 
                     <div class="lesson-search">
                         <input
                             type="search"
                             id="lessonSearch"
-                            name="cpp_lesson_search_query"
-                            placeholder="Tìm kiếm bài học..."
+                            name="cpp_lesson_search_query_noautofill"
+                            placeholder="Tìm kiếm bài học (VD: Bài 1, Vòng lặp, Con trỏ, OOP)..."
                             autocomplete="off"
                             autocorrect="off"
                             autocapitalize="off"
                             spellcheck="false"
+                            readonly
+                            onfocus="this.removeAttribute('readonly');"
                         >
                     </div>
 
@@ -270,7 +278,28 @@
                         <select id="chapterFilter">
 
                             <option value="all">
-                                Tất cả chương
+                                Tất cả chương (Chương 1 - Chương 7)
+                            </option>
+                            <option value="Chương 1: Bắt đầu với C++">
+                                Chương 1: Bắt đầu với C++ (Bài 1, 2, 3, 4)
+                            </option>
+                            <option value="Chương 2: Cấu trúc rẽ nhánh">
+                                Chương 2: Cấu trúc rẽ nhánh (Bài 5, 6)
+                            </option>
+                            <option value="Chương 3: Cấu trúc vòng lặp">
+                                Chương 3: Cấu trúc vòng lặp (Bài 7, 8, 9)
+                            </option>
+                            <option value="Chương 4: Hàm & Tổ chức mã nguồn">
+                                Chương 4: Hàm &amp; Tổ chức mã nguồn (Bài 10, 11)
+                            </option>
+                            <option value="Chương 5: Mảng & Chuỗi ký tự">
+                                Chương 5: Mảng &amp; Chuỗi ký tự (Bài 12, 13, 14, 15)
+                            </option>
+                            <option value="Chương 6: Con trỏ & Quản lý bộ nhớ">
+                                Chương 6: Con trỏ &amp; Quản lý bộ nhớ (Bài 16, 17)
+                            </option>
+                            <option value="Chương 7: Lập trình Hướng đối tượng (OOP)">
+                                Chương 7: Lập trình Hướng đối tượng (Bài 18, 19, 20)
                             </option>
 
                         </select>
@@ -315,14 +344,14 @@
 
 
         <!-- =====================================
-             LESSON CONTENT
+             LESSON CONTENT (CHƯƠNG TRÌNH HỌC & DANH SÁCH BÀI HỌC)
         ====================================== -->
 
         <section class="all-lessons-section">
 
             <div class="container">
 
-                <!-- Summary -->
+                <!-- Summary & Curriculum Overview -->
 
                 <div class="lessons-summary">
 
@@ -342,7 +371,7 @@
                     <div class="lesson-count">
 
                         <strong id="lessonCount">
-                            0
+                            20
                         </strong>
 
                         <span>
@@ -383,23 +412,587 @@
                 </div>
 
 
-                <!-- Dynamic lessons -->
+                <!-- Bảng Tổng Quan Chương Trình Học (7 Chương - 20 Bài) -->
+                <div class="curriculum-overview-panel" id="curriculumOverviewPanel">
+                    <div class="curriculum-overview-header">
+                        <div>
+                            <span class="curriculum-badge-tag">CẤU TRÚC KHÓA HỌC CHUẨN</span>
+                            <h3>Khung Chương trình học C++ (7 Chương • 20 Bài học)</h3>
+                            <p>Chọn nhanh chương hoặc bấm trực tiếp vào từng bài để bắt đầu học ngay.</p>
+                        </div>
+                    </div>
+
+                    <div class="curriculum-overview-grid">
+                        <!-- Chương 1 -->
+                        <div class="curriculum-chapter-box" data-chapter-target="Chương 1">
+                            <div class="curr-chap-top">
+                                <span class="curr-chap-num">Chương 1</span>
+                                <span class="curr-chap-lessons-range">Bao gồm Bài 1, 2, 3, 4</span>
+                            </div>
+                            <h4>Bắt đầu với C++</h4>
+                            <div class="curr-chap-links">
+                                <a href="lesson-detail.html?id=lesson-01" class="curr-lesson-chip" data-lesson-id="lesson-01"><strong>Bài 1:</strong> Giới thiệu C++</a>
+                                <a href="lesson-detail.html?id=lesson-02" class="curr-lesson-chip" data-lesson-id="lesson-02"><strong>Bài 2:</strong> Biến &amp; Kiểu dữ liệu</a>
+                                <a href="lesson-detail.html?id=lesson-03" class="curr-lesson-chip" data-lesson-id="lesson-03"><strong>Bài 3:</strong> Nhập xuất cin, cout</a>
+                                <a href="lesson-detail.html?id=lesson-04" class="curr-lesson-chip" data-lesson-id="lesson-04"><strong>Bài 4:</strong> Các toán tử C++</a>
+                            </div>
+                        </div>
+
+                        <!-- Chương 2 -->
+                        <div class="curriculum-chapter-box" data-chapter-target="Chương 2">
+                            <div class="curr-chap-top">
+                                <span class="curr-chap-num">Chương 2</span>
+                                <span class="curr-chap-lessons-range">Bao gồm Bài 5, 6</span>
+                            </div>
+                            <h4>Cấu trúc rẽ nhánh</h4>
+                            <div class="curr-chap-links">
+                                <a href="lesson-detail.html?id=lesson-05" class="curr-lesson-chip" data-lesson-id="lesson-05"><strong>Bài 5:</strong> Điều kiện if - else</a>
+                                <a href="lesson-detail.html?id=lesson-06" class="curr-lesson-chip" data-lesson-id="lesson-06"><strong>Bài 6:</strong> Rẽ nhánh switch - case</a>
+                            </div>
+                        </div>
+
+                        <!-- Chương 3 -->
+                        <div class="curriculum-chapter-box" data-chapter-target="Chương 3">
+                            <div class="curr-chap-top">
+                                <span class="curr-chap-num">Chương 3</span>
+                                <span class="curr-chap-lessons-range">Bao gồm Bài 7, 8, 9</span>
+                            </div>
+                            <h4>Cấu trúc vòng lặp</h4>
+                            <div class="curr-chap-links">
+                                <a href="lesson-detail.html?id=lesson-07" class="curr-lesson-chip" data-lesson-id="lesson-07"><strong>Bài 7:</strong> Vòng lặp for</a>
+                                <a href="lesson-detail.html?id=lesson-08" class="curr-lesson-chip" data-lesson-id="lesson-08"><strong>Bài 8:</strong> Vòng lặp while &amp; do-while</a>
+                                <a href="lesson-detail.html?id=lesson-09" class="curr-lesson-chip" data-lesson-id="lesson-09"><strong>Bài 9:</strong> Lệnh break &amp; continue</a>
+                            </div>
+                        </div>
+
+                        <!-- Chương 4 -->
+                        <div class="curriculum-chapter-box" data-chapter-target="Chương 4">
+                            <div class="curr-chap-top">
+                                <span class="curr-chap-num">Chương 4</span>
+                                <span class="curr-chap-lessons-range">Bao gồm Bài 10, 11</span>
+                            </div>
+                            <h4>Hàm &amp; Tổ chức mã nguồn</h4>
+                            <div class="curr-chap-links">
+                                <a href="lesson-detail.html?id=lesson-10" class="curr-lesson-chip" data-lesson-id="lesson-10"><strong>Bài 10:</strong> Hàm &amp; Tham số</a>
+                                <a href="lesson-detail.html?id=lesson-11" class="curr-lesson-chip" data-lesson-id="lesson-11"><strong>Bài 11:</strong> Nạp chồng hàm &amp; Đệ quy</a>
+                            </div>
+                        </div>
+
+                        <!-- Chương 5 -->
+                        <div class="curriculum-chapter-box" data-chapter-target="Chương 5">
+                            <div class="curr-chap-top">
+                                <span class="curr-chap-num">Chương 5</span>
+                                <span class="curr-chap-lessons-range">Bao gồm Bài 12, 13, 14, 15</span>
+                            </div>
+                            <h4>Mảng &amp; Chuỗi ký tự</h4>
+                            <div class="curr-chap-links">
+                                <a href="lesson-detail.html?id=lesson-12" class="curr-lesson-chip" data-lesson-id="lesson-12"><strong>Bài 12:</strong> Mảng 1 chiều</a>
+                                <a href="lesson-detail.html?id=lesson-13" class="curr-lesson-chip" data-lesson-id="lesson-13"><strong>Bài 13:</strong> Thuật toán mảng</a>
+                                <a href="lesson-detail.html?id=lesson-14" class="curr-lesson-chip" data-lesson-id="lesson-14"><strong>Bài 14:</strong> Chuỗi std::string</a>
+                                <a href="lesson-detail.html?id=lesson-15" class="curr-lesson-chip" data-lesson-id="lesson-15"><strong>Bài 15:</strong> Mảng 2 chiều (Ma trận)</a>
+                            </div>
+                        </div>
+
+                        <!-- Chương 6 -->
+                        <div class="curriculum-chapter-box" data-chapter-target="Chương 6">
+                            <div class="curr-chap-top">
+                                <span class="curr-chap-num">Chương 6</span>
+                                <span class="curr-chap-lessons-range">Bao gồm Bài 16, 17</span>
+                            </div>
+                            <h4>Con trỏ &amp; Quản lý bộ nhớ</h4>
+                            <div class="curr-chap-links">
+                                <a href="lesson-detail.html?id=lesson-16" class="curr-lesson-chip" data-lesson-id="lesson-16"><strong>Bài 16:</strong> Con trỏ (Pointers)</a>
+                                <a href="lesson-detail.html?id=lesson-17" class="curr-lesson-chip" data-lesson-id="lesson-17"><strong>Bài 17:</strong> Cấp phát động new/delete</a>
+                            </div>
+                        </div>
+
+                        <!-- Chương 7 -->
+                        <div class="curriculum-chapter-box" data-chapter-target="Chương 7">
+                            <div class="curr-chap-top">
+                                <span class="curr-chap-num">Chương 7</span>
+                                <span class="curr-chap-lessons-range">Bao gồm Bài 18, 19, 20</span>
+                            </div>
+                            <h4>Lập trình Hướng đối tượng (OOP)</h4>
+                            <div class="curr-chap-links">
+                                <a href="lesson-detail.html?id=lesson-18" class="curr-lesson-chip" data-lesson-id="lesson-18"><strong>Bài 18:</strong> Cấu trúc struct</a>
+                                <a href="lesson-detail.html?id=lesson-19" class="curr-lesson-chip" data-lesson-id="lesson-19"><strong>Bài 19:</strong> Lớp Class &amp; Object</a>
+                                <a href="lesson-detail.html?id=lesson-20" class="curr-lesson-chip" data-lesson-id="lesson-20"><strong>Bài 20:</strong> Constructor &amp; Kế thừa</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Dynamic lessons grouped by Chapter 1..7 -->
 
                 <div
                     id="lessonsContainer"
                     class="lessons-list"
                 >
+                    <!-- Chương 1: Bài 1, 2, 3, 4 -->
+                    <div class="chapter-group-section" data-chapter-group="Chương 1">
+                        <div class="chapter-group-header">
+                            <div class="chapter-group-title-wrap">
+                                <span class="chapter-group-badge">CHƯƠNG 1</span>
+                                <div>
+                                    <h3>Chương 1: Bắt đầu với C++</h3>
+                                    <p>Bao gồm Bài 1, Bài 2, Bài 3, Bài 4 — Làm quen ngôn ngữ, cú pháp, biến và nhập xuất cơ bản</p>
+                                </div>
+                            </div>
+                            <span class="chapter-group-count">4 bài học</span>
+                        </div>
+                        <div class="chapter-group-lessons">
+                            <article class="lesson-card lesson-list-card not-completed" data-lesson-id="lesson-01" style="cursor: pointer;">
+                                <div class="lesson-card-top"><span class="lesson-number">01</span><span class="lesson-status">○</span></div>
+                                <div class="lesson-card-icon">🚀</div>
+                                <div class="lesson-card-content">
+                                    <div class="lesson-card-meta">
+                                        <span class="lesson-chapter">Chương 1: Bắt đầu với C++</span>
+                                        <span class="lesson-level">Cơ bản</span>
+                                        <span class="status-badge-pill pending">Bài 1</span>
+                                    </div>
+                                    <h3><a href="lesson-detail.html?id=lesson-01" style="color: inherit; text-decoration: none;">Bài 1: Giới thiệu về C++ &amp; Cấu trúc chương trình</a></h3>
+                                    <p>Làm quen với ngôn ngữ C++, tìm hiểu cấu trúc của một chương trình chuẩn và viết chương trình Hello World đầu tiên.</p>
+                                    <div class="lesson-card-info"><span>⏱ 20 phút</span><span>⚡ 3 Bài tập thực hành</span></div>
+                                </div>
+                                <div class="lesson-card-action">
+                                    <a href="lesson-detail.html?id=lesson-01" class="btn-lesson-interactive" data-lesson-id="lesson-01"><span>Bắt đầu học</span><span class="btn-arrow">→</span></a>
+                                </div>
+                            </article>
 
-                    <div class="loading-card">
+                            <article class="lesson-card lesson-list-card not-completed" data-lesson-id="lesson-02" style="cursor: pointer;">
+                                <div class="lesson-card-top"><span class="lesson-number">02</span><span class="lesson-status">○</span></div>
+                                <div class="lesson-card-icon">📦</div>
+                                <div class="lesson-card-content">
+                                    <div class="lesson-card-meta">
+                                        <span class="lesson-chapter">Chương 1: Bắt đầu với C++</span>
+                                        <span class="lesson-level">Cơ bản</span>
+                                        <span class="status-badge-pill pending">Bài 2</span>
+                                    </div>
+                                    <h3><a href="lesson-detail.html?id=lesson-02" style="color: inherit; text-decoration: none;">Bài 2: Biến, Kiểu dữ liệu &amp; Hằng số</a></h3>
+                                    <p>Hiểu rõ cách bộ nhớ lưu trữ dữ liệu thông qua biến, hằng số (const) và các kiểu dữ liệu nguyên thủy trong C++.</p>
+                                    <div class="lesson-card-info"><span>⏱ 25 phút</span><span>⚡ 3 Bài tập thực hành</span></div>
+                                </div>
+                                <div class="lesson-card-action">
+                                    <a href="lesson-detail.html?id=lesson-02" class="btn-lesson-interactive" data-lesson-id="lesson-02"><span>Bắt đầu học</span><span class="btn-arrow">→</span></a>
+                                </div>
+                            </article>
 
-                        <div class="loading-spinner"></div>
+                            <article class="lesson-card lesson-list-card not-completed" data-lesson-id="lesson-03" style="cursor: pointer;">
+                                <div class="lesson-card-top"><span class="lesson-number">03</span><span class="lesson-status">○</span></div>
+                                <div class="lesson-card-icon">⌨️</div>
+                                <div class="lesson-card-content">
+                                    <div class="lesson-card-meta">
+                                        <span class="lesson-chapter">Chương 1: Bắt đầu với C++</span>
+                                        <span class="lesson-level">Cơ bản</span>
+                                        <span class="status-badge-pill pending">Bài 3</span>
+                                    </div>
+                                    <h3><a href="lesson-detail.html?id=lesson-03" style="color: inherit; text-decoration: none;">Bài 3: Nhập &amp; Xuất dữ liệu với cin, cout</a></h3>
+                                    <p>Tương tác hai chiều với người dùng thông qua luồng nhập chuẩn (std::cin) và luồng xuất chuẩn (std::cout).</p>
+                                    <div class="lesson-card-info"><span>⏱ 25 phút</span><span>⚡ 3 Bài tập thực hành</span></div>
+                                </div>
+                                <div class="lesson-card-action">
+                                    <a href="lesson-detail.html?id=lesson-03" class="btn-lesson-interactive" data-lesson-id="lesson-03"><span>Bắt đầu học</span><span class="btn-arrow">→</span></a>
+                                </div>
+                            </article>
 
-                        <p>
-                            Đang tải danh sách bài học...
-                        </p>
-
+                            <article class="lesson-card lesson-list-card not-completed" data-lesson-id="lesson-04" style="cursor: pointer;">
+                                <div class="lesson-card-top"><span class="lesson-number">04</span><span class="lesson-status">○</span></div>
+                                <div class="lesson-card-icon">➗</div>
+                                <div class="lesson-card-content">
+                                    <div class="lesson-card-meta">
+                                        <span class="lesson-chapter">Chương 1: Bắt đầu với C++</span>
+                                        <span class="lesson-level">Cơ bản</span>
+                                        <span class="status-badge-pill pending">Bài 4</span>
+                                    </div>
+                                    <h3><a href="lesson-detail.html?id=lesson-04" style="color: inherit; text-decoration: none;">Bài 4: Các toán tử trong C++</a></h3>
+                                    <p>Nắm vững toán tử số học, toán tử gán, so sánh, logic và toán tử tăng/giảm (++, --) trong biểu thức C++.</p>
+                                    <div class="lesson-card-info"><span>⏱ 30 phút</span><span>⚡ 3 Bài tập thực hành</span></div>
+                                </div>
+                                <div class="lesson-card-action">
+                                    <a href="lesson-detail.html?id=lesson-04" class="btn-lesson-interactive" data-lesson-id="lesson-04"><span>Bắt đầu học</span><span class="btn-arrow">→</span></a>
+                                </div>
+                            </article>
+                        </div>
                     </div>
 
+                    <!-- Chương 2: Bài 5, 6 -->
+                    <div class="chapter-group-section" data-chapter-group="Chương 2">
+                        <div class="chapter-group-header">
+                            <div class="chapter-group-title-wrap">
+                                <span class="chapter-group-badge">CHƯƠNG 2</span>
+                                <div>
+                                    <h3>Chương 2: Cấu trúc rẽ nhánh</h3>
+                                    <p>Bao gồm Bài 5, Bài 6 — Điều khiển luồng chương trình bằng điều kiện if-else và switch-case</p>
+                                </div>
+                            </div>
+                            <span class="chapter-group-count">2 bài học</span>
+                        </div>
+                        <div class="chapter-group-lessons">
+                            <article class="lesson-card lesson-list-card not-completed" data-lesson-id="lesson-05" style="cursor: pointer;">
+                                <div class="lesson-card-top"><span class="lesson-number">05</span><span class="lesson-status">○</span></div>
+                                <div class="lesson-card-icon">🔀</div>
+                                <div class="lesson-card-content">
+                                    <div class="lesson-card-meta">
+                                        <span class="lesson-chapter">Chương 2: Cấu trúc rẽ nhánh</span>
+                                        <span class="lesson-level">Cơ bản</span>
+                                        <span class="status-badge-pill pending">Bài 5</span>
+                                    </div>
+                                    <h3><a href="lesson-detail.html?id=lesson-05" style="color: inherit; text-decoration: none;">Bài 5: Cấu trúc điều kiện if, else if, else</a></h3>
+                                    <p>Điều khiển luồng thực thi của chương trình dựa trên các biểu thức điều kiện đúng hoặc sai.</p>
+                                    <div class="lesson-card-info"><span>⏱ 30 phút</span><span>⚡ 3 Bài tập thực hành</span></div>
+                                </div>
+                                <div class="lesson-card-action">
+                                    <a href="lesson-detail.html?id=lesson-05" class="btn-lesson-interactive" data-lesson-id="lesson-05"><span>Bắt đầu học</span><span class="btn-arrow">→</span></a>
+                                </div>
+                            </article>
+
+                            <article class="lesson-card lesson-list-card not-completed" data-lesson-id="lesson-06" style="cursor: pointer;">
+                                <div class="lesson-card-top"><span class="lesson-number">06</span><span class="lesson-status">○</span></div>
+                                <div class="lesson-card-icon">🔁</div>
+                                <div class="lesson-card-content">
+                                    <div class="lesson-card-meta">
+                                        <span class="lesson-chapter">Chương 2: Cấu trúc rẽ nhánh</span>
+                                        <span class="lesson-level">Cơ bản</span>
+                                        <span class="status-badge-pill pending">Bài 6</span>
+                                    </div>
+                                    <h3><a href="lesson-detail.html?id=lesson-06" style="color: inherit; text-decoration: none;">Bài 6: Cấu trúc rẽ nhánh switch - case</a></h3>
+                                    <p>Tối ưu hóa việc kiểm tra một biến nguyên hoặc ký tự với nhiều trường hợp giá trị cố định khác nhau.</p>
+                                    <div class="lesson-card-info"><span>⏱ 25 phút</span><span>⚡ 3 Bài tập thực hành</span></div>
+                                </div>
+                                <div class="lesson-card-action">
+                                    <a href="lesson-detail.html?id=lesson-06" class="btn-lesson-interactive" data-lesson-id="lesson-06"><span>Bắt đầu học</span><span class="btn-arrow">→</span></a>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+
+                    <!-- Chương 3: Bài 7, 8, 9 -->
+                    <div class="chapter-group-section" data-chapter-group="Chương 3">
+                        <div class="chapter-group-header">
+                            <div class="chapter-group-title-wrap">
+                                <span class="chapter-group-badge">CHƯƠNG 3</span>
+                                <div>
+                                    <h3>Chương 3: Cấu trúc vòng lặp</h3>
+                                    <p>Bao gồm Bài 7, Bài 8, Bài 9 — Tự động hóa công việc lặp đi lặp lại với for, while, do-while, break &amp; continue</p>
+                                </div>
+                            </div>
+                            <span class="chapter-group-count">3 bài học</span>
+                        </div>
+                        <div class="chapter-group-lessons">
+                            <article class="lesson-card lesson-list-card not-completed" data-lesson-id="lesson-07" style="cursor: pointer;">
+                                <div class="lesson-card-top"><span class="lesson-number">07</span><span class="lesson-status">○</span></div>
+                                <div class="lesson-card-icon">🧩</div>
+                                <div class="lesson-card-content">
+                                    <div class="lesson-card-meta">
+                                        <span class="lesson-chapter">Chương 3: Cấu trúc vòng lặp</span>
+                                        <span class="lesson-level">Trung bình</span>
+                                        <span class="status-badge-pill pending">Bài 7</span>
+                                    </div>
+                                    <h3><a href="lesson-detail.html?id=lesson-07" style="color: inherit; text-decoration: none;">Bài 7: Vòng lặp for cơ bản &amp; nâng cao</a></h3>
+                                    <p>Tự động hóa các công việc lặp đi lặp lại với số lần xác định trước bằng cấu trúc vòng lặp for.</p>
+                                    <div class="lesson-card-info"><span>⏱ 30 phút</span><span>⚡ 3 Bài tập thực hành</span></div>
+                                </div>
+                                <div class="lesson-card-action">
+                                    <a href="lesson-detail.html?id=lesson-07" class="btn-lesson-interactive" data-lesson-id="lesson-07"><span>Bắt đầu học</span><span class="btn-arrow">→</span></a>
+                                </div>
+                            </article>
+
+                            <article class="lesson-card lesson-list-card not-completed" data-lesson-id="lesson-08" style="cursor: pointer;">
+                                <div class="lesson-card-top"><span class="lesson-number">08</span><span class="lesson-status">○</span></div>
+                                <div class="lesson-card-icon">📝</div>
+                                <div class="lesson-card-content">
+                                    <div class="lesson-card-meta">
+                                        <span class="lesson-chapter">Chương 3: Cấu trúc vòng lặp</span>
+                                        <span class="lesson-level">Trung bình</span>
+                                        <span class="status-badge-pill pending">Bài 8</span>
+                                    </div>
+                                    <h3><a href="lesson-detail.html?id=lesson-08" style="color: inherit; text-decoration: none;">Bài 8: Vòng lặp while và do-while</a></h3>
+                                    <p>Xử lý các bài toán lặp khi chưa biết trước số lần lặp như tách chữ số, tìm ước chung lớn nhất.</p>
+                                    <div class="lesson-card-info"><span>⏱ 30 phút</span><span>⚡ 3 Bài tập thực hành</span></div>
+                                </div>
+                                <div class="lesson-card-action">
+                                    <a href="lesson-detail.html?id=lesson-08" class="btn-lesson-interactive" data-lesson-id="lesson-08"><span>Bắt đầu học</span><span class="btn-arrow">→</span></a>
+                                </div>
+                            </article>
+
+                            <article class="lesson-card lesson-list-card not-completed" data-lesson-id="lesson-09" style="cursor: pointer;">
+                                <div class="lesson-card-top"><span class="lesson-number">09</span><span class="lesson-status">○</span></div>
+                                <div class="lesson-card-icon">⚙️</div>
+                                <div class="lesson-card-content">
+                                    <div class="lesson-card-meta">
+                                        <span class="lesson-chapter">Chương 3: Cấu trúc vòng lặp</span>
+                                        <span class="lesson-level">Trung bình</span>
+                                        <span class="status-badge-pill pending">Bài 9</span>
+                                    </div>
+                                    <h3><a href="lesson-detail.html?id=lesson-09" style="color: inherit; text-decoration: none;">Bài 9: Lệnh điều khiển break &amp; continue</a></h3>
+                                    <p>Làm chủ kỹ thuật thoát vòng lặp sớm với break hoặc bỏ qua một bước lặp với continue.</p>
+                                    <div class="lesson-card-info"><span>⏱ 20 phút</span><span>⚡ 3 Bài tập thực hành</span></div>
+                                </div>
+                                <div class="lesson-card-action">
+                                    <a href="lesson-detail.html?id=lesson-09" class="btn-lesson-interactive" data-lesson-id="lesson-09"><span>Bắt đầu học</span><span class="btn-arrow">→</span></a>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+
+                    <!-- Chương 4: Bài 10, 11 -->
+                    <div class="chapter-group-section" data-chapter-group="Chương 4">
+                        <div class="chapter-group-header">
+                            <div class="chapter-group-title-wrap">
+                                <span class="chapter-group-badge">CHƯƠNG 4</span>
+                                <div>
+                                    <h3>Chương 4: Hàm &amp; Tổ chức mã nguồn</h3>
+                                    <p>Bao gồm Bài 10, Bài 11 — Xây dựng hàm, truyền tham trị/tham chiếu, nạp chồng hàm và đệ quy</p>
+                                </div>
+                            </div>
+                            <span class="chapter-group-count">2 bài học</span>
+                        </div>
+                        <div class="chapter-group-lessons">
+                            <article class="lesson-card lesson-list-card not-completed" data-lesson-id="lesson-10" style="cursor: pointer;">
+                                <div class="lesson-card-top"><span class="lesson-number">10</span><span class="lesson-status">○</span></div>
+                                <div class="lesson-card-icon">💡</div>
+                                <div class="lesson-card-content">
+                                    <div class="lesson-card-meta">
+                                        <span class="lesson-chapter">Chương 4: Hàm &amp; Tổ chức mã nguồn</span>
+                                        <span class="lesson-level">Trung bình</span>
+                                        <span class="status-badge-pill pending">Bài 10</span>
+                                    </div>
+                                    <h3><a href="lesson-detail.html?id=lesson-10" style="color: inherit; text-decoration: none;">Bài 10: Hàm (Functions) &amp; Truyền tham số</a></h3>
+                                    <p>Chia nhỏ chương trình thành các module tái sử dụng được, phân biệt rõ truyền tham trị và truyền tham chiếu.</p>
+                                    <div class="lesson-card-info"><span>⏱ 35 phút</span><span>⚡ 3 Bài tập thực hành</span></div>
+                                </div>
+                                <div class="lesson-card-action">
+                                    <a href="lesson-detail.html?id=lesson-10" class="btn-lesson-interactive" data-lesson-id="lesson-10"><span>Bắt đầu học</span><span class="btn-arrow">→</span></a>
+                                </div>
+                            </article>
+
+                            <article class="lesson-card lesson-list-card not-completed" data-lesson-id="lesson-11" style="cursor: pointer;">
+                                <div class="lesson-card-top"><span class="lesson-number">11</span><span class="lesson-status">○</span></div>
+                                <div class="lesson-card-icon">🚀</div>
+                                <div class="lesson-card-content">
+                                    <div class="lesson-card-meta">
+                                        <span class="lesson-chapter">Chương 4: Hàm &amp; Tổ chức mã nguồn</span>
+                                        <span class="lesson-level">Trung bình</span>
+                                        <span class="status-badge-pill pending">Bài 11</span>
+                                    </div>
+                                    <h3><a href="lesson-detail.html?id=lesson-11" style="color: inherit; text-decoration: none;">Bài 11: Nạp chồng hàm &amp; Đệ quy (Recursion)</a></h3>
+                                    <p>Khám phá kỹ thuật Function Overloading và tư duy giải quyết bài toán bằng hàm tự gọi lại chính nó (Đệ quy).</p>
+                                    <div class="lesson-card-info"><span>⏱ 30 phút</span><span>⚡ 3 Bài tập thực hành</span></div>
+                                </div>
+                                <div class="lesson-card-action">
+                                    <a href="lesson-detail.html?id=lesson-11" class="btn-lesson-interactive" data-lesson-id="lesson-11"><span>Bắt đầu học</span><span class="btn-arrow">→</span></a>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+
+                    <!-- Chương 5: Bài 12, 13, 14, 15 -->
+                    <div class="chapter-group-section" data-chapter-group="Chương 5">
+                        <div class="chapter-group-header">
+                            <div class="chapter-group-title-wrap">
+                                <span class="chapter-group-badge">CHƯƠNG 5</span>
+                                <div>
+                                    <h3>Chương 5: Mảng &amp; Chuỗi ký tự</h3>
+                                    <p>Bao gồm Bài 12, Bài 13, Bài 14, Bài 15 — Mảng 1 chiều, thuật toán mảng, chuỗi std::string và ma trận 2 chiều</p>
+                                </div>
+                            </div>
+                            <span class="chapter-group-count">4 bài học</span>
+                        </div>
+                        <div class="chapter-group-lessons">
+                            <article class="lesson-card lesson-list-card not-completed" data-lesson-id="lesson-12" style="cursor: pointer;">
+                                <div class="lesson-card-top"><span class="lesson-number">12</span><span class="lesson-status">○</span></div>
+                                <div class="lesson-card-icon">📦</div>
+                                <div class="lesson-card-content">
+                                    <div class="lesson-card-meta">
+                                        <span class="lesson-chapter">Chương 5: Mảng &amp; Chuỗi ký tự</span>
+                                        <span class="lesson-level">Trung bình</span>
+                                        <span class="status-badge-pill pending">Bài 12</span>
+                                    </div>
+                                    <h3><a href="lesson-detail.html?id=lesson-12" style="color: inherit; text-decoration: none;">Bài 12: Mảng một chiều (1D Array)</a></h3>
+                                    <p>Lưu trữ và quản lý hàng loạt phần tử cùng kiểu dữ liệu trong vùng nhớ liên tiếp bằng mảng một chiều.</p>
+                                    <div class="lesson-card-info"><span>⏱ 30 phút</span><span>⚡ 3 Bài tập thực hành</span></div>
+                                </div>
+                                <div class="lesson-card-action">
+                                    <a href="lesson-detail.html?id=lesson-12" class="btn-lesson-interactive" data-lesson-id="lesson-12"><span>Bắt đầu học</span><span class="btn-arrow">→</span></a>
+                                </div>
+                            </article>
+
+                            <article class="lesson-card lesson-list-card not-completed" data-lesson-id="lesson-13" style="cursor: pointer;">
+                                <div class="lesson-card-top"><span class="lesson-number">13</span><span class="lesson-status">○</span></div>
+                                <div class="lesson-card-icon">⌨️</div>
+                                <div class="lesson-card-content">
+                                    <div class="lesson-card-meta">
+                                        <span class="lesson-chapter">Chương 5: Mảng &amp; Chuỗi ký tự</span>
+                                        <span class="lesson-level">Trung bình</span>
+                                        <span class="status-badge-pill pending">Bài 13</span>
+                                    </div>
+                                    <h3><a href="lesson-detail.html?id=lesson-13" style="color: inherit; text-decoration: none;">Bài 13: Các thuật toán mảng cơ bản</a></h3>
+                                    <p>Thực hành các thuật toán nền tảng trên mảng: Tìm Max/Min, Tìm kiếm tuyến tính, Đảo ngược và Sắp xếp mảng.</p>
+                                    <div class="lesson-card-info"><span>⏱ 35 phút</span><span>⚡ 3 Bài tập thực hành</span></div>
+                                </div>
+                                <div class="lesson-card-action">
+                                    <a href="lesson-detail.html?id=lesson-13" class="btn-lesson-interactive" data-lesson-id="lesson-13"><span>Bắt đầu học</span><span class="btn-arrow">→</span></a>
+                                </div>
+                            </article>
+
+                            <article class="lesson-card lesson-list-card not-completed" data-lesson-id="lesson-14" style="cursor: pointer;">
+                                <div class="lesson-card-top"><span class="lesson-number">14</span><span class="lesson-status">○</span></div>
+                                <div class="lesson-card-icon">➗</div>
+                                <div class="lesson-card-content">
+                                    <div class="lesson-card-meta">
+                                        <span class="lesson-chapter">Chương 5: Mảng &amp; Chuỗi ký tự</span>
+                                        <span class="lesson-level">Trung bình</span>
+                                        <span class="status-badge-pill pending">Bài 14</span>
+                                    </div>
+                                    <h3><a href="lesson-detail.html?id=lesson-14" style="color: inherit; text-decoration: none;">Bài 14: Chuỗi ký tự std::string</a></h3>
+                                    <p>Xử lý văn bản mạnh mẽ và an toàn với lớp std::string trong thư viện chuẩn C++.</p>
+                                    <div class="lesson-card-info"><span>⏱ 30 phút</span><span>⚡ 3 Bài tập thực hành</span></div>
+                                </div>
+                                <div class="lesson-card-action">
+                                    <a href="lesson-detail.html?id=lesson-14" class="btn-lesson-interactive" data-lesson-id="lesson-14"><span>Bắt đầu học</span><span class="btn-arrow">→</span></a>
+                                </div>
+                            </article>
+
+                            <article class="lesson-card lesson-list-card not-completed" data-lesson-id="lesson-15" style="cursor: pointer;">
+                                <div class="lesson-card-top"><span class="lesson-number">15</span><span class="lesson-status">○</span></div>
+                                <div class="lesson-card-icon">🔀</div>
+                                <div class="lesson-card-content">
+                                    <div class="lesson-card-meta">
+                                        <span class="lesson-chapter">Chương 5: Mảng &amp; Chuỗi ký tự</span>
+                                        <span class="lesson-level">Trung bình</span>
+                                        <span class="status-badge-pill pending">Bài 15</span>
+                                    </div>
+                                    <h3><a href="lesson-detail.html?id=lesson-15" style="color: inherit; text-decoration: none;">Bài 15: Mảng hai chiều (Ma trận 2D)</a></h3>
+                                    <p>Biểu diễn bảng dữ liệu, lưới tọa độ và ma trận toán học bằng mảng hai chiều kết hợp vòng lặp lồng nhau.</p>
+                                    <div class="lesson-card-info"><span>⏱ 35 phút</span><span>⚡ 3 Bài tập thực hành</span></div>
+                                </div>
+                                <div class="lesson-card-action">
+                                    <a href="lesson-detail.html?id=lesson-15" class="btn-lesson-interactive" data-lesson-id="lesson-15"><span>Bắt đầu học</span><span class="btn-arrow">→</span></a>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+
+                    <!-- Chương 6: Bài 16, 17 -->
+                    <div class="chapter-group-section" data-chapter-group="Chương 6">
+                        <div class="chapter-group-header">
+                            <div class="chapter-group-title-wrap">
+                                <span class="chapter-group-badge">CHƯƠNG 6</span>
+                                <div>
+                                    <h3>Chương 6: Con trỏ &amp; Quản lý bộ nhớ</h3>
+                                    <p>Bao gồm Bài 16, Bài 17 — Địa chỉ bộ nhớ, con trỏ (Pointers) và cấp phát động new &amp; delete</p>
+                                </div>
+                            </div>
+                            <span class="chapter-group-count">2 bài học</span>
+                        </div>
+                        <div class="chapter-group-lessons">
+                            <article class="lesson-card lesson-list-card not-completed" data-lesson-id="lesson-16" style="cursor: pointer;">
+                                <div class="lesson-card-top"><span class="lesson-number">16</span><span class="lesson-status">○</span></div>
+                                <div class="lesson-card-icon">🔁</div>
+                                <div class="lesson-card-content">
+                                    <div class="lesson-card-meta">
+                                        <span class="lesson-chapter">Chương 6: Con trỏ &amp; Quản lý bộ nhớ</span>
+                                        <span class="lesson-level">Nâng cao</span>
+                                        <span class="status-badge-pill pending">Bài 16</span>
+                                    </div>
+                                    <h3><a href="lesson-detail.html?id=lesson-16" style="color: inherit; text-decoration: none;">Bài 16: Con trỏ (Pointers) trong C++</a></h3>
+                                    <p>Chinh phục khái niệm cốt lõi làm nên sức mạnh của C++: Địa chỉ bộ nhớ, toán tử &amp; và con trỏ *.</p>
+                                    <div class="lesson-card-info"><span>⏱ 35 phút</span><span>⚡ 3 Bài tập thực hành</span></div>
+                                </div>
+                                <div class="lesson-card-action">
+                                    <a href="lesson-detail.html?id=lesson-16" class="btn-lesson-interactive" data-lesson-id="lesson-16"><span>Bắt đầu học</span><span class="btn-arrow">→</span></a>
+                                </div>
+                            </article>
+
+                            <article class="lesson-card lesson-list-card not-completed" data-lesson-id="lesson-17" style="cursor: pointer;">
+                                <div class="lesson-card-top"><span class="lesson-number">17</span><span class="lesson-status">○</span></div>
+                                <div class="lesson-card-icon">🧩</div>
+                                <div class="lesson-card-content">
+                                    <div class="lesson-card-meta">
+                                        <span class="lesson-chapter">Chương 6: Con trỏ &amp; Quản lý bộ nhớ</span>
+                                        <span class="lesson-level">Nâng cao</span>
+                                        <span class="status-badge-pill pending">Bài 17</span>
+                                    </div>
+                                    <h3><a href="lesson-detail.html?id=lesson-17" style="color: inherit; text-decoration: none;">Bài 17: Cấp phát bộ nhớ động (new &amp; delete)</a></h3>
+                                    <p>Quản lý vùng nhớ Heap linh hoạt lúc chương trình đang chạy và cách phòng tránh rò rỉ bộ nhớ (Memory Leak).</p>
+                                    <div class="lesson-card-info"><span>⏱ 35 phút</span><span>⚡ 3 Bài tập thực hành</span></div>
+                                </div>
+                                <div class="lesson-card-action">
+                                    <a href="lesson-detail.html?id=lesson-17" class="btn-lesson-interactive" data-lesson-id="lesson-17"><span>Bắt đầu học</span><span class="btn-arrow">→</span></a>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+
+                    <!-- Chương 7: Bài 18, 19, 20 -->
+                    <div class="chapter-group-section" data-chapter-group="Chương 7">
+                        <div class="chapter-group-header">
+                            <div class="chapter-group-title-wrap">
+                                <span class="chapter-group-badge">CHƯƠNG 7</span>
+                                <div>
+                                    <h3>Chương 7: Lập trình Hướng đối tượng (OOP)</h3>
+                                    <p>Bao gồm Bài 18, Bài 19, Bài 20 — Kiểu dữ liệu cấu trúc struct, Lớp Class &amp; Object, Constructor và Kế thừa</p>
+                                </div>
+                            </div>
+                            <span class="chapter-group-count">3 bài học</span>
+                        </div>
+                        <div class="chapter-group-lessons">
+                            <article class="lesson-card lesson-list-card not-completed" data-lesson-id="lesson-18" style="cursor: pointer;">
+                                <div class="lesson-card-top"><span class="lesson-number">18</span><span class="lesson-status">○</span></div>
+                                <div class="lesson-card-icon">📝</div>
+                                <div class="lesson-card-content">
+                                    <div class="lesson-card-meta">
+                                        <span class="lesson-chapter">Chương 7: Lập trình Hướng đối tượng (OOP)</span>
+                                        <span class="lesson-level">Trung bình</span>
+                                        <span class="status-badge-pill pending">Bài 18</span>
+                                    </div>
+                                    <h3><a href="lesson-detail.html?id=lesson-18" style="color: inherit; text-decoration: none;">Bài 18: Kiểu dữ liệu cấu trúc (struct)</a></h3>
+                                    <p>Gom nhóm nhiều thuộc tính có kiểu dữ liệu khác nhau thành một kiểu dữ liệu mới thống nhất (VD: SinhVien, Diem2D).</p>
+                                    <div class="lesson-card-info"><span>⏱ 30 phút</span><span>⚡ 3 Bài tập thực hành</span></div>
+                                </div>
+                                <div class="lesson-card-action">
+                                    <a href="lesson-detail.html?id=lesson-18" class="btn-lesson-interactive" data-lesson-id="lesson-18"><span>Bắt đầu học</span><span class="btn-arrow">→</span></a>
+                                </div>
+                            </article>
+
+                            <article class="lesson-card lesson-list-card not-completed" data-lesson-id="lesson-19" style="cursor: pointer;">
+                                <div class="lesson-card-top"><span class="lesson-number">19</span><span class="lesson-status">○</span></div>
+                                <div class="lesson-card-icon">⚙️</div>
+                                <div class="lesson-card-content">
+                                    <div class="lesson-card-meta">
+                                        <span class="lesson-chapter">Chương 7: Lập trình Hướng đối tượng (OOP)</span>
+                                        <span class="lesson-level">Nâng cao</span>
+                                        <span class="status-badge-pill pending">Bài 19</span>
+                                    </div>
+                                    <h3><a href="lesson-detail.html?id=lesson-19" style="color: inherit; text-decoration: none;">Bài 19: Lớp (Class) &amp; Đối tượng (Object)</a></h3>
+                                    <p>Bước vào Lập trình Hướng đối tượng: Đóng gói thuộc tính (private) và phương thức (public) trong một Class.</p>
+                                    <div class="lesson-card-info"><span>⏱ 35 phút</span><span>⚡ 3 Bài tập thực hành</span></div>
+                                </div>
+                                <div class="lesson-card-action">
+                                    <a href="lesson-detail.html?id=lesson-19" class="btn-lesson-interactive" data-lesson-id="lesson-19"><span>Bắt đầu học</span><span class="btn-arrow">→</span></a>
+                                </div>
+                            </article>
+
+                            <article class="lesson-card lesson-list-card not-completed" data-lesson-id="lesson-20" style="cursor: pointer;">
+                                <div class="lesson-card-top"><span class="lesson-number">20</span><span class="lesson-status">○</span></div>
+                                <div class="lesson-card-icon">💡</div>
+                                <div class="lesson-card-content">
+                                    <div class="lesson-card-meta">
+                                        <span class="lesson-chapter">Chương 7: Lập trình Hướng đối tượng (OOP)</span>
+                                        <span class="lesson-level">Nâng cao</span>
+                                        <span class="status-badge-pill pending">Bài 20</span>
+                                    </div>
+                                    <h3><a href="lesson-detail.html?id=lesson-20" style="color: inherit; text-decoration: none;">Bài 20: Constructor, Destructor &amp; Kế thừa (OOP)</a></h3>
+                                    <p>Hoàn thiện kỹ năng OOP với Hàm khởi tạo (Constructor), Hàm hủy (Destructor) và Tính kế thừa (Inheritance).</p>
+                                    <div class="lesson-card-info"><span>⏱ 40 phút</span><span>⚡ 3 Bài tập thực hành</span></div>
+                                </div>
+                                <div class="lesson-card-action">
+                                    <a href="lesson-detail.html?id=lesson-20" class="btn-lesson-interactive" data-lesson-id="lesson-20"><span>Bắt đầu học</span><span class="btn-arrow">→</span></a>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
                 </div>
 
 
