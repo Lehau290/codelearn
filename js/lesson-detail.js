@@ -940,91 +940,122 @@ function setupRunButton(
 
 function simulateCppExecution(
     code,
-    lesson
+    lesson,
+    inputVal = ""
 ) {
-    const normalized =
-        code.toLowerCase();
-
-
-    // --------------------------------------------------------
-    // Code rỗng
-    // --------------------------------------------------------
-
-    if (!code.trim()) {
+    if (!code || !code.trim()) {
         return {
             success: false,
-            output:
-                "Không có code để chạy."
+            output: "⚠️ Bạn chưa nhập code để chạy."
         };
     }
 
-
-    // --------------------------------------------------------
-    // Kiểm tra một số lỗi cú pháp cơ bản
-    // --------------------------------------------------------
-
-    if (
-        !code.includes("#include") &&
-        !code.includes("iostream")
-    ) {
+    if (!code.includes("#include") && !code.includes("main")) {
         return {
             success: false,
-            output:
-                "⚠️ Có vẻ bạn chưa khai báo thư viện cần thiết."
+            output: "⚠️ Cảnh báo: Thiếu cấu trúc chương trình C++ cơ bản (#include <iostream>, int main)."
         };
     }
 
+    // Kiểm tra thiếu dấu chấm phẩy cơ bản
+    const lines = code.split("\n");
+    let missingSemicolon = false;
+    for (let line of lines) {
+        const trimmed = line.trim();
+        if (trimmed && !trimmed.startsWith("//") && !trimmed.startsWith("#") && !trimmed.endsWith("{") && !trimmed.endsWith("}") && !trimmed.endsWith(";")) {
+            if (trimmed.startsWith("cout") || trimmed.startsWith("int ") || trimmed.startsWith("double ") || trimmed.startsWith("string ") || trimmed.startsWith("return ")) {
+                missingSemicolon = true;
+                break;
+            }
+        }
+    }
 
-    if (
-        code.includes("cout") &&
-        !code.includes(";")
-    ) {
+    if (missingSemicolon) {
         return {
             success: false,
-            output:
-                "⚠️ Có thể bạn đang thiếu dấu ';'."
+            output: "❌ Lỗi biên dịch (Compile Error):\nerror: expected ';' before end of statement"
         };
     }
 
+    // Biến và dữ liệu đầu vào stdin
+    const vars = {};
+    const inputTokens = (inputVal || "").trim().split(/\s+/).filter(Boolean);
+    let inputIdx = 0;
 
-    // --------------------------------------------------------
-    // Mô phỏng cout
-    // --------------------------------------------------------
-
-    const coutMatches =
-        [
-            ...code.matchAll(
-                /cout\s*<<\s*["'`](.*?)["'`]/g
-            )
-        ];
-
-
-    if (coutMatches.length > 0) {
-
-        const outputs =
-            coutMatches.map(
-                match => match[1]
-            );
-
-        return {
-            success: true,
-            output:
-                outputs.join("\n") +
-                "\n\n✓ Chương trình chạy thành công."
-        };
+    // Phân tích cin >> ...
+    const cinMatches = code.matchAll(/cin\s*>>\s*([a-zA-Z0-9_]+)/g);
+    for (const cMatch of cinMatches) {
+        const varName = cMatch[1];
+        if (inputIdx < inputTokens.length) {
+            vars[varName] = isNaN(inputTokens[inputIdx]) ? inputTokens[inputIdx] : Number(inputTokens[inputIdx]);
+            inputIdx++;
+        }
     }
 
+    // Phân tích gán biến đơn giản: int a = 10, double b = 2.5, string s = "Hello"
+    const assignMatches = code.matchAll(/(?:int|long\s+long|double|float|string)\s+([a-zA-Z0-9_]+)\s*=\s*([^;,]+)/g);
+    for (const aMatch of assignMatches) {
+        const vName = aMatch[1];
+        let vVal = aMatch[2].trim();
+        if (vVal.startsWith('"') && vVal.endsWith('"')) {
+            vars[vName] = vVal.slice(1, -1);
+        } else if (!isNaN(vVal)) {
+            vars[vName] = Number(vVal);
+        }
+    }
 
-    // --------------------------------------------------------
-    // Nếu chưa phát hiện cout
-    // --------------------------------------------------------
+    // Trích xuất và mô phỏng các dòng cout << ... ;
+    let simulatedOutput = [];
+    const coutRegex = /cout\s*<<\s*([\s\S]*?);/g;
+    let match;
+
+    while ((match = coutRegex.exec(code)) !== null) {
+        const chain = match[1];
+        const parts = chain.split("<<");
+        let lineOut = "";
+        for (let part of parts) {
+            part = part.trim();
+            if (!part) continue;
+            if (part === "endl" || part === "'\\n'" || part === '"\\n"') {
+                lineOut += "\n";
+            } else if (part.startsWith('"') && part.endsWith('"')) {
+                lineOut += part.slice(1, -1).replace(/\\n/g, "\n").replace(/\\t/g, "\t");
+            } else if (part.startsWith("'") && part.endsWith("'")) {
+                lineOut += part.slice(1, -1);
+            } else if (vars[part] !== undefined) {
+                lineOut += vars[part];
+            } else {
+                try {
+                    let expr = part;
+                    for (const [k, v] of Object.entries(vars)) {
+                        expr = expr.replace(new RegExp(`\\b${k}\\b`, "g"), v);
+                    }
+                    if (/^[0-9+\-*/% ()]+$/.test(expr)) {
+                        lineOut += Function(`'use strict'; return (${expr})`)();
+                    } else {
+                        lineOut += part;
+                    }
+                } catch {
+                    lineOut += part;
+                }
+            }
+        }
+        simulatedOutput.push(lineOut);
+    }
+
+    let rawOut = simulatedOutput.join("");
+    if (!rawOut.trim()) {
+        rawOut = "Chương trình thực thi thành công (không có đầu ra ra màn hình).";
+    }
+
+    const isGH = window.CodeLearnApi && window.CodeLearnApi.isStaticHosted;
+    const footerNotice = isGH
+        ? "\n\n--------------------------------\n[Mô phỏng trình duyệt (GitHub Pages) • Để biên dịch 100% bằng g++ 13.2.0, vui lòng mở start_server.bat trên máy tính (http://localhost:5000)]"
+        : "\n\n--------------------------------\n[Mô phỏng trình duyệt • Để kích hoạt g++ 13.2.0, hãy mở start_server.bat (http://localhost:5000)]";
 
     return {
         success: true,
-        output:
-            "✓ Code đã được kiểm tra cơ bản.\n\n" +
-            "Chưa phát hiện lỗi cú pháp đơn giản.\n" +
-            "Bạn có thể tiếp tục hoàn thiện chương trình."
+        output: rawOut + footerNotice
     };
 }
 

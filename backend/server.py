@@ -1808,27 +1808,43 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
 
         return self.send_json(404, {"error": "Endpoint DELETE không tồn tại."})
 
-def run_server():
-    """Initializes DB and runs the HTTP server."""
+def run_server(port=PORT):
+    """Initializes DB and runs the HTTP server with port fallback."""
     init_db()
-    server_address = ("", PORT)
-    httpd = ThreadingHTTPServer(server_address, CodeLearnHandler)
+    current_port = port
+    httpd = None
+
+    for p in [port, port + 1, port + 2]:
+        try:
+            server_address = ("", p)
+            httpd = ThreadingHTTPServer(server_address, CodeLearnHandler)
+            current_port = p
+            break
+        except OSError as e:
+            if "10048" in str(e) or "Address already in use" in str(e):
+                continue
+            raise
+
+    if httpd is None:
+        print(f">> [LỖI] Cổng {port}, {port+1}, {port+2} đều đang bận!", flush=True)
+        return
+
     compiler_ver = get_compiler_version()
 
-    print("=" * 60)
-    print(">> CODELEARN C++ BACKEND SERVER IS RUNNING!")
-    print("=" * 60)
-    print(f"[*] Web & REST API:   http://localhost:{PORT}")
-    print(f"[*] Serving Files:    {BASE_DIR}")
-    print(f"[*] SQLite Database:  {os.path.join(BASE_DIR, 'backend', 'database.db')}")
-    print(f"[*] C++ Compiler:     {compiler_ver}")
-    print("=" * 60)
-    print("Nhan Ctrl + C de dung may chu.\n")
+    print("=" * 60, flush=True)
+    print(">> CODELEARN C++ BACKEND SERVER IS RUNNING!", flush=True)
+    print("=" * 60, flush=True)
+    print(f"[*] Web & REST API:   http://localhost:{current_port}", flush=True)
+    print(f"[*] Serving Files:    {BASE_DIR}", flush=True)
+    print(f"[*] SQLite Database:  {os.path.join(BASE_DIR, 'backend', 'database.db')}", flush=True)
+    print(f"[*] C++ Compiler:     {compiler_ver}", flush=True)
+    print("=" * 60, flush=True)
+    print("Nhan Ctrl + C de dung may chu.\n", flush=True)
 
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
-        print("\n>> May chu da dung an toan.")
+        print("\n>> May chu da dung an toan.", flush=True)
         httpd.server_close()
 
 if __name__ == "__main__":

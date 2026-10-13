@@ -7,13 +7,13 @@
 (function () {
     "use strict";
 
-    // Tự động nhận diện API URL:
-    // Nếu trang đang mở qua server Python (port 5000) -> dùng '/api'
-    // Nếu mở qua Live Server (port 5500) hoặc file:// -> dùng 'http://localhost:5000/api'
-    const isRunningOnBackendPort = window.location.port === "5000";
-    const API_BASE_URL = isRunningOnBackendPort
-        ? "/api"
-        : "http://localhost:5000/api";
+    // Tự động nhận diện API URL & Môi trường chạy:
+    const isHttps = typeof window !== "undefined" && window.location.protocol === "https:";
+    const isLocalhost = typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
+    const isDirectBackend = typeof window !== "undefined" && ["5000", "5001", "5002"].includes(window.location.port);
+    const isStaticHosted = isHttps && !isLocalhost; // Ví dụ: GitHub Pages (lehau290.github.io)
+
+    let API_BASE_URL = isDirectBackend ? "/api" : "http://localhost:5000/api";
 
     const TOKEN_KEY = "cpp_backend_token";
 
@@ -33,27 +33,44 @@
     }
 
     async function checkHealth() {
+        if (isStaticHosted) {
+            // Trên GitHub Pages (HTTPS), trình duyệt chặn HTTP request tới localhost (Mixed Content).
+            // Tự động chuyển sang chế độ Offline-First mượt mà không ném lỗi ra console.
+            _backendAvailable = false;
+            return false;
+        }
+
         // Cache health check for 10 seconds
         const now = Date.now();
         if (_backendAvailable !== null && now - _lastHealthCheck < 10000) {
             return _backendAvailable;
         }
 
-        try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 2000);
-            const res = await fetch(`${API_BASE_URL}/health`, {
-                signal: controller.signal
-            });
-            clearTimeout(timeoutId);
-            _backendAvailable = res.ok;
-            _lastHealthCheck = now;
-            return _backendAvailable;
-        } catch (e) {
-            _backendAvailable = false;
-            _lastHealthCheck = now;
-            return false;
+        const candidateUrls = [API_BASE_URL];
+        if (!isDirectBackend && API_BASE_URL.includes(":5000")) {
+            candidateUrls.push("http://localhost:5001/api");
         }
+
+        for (const base of candidateUrls) {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 1800);
+                const res = await fetch(`${base}/health`, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                if (res.ok) {
+                    API_BASE_URL = base;
+                    _backendAvailable = true;
+                    _lastHealthCheck = now;
+                    return true;
+                }
+            } catch (e) {
+                // Thử ứng viên tiếp theo
+            }
+        }
+
+        _backendAvailable = false;
+        _lastHealthCheck = now;
+        return false;
     }
 
     async function request(endpoint, options = {}) {
@@ -88,7 +105,8 @@
 
     // Export window.CodeLearnApi
     window.CodeLearnApi = {
-        API_BASE_URL,
+        get API_BASE_URL() { return API_BASE_URL; },
+        isStaticHosted,
         getToken,
         setToken,
         checkHealth,
