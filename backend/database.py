@@ -231,9 +231,13 @@ def init_db():
         """, ("user-student", "letrunghau", "letrunghau@codelearn.vn", student_pass, "Lê Trung Hậu", "student", "", now, now))
         conn.commit()
 
-    # Seed lessons and exercises if not exist
+    # Seed lessons and exercises if not exist or if content was upgraded with real-world examples
     cursor.execute("SELECT COUNT(*) as count FROM lessons")
-    if cursor.fetchone()["count"] == 0:
+    lesson_count = cursor.fetchone()["count"]
+    cursor.execute("SELECT content FROM lessons WHERE id = 'lesson-01'")
+    row_01 = cursor.fetchone()
+    needs_reseed = (lesson_count == 0) or (not row_01) or ("real-world-box" not in (row_01["content"] or ""))
+    if needs_reseed:
         seed_lessons_and_exercises(conn)
 
     conn.close()

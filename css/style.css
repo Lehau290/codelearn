@@ -12065,9 +12065,149 @@ body.dark-theme .btn-toggle-single-chap:hover {
     display: none;
 }
 
+/* =========================================================
+   DETAILED LESSON THEORY & REAL-WORLD ANALOGY BOXES
+   ========================================================= */
+.lesson-text h3 {
+    font-size: 1.12rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 22px 0 10px 0;
+    padding-left: 12px;
+    border-left: 4px solid #6366f1;
+    line-height: 1.4;
+}
 
+.lesson-text h3:first-child {
+    margin-top: 4px;
+}
 
+.lesson-text pre {
+    background: #0f172a;
+    color: #e2e8f0;
+    padding: 14px 18px;
+    border-radius: 12px;
+    font-family: "JetBrains Mono", Consolas, monospace;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    overflow-x: auto;
+    margin: 12px 0 16px 0;
+    border: 1px solid #1e293b;
+}
 
+.real-world-box {
+    margin: 22px 0 18px 0;
+    padding: 20px 22px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(6, 182, 212, 0.08) 100%);
+    border: 1.5px solid rgba(16, 185, 129, 0.32);
+    box-shadow: 0 8px 24px -8px rgba(16, 185, 129, 0.14);
+}
 
+.real-world-header {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+}
 
+.real-world-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    align-self: flex-start;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    font-size: 0.74rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    box-shadow: 0 3px 10px rgba(16, 185, 129, 0.28);
+}
 
+.real-world-header h4 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #065f46;
+}
+
+.real-world-box p {
+    margin-bottom: 10px;
+    color: #1e293b;
+}
+
+.real-world-box ul {
+    margin-bottom: 0;
+}
+
+.real-world-box li {
+    margin-bottom: 8px;
+}
+
+.pitfall-box {
+    margin: 18px 0 8px 0;
+    padding: 16px 20px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.09) 0%, rgba(239, 68, 68, 0.06) 100%);
+    border: 1.5px solid rgba(245, 158, 11, 0.35);
+}
+
+.pitfall-box h4 {
+    margin: 0 0 10px 0;
+    font-size: 0.98rem;
+    font-weight: 800;
+    color: #b45309;
+}
+
+.pitfall-box ul {
+    margin-bottom: 0;
+}
+
+.pitfall-box li {
+    margin-bottom: 6px;
+}
+
+/* Dark Mode for Detailed Lesson Theory & Real-World Boxes */
+html.dark-theme .lesson-text h3,
+body.dark-theme .lesson-text h3 {
+    color: #f8fafc;
+    border-left-color: #818cf8;
+}
+
+html.dark-theme .real-world-box,
+body.dark-theme .real-world-box {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.14) 0%, rgba(6, 182, 212, 0.12) 100%);
+    border-color: rgba(16, 185, 129, 0.4);
+    box-shadow: 0 10px 28px -10px rgba(0, 0, 0, 0.5);
+}
+
+html.dark-theme .real-world-header h4,
+body.dark-theme .real-world-header h4 {
+    color: #6ee7b7;
+}
+
+html.dark-theme .real-world-box p,
+body.dark-theme .real-world-box p,
+html.dark-theme .real-world-box li,
+body.dark-theme .real-world-box li {
+    color: #e2e8f0;
+}
+
+html.dark-theme .pitfall-box,
+body.dark-theme .pitfall-box {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.14) 0%, rgba(239, 68, 68, 0.1) 100%);
+    border-color: rgba(245, 158, 11, 0.42);
+}
+
+html.dark-theme .pitfall-box h4,
+body.dark-theme .pitfall-box h4 {
+    color: #fcd34d;
+}
+
+html.dark-theme .pitfall-box li,
+body.dark-theme .pitfall-box li {
+    color: #e2e8f0;
+}
