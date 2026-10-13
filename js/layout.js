@@ -548,6 +548,9 @@ function setupCodeCopyButtons() {
     const preBlocks = document.querySelectorAll("pre:not(.no-copy)");
     preBlocks.forEach(pre => {
         if (pre.querySelector(".copy-code-btn")) return;
+        if (pre.closest(".code-example") || pre.closest(".code-example-container") || (pre.parentElement && pre.parentElement.querySelector("#copyExampleButton, .code-copy-button"))) {
+            return;
+        }
 
         // Bọc pre trong wrapper nếu chưa có
         if (!pre.classList.contains("code-block-wrapper")) {

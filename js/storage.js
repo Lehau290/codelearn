@@ -24,7 +24,7 @@
        2. DEFAULT LESSONS
        ===================================================== */
 
-    const LESSONS_CONTENT_VERSION = "2026.10.realworld.v2";
+    const LESSONS_CONTENT_VERSION = "2026.10.realworld.v3";
 
     const DEFAULT_LESSONS = [
         {
@@ -78,13 +78,10 @@ using namespace std;
 
 int main() {
     // Mo phong in Hoa don thanh toan tai quan Ca phe C++
-    cout << "========================================" << endl;
-    cout << "       HIGHLANDS C++ COFFEE SHOP        " << endl;
-    cout << "========================================" << endl;
-    cout << "Mon: 01 Bac Xiu Da (Size L)   39.000 VND" << endl;
-    cout << "Mon: 01 Banh Mi Que Pate      19.000 VND" << endl;
-    cout << "----------------------------------------" << endl;
-    cout << "Tong thanh toan:              58.000 VND" << endl;
+    cout << "Cua hang: HIGHLANDS C++ COFFEE SHOP" << endl;
+    cout << "Mon 1: 01 Bac Xiu Da (Size L) - 39.000 VND" << endl;
+    cout << "Mon 2: 01 Banh Mi Que Pate    - 19.000 VND" << endl;
+    cout << "Tong thanh toan: 58.000 VND" << endl;
     cout << "Cam on quy khach & Hen gap lai!" << endl;
     return 0;
 }`,
@@ -160,7 +157,6 @@ int main() {
     double tamTinh = soLuongSua * donGia;
     double tongThanhToan = tamTinh + (tamTinh * THUE_VAT);
 
-    cout << "=== THONG TIN SAN PHAM SIEU THI ===" << endl;
     cout << "Phan hang chat luong: Loai " << phanHang << endl;
     cout << "Trang thai ton kho: " << conHang << " (1: Con hang, 0: Het)" << endl;
     cout << "So luong mua: " << soLuongSua << " loc" << endl;
@@ -239,10 +235,8 @@ int main() {
 
     int tongTien = (soVeNguoiLon * GIA_NGUOI_LON) + (soVeTreEm * GIA_TRE_EM);
 
-    cout << "=== QUAY DAT VE XEM PHIM TU DONG ===" << endl;
     cout << "So ve nguoi lon: " << soVeNguoiLon << " x 90.000d" << endl;
     cout << "So ve tre em   : " << soVeTreEm << " x 60.000d" << endl;
-    cout << "------------------------------------" << endl;
     cout << "Tong thanh toan: " << tongTien << " VND" << endl;
     return 0;
 }`,
@@ -324,7 +318,6 @@ int main() {
 
     int to50k = conLai / 50000;
 
-    cout << "=== MAY ATM PHAN BO MENH GIA TIEN ===" << endl;
     cout << "So tien yeu cau rut: " << soTienRut << " VND" << endl;
     cout << "- Menh gia 500.000d: " << to500k << " to" << endl;
     cout << "- Menh gia 200.000d: " << to200k << " to" << endl;
@@ -420,7 +413,6 @@ int main() {
     // Neu la khach VIP thi giam 10% tong hoa don
     double thanhToan = laKhachVIP ? (giaCuoc * 0.9) : giaCuoc;
 
-    cout << "=== HOA DON CUOC TAXI CONG NGHE ===" << endl;
     cout << "Quang duong di chuyen: " << soKm << " km" << endl;
     cout << "Cuoc tam tinh: " << giaCuoc << " VND" << endl;
     cout << "Hang khach hang: " << (laKhachVIP ? "Thanh vien VIP (-10%)" : "Thuong") << endl;
@@ -498,10 +490,8 @@ int main() {
     long long soDu = 15000000;
     long long soTienRut = 3000000;
 
-    cout << "=== MENU CAY ATM NGAN HANG C++ ===" << endl;
-    cout << "1. Van tin so du  | 2. Rut tien mat  | 3. Chuyen khoan" << endl;
+    cout << "Menu: 1. Van tin so du | 2. Rut tien mat | 3. Chuyen khoan" << endl;
     cout << "Khach hang da chon chuc nang so: " << luaChon << endl;
-    cout << "----------------------------------" << endl;
 
     switch (luaChon) {
         case 1:
@@ -597,9 +587,7 @@ int main() {
     double laiSuatNam = 0.07;   // Lai suat: 7% / nam
     int soNam = 5;
 
-    cout << "=== BANG KE LAI KEP TIET KIEM NGAN HANG ===" << endl;
     cout << "Von ban dau: " << (long long)tienGui << " VND (Lai suat 7%/nam)" << endl;
-    cout << "-------------------------------------------" << endl;
 
     for (int nam = 1; nam <= soNam; nam++) {
         double tienLai = tienGui * laiSuatNam;
@@ -737,7 +725,6 @@ int main() {
     int kienHang[8] = {120, 150, -1, 200, 180, 999, 130, 160};
     int tongKhoiLuong = 0;
 
-    cout << "=== HE THONG QUET KIEN HANG TU DONG ===" << endl;
     for (int i = 0; i < 8; i++) {
         if (kienHang[i] == -1) {
             cout << "[Canh bao] Kien hang #" << (i + 1) << " bi loi bao bi -> Bo qua (continue)!" << endl;
@@ -909,12 +896,9 @@ int tongLiXiDeQuy(int ngay) {
 }
 
 int main() {
-    cout << "=== 1. NAP CHONG HAM TINH CUOC SHIP ===" << endl;
-    cout << "Ship noi thanh (2.5 kg)         : " << tinhCuocShip(2.5) << " VND" << endl;
-    cout << "Ship lien tinh (2.5 kg, 30 km)  : " << tinhCuocShip(2.5, 30) << " VND" << endl;
-
-    cout << "\n=== 2. DE QUY TINH TIEN LI XI 5 NGAY TET ===" << endl;
-    cout << "Tong li xi sau 5 ngay Tet: " << tongLiXiDeQuy(5) << " VND" << endl;
+    cout << "Ship noi thanh (2.5 kg)        : " << tinhCuocShip(2.5) << " VND" << endl;
+    cout << "Ship lien tinh (2.5 kg, 30 km) : " << tinhCuocShip(2.5, 30) << " VND" << endl;
+    cout << "Tong li xi sau 5 ngay Tet      : " << tongLiXiDeQuy(5) << " VND" << endl;
     return 0;
 }`,
             exerciseTitle: "Tính số Fibonacci thứ n",
@@ -979,7 +963,6 @@ int main() {
     int tongChiTieu = 0;
     int ngayTieuNhieuNhat = 0;
 
-    cout << "=== BAO CAO CHI TIEU 7 NGAY TRONG TUAN ===" << endl;
     for (int i = 0; i < 7; i++) {
         cout << "Ngay thu " << (i + 2 <= 7 ? i + 2 : 8) << ": " << chiTieu[i] << ".000 VND" << endl;
         tongChiTieu += chiTieu[i];
@@ -988,7 +971,6 @@ int main() {
         }
     }
 
-    cout << "------------------------------------------" << endl;
     cout << "Tong chi tieu ca tuan : " << tongChiTieu << ".000 VND" << endl;
     cout << "Trung binh moi ngay   : " << (tongChiTieu / 7) << ".000 VND" << endl;
     cout << "Muc chi cao nhat ngay : " << chiTieu[ngayTieuNhieuNhat] << ".000 VND" << endl;
@@ -1074,7 +1056,6 @@ int main() {
         }
     }
 
-    cout << "=== BO LOC GIA SAN PHAM SHOPEE C++ ===" << endl;
     cout << "San pham re nhat : " << giaReNhat << ".000 VND" << endl;
     cout << "San pham dat nhat: " << giaDatNhat << ".000 VND" << endl;
     cout << "Danh sach gia tu Thap -> Cao: ";
@@ -1158,7 +1139,6 @@ int main() {
         if (matKhau[i] >= '0' && matKhau[i] <= '9') soChuSo++;
     }
 
-    cout << "=== HE THONG TAI KHOAN SINH VIEN ===" << endl;
     cout << "Ho va ten      : " << hoTen << " (" << hoTen.length() << " ky tu)" << endl;
     cout << "Email cap phat : " << emailTruong << endl;
     cout << "Do dai mat khau: " << matKhau.length() << " ky tu (" << soChuHoa << " chu hoa, " << soChuSo << " chu so)" << endl;
@@ -1234,7 +1214,6 @@ int main() {
 
     int gheTrong = 0, gheDaDat = 0;
 
-    cout << "=== SO DO GHE RAP CHIEU PHIM (1: Da dat, 0: Trong) ===" << endl;
     for (int hang = 0; hang < 3; hang++) {
         cout << "Hang " << (char)('A' + hang) << ": ";
         for (int cot = 0; cot < 4; cot++) {
@@ -1245,7 +1224,6 @@ int main() {
         cout << endl;
     }
 
-    cout << "------------------------------------------------------" << endl;
     cout << "So ghe da ban: " << gheDaDat << " ve | So ghe con trong: " << gheTrong << " ghe" << endl;
     return 0;
 }`,
@@ -1311,7 +1289,6 @@ int main() {
     int nhietDoPhong = 28;            // Nhiet do thuc te trong phong (28 do C)
     int* dieuKhienTuXa = &nhietDoPhong; // Con tro luu dia chi o nho cua cam bien phong
 
-    cout << "=== HE THONG DIEU HOA SMART HOME C++ ===" << endl;
     cout << "Nhiet do phong ban dau      : " << nhietDoPhong << " do C" << endl;
     cout << "Dia chi o nho cam bien RAM  : " << dieuKhienTuXa << endl;
     cout << "Doc nhiet do qua dieu khien : " << *dieuKhienTuXa << " do C" << endl;
@@ -1319,7 +1296,6 @@ int main() {
     // Bam dieu khien ha nhiet do xuong 24 do C thong qua giai tham chieu *
     *dieuKhienTuXa = 24;
 
-    cout << "----------------------------------------" << endl;
     cout << "Sau khi chinh tren dieu khien (*dieuKhienTuXa = 24):" << endl;
     cout << "Nhiet do phong thuc te hien tai: " << nhietDoPhong << " do C" << endl;
     return 0;
@@ -1394,7 +1370,6 @@ int main() {
     dsBan[3] = 12;
 
     int tongKhach = 0;
-    cout << "=== QUAN LY DAT BAN TIEC NHA HANG (DYNAMIC MEMORY) ===" << endl;
     for (int i = 0; i < soBanTiec; i++) {
         cout << "Ban tiec so " << (i + 1) << ": " << dsBan[i] << " khach" << endl;
         tongKhach += dsBan[i];
@@ -1480,7 +1455,6 @@ int main() {
     int namHienTai = 2026;
     int tuoi = namHienTai - bn1.namSinh;
 
-    cout << "=== PHIEU KHAM BENH DIEN TU (STRUCT) ===" << endl;
     cout << "Ma benh nhan : " << bn1.maBN << endl;
     cout << "Ho va ten    : " << bn1.hoTen << " (" << tuoi << " tuoi)" << endl;
     cout << "Than nhiet   : " << bn1.nhietDoCoThe << " do C" << endl;
@@ -1671,7 +1645,6 @@ public:
 };
 
 int main() {
-    cout << "=== HE THONG QUAN LY NHAN SU CONG TY CONG NGHE (OOP) ===" << endl;
     LapTrinhVien dev("Le Trung Hau", 18000000, "C++ / Backend", 5000000);
     dev.inBangLuongChiTiet();
     return 0;
@@ -2198,8 +2171,9 @@ int main() {
                 const def = defaultMap.get(String(id));
                 const rawContent = lesson.content || lesson.theory || "";
                 const useDefContent = def && (!rawContent || !rawContent.includes("real-world-box"));
-                const finalContent = useDefContent ? def.content : rawContent;
-                const finalExample = (useDefContent && def.example) ? def.example : (lesson.example || lesson.exampleCode || (def ? def.example : ""));
+                const rawExample = lesson.example || lesson.exampleCode || "";
+                const useDefExample = def && (!rawExample || rawExample.includes("===") || rawExample.includes("---") || useDefContent);
+                const finalExample = useDefExample ? def.example : (rawExample || (def ? def.example : ""));
 
                 return {
                     ...(def || {}),
