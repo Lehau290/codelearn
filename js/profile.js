@@ -678,14 +678,22 @@ function renderProfileProgress(user) {
 
     // Nút tiếp tục bài học tiếp theo
     const resumeBtn = document.getElementById("btnResumeLearning");
+    const sidebarContinueBtn = document.getElementById("profileSidebarContinueBtn");
+    const nextLesson = lessons.find(l => !progress[l.id]?.completed) || lessons[0];
+    const nextLessonUrl = `lesson-detail.html?id=${encodeURIComponent(nextLesson ? nextLesson.id : "lesson-01")}`;
+
+    if (sidebarContinueBtn) {
+        sidebarContinueBtn.href = nextLessonUrl;
+    }
+
     if (resumeBtn) {
-        const nextLesson = lessons.find(l => !progress[l.id]?.completed);
-        if (nextLesson) {
-            resumeBtn.href = `lesson-detail.html?id=${encodeURIComponent(nextLesson.id)}`;
-            resumeBtn.textContent = `Học tiếp: Bài ${nextLesson.order || 1} →`;
+        resumeBtn.href = nextLessonUrl;
+        if (completed < total && nextLesson) {
+            resumeBtn.textContent = completed > 0
+                ? `Học tiếp: Bài ${nextLesson.order || 1} →`
+                : `Bắt đầu học: Bài ${nextLesson.order || 1} →`;
         } else {
-            resumeBtn.href = "lessons.html";
-            resumeBtn.textContent = "Xem danh sách bài học →";
+            resumeBtn.textContent = "Ôn tập lại: Bài 1 →";
         }
     }
 
@@ -712,11 +720,12 @@ function renderRecentLessons(user) {
         .reverse();
 
     if (!completedLessons.length) {
+        const firstLessonId = (lessons && lessons.length > 0 && lessons[0].id) ? lessons[0].id : "lesson-01";
         container.innerHTML = `
             <div class="empty-state">
                 <h3>Chưa có bài hoàn thành</h3>
                 <p>Hãy bắt đầu học bài đầu tiên để lưu lại lịch sử làm bài và điểm số của bạn.</p>
-                <a href="lessons.html" class="btn btn-primary" style="margin-top: 12px;">Bắt đầu học ngay →</a>
+                <a href="lesson-detail.html?id=${encodeURIComponent(firstLessonId)}" class="btn btn-primary" style="margin-top: 12px;">Bắt đầu học ngay →</a>
             </div>
         `;
         return;

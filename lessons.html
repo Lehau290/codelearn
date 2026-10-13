@@ -201,6 +201,18 @@
                     </div>
                 </div>
 
+                <div style="margin-top: 22px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; position: relative; z-index: 2;">
+                    <a
+                        href="lesson-detail.html?id=lesson-01"
+                        id="heroStartLearningButton"
+                        class="btn btn-primary btn-lg"
+                        style="box-shadow: 0 10px 28px rgba(99, 102, 241, 0.35);"
+                    >
+                        Bắt đầu học ngay
+                        <span>→</span>
+                    </a>
+                </div>
+
             </div>
 
         </section>
@@ -218,9 +230,12 @@
                 <div class="chapter-pills-bar" id="chapterPillsBar">
                     <button type="button" class="chapter-pill active" data-chapter="all">Tất cả bài học</button>
                     <button type="button" class="chapter-pill" data-chapter="Chương 1">Chương 1: Bắt đầu</button>
-                    <button type="button" class="chapter-pill" data-chapter="Chương 2">Chương 2: Rẽ nhánh &amp; Vòng lặp</button>
-                    <button type="button" class="chapter-pill" data-chapter="Chương 3">Chương 3: Mảng &amp; Con trỏ</button>
-                    <button type="button" class="chapter-pill" data-chapter="Chương 4">Chương 4: OOP &amp; Nâng cao</button>
+                    <button type="button" class="chapter-pill" data-chapter="Chương 2">Chương 2: Rẽ nhánh</button>
+                    <button type="button" class="chapter-pill" data-chapter="Chương 3">Chương 3: Vòng lặp</button>
+                    <button type="button" class="chapter-pill" data-chapter="Chương 4">Chương 4: Hàm</button>
+                    <button type="button" class="chapter-pill" data-chapter="Chương 5">Chương 5: Mảng &amp; Chuỗi</button>
+                    <button type="button" class="chapter-pill" data-chapter="Chương 6">Chương 6: Con trỏ</button>
+                    <button type="button" class="chapter-pill" data-chapter="Chương 7">Chương 7: OOP</button>
                 </div>
 
                 <div class="lesson-controls">
@@ -231,8 +246,12 @@
                         <input
                             type="search"
                             id="lessonSearch"
+                            name="cpp_lesson_search_query"
                             placeholder="Tìm kiếm bài học..."
                             autocomplete="off"
+                            autocorrect="off"
+                            autocapitalize="off"
+                            spellcheck="false"
                         >
                     </div>
 

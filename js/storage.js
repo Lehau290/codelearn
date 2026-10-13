@@ -1138,7 +1138,7 @@ int main() {
             current.username = "letrunghau";
             current.fullName = "Lê Trung Hậu";
             current.email = "letrunghau@codelearn.vn";
-            saveCurrentUser(current);
+            setCurrentUser(current);
         }
     }
 
@@ -1437,6 +1437,10 @@ int main() {
                 []
             );
 
+        if (Array.isArray(lessons)) {
+            lessons = lessons.filter(l => l && (l.id || l.title));
+        }
+
         if (!Array.isArray(lessons) || lessons.length === 0) {
             lessons = Array.isArray(DEFAULT_LESSONS) && DEFAULT_LESSONS.length > 0
                 ? DEFAULT_LESSONS
@@ -1447,14 +1451,19 @@ int main() {
         }
 
         return lessons
-            .map(lesson => {
+            .map((lesson, idx) => {
                 let id = lesson.id;
                 if (typeof id === "string" && /^lesson-\d$/.test(id)) {
                     id = `lesson-0${id.slice(7)}`;
                 }
+                if (!id) {
+                    const ord = Number(lesson.order || lesson.order_num || (idx + 1));
+                    id = `lesson-${String(ord).padStart(2, "0")}`;
+                }
                 return {
                     ...lesson,
-                    id: id || lesson.id,
+                    id: id,
+                    order: Number(lesson.order || lesson.order_num || (idx + 1)),
                     theory: lesson.theory || lesson.content || "",
                     content: lesson.content || lesson.theory || "",
                     example: lesson.example || lesson.exampleCode || "",

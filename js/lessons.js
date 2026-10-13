@@ -14,17 +14,48 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.getElementById("lessonsContainer") ||
         document.getElementById("lessonList");
     const clearFiltersButton = document.getElementById("clearFiltersButton");
+    const heroStartBtn = document.getElementById("heroStartLearningButton");
+
+    // Chặn trình duyệt tự động điền (autofill username/admin) vào ô tìm kiếm bài học
+    let isUserFiltering = false;
+    let userFocusedSearch = false;
+    if (searchInput) {
+        searchInput.value = "";
+        searchInput.addEventListener("focus", () => {
+            userFocusedSearch = true;
+        });
+        searchInput.addEventListener("keydown", () => {
+            userFocusedSearch = true;
+            isUserFiltering = true;
+        });
+    }
+    if (chapterFilter) chapterFilter.value = "all";
+    if (statusFilter) statusFilter.value = "all";
 
     // Lấy tiến độ người dùng
     const userProgress = currentUser ? CppStorage.getUserProgress(currentUser.id) : {};
 
     // 1. Tải danh sách bài học ngay từ Storage / DEFAULT_LESSONS để hiển thị tức thì
     let allLessons = CppStorage.getLessons();
-    if (!allLessons || allLessons.length === 0) {
+    if (!allLessons || allLessons.length < 20) {
         if (typeof CppStorage.resetLessons === "function") {
             CppStorage.resetLessons();
         }
         allLessons = CppStorage.getLessons();
+    }
+
+    // Cập nhật nút Bắt đầu học ngay trên Hero của trang Bài học
+    function updateHeroStartButton(lessons, progress) {
+        if (!heroStartBtn || !lessons || !lessons.length) return;
+        const nextLesson = lessons.find(l => !progress[l.id]?.completed) || lessons[0];
+        const targetId = nextLesson ? nextLesson.id : "lesson-01";
+        heroStartBtn.href = `lesson-detail.html?id=${encodeURIComponent(targetId)}`;
+        const completedCount = lessons.filter(l => progress[l.id]?.completed).length;
+        if (completedCount > 0 && completedCount < lessons.length) {
+            heroStartBtn.innerHTML = `Tiếp tục học: Bài ${String(nextLesson.order || 1).padStart(2, "0")} <span>→</span>`;
+        } else {
+            heroStartBtn.innerHTML = `Bắt đầu học ngay (Bài 01) <span>→</span>`;
+        }
     }
 
     // Hiển thị bộ lọc chương
@@ -37,11 +68,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         lessonList
     );
 
-    // Cập nhật tổng tiến độ
+    // Cập nhật tổng tiến độ & nút bắt đầu học
     updateOverallProgress(
         allLessons,
         userProgress
     );
+    updateHeroStartButton(allLessons, userProgress);
 
     // 2. Tự động đồng bộ với Backend API (/api/lessons) nếu máy chủ đang chạy
     if (window.CodeLearnApi && typeof CodeLearnApi.lessons?.getAll === "function") {
@@ -50,31 +82,50 @@ document.addEventListener("DOMContentLoaded", async () => {
             const apiLessons = (res && Array.isArray(res.lessons)) ? res.lessons : (Array.isArray(res) ? res : null);
             if (apiLessons && apiLessons.length > 0) {
                 const storageMap = new Map((allLessons || []).map(l => [String(l.id), l]));
-                const mergedLessons = apiLessons.map(apiL => {
-                    const localL = storageMap.get(String(apiL.id)) || {};
+                const apiMap = new Map(apiLessons.map(l => [String(l.id), l]));
+                const combinedIds = new Set([...storageMap.keys(), ...apiMap.keys()]);
+
+                const mergedLessons = Array.from(combinedIds).map(id => {
+                    const localL = storageMap.get(id) || {};
+                    const apiL = apiMap.get(id) || {};
                     return {
                         ...localL,
                         ...apiL,
+                        id: apiL.id || localL.id || id,
+                        title: apiL.title || localL.title || "Bài học C++",
+                        chapter: apiL.chapter || localL.chapter || "Chương 1: Bắt đầu với C++",
                         content: apiL.content || localL.content || localL.theory || "",
                         theory: apiL.content || localL.theory || localL.content || "",
                         starterCode: apiL.starterCode || localL.starterCode || "",
-                        example: apiL.example || localL.example || ""
+                        example: apiL.example || localL.example || "",
+                        order: Number(apiL.order || localL.order || 1)
                     };
                 }).sort((a, b) => Number(a.order || 0) - Number(b.order || 0));
 
-                allLessons = mergedLessons;
-                CppStorage.saveLessons(mergedLessons);
+                if (mergedLessons.length > 0) {
+                    allLessons = mergedLessons;
+                    CppStorage.saveLessons(mergedLessons);
+                }
 
                 renderChapterFilter(allLessons, chapterFilter);
-                filterLessons(
-                    allLessons,
-                    userProgress,
-                    lessonList,
-                    searchInput,
-                    chapterFilter,
-                    statusFilter
-                );
+
+                if (!isUserFiltering) {
+                    if (searchInput) searchInput.value = "";
+                    if (chapterFilter) chapterFilter.value = "all";
+                    if (statusFilter) statusFilter.value = "all";
+                    renderLessons(allLessons, userProgress, lessonList);
+                } else {
+                    filterLessons(
+                        allLessons,
+                        userProgress,
+                        lessonList,
+                        searchInput,
+                        chapterFilter,
+                        statusFilter
+                    );
+                }
                 updateOverallProgress(allLessons, userProgress);
+                updateHeroStartButton(allLessons, userProgress);
             }
         } catch (err) {
             console.warn("Không thể đồng bộ từ API backend, sử dụng dữ liệu cục bộ:", err);
@@ -98,26 +149,45 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Tìm kiếm
     if (searchInput) {
-        searchInput.addEventListener("input", triggerFilter);
+        searchInput.addEventListener("input", () => {
+            if (!userFocusedSearch && document.activeElement !== searchInput) {
+                // Bỏ qua giá trị autofill tự động của trình duyệt
+                searchInput.value = "";
+                return;
+            }
+            isUserFiltering = true;
+            triggerFilter();
+        });
     }
 
     // Lọc chương
     if (chapterFilter) {
-        chapterFilter.addEventListener("change", triggerFilter);
+        chapterFilter.addEventListener("change", () => {
+            isUserFiltering = true;
+            triggerFilter();
+        });
     }
 
     // Lọc trạng thái
     if (statusFilter) {
-        statusFilter.addEventListener("change", triggerFilter);
+        statusFilter.addEventListener("change", () => {
+            isUserFiltering = true;
+            triggerFilter();
+        });
     }
 
     // Xóa bộ lọc
     if (clearFiltersButton) {
         clearFiltersButton.addEventListener("click", () => {
+            isUserFiltering = false;
             if (searchInput) searchInput.value = "";
             if (chapterFilter) chapterFilter.value = "all";
             if (statusFilter) statusFilter.value = "all";
-            triggerFilter();
+            const allPills = document.querySelectorAll(".chapter-pill");
+            allPills.forEach(p => {
+                p.classList.toggle("active", p.getAttribute("data-chapter") === "all");
+            });
+            renderLessons(allLessons, userProgress, lessonList);
         });
     }
 
@@ -147,16 +217,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         pill.addEventListener("click", () => {
             pills.forEach(p => p.classList.remove("active"));
             pill.classList.add("active");
-            const targetChap = pill.getAttribute("data-chapter");
+            const targetChap = pill.getAttribute("data-chapter") || "all";
+            isUserFiltering = targetChap !== "all";
             if (chapterFilter) {
                 if (targetChap === "all") {
                     chapterFilter.value = "all";
                 } else {
-                    const matchedOption = Array.from(chapterFilter.options).find(opt => 
+                    const matchedOption = Array.from(chapterFilter.options).find(opt =>
                         opt.value.toLowerCase().includes(targetChap.toLowerCase())
                     );
                     if (matchedOption) {
                         chapterFilter.value = matchedOption.value;
+                    } else {
+                        chapterFilter.value = "all";
                     }
                 }
                 triggerFilter();
@@ -166,12 +239,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (chapterFilter) {
         chapterFilter.addEventListener("change", () => {
-            const val = chapterFilter.value.toLowerCase();
+            const val = (chapterFilter.value || "all").toLowerCase();
             pills.forEach(p => {
                 const pChap = (p.getAttribute("data-chapter") || "").toLowerCase();
                 if (val === "all" && pChap === "all") {
                     p.classList.add("active");
-                } else if (val !== "all" && val.includes(pChap)) {
+                } else if (val !== "all" && pChap !== "all" && val.includes(pChap)) {
                     p.classList.add("active");
                 } else {
                     p.classList.remove("active");
@@ -244,6 +317,8 @@ function renderChapterFilter(lessons, select) {
 
     if (currentVal && Array.from(select.options).some(o => o.value === currentVal)) {
         select.value = currentVal;
+    } else {
+        select.value = "all";
     }
 }
 
@@ -264,9 +339,15 @@ function filterLessons(
         return;
     }
 
-    const currentLessons = (lessons && lessons.length > 0)
+    let currentLessons = (lessons && lessons.length > 0)
         ? lessons
         : CppStorage.getLessons();
+
+    if (!currentLessons || currentLessons.length === 0) {
+        if (typeof CppStorage.resetLessons === "function") {
+            currentLessons = CppStorage.resetLessons();
+        }
+    }
 
     const searchText = searchInput
         ? searchInput.value
@@ -274,11 +355,11 @@ function filterLessons(
             .toLowerCase()
         : "";
 
-    const selectedChapter = chapterFilter
+    const selectedChapter = (chapterFilter && chapterFilter.value)
         ? chapterFilter.value
         : "all";
 
-    const selectedStatus = statusFilter
+    const selectedStatus = (statusFilter && statusFilter.value)
         ? statusFilter.value
         : "all";
 
@@ -310,9 +391,10 @@ function filterLessons(
         // Lọc chương
         // --------------------------------------------
         const matchesChapter =
+            !selectedChapter ||
             selectedChapter === "all" ||
             lesson.chapter === selectedChapter ||
-            (selectedChapter && lesson.chapter && lesson.chapter.toLowerCase().includes(selectedChapter.toLowerCase()));
+            (lesson.chapter && lesson.chapter.toLowerCase().includes(selectedChapter.toLowerCase()));
 
 
         // --------------------------------------------
@@ -367,6 +449,7 @@ function renderLessons(
     if (!lessons || !lessons.length) {
         if (noLessons) {
             noLessons.hidden = false;
+            noLessons.style.display = "";
         }
         // Giữ container trống, KHÔNG hiển thị thêm thẻ empty-state thứ 2 để tránh trùng lặp
         container.innerHTML = "";
@@ -375,6 +458,7 @@ function renderLessons(
 
     if (noLessons) {
         noLessons.hidden = true;
+        noLessons.style.display = "none";
     }
 
 

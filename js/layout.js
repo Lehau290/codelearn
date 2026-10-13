@@ -27,10 +27,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const publicPages = [
         "",
         "index.html",
+        "index",
         "login.html",
+        "login",
         "register.html",
+        "register",
         "home.html",
-        "lessons.html"
+        "home",
+        "lessons.html",
+        "lessons",
+        "lesson-detail.html",
+        "lesson-detail"
     ];
 
     if (!currentUser && !publicPages.includes(currentPage)) {
@@ -152,9 +159,12 @@ function updateAdminNavigation(user) {
     );
 
     adminLinks.forEach(link => {
-        if (user.role === "admin") {
+        if (user && user.role === "admin") {
+            link.hidden = false;
+            link.removeAttribute("hidden");
             link.style.display = "";
         } else {
+            link.hidden = true;
             link.style.display = "none";
         }
     });

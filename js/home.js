@@ -185,7 +185,7 @@ function renderFeaturedLessons(user) {
 
 
             return `
-                <article class="lesson-card ${statusClass}">
+                <article class="lesson-card ${statusClass}" data-lesson-id="${escapeHtml(lesson.id)}" style="cursor: pointer;" onclick="window.location.href='lesson-detail.html?id=${encodeURIComponent(lesson.id)}'">
                     
                     <div class="lesson-card-top">
                         <span class="lesson-number">
@@ -234,7 +234,7 @@ function renderFeaturedLessons(user) {
                         </span>
 
                         <span class="lesson-action-pill ${completed ? "completed" : ""}">
-                            ${completed ? "Ôn lại bài →" : "Vào học ngay →"}
+                            ${completed ? "Ôn lại bài →" : "Bắt đầu học →"}
                         </span>
                     </div>
 
@@ -265,16 +265,21 @@ function setupContinueLearning(user) {
     const button = document.getElementById(
         "continueLearningButton"
     );
-
-    if (!button) {
-        return;
-    }
+    const ctaButton = document.getElementById(
+        "ctaStartLearningButton"
+    );
 
     const lessons = CppStorage.getLessons();
+    const firstLessonId = (lessons && lessons.length > 0 && lessons[0].id) ? lessons[0].id : "lesson-01";
 
     if (!user) {
-        button.href = "lesson-detail.html?id=lesson-01";
-        button.textContent = "Bắt đầu học ngay →";
+        if (button) {
+            button.href = `lesson-detail.html?id=${encodeURIComponent(firstLessonId)}`;
+            button.textContent = "Bắt đầu học ngay →";
+        }
+        if (ctaButton) {
+            ctaButton.href = `lesson-detail.html?id=${encodeURIComponent(firstLessonId)}`;
+        }
         return;
     }
 
@@ -282,32 +287,34 @@ function setupContinueLearning(user) {
         user.id
     );
 
-
     // Tìm bài đầu tiên chưa hoàn thành
     const nextLesson = lessons.find(
         lesson => !progress[lesson.id]?.completed
     );
 
+    const targetLessonId = nextLesson ? nextLesson.id : firstLessonId;
+    const targetUrl = `lesson-detail.html?id=${encodeURIComponent(targetLessonId)}`;
 
-    // Nếu còn bài chưa học
-    if (nextLesson) {
-        button.href =
-            `lesson-detail.html?id=${encodeURIComponent(
-                nextLesson.id
-            )}`;
+    if (ctaButton) {
+        ctaButton.href = targetUrl;
+    }
 
-        button.textContent =
-            "Tiếp tục học →";
-
+    if (!button) {
         return;
     }
 
+    // Nếu còn bài chưa học
+    if (nextLesson) {
+        button.href = targetUrl;
+        const completedCount = lessons.filter(l => progress[l.id]?.completed).length;
+        button.textContent = completedCount > 0 ? "Tiếp tục học →" : "Bắt đầu học ngay →";
+        return;
+    }
 
-    // Nếu đã hoàn thành tất cả
+    // Nếu đã hoàn thành tất cả, vẫn mở thẳng bài 1 để ôn tập
     if (lessons.length > 0) {
-        button.href = "lessons.html";
-        button.textContent =
-            "Xem lại khóa học →";
+        button.href = `lesson-detail.html?id=${encodeURIComponent(firstLessonId)}`;
+        button.textContent = "Ôn tập lại từ Bài 1 →";
     }
 }
 

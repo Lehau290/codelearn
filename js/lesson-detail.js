@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const lessonId = params.get("id");
 
     let lessons = CppStorage.getLessons();
-    if (!lessons || lessons.length === 0) {
+    if (!lessons || lessons.length < 20) {
         if (typeof CppStorage.resetLessons === "function") {
             CppStorage.resetLessons();
         }
