@@ -82,9 +82,7 @@ using namespace std;
 
 int main() {
     // Mo phong in Hoa don thanh toan tai quan Ca phe C++
-    cout << "========================================" << endl;
     cout << "       HIGHLANDS C++ COFFEE SHOP        " << endl;
-    cout << "========================================" << endl;
     cout << "Mon: 01 Bac Xiu Da (Size L)   39.000 VND" << endl;
     cout << "Mon: 01 Banh Mi Que Pate      19.000 VND" << endl;
     cout << "----------------------------------------" << endl;

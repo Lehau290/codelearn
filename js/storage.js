@@ -78,9 +78,7 @@ using namespace std;
 
 int main() {
     // Mo phong in Hoa don thanh toan tai quan Ca phe C++
-    cout << "========================================" << endl;
     cout << "       HIGHLANDS C++ COFFEE SHOP        " << endl;
-    cout << "========================================" << endl;
     cout << "Mon: 01 Bac Xiu Da (Size L)   39.000 VND" << endl;
     cout << "Mon: 01 Banh Mi Que Pate      19.000 VND" << endl;
     cout << "----------------------------------------" << endl;
@@ -2200,8 +2198,11 @@ int main() {
                 const useDefContent = def && (!rawContent || !rawContent.includes("real-world-box"));
                 const finalContent = useDefContent ? def.content : rawContent;
                 const rawExample = lesson.example || lesson.exampleCode || "";
-                const useDefExample = def && (!rawExample || !rawExample.includes("===") || useDefContent);
-                const finalExample = useDefExample ? def.example : (rawExample || (def ? def.example : ""));
+                const useDefExample = def && (!rawExample || useDefContent || (id === "lesson-01" && rawExample.includes("========================================")));
+                let finalExample = useDefExample ? def.example : (rawExample || (def ? def.example : ""));
+                if (typeof finalExample === "string" && finalExample.includes("========================================")) {
+                    finalExample = finalExample.replace(/[ \t]*cout\s*<<\s*"========================================"\s*<<\s*endl;\r?\n?/g, "");
+                }
 
                 return {
                     ...(def || {}),
