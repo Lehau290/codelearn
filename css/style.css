@@ -2421,41 +2421,79 @@ main {
     --spotlight-y: 35%;
     padding: 72px 0 84px;
     background:
-        radial-gradient(circle at 15% 15%, rgba(160, 145, 255, 0.42) 0%, transparent 50%),
-        radial-gradient(circle at 85% 85%, rgba(215, 165, 255, 0.35) 0%, transparent 50%),
-        radial-gradient(circle at 50% 50%, rgba(115, 100, 242, 0.22) 0%, transparent 65%),
-        linear-gradient(180deg, rgba(12, 10, 26, 0.58) 0%, rgba(16, 12, 34, 0.8) 100%),
+        radial-gradient(
+            680px circle at var(--spotlight-x, 50%) var(--spotlight-y, 35%),
+            rgba(168, 85, 247, 0.28) 0%,
+            rgba(99, 102, 241, 0.16) 32%,
+            transparent 65%
+        ),
+        radial-gradient(
+            circle at 15% 20%,
+            rgba(160, 145, 255, 0.42),
+            transparent 50%
+        ),
+        radial-gradient(
+            circle at 85% 10%,
+            rgba(215, 165, 255, 0.32),
+            transparent 50%
+        ),
+        linear-gradient(
+            180deg,
+            rgba(13, 10, 26, 0.6) 0%,
+            rgba(17, 13, 34, 0.82) 100%
+        ),
         url('../images/hero-star-bg.png') center/cover no-repeat;
     color: #ffffff;
     position: relative;
     overflow: hidden;
+    transition: background 0.1s ease;
 }
 
-.home-hero::before {
-    content: "";
+/* Background Cyber Grid for Home Hero */
+.home-hero-cyber-grid {
     position: absolute;
     inset: 0;
-    background: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-    background-size: 24px 24px;
-    opacity: 0.25;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+    background-size: 28px 28px;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 30%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 30%, transparent 100%);
+    opacity: 0.55;
     pointer-events: none;
     z-index: 0;
 }
 
-/* Mouse Spotlight Glow Layer (Effect 2) */
-.home-hero::after {
-    content: "";
+/* Floating C++ Glyphs for Home Hero */
+.home-floating-glyphs {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: radial-gradient(
-        650px circle at var(--spotlight-x, 50%) var(--spotlight-y, 35%),
-        rgba(129, 140, 248, 0.25) 0%,
-        rgba(168, 85, 247, 0.12) 32%,
-        transparent 70%
-    );
-    z-index: 0;
-    transition: opacity 0.2s ease;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.h-glyph {
+    position: absolute;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: rgba(196, 181, 253, 0.26);
+    text-shadow: 0 0 12px rgba(168, 85, 247, 0.35);
+    user-select: none;
+    animation: floatHomeGlyph 6.5s ease-in-out infinite alternate;
+}
+
+.h-glyph.hg1 { top: 14%; left: 7%; animation-duration: 5.6s; font-size: 1.05rem; color: rgba(167, 139, 250, 0.36); }
+.h-glyph.hg2 { top: 24%; right: 10%; animation-duration: 7s; font-size: 1.15rem; color: rgba(244, 114, 182, 0.3); }
+.h-glyph.hg3 { bottom: 22%; left: 5%; animation-duration: 6.2s; color: rgba(129, 140, 248, 0.35); }
+.h-glyph.hg4 { bottom: 12%; right: 40%; animation-duration: 8s; color: rgba(94, 234, 212, 0.3); }
+.h-glyph.hg5 { top: 65%; right: 6%; animation-duration: 5.8s; color: rgba(192, 132, 252, 0.32); }
+.h-glyph.hg6 { top: 9%; right: 32%; animation-duration: 7.5s; font-size: 0.8rem; color: rgba(147, 197, 253, 0.3); }
+.h-glyph.hg7 { bottom: 8%; right: 18%; animation-duration: 6.5s; font-size: 0.78rem; color: rgba(244, 114, 182, 0.28); }
+.h-glyph.hg8 { top: 48%; left: 2%; animation-duration: 6s; font-size: 0.9rem; color: rgba(168, 85, 247, 0.32); }
+
+@keyframes floatHomeGlyph {
+    0% { transform: translateY(0) rotate(0deg); }
+    100% { transform: translateY(-16px) rotate(3deg); }
 }
 
 .hero-grid {
@@ -9953,9 +9991,35 @@ body.dark-theme #lessonSearch:-webkit-autofill {
 .lessons-hero-upgraded {
     position: relative;
     overflow: hidden;
-    padding: 58px 0 48px !important;
-    background: radial-gradient(circle at 20% 20%, #1e1b4b 0%, #0f172a 55%, #090d16 100%) !important;
-    border-bottom: 1px solid rgba(129, 140, 248, 0.22);
+    padding: 68px 0 60px !important;
+    color: #ffffff;
+    --lessons-spotlight-x: 50%;
+    --lessons-spotlight-y: 35%;
+    background:
+        radial-gradient(
+            680px circle at var(--lessons-spotlight-x, 50%) var(--lessons-spotlight-y, 35%),
+            rgba(168, 85, 247, 0.28) 0%,
+            rgba(99, 102, 241, 0.16) 32%,
+            transparent 65%
+        ),
+        radial-gradient(
+            circle at 15% 20%,
+            rgba(160, 145, 255, 0.42),
+            transparent 50%
+        ),
+        radial-gradient(
+            circle at 85% 10%,
+            rgba(215, 165, 255, 0.32),
+            transparent 50%
+        ),
+        linear-gradient(
+            180deg,
+            rgba(13, 10, 26, 0.6) 0%,
+            rgba(17, 13, 34, 0.82) 100%
+        ),
+        url('../images/hero-star-bg.png') center/cover no-repeat !important;
+    border-bottom: 1px solid rgba(168, 85, 247, 0.25);
+    transition: background 0.1s ease;
 }
 
 .lessons-aurora-orb {
@@ -10076,8 +10140,8 @@ body.dark-theme #lessonSearch:-webkit-autofill {
     gap: 3px;
     padding: 11px 13px;
     border-radius: 14px;
-    background: rgba(15, 23, 42, 0.62);
-    border: 1px solid rgba(148, 163, 184, 0.22);
+    background: rgba(22, 18, 40, 0.65);
+    border: 1px solid rgba(164, 158, 242, 0.25);
     backdrop-filter: blur(12px);
     text-decoration: none;
     text-align: left;
@@ -10086,9 +10150,9 @@ body.dark-theme #lessonSearch:-webkit-autofill {
 
 .stepper-node:hover {
     transform: translateY(-4px);
-    background: rgba(30, 41, 59, 0.88);
-    border-color: rgba(129, 140, 248, 0.65);
-    box-shadow: 0 10px 24px rgba(99, 102, 241, 0.25);
+    background: rgba(36, 28, 64, 0.88);
+    border-color: rgba(168, 85, 247, 0.65);
+    box-shadow: 0 10px 24px rgba(115, 100, 242, 0.3);
 }
 
 .stepper-num {
@@ -10113,7 +10177,7 @@ body.dark-theme #lessonSearch:-webkit-autofill {
 .stepper-node small {
     font-size: 0.72rem;
     font-weight: 600;
-    color: #94a3b8;
+    color: #cbd5e1;
 }
 
 /* 2. Glassmorphic Command & Filter Bar */
@@ -10126,17 +10190,17 @@ body.dark-theme #lessonSearch:-webkit-autofill {
 
 .lessons-command-glass {
     background: rgba(255, 255, 255, 0.94);
-    border: 1px solid rgba(99, 102, 241, 0.2);
+    border: 1px solid rgba(164, 158, 242, 0.25);
     border-radius: 22px;
     padding: 20px 24px;
-    box-shadow: 0 18px 42px rgba(15, 23, 42, 0.08);
+    box-shadow: 0 18px 42px rgba(115, 100, 242, 0.08);
     backdrop-filter: blur(16px);
 }
 
 html.dark-theme .lessons-command-glass,
 body.dark-theme .lessons-command-glass {
-    background: rgba(15, 23, 42, 0.9);
-    border-color: rgba(129, 140, 248, 0.24);
+    background: rgba(22, 18, 40, 0.92);
+    border-color: rgba(164, 158, 242, 0.25);
     box-shadow: 0 20px 46px rgba(0, 0, 0, 0.45);
 }
 
@@ -10191,25 +10255,33 @@ html.dark-theme .lesson-search input#lessonSearch,
 body.dark-theme .lesson-search input#lessonSearch,
 html.dark-theme .lesson-filter select,
 body.dark-theme .lesson-filter select {
-    background: #0f172a !important;
-    border-color: rgba(148, 163, 184, 0.24) !important;
+    background: #100d20 !important;
+    border-color: #241c40 !important;
     color: #f8fafc !important;
     border-radius: 14px !important;
 }
 
+html.dark-theme .lesson-search input#lessonSearch:focus,
+body.dark-theme .lesson-search input#lessonSearch:focus,
+html.dark-theme .lesson-filter select:focus,
+body.dark-theme .lesson-filter select:focus {
+    border-color: #a49ef2 !important;
+    box-shadow: 0 0 0 3px rgba(164, 158, 242, 0.25) !important;
+}
+
 .lessons-view-switcher {
     display: inline-flex;
-    background: #f1f5f9;
+    background: var(--background-alt, #eeeaf8);
     padding: 4px;
     border-radius: 14px;
-    border: 1px solid rgba(148, 163, 184, 0.25);
+    border: 1px solid var(--border-light, #ebe6f8);
     gap: 4px;
 }
 
 html.dark-theme .lessons-view-switcher,
 body.dark-theme .lessons-view-switcher {
-    background: #0f172a;
-    border-color: rgba(255, 255, 255, 0.12);
+    background: #100d20;
+    border-color: #241c40;
 }
 
 .view-mode-btn {
@@ -10386,8 +10458,8 @@ body.dark-theme .lessons-master-dashboard .progress-bar {
 
 html.dark-theme .curriculum-overview-panel,
 body.dark-theme .curriculum-overview-panel {
-    background: linear-gradient(145deg, #131b2e 0%, #0f172a 100%);
-    border-color: rgba(129, 140, 248, 0.25);
+    background: linear-gradient(145deg, #18132e 0%, #161228 100%);
+    border-color: #241c40;
     box-shadow: 0 20px 48px rgba(0, 0, 0, 0.42);
 }
 
@@ -10481,15 +10553,15 @@ body.dark-theme .curriculum-overview-header p {
 
 html.dark-theme .curriculum-chapter-box,
 body.dark-theme .curriculum-chapter-box {
-    background: rgba(15, 23, 42, 0.86);
-    border-color: rgba(255, 255, 255, 0.1);
+    background: #161228;
+    border-color: #241c40;
     border-top: 4px solid var(--chap-accent);
 }
 
 html.dark-theme .curriculum-chapter-box:hover,
 body.dark-theme .curriculum-chapter-box:hover {
-    background: rgba(30, 41, 59, 0.95);
-    box-shadow: 0 18px 38px rgba(0, 0, 0, 0.5);
+    background: #1e1738;
+    box-shadow: 0 18px 38px rgba(132, 125, 232, 0.25);
 }
 
 .curr-chap-top {
@@ -10595,8 +10667,8 @@ body.dark-theme .curr-chap-desc {
 
 html.dark-theme .curr-lesson-chip,
 body.dark-theme .curr-lesson-chip {
-    background: rgba(15, 23, 42, 0.9);
-    border-color: rgba(255, 255, 255, 0.12);
+    background: #100d20;
+    border-color: #241c40;
     color: #e2e8f0;
 }
 
@@ -10668,8 +10740,8 @@ body.dark-theme .curr-chap-go {
 
 html.dark-theme .chapter-group-section,
 body.dark-theme .chapter-group-section {
-    background: linear-gradient(180deg, rgba(19, 27, 46, 0.92) 0%, rgba(15, 23, 42, 0.88) 100%);
-    border-color: rgba(255, 255, 255, 0.1);
+    background: linear-gradient(180deg, rgba(22, 18, 40, 0.95) 0%, rgba(16, 13, 32, 0.92) 100%);
+    border-color: #241c40;
     box-shadow: 0 16px 40px rgba(0, 0, 0, 0.38);
 }
 
@@ -11331,8 +11403,8 @@ body.dark-theme .home-chap-range {
 
 html.dark-theme .home-chap-lesson-item,
 body.dark-theme .home-chap-lesson-item {
-    background: rgba(15, 23, 42, 0.75);
-    border-color: rgba(255, 255, 255, 0.09);
+    background: rgba(22, 18, 40, 0.85);
+    border-color: #241c40;
     color: #e2e8f0;
 }
 
