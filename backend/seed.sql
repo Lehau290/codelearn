@@ -40,7 +40,7 @@ INSERT OR REPLACE INTO sessions (token, user_id, created_at, expires_at) VALUES 
 -- ------------------------------------------------------------------------------
 -- Dữ liệu bảng `lessons` (20 bản ghi)
 -- ------------------------------------------------------------------------------
-INSERT OR REPLACE INTO lessons (id, title, chapter, description, level, duration, content, example, exercise_title, exercise_description, starter_code, order_num, created_at) VALUES ('lesson-01', 'Giới thiệu về C++ & Cấu trúc chương trình', 'Chương 1: Bắt đầu với C++', 'Làm quen với ngôn ngữ C++, quy trình biên dịch, giải phẫu hàm main() và viết chương trình hóa đơn thực tế đầu tiên.', 'Cơ bản', '25 phút', '<h3>1. Ngôn ngữ C++ là gì & Tại sao lại quan trọng?</h3>
+INSERT OR REPLACE INTO lessons (id, title, chapter, description, level, duration, content, example, exercise_title, exercise_description, starter_code, order_num, created_at) VALUES ('lesson-01', 'Giới thiệu về C++ & Cấu trúc chương trình', 'Chương 1: Bắt đầu với C++', 'Làm quen với ngôn ngữ C++, quy trình biên dịch, giải phẫu hàm main() và viết chương trình đầu tiên xuất lời chào ra màn hình.', 'Cơ bản', '25 phút', '<h3>1. Ngôn ngữ C++ là gì & Tại sao lại quan trọng?</h3>
 <p><strong>C++</strong> là ngôn ngữ lập trình bậc trung (middle-level language) do <strong>Bjarne Stroustrup</strong> phát triển tại phòng thí nghiệm Bell Labs từ năm 1979 (ban đầu gọi là "C with Classes"). C++ kết hợp hoàn hảo hai thế giới:</p>
 <ul>
     <li><strong>Sức mạnh phần cứng của bậc thấp:</strong> Tốc độ thực thi cực nhanh, cho phép quản lý trực tiếp từng ô nhớ RAM và CPU.</li>
@@ -81,13 +81,9 @@ INSERT OR REPLACE INTO lessons (id, title, chapter, description, level, duration
 using namespace std;
 
 int main() {
-    // Mo phong in Hoa don thanh toan tai quan Ca phe C++
-    cout << "       HIGHLANDS C++ COFFEE SHOP        " << endl;
-    cout << "Mon: 01 Bac Xiu Da (Size L)   39.000 VND" << endl;
-    cout << "Mon: 01 Banh Mi Que Pate      19.000 VND" << endl;
-    cout << "----------------------------------------" << endl;
-    cout << "Tong thanh toan:              58.000 VND" << endl;
-    cout << "Cam on quy khach & Hen gap lai!" << endl;
+    // In loi chao dau tien ra man hinh
+    cout << "Xin chao! Chao mung ban den voi C++ Basic Academy." << endl;
+    cout << "Lap trinh C++ that don gian va thu vi!" << endl;
     return 0;
 }', 'In lời chào ra màn hình', 'Viết chương trình C++ in ra màn hình dòng chữ: Hello C++ Academy!', '#include <iostream>
 using namespace std;

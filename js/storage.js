@@ -24,14 +24,14 @@
        2. DEFAULT LESSONS
        ===================================================== */
 
-    const LESSONS_CONTENT_VERSION = "2026.10.realworld.v4";
+    const LESSONS_CONTENT_VERSION = "2026.10.realworld.v5";
 
     const DEFAULT_LESSONS = [
         {
             id: "lesson-01",
             title: "Giới thiệu về C++ & Cấu trúc chương trình",
             chapter: "Chương 1: Bắt đầu với C++",
-            description: "Làm quen với ngôn ngữ C++, quy trình biên dịch, giải phẫu hàm main() và viết chương trình hóa đơn thực tế đầu tiên.",
+            description: "Làm quen với ngôn ngữ C++, quy trình biên dịch, giải phẫu hàm main() và viết chương trình đầu tiên xuất lời chào ra màn hình.",
             level: "Cơ bản",
             duration: "25 phút",
             content: `
@@ -77,13 +77,9 @@
 using namespace std;
 
 int main() {
-    // Mo phong in Hoa don thanh toan tai quan Ca phe C++
-    cout << "       HIGHLANDS C++ COFFEE SHOP        " << endl;
-    cout << "Mon: 01 Bac Xiu Da (Size L)   39.000 VND" << endl;
-    cout << "Mon: 01 Banh Mi Que Pate      19.000 VND" << endl;
-    cout << "----------------------------------------" << endl;
-    cout << "Tong thanh toan:              58.000 VND" << endl;
-    cout << "Cam on quy khach & Hen gap lai!" << endl;
+    // In loi chao dau tien ra man hinh
+    cout << "Xin chao! Chao mung ban den voi C++ Basic Academy." << endl;
+    cout << "Lap trinh C++ that don gian va thu vi!" << endl;
     return 0;
 }`,
             exerciseTitle: "In lời chào ra màn hình",
@@ -2198,7 +2194,7 @@ int main() {
                 const useDefContent = def && (!rawContent || !rawContent.includes("real-world-box"));
                 const finalContent = useDefContent ? def.content : rawContent;
                 const rawExample = lesson.example || lesson.exampleCode || "";
-                const useDefExample = def && (!rawExample || useDefContent || (id === "lesson-01" && rawExample.includes("========================================")));
+                const useDefExample = def && (!rawExample || useDefContent || (id === "lesson-01" && (rawExample.includes("HIGHLANDS") || rawExample.includes("========================================"))));
                 let finalExample = useDefExample ? def.example : (rawExample || (def ? def.example : ""));
                 if (typeof finalExample === "string" && finalExample.includes("========================================")) {
                     finalExample = finalExample.replace(/[ \t]*cout\s*<<\s*"========================================"\s*<<\s*endl;\r?\n?/g, "");
