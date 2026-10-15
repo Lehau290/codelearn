@@ -1,0 +1,9 @@
+{
+  "GEMINI_API_KEY": "",
+  "OPENAI_API_KEY": "",
+  "GROQ_API_KEY": "",
+  "PORT": 5000,
+  "DATABASE_URL": "sqlite:///backend/database.db",
+  "_comment": "Điền API Key của bạn vào đây nếu muốn dùng AI trực tuyến (Gemini / OpenAI). Nếu để trống, hệ thống sẽ tự động dùng AI Mentor tích hợp cục bộ cùng kho tri thức VNOI Wiki hoàn toàn miễn phí."
+}
+
