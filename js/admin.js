@@ -33,6 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setupExerciseManagement();
     setupUserManagement();
     setupMonitorSection();
+    setupCommunitySection();
     setupDatabaseAndKnowledgeSection();
     setupModalDialog();
 });
@@ -72,6 +73,9 @@ function setupAdminTabs() {
             } else if (targetTab === "tab-monitor") {
                 loadAdminSubmissions();
                 loadAdminAiChats();
+            } else if (targetTab === "tab-community") {
+                loadAdminAnnouncements();
+                loadAdminComments();
             } else if (targetTab === "tab-database") {
                 if (typeof window.loadDbStats === "function") window.loadDbStats();
                 loadAiKnowledge();
@@ -1315,6 +1319,262 @@ function showSubmissionDetailModal(item) {
         });
     }
 }
+
+// ============================================================
+// 8. QUẢN TRỊ TƯƠNG TÁC & THÔNG BÁO (COMMUNITY & ANNOUNCEMENTS)
+// ============================================================
+let _adminCommentsList = [];
+
+function setupCommunitySection() {
+    const annForm = document.getElementById("formBroadcastAnnouncement");
+    if (annForm) {
+        annForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const titleInput = document.getElementById("annTitleInput");
+            const typeSelect = document.getElementById("annTypeSelect");
+            const contentInput = document.getElementById("annContentInput");
+            const submitBtn = document.getElementById("btnSubmitAnnouncement");
+
+            const title = titleInput.value.trim();
+            const type = typeSelect.value;
+            const content = contentInput.value.trim();
+
+            if (!title || !content) {
+                alert("Vui lòng điền đầy đủ tiêu đề và nội dung thông báo.");
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Đang gửi...";
+
+            try {
+                const res = await CodeLearnApi.admin.createAnnouncement({ title, type, content });
+                if (res && res.message) {
+                    if (typeof window.showToast === "function") {
+                        window.showToast("Đã phát thanh thông báo thành công!", "success");
+                    } else {
+                        alert("Đã phát thanh thông báo thành công!");
+                    }
+                    annForm.reset();
+                    loadAdminAnnouncements();
+                } else {
+                    alert(res?.error || "Không thể tạo thông báo.");
+                }
+            } catch (err) {
+                console.error("Lỗi tạo thông báo:", err);
+                alert("Đã xảy ra lỗi khi tạo thông báo: " + err.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<span>🚀</span> Phát thông báo ngay`;
+            }
+        });
+    }
+
+    const filterStatus = document.getElementById("filterCommentStatus");
+    if (filterStatus) {
+        filterStatus.addEventListener("change", () => {
+            renderCommentsTable();
+        });
+    }
+
+    const refreshBtn = document.getElementById("btnRefreshComments");
+    if (refreshBtn) {
+        refreshBtn.addEventListener("click", () => {
+            loadAdminComments();
+        });
+    }
+}
+
+async function loadAdminAnnouncements() {
+    const tbody = document.getElementById("announcementsTableBody");
+    if (!tbody) return;
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--text-secondary);">Đang nạp danh sách thông báo...</td></tr>`;
+
+    try {
+        const res = await CodeLearnApi.admin.getAnnouncements();
+        const announcements = res.announcements || [];
+        if (!announcements.length) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--text-secondary);">Chưa có thông báo nào được phát.</td></tr>`;
+            return;
+        }
+
+        const typeLabels = {
+            info: { text: "Thông tin", class: "status-tag info", icon: "ℹ️" },
+            warning: { text: "Lưu ý", class: "status-tag warning", icon: "⚠️" },
+            success: { text: "Sự kiện", class: "status-tag success", icon: "🎉" },
+            urgent: { text: "Khẩn cấp", class: "status-tag error", icon: "🚨" }
+        };
+
+        tbody.innerHTML = announcements.map(ann => {
+            const meta = typeLabels[ann.type] || typeLabels.info;
+            const timeStr = ann.created_at ? new Date(ann.created_at).toLocaleString("vi-VN") : "---";
+            const isActive = ann.is_active === 1;
+
+            return `
+                <tr>
+                    <td style="font-weight:600; color:var(--text-primary);">${escapeHtml(ann.title)}</td>
+                    <td style="color:var(--text-secondary); max-width:280px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${escapeHtml(ann.content)}">${escapeHtml(ann.content)}</td>
+                    <td>
+                        <span class="${meta.class}" style="font-size:12px; padding:3px 8px; border-radius:6px;">
+                            ${meta.icon} ${meta.text}
+                        </span>
+                    </td>
+                    <td style="font-size:12px; color:var(--text-secondary);">${timeStr}</td>
+                    <td>
+                        <span class="status-tag ${isActive ? "success" : "warning"}" style="font-size:12px;">
+                            ${isActive ? "🟢 Đang phát" : "⚪ Đã ẩn"}
+                        </span>
+                    </td>
+                    <td style="text-align:center; white-space:nowrap;">
+                        <button type="button" class="btn btn-sm ${isActive ? "btn-secondary" : "btn-primary"}" onclick="toggleAnnouncementStatus('${ann.id}', ${isActive ? 0 : 1})" title="${isActive ? "Ẩn thông báo" : "Kích hoạt phát"}">
+                            ${isActive ? "Tắt" : "Bật"}
+                        </button>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="deleteAnnouncement('${ann.id}')" title="Xóa thông báo" style="margin-left:4px;">
+                            🗑️
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join("");
+    } catch (err) {
+        console.error("Lỗi nạp thông báo:", err);
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:#ef4444;">Lỗi nạp dữ liệu: ${err.message}</td></tr>`;
+    }
+}
+
+async function toggleAnnouncementStatus(id, newStatus) {
+    try {
+        await CodeLearnApi.admin.updateAnnouncement(id, { isActive: newStatus === 1 });
+        loadAdminAnnouncements();
+    } catch (err) {
+        alert("Lỗi cập nhật thông báo: " + err.message);
+    }
+}
+
+async function deleteAnnouncement(id) {
+    if (!confirm("Bạn có chắc chắn muốn xóa vĩnh viễn thông báo này?")) return;
+    try {
+        await CodeLearnApi.admin.deleteAnnouncement(id);
+        loadAdminAnnouncements();
+    } catch (err) {
+        alert("Lỗi xóa thông báo: " + err.message);
+    }
+}
+
+async function loadAdminComments() {
+    const tbody = document.getElementById("commentsTableBody");
+    if (!tbody) return;
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--text-secondary);">Đang nạp danh sách bình luận...</td></tr>`;
+
+    try {
+        const res = await CodeLearnApi.admin.getComments();
+        _adminCommentsList = res.comments || [];
+        renderCommentsTable();
+    } catch (err) {
+        console.error("Lỗi nạp bình luận:", err);
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:#ef4444;">Lỗi nạp bình luận: ${err.message}</td></tr>`;
+    }
+}
+
+function renderCommentsTable() {
+    const tbody = document.getElementById("commentsTableBody");
+    if (!tbody) return;
+
+    const filter = document.getElementById("filterCommentStatus")?.value || "all";
+    let list = _adminCommentsList;
+
+    if (filter === "approved") {
+        list = list.filter(c => c.status !== "hidden");
+    } else if (filter === "hidden") {
+        list = list.filter(c => c.status === "hidden");
+    } else if (filter === "pinned") {
+        list = list.filter(c => c.is_pinned === 1);
+    }
+
+    if (!list.length) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:24px; color:var(--text-secondary);">Không có bình luận nào phù hợp bộ lọc.</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = list.map(c => {
+        const isHidden = c.status === "hidden";
+        const isPinned = c.is_pinned === 1;
+        const timeStr = c.created_at ? new Date(c.created_at).toLocaleString("vi-VN") : "---";
+        const authorName = c.full_name || c.username || "Ẩn danh";
+        const roleLabel = c.role === "admin" ? '<span class="status-tag primary" style="font-size:10px;">Admin</span>' : '';
+
+        return `
+            <tr style="${isHidden ? 'opacity: 0.65; background: rgba(239, 68, 68, 0.05);' : ''}">
+                <td>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:16px;">👤</span>
+                        <div>
+                            <div style="font-weight:600; font-size:13px; color:var(--text-primary);">${escapeHtml(authorName)} ${roleLabel}</div>
+                            <div style="font-size:11px; color:var(--text-secondary);">@${escapeHtml(c.username || "")}</div>
+                        </div>
+                    </div>
+                </td>
+                <td style="font-size:13px; color:var(--text-secondary);">
+                    <div style="font-weight:500; color:var(--text-primary);">${escapeHtml(c.lesson_title || c.lesson_id)}</div>
+                    <div style="font-size:11px; color:var(--text-secondary);">${escapeHtml(c.lesson_id)}</div>
+                </td>
+                <td style="color:var(--text-primary); font-size:13px; max-width:320px; word-break:break-word;">
+                    ${isPinned ? '<span style="color:#f59e0b; font-weight:700; margin-right:4px;">📌 [Đã Ghim]</span>' : ''}
+                    ${escapeHtml(c.content)}
+                </td>
+                <td style="font-size:12px; color:var(--text-secondary);">${timeStr}</td>
+                <td>
+                    ${isHidden ? '<span class="status-tag error" style="font-size:12px;">🚫 Đã ẩn</span>' : '<span class="status-tag success" style="font-size:12px;">✅ Hiển thị</span>'}
+                </td>
+                <td style="text-align:center; white-space:nowrap;">
+                    <button type="button" class="btn btn-sm ${isPinned ? 'btn-secondary' : 'btn-outline'}" onclick="toggleCommentPin('${c.id}', ${isPinned ? 0 : 1})" title="${isPinned ? 'Bỏ ghim' : 'Ghim bình luận lên đầu'}" style="margin-right:4px;">
+                        ${isPinned ? '📍 Bỏ ghim' : '📌 Ghim'}
+                    </button>
+                    <button type="button" class="btn btn-sm ${isHidden ? 'btn-primary' : 'btn-secondary'}" onclick="toggleCommentHidden('${c.id}', '${isHidden ? 'approved' : 'hidden'}')" title="${isHidden ? 'Hiện lại bình luận' : 'Ẩn bình luận khỏi học viên'}" style="margin-right:4px;">
+                        ${isHidden ? '👁️ Hiện' : '🚫 Ẩn'}
+                    </button>
+                    <button type="button" class="btn btn-sm btn-danger" onclick="deleteComment('${c.id}')" title="Xóa vĩnh viễn">
+                        🗑️
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join("");
+}
+
+async function toggleCommentPin(id, pinVal) {
+    try {
+        await CodeLearnApi.admin.updateCommentStatus(id, { isPinned: pinVal });
+        loadAdminComments();
+    } catch (err) {
+        alert("Lỗi cập nhật ghim bình luận: " + err.message);
+    }
+}
+
+async function toggleCommentHidden(id, statusVal) {
+    try {
+        await CodeLearnApi.admin.updateCommentStatus(id, { status: statusVal });
+        loadAdminComments();
+    } catch (err) {
+        alert("Lỗi cập nhật hiển thị bình luận: " + err.message);
+    }
+}
+
+async function deleteComment(id) {
+    if (!confirm("Bạn có chắc muốn xóa bình luận này vĩnh viễn?")) return;
+    try {
+        await CodeLearnApi.admin.deleteComment(id);
+        loadAdminComments();
+    } catch (err) {
+        alert("Lỗi xóa bình luận: " + err.message);
+    }
+}
+
+window.toggleAnnouncementStatus = toggleAnnouncementStatus;
+window.deleteAnnouncement = deleteAnnouncement;
+window.toggleCommentPin = toggleCommentPin;
+window.toggleCommentHidden = toggleCommentHidden;
+window.deleteComment = deleteComment;
 
 // ============================================================
 // TIỆN ÍCH DÙNG CHUNG (UTILITIES)

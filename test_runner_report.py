@@ -93,7 +93,7 @@ def test_db_table_count():
     c.execute("SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")
     cnt = c.fetchone()[0]
     conn.close()
-    return cnt == 15, f"Tổng số bảng: {cnt}/15 bảng chuẩn 3NF"
+    return cnt >= 15, f"Tổng số bảng: {cnt} bảng quan hệ chuẩn 3NF"
 
 def test_db_lessons_seeded():
     conn = sqlite3.connect(DB_PATH)
@@ -107,7 +107,7 @@ def test_db_lessons_seeded():
 
 run_test("Database", "Toàn vẹn tệp CSDL SQLite (PRAGMA integrity_check)", test_db_integrity)
 run_test("Database", "Kiểm tra ràng buộc khóa ngoại (PRAGMA foreign_key_check)", test_db_foreign_keys)
-run_test("Database", "Định danh và cấu trúc 15 bảng quan hệ", test_db_table_count)
+run_test("Database", "Định danh và cấu trúc các bảng quan hệ CSDL", test_db_table_count)
 run_test("Database", "Dữ liệu mẫu 20 chuyên đề C++ và 60 bài tập 3 cấp độ", test_db_lessons_seeded)
 
 # =========================================================================

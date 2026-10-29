@@ -62,7 +62,8 @@ ALL_TABLES = [
     "comments",
     "activity_logs",
     "ai_chat_messages",
-    "vnoi_real_knowledge"
+    "vnoi_real_knowledge",
+    "announcements"
 ]
 
 def get_stats():

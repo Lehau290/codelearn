@@ -229,6 +229,9 @@
                 <button type="button" class="admin-tab-btn" data-tab="tab-monitor">
                     <span>📊</span> Nhật ký Nộp bài &amp; AI
                 </button>
+                <button type="button" class="admin-tab-btn" data-tab="tab-community">
+                    <span>📢</span> Tương tác &amp; Thông báo
+                </button>
                 <button type="button" class="admin-tab-btn" data-tab="tab-database">
                     <span>🧠</span> CSDL &amp; Tri thức AI
                 </button>
@@ -1033,6 +1036,103 @@ int main() {
                                 </tr>
                             </thead>
                             <tbody id="adminAiChatsTableBody">
+                                <!-- Rendered by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ================= TAB: TƯƠNG TÁC & THÔNG BÁO (COMMUNITY & ANNOUNCEMENTS) ================= -->
+            <div id="tab-community" class="admin-tab-pane">
+                <!-- Bộ công cụ Phát thông báo toàn hệ thống -->
+                <section class="profile-content-card" style="margin-bottom: 24px;">
+                    <div class="profile-content-header">
+                        <div>
+                            <h2 class="profile-card-title">📢 Phát thanh Thông báo Toàn hệ thống</h2>
+                            <p class="profile-card-desc">Gửi thông báo nhanh đến toàn bộ học viên và giảng viên trên nền tảng CodeLearn C++</p>
+                        </div>
+                    </div>
+
+                    <form id="formBroadcastAnnouncement" style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 20px;">
+                        <div>
+                            <label style="display:block; font-size:13px; font-weight:600; margin-bottom:6px; color:var(--text-secondary);">Tiêu đề thông báo:</label>
+                            <input type="text" id="annTitleInput" class="form-input" placeholder="Ví dụ: Lịch bảo trì Sandbox hoặc Khai giảng Chuyên đề mới..." required style="width:100%; padding:10px 14px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-tertiary); color:var(--text-primary);">
+                        </div>
+                        <div>
+                            <label style="display:block; font-size:13px; font-weight:600; margin-bottom:6px; color:var(--text-secondary);">Mức độ ưu tiên / Loại tin:</label>
+                            <select id="annTypeSelect" class="form-select" style="width:100%; padding:10px 14px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-tertiary); color:var(--text-primary);">
+                                <option value="info">ℹ️ Thông tin chung (Info)</option>
+                                <option value="warning">⚠️ Lưu ý / Nhắc nhở (Warning)</option>
+                                <option value="success">🎉 Chúc mừng / Sự kiện (Success)</option>
+                                <option value="urgent">🚨 Khẩn cấp / Quan trọng (Urgent)</option>
+                            </select>
+                        </div>
+                        <div style="grid-column: 1 / -1;">
+                            <label style="display:block; font-size:13px; font-weight:600; margin-bottom:6px; color:var(--text-secondary);">Nội dung chi tiết thông báo:</label>
+                            <textarea id="annContentInput" rows="3" class="form-textarea" placeholder="Nhập nội dung đầy đủ của thông báo..." required style="width:100%; padding:10px 14px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-tertiary); color:var(--text-primary);"></textarea>
+                        </div>
+                        <div style="grid-column: 1 / -1; display:flex; justify-content:flex-end;">
+                            <button type="submit" class="btn btn-primary" id="btnSubmitAnnouncement" style="display:inline-flex; align-items:center; gap:8px;">
+                                <span>🚀</span> Phát thông báo ngay
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Danh sách thông báo hiện có -->
+                    <h3 style="font-size: 15px; font-weight: 600; margin-bottom: 12px; color: var(--text-primary);">📋 Danh sách Thông báo đang lưu hành</h3>
+                    <div class="table-responsive" style="max-height: 280px; overflow-y: auto;">
+                        <table class="data-table" id="announcementsTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 25%;">Tiêu đề</th>
+                                    <th>Nội dung</th>
+                                    <th style="width: 12%;">Loại</th>
+                                    <th style="width: 14%;">Thời gian</th>
+                                    <th style="width: 12%;">Trạng thái</th>
+                                    <th style="width: 12%; text-align: center;">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="announcementsTableBody">
+                                <!-- Rendered by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Quản trị & Kiểm duyệt Bình luận thảo luận -->
+                <section class="profile-content-card">
+                    <div class="profile-content-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                        <div>
+                            <h2 class="profile-card-title">💬 Kiểm duyệt Thảo luận &amp; Bình luận Bài học</h2>
+                            <p class="profile-card-desc">Giám sát trao đổi của học viên, ghim câu hỏi hay hoặc ẩn bình luận vi phạm nội quy</p>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <select id="filterCommentStatus" class="form-select" style="padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-tertiary); color: var(--text-primary); font-size: 13px;">
+                                <option value="all">Tất cả trạng thái</option>
+                                <option value="approved">Đã duyệt (Hiển thị)</option>
+                                <option value="hidden">Đã ẩn (Vi phạm)</option>
+                                <option value="pinned">Đang được ghim</option>
+                            </select>
+                            <button type="button" class="btn btn-secondary btn-sm" id="btnRefreshComments">
+                                <span>🔄</span> Làm mới
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive" style="max-height: 480px; overflow-y: auto;">
+                        <table class="data-table" id="commentsModerationTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 16%;">Người đăng</th>
+                                    <th style="width: 18%;">Bài học</th>
+                                    <th>Nội dung bình luận</th>
+                                    <th style="width: 14%;">Thời gian</th>
+                                    <th style="width: 12%;">Trạng thái</th>
+                                    <th style="width: 14%; text-align: center;">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="commentsTableBody">
                                 <!-- Rendered by JS -->
                             </tbody>
                         </table>

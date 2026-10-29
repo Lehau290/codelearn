@@ -387,6 +387,47 @@
                 return request("/admin/ai-knowledge/sync", { method: "POST" });
             },
 
+            async getComments() {
+                return request("/admin/comments");
+            },
+
+            async updateCommentStatus(commentId, data) {
+                return request(`/admin/comments/${encodeURIComponent(commentId)}/status`, {
+                    method: "PUT",
+                    body: JSON.stringify(data)
+                });
+            },
+
+            async deleteComment(commentId) {
+                return request(`/admin/comments/${encodeURIComponent(commentId)}`, {
+                    method: "DELETE"
+                });
+            },
+
+            async getAnnouncements() {
+                return request("/admin/announcements");
+            },
+
+            async createAnnouncement(data) {
+                return request("/admin/announcements", {
+                    method: "POST",
+                    body: JSON.stringify(data)
+                });
+            },
+
+            async updateAnnouncement(announcementId, data) {
+                return request(`/admin/announcements/${encodeURIComponent(announcementId)}`, {
+                    method: "PUT",
+                    body: JSON.stringify(data)
+                });
+            },
+
+            async deleteAnnouncement(announcementId) {
+                return request(`/admin/announcements/${encodeURIComponent(announcementId)}`, {
+                    method: "DELETE"
+                });
+            },
+
             async createLesson(data) {
                 return request("/lessons", {
                     method: "POST",
@@ -448,6 +489,15 @@
         achievements: {
             async get() {
                 return request("/achievements");
+            }
+        },
+
+        // -----------------------------------------------------
+        // Announcements
+        // -----------------------------------------------------
+        announcements: {
+            async getAll() {
+                return request("/announcements");
             }
         },
 

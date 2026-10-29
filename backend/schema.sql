@@ -214,6 +214,8 @@ CREATE TABLE IF NOT EXISTS comments (
     user_id     TEXT NOT NULL,
     parent_id   TEXT,                            -- Trả lời bình luận khác
     content     TEXT NOT NULL,
+    status      TEXT DEFAULT 'approved',         -- 'approved', 'hidden', 'flagged'
+    is_pinned   INTEGER DEFAULT 0,               -- 1 = Ghim lên đầu, 0 = Bình thường
     created_at  TEXT NOT NULL,
     FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
@@ -272,3 +274,17 @@ CREATE TABLE IF NOT EXISTS vnoi_real_knowledge (
 
 CREATE INDEX IF NOT EXISTS idx_vnoi_category ON vnoi_real_knowledge(category);
 CREATE INDEX IF NOT EXISTS idx_vnoi_title ON vnoi_real_knowledge(title);
+
+-- ------------------------------------------------------------------------------
+-- 16. BẢNG ANNOUNCEMENTS (Thông báo phát thanh toàn hệ thống từ Ban Quản trị)
+-- ------------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS announcements (
+    id          TEXT PRIMARY KEY,
+    title       TEXT NOT NULL,
+    content     TEXT NOT NULL,
+    type        TEXT DEFAULT 'info',             -- 'info', 'warning', 'success', 'urgent'
+    is_active   INTEGER DEFAULT 1,               -- 1 = Đang hiển thị, 0 = Đã ẩn/tắt
+    created_at  TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_announcements_active ON announcements(is_active, created_at);

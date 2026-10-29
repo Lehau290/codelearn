@@ -360,16 +360,26 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
             cursor = conn.cursor()
             cursor.execute("""
                 SELECT c.id, c.lesson_id, c.user_id, c.parent_id, c.content, c.created_at,
+                       c.status, c.is_pinned,
                        u.username, u.full_name, u.avatar, u.role
                 FROM comments c
                 JOIN users u ON c.user_id = u.id
-                WHERE c.lesson_id = ?
-                ORDER BY c.created_at DESC
+                WHERE c.lesson_id = ? AND (c.status IS NULL OR c.status != 'hidden')
+                ORDER BY c.is_pinned DESC, c.created_at DESC
                 LIMIT 100
             """, (lid,))
             comments = [dict(r) for r in cursor.fetchall()]
             conn.close()
             return self.send_json(200, {"comments": comments, "total": len(comments)})
+
+        # 4a. Public Announcements (/api/announcements)
+        if path == "/api/announcements":
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT id, title, content, type, is_active, created_at FROM announcements WHERE is_active = 1 ORDER BY created_at DESC LIMIT 20")
+            announcements = [dict(r) for r in cursor.fetchall()]
+            conn.close()
+            return self.send_json(200, {"announcements": announcements, "total": len(announcements)})
 
         # 5. Single lesson (/api/lessons/<id>)
         if path.startswith("/api/lessons/"):
@@ -834,6 +844,37 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
                     "createdAt": r["created_at"]
                 })
             return self.send_json(200, {"messages": chats_list})
+
+        # 9f. Admin Comments moderation list (/api/admin/comments)
+        if path == "/api/admin/comments":
+            if not user or user["role"] != "admin":
+                return self.send_json(403, {"error": "Chỉ dành cho Quản trị viên."})
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT c.id, c.lesson_id, c.user_id, c.parent_id, c.content, c.status, c.is_pinned, c.created_at,
+                       u.username, u.full_name, u.avatar, u.role,
+                       l.title as lesson_title
+                FROM comments c
+                LEFT JOIN users u ON c.user_id = u.id
+                LEFT JOIN lessons l ON c.lesson_id = l.id
+                ORDER BY c.is_pinned DESC, c.created_at DESC
+                LIMIT 300
+            """)
+            comments = [dict(r) for r in cursor.fetchall()]
+            conn.close()
+            return self.send_json(200, {"comments": comments, "total": len(comments)})
+
+        # 9g. Admin Announcements list (/api/admin/announcements)
+        if path == "/api/admin/announcements":
+            if not user or user["role"] != "admin":
+                return self.send_json(403, {"error": "Chỉ dành cho Quản trị viên."})
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT id, title, content, type, is_active, created_at FROM announcements ORDER BY created_at DESC")
+            announcements = [dict(r) for r in cursor.fetchall()]
+            conn.close()
+            return self.send_json(200, {"announcements": announcements, "total": len(announcements)})
 
         # 9e. Admin AI Knowledge summary (/api/admin/ai-knowledge)
         if path == "/api/admin/ai-knowledge":
@@ -1405,6 +1446,31 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
             except Exception as e:
                 return self.send_json(500, {"error": f"Lỗi đồng bộ dữ liệu VNOI: {str(e)}"})
 
+        # 10b2. Admin Create Announcement (/api/admin/announcements)
+        if path == "/api/admin/announcements":
+            if not user or user["role"] != "admin":
+                return self.send_json(403, {"error": "Chỉ Quản trị viên mới có quyền đăng thông báo hệ thống."})
+            title = body.get("title", "").strip()
+            content = body.get("content", "").strip()
+            ann_type = body.get("type", "info").strip()
+            if not title or not content:
+                return self.send_json(400, {"error": "Tiêu đề và nội dung thông báo không được để trống."})
+            aid = "ann-" + str(uuid.uuid4())[:8]
+            now = datetime.now().isoformat()
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("""
+                INSERT INTO announcements (id, title, content, type, is_active, created_at)
+                VALUES (?, ?, ?, ?, 1, ?)
+            """, (aid, title, content, ann_type, now))
+            cursor.execute("""
+                INSERT INTO activity_logs (id, user_id, action, ip_address, details, created_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (str(uuid.uuid4()), user["id"], "create_announcement", client_ip, f"Announcement: {aid} - {title}", now))
+            conn.commit()
+            conn.close()
+            return self.send_json(201, {"message": "Đã phát thông báo thành công!", "announcementId": aid})
+
         # 10c. Admin Create Exercise (/api/admin/exercises)
         if path == "/api/admin/exercises":
             if not user or user["role"] != "admin":
@@ -1914,6 +1980,71 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
                 "status": new_status
             })
 
+        # 4b2. Admin Moderate Comment (/api/admin/comments/<id>/status)
+        if path.startswith("/api/admin/comments/") and path.endswith("/status"):
+            if not user or user["role"] != "admin":
+                return self.send_json(403, {"error": "Chỉ Quản trị viên mới có quyền kiểm duyệt bình luận."})
+            parts = path.split("/")
+            cid = parts[4]
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT id FROM comments WHERE id = ?", (cid,))
+            if not cursor.fetchone():
+                conn.close()
+                return self.send_json(404, {"error": "Không tìm thấy bình luận."})
+            status = body.get("status")
+            is_pinned = body.get("isPinned")
+            fields = []
+            params = []
+            if status is not None:
+                fields.append("status = ?")
+                params.append(status)
+            if is_pinned is not None:
+                fields.append("is_pinned = ?")
+                params.append(1 if is_pinned else 0)
+            if fields:
+                params.append(cid)
+                cursor.execute(f"UPDATE comments SET {', '.join(fields)} WHERE id = ?", tuple(params))
+                conn.commit()
+            conn.close()
+            return self.send_json(200, {"message": "Đã cập nhật trạng thái bình luận thành công!"})
+
+        # 4b3. Admin Update Announcement (/api/admin/announcements/<id>)
+        if path.startswith("/api/admin/announcements/"):
+            if not user or user["role"] != "admin":
+                return self.send_json(403, {"error": "Chỉ Quản trị viên mới có quyền sửa thông báo."})
+            aid = path[len("/api/admin/announcements/"):].strip()
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT id FROM announcements WHERE id = ?", (aid,))
+            if not cursor.fetchone():
+                conn.close()
+                return self.send_json(404, {"error": "Không tìm thấy thông báo."})
+            title = body.get("title")
+            content = body.get("content")
+            ann_type = body.get("type")
+            is_active = body.get("isActive")
+            fields = []
+            params = []
+            if title is not None:
+                fields.append("title = ?")
+                params.append(title.strip())
+            if content is not None:
+                fields.append("content = ?")
+                params.append(content.strip())
+            if ann_type is not None:
+                fields.append("type = ?")
+                params.append(ann_type.strip())
+            if is_active is not None:
+                fields.append("is_active = ?")
+                params.append(1 if is_active else 0)
+            if fields:
+                params.append(aid)
+                cursor.execute(f"UPDATE announcements SET {', '.join(fields)} WHERE id = ?", tuple(params))
+                conn.commit()
+            conn.close()
+            return self.send_json(200, {"message": "Cập nhật thông báo thành công!"})
+
         # 4d. Admin Grade / Override Submission (/api/admin/submissions/<id>/grade)
         if path.startswith("/api/admin/submissions/") and path.endswith("/grade"):
             if not user or user["role"] not in ["admin", "moderator"]:
@@ -2085,6 +2216,30 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
             conn.commit()
             conn.close()
             return self.send_json(200, {"message": "Đã xóa bài học thành công."})
+
+        # Admin delete comment (/api/admin/comments/<id>)
+        if path.startswith("/api/admin/comments/"):
+            if not user or user["role"] != "admin":
+                return self.send_json(403, {"error": "Chỉ Quản trị viên mới có quyền xóa bình luận."})
+            cid = path[len("/api/admin/comments/"):].strip()
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM comments WHERE id = ?", (cid,))
+            conn.commit()
+            conn.close()
+            return self.send_json(200, {"message": "Đã xóa bình luận thành công."})
+
+        # Admin delete announcement (/api/admin/announcements/<id>)
+        if path.startswith("/api/admin/announcements/"):
+            if not user or user["role"] != "admin":
+                return self.send_json(403, {"error": "Chỉ Quản trị viên mới có quyền xóa thông báo."})
+            aid = path[len("/api/admin/announcements/"):].strip()
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM announcements WHERE id = ?", (aid,))
+            conn.commit()
+            conn.close()
+            return self.send_json(200, {"message": "Đã xóa thông báo thành công."})
 
         # Admin delete exercise (/api/admin/exercises/<id>?lessonId=...)
         if path.startswith("/api/admin/exercises/"):
