@@ -296,6 +296,10 @@
                 return request("/admin/stats");
             },
 
+            async getAnalytics() {
+                return request("/admin/analytics");
+            },
+
             async getUsers() {
                 return request("/admin/users");
             },

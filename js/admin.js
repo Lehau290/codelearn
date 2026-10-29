@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 3. Khởi tạo các module
     setupAdminTabs();
+    setupAnalyticsSection();
     renderAdminStats();
     renderAdminLessons();
     setupLessonSearch();
@@ -58,7 +59,9 @@ function setupAdminTabs() {
             }
 
             // Kích hoạt nạp dữ liệu tương ứng khi mở tab
-            if (targetTab === "tab-lessons") {
+            if (targetTab === "tab-analytics") {
+                loadAdminAnalytics();
+            } else if (targetTab === "tab-lessons") {
                 renderAdminStats();
                 renderAdminLessons();
             } else if (targetTab === "tab-exercises") {

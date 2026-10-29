@@ -535,6 +535,136 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
                 "totalSubmissions": total_submissions
             })
 
+        # 7b. Admin Analytics (/api/admin/analytics)
+        if path == "/api/admin/analytics":
+            if not user or user["role"] != "admin":
+                return self.send_json(403, {"error": "Chỉ dành cho Quản trị viên."})
+            conn = get_connection()
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT COUNT(*) as count FROM users")
+            total_users = cursor.fetchone()["count"]
+            cursor.execute("SELECT COUNT(*) as count FROM lessons")
+            total_lessons = cursor.fetchone()["count"]
+            cursor.execute("SELECT COUNT(*) as count FROM submissions")
+            total_submissions = cursor.fetchone()["count"]
+            cursor.execute("SELECT COUNT(*) as count FROM ai_chat_messages")
+            total_ai_chats = cursor.fetchone()["count"]
+
+            cursor.execute("SELECT AVG(score) as avg_score, SUM(CASE WHEN passed = 1 THEN 1 ELSE 0 END) as passed_cnt FROM submissions")
+            sub_stats = cursor.fetchone()
+            avg_score = round(sub_stats["avg_score"] or 0, 1)
+            passed_cnt = sub_stats["passed_cnt"] or 0
+            pass_rate = round((passed_cnt / total_submissions * 100), 1) if total_submissions > 0 else 0
+
+            cursor.execute("""
+                SELECT l.chapter, COUNT(DISTINCT l.id) as total_lessons,
+                       COUNT(DISTINCT CASE WHEN p.status = 'completed' THEN p.lesson_id END) as completed_lessons
+                FROM lessons l
+                LEFT JOIN progress p ON l.id = p.lesson_id
+                GROUP BY l.chapter
+                ORDER BY MIN(l.order_num)
+            """)
+            chapter_rows = cursor.fetchall()
+            chapters_data = []
+            for cr in chapter_rows:
+                tot = cr["total_lessons"]
+                comp = cr["completed_lessons"]
+                rate = round((comp / (tot * max(1, total_users))) * 100, 1) if tot > 0 else 0
+                chapters_data.append({
+                    "chapter": cr["chapter"],
+                    "totalLessons": tot,
+                    "completedLessons": comp,
+                    "completionRate": min(100.0, rate)
+                })
+
+            cursor.execute("""
+                SELECT 
+                    SUM(CASE WHEN passed = 1 THEN 1 ELSE 0 END) as passed_cnt,
+                    SUM(CASE WHEN passed = 0 AND (output LIKE '%error:%' OR output LIKE '%fatal error:%') THEN 1 ELSE 0 END) as syntax_errors,
+                    SUM(CASE WHEN passed = 0 AND output LIKE '%Quá thời gian%' THEN 1 ELSE 0 END) as timeout_errors,
+                    SUM(CASE WHEN passed = 0 AND output NOT LIKE '%error:%' AND output NOT LIKE '%fatal error:%' AND output NOT LIKE '%Quá thời gian%' THEN 1 ELSE 0 END) as wrong_answers
+                FROM submissions
+            """)
+            err_row = cursor.fetchone()
+            status_breakdown = {
+                "passed": err_row["passed_cnt"] or 0,
+                "syntax_errors": err_row["syntax_errors"] or 0,
+                "wrong_answers": err_row["wrong_answers"] or 0,
+                "timeout_errors": err_row["timeout_errors"] or 0
+            }
+
+            cursor.execute("""
+                SELECT 
+                    SUM(CASE WHEN score < 50 THEN 1 ELSE 0 END) as low_score,
+                    SUM(CASE WHEN score >= 50 AND score < 80 THEN 1 ELSE 0 END) as mid_score,
+                    SUM(CASE WHEN score >= 80 THEN 1 ELSE 0 END) as high_score
+                FROM submissions
+            """)
+            score_row = cursor.fetchone()
+            score_distribution = {
+                "low": score_row["low_score"] or 0,
+                "mid": score_row["mid_score"] or 0,
+                "high": score_row["high_score"] or 0
+            }
+
+            today = datetime.now()
+            activity_days = []
+            for i in range(6, -1, -1):
+                day_date = today - timedelta(days=i)
+                day_str = day_date.strftime("%Y-%m-%d")
+                cursor.execute("SELECT COUNT(*) as cnt FROM submissions WHERE submitted_at LIKE ?", (f"{day_str}%",))
+                sub_count = cursor.fetchone()["cnt"]
+                cursor.execute("SELECT COUNT(*) as cnt FROM ai_chat_messages WHERE created_at LIKE ?", (f"{day_str}%",))
+                ai_count = cursor.fetchone()["cnt"]
+                activity_days.append({
+                    "date": day_date.strftime("%d/%m"),
+                    "submissions": sub_count,
+                    "aiChats": ai_count
+                })
+
+            cursor.execute("""
+                SELECT u.id, u.username, u.full_name, u.email,
+                       COUNT(s.id) as total_submits,
+                       ROUND(AVG(s.score), 1) as avg_score,
+                       SUM(CASE WHEN s.passed = 0 THEN 1 ELSE 0 END) as fail_submits
+                FROM users u
+                LEFT JOIN submissions s ON u.id = s.user_id
+                WHERE u.role = 'student'
+                GROUP BY u.id
+                ORDER BY avg_score ASC, fail_submits DESC
+                LIMIT 5
+            """)
+            at_risk_rows = cursor.fetchall()
+            at_risk_students = []
+            for r in at_risk_rows:
+                at_risk_students.append({
+                    "id": r["id"],
+                    "username": r["username"],
+                    "fullName": r["full_name"],
+                    "email": r["email"],
+                    "totalSubmits": r["total_submits"] or 0,
+                    "avgScore": r["avg_score"] or 0,
+                    "failSubmits": r["fail_submits"] or 0
+                })
+
+            conn.close()
+            return self.send_json(200, {
+                "summary": {
+                    "totalUsers": total_users,
+                    "totalLessons": total_lessons,
+                    "totalSubmissions": total_submissions,
+                    "totalAiChats": total_ai_chats,
+                    "avgScore": avg_score,
+                    "passRate": pass_rate
+                },
+                "chapters": chapters_data,
+                "statusBreakdown": status_breakdown,
+                "scoreDistribution": score_distribution,
+                "activity": activity_days,
+                "atRiskStudents": at_risk_students
+            })
+
         # 8. Admin Users list (/api/admin/users)
         if path == "/api/admin/users":
             if not user or user["role"] != "admin":

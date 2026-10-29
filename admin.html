@@ -12,6 +12,8 @@
     <title>Quản trị | CodeLearn C++</title>
 
     <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
     <script>
         (function() {
             var t = localStorage.getItem("cpp_theme");
@@ -212,7 +214,10 @@
 
             <!-- ================= ADMIN NAVIGATION TABS ================= -->
             <div class="admin-tabs-nav" id="adminTabsNav">
-                <button type="button" class="admin-tab-btn active" data-tab="tab-lessons">
+                <button type="button" class="admin-tab-btn active" data-tab="tab-analytics">
+                    <span>📈</span> Báo cáo &amp; Phân tích
+                </button>
+                <button type="button" class="admin-tab-btn" data-tab="tab-lessons">
                     <span>📚</span> Quản lý Bài giảng
                 </button>
                 <button type="button" class="admin-tab-btn" data-tab="tab-exercises">
@@ -229,8 +234,152 @@
                 </button>
             </div>
 
+            <!-- ================= TAB 0: BÁO CÁO & PHÂN TÍCH (ANALYTICS) ================= -->
+            <div id="tab-analytics" class="admin-tab-pane active">
+                <div class="profile-content-card" style="margin-bottom: 24px;">
+                    <div class="profile-content-header">
+                        <div>
+                            <span class="section-label">LEARNING ANALYTICS DASHBOARD</span>
+                            <h2>Báo cáo tiến độ &amp; Đánh giá năng lực học viên</h2>
+                        </div>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <button type="button" id="btnRefreshAnalytics" class="btn btn-secondary" title="Làm mới số liệu">
+                                🔄 Tải lại số liệu
+                            </button>
+                            <button type="button" id="btnExportAnalyticsReport" class="btn btn-primary" title="In / Xuất báo cáo">
+                                📑 Xuất báo cáo / In
+                            </button>
+                        </div>
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 20px;">
+                        Phân tích thời gian thực dữ liệu học tập từ CSDL: Tỷ lệ hoàn thành theo chương, phổ điểm năng lực, phân bổ lỗi biên dịch g++ và phát hiện học viên cần hỗ trợ sớm.
+                    </p>
+
+                    <!-- KPI Cards Grid -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-bottom: 24px;">
+                        <div class="profile-stat-card" style="padding: 16px; border-top: 4px solid #6366f1;">
+                            <div>
+                                <strong id="kpiAvgScore" style="color: #6366f1; font-size: 1.6rem;">0</strong>
+                                <span style="font-size: 0.85rem; font-weight: 700;">Điểm TB toàn khóa</span>
+                            </div>
+                        </div>
+                        <div class="profile-stat-card" style="padding: 16px; border-top: 4px solid #10b981;">
+                            <div>
+                                <strong id="kpiPassRate" style="color: #10b981; font-size: 1.6rem;">0%</strong>
+                                <span style="font-size: 0.85rem; font-weight: 700;">Tỷ lệ đạt bài tập</span>
+                            </div>
+                        </div>
+                        <div class="profile-stat-card" style="padding: 16px; border-top: 4px solid #f59e0b;">
+                            <div>
+                                <strong id="kpiTotalSubmits" style="color: #f59e0b; font-size: 1.6rem;">0</strong>
+                                <span style="font-size: 0.85rem; font-weight: 700;">Tổng lượt nộp code</span>
+                            </div>
+                        </div>
+                        <div class="profile-stat-card" style="padding: 16px; border-top: 4px solid #8b5cf6;">
+                            <div>
+                                <strong id="kpiAiQuestions" style="color: #8b5cf6; font-size: 1.6rem;">0</strong>
+                                <span style="font-size: 0.85rem; font-weight: 700;">Lượt hỏi đáp AI</span>
+                            </div>
+                        </div>
+                        <div class="profile-stat-card" style="padding: 16px; border-top: 4px solid #06b6d4;">
+                            <div>
+                                <strong id="kpiActiveStudents" style="color: #06b6d4; font-size: 1.6rem;">0</strong>
+                                <span style="font-size: 0.85rem; font-weight: 700;">Học viên tham gia</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts 2x2 Grid -->
+                    <div class="admin-charts-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 20px;">
+                        <!-- Chart 1: Tiến độ 7 chương -->
+                        <div style="background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 16px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                <h4 style="margin: 0; font-size: 1rem; font-weight: 800; color: var(--text-primary);">
+                                    📚 Tỷ lệ hoàn thành theo 7 Chương học
+                                </h4>
+                                <span style="font-size: 0.75rem; padding: 3px 8px; border-radius: 999px; background: rgba(99,102,241,0.1); color: #6366f1; font-weight: 700;">Chương 1 - 7</span>
+                            </div>
+                            <div style="height: 260px; position: relative;">
+                                <canvas id="chartChapterProgress"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Chart 2: Phân bổ lỗi biên dịch & Trạng thái -->
+                        <div style="background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 16px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                <h4 style="margin: 0; font-size: 1rem; font-weight: 800; color: var(--text-primary);">
+                                    ⚡ Phân bổ Trạng thái &amp; Lỗi biên dịch g++
+                                </h4>
+                                <span style="font-size: 0.75rem; padding: 3px 8px; border-radius: 999px; background: rgba(16,185,129,0.1); color: #10b981; font-weight: 700;">Online Judge</span>
+                            </div>
+                            <div style="height: 260px; position: relative;">
+                                <canvas id="chartStatusBreakdown"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Chart 3: Xu hướng hoạt động 7 ngày -->
+                        <div style="background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 16px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                <h4 style="margin: 0; font-size: 1rem; font-weight: 800; color: var(--text-primary);">
+                                    📈 Tần suất nộp bài &amp; Hỏi AI (7 ngày gần nhất)
+                                </h4>
+                                <span style="font-size: 0.75rem; padding: 3px 8px; border-radius: 999px; background: rgba(245,158,11,0.1); color: #f59e0b; font-weight: 700;">Activity Trend</span>
+                            </div>
+                            <div style="height: 260px; position: relative;">
+                                <canvas id="chartActivityTrend"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Chart 4: Phổ điểm -->
+                        <div style="background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 16px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                <h4 style="margin: 0; font-size: 1rem; font-weight: 800; color: var(--text-primary);">
+                                    🎯 Phổ điểm đánh giá năng lực học viên
+                                </h4>
+                                <span style="font-size: 0.75rem; padding: 3px 8px; border-radius: 999px; background: rgba(139,92,246,0.1); color: #8b5cf6; font-weight: 700;">Score Range</span>
+                            </div>
+                            <div style="height: 260px; position: relative;">
+                                <canvas id="chartScoreDistribution"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- At-Risk Students Early Warning Section -->
+                    <div style="margin-top: 28px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                            <div>
+                                <h3 style="margin: 0; font-size: 1.15rem; color: #ef4444; display: flex; align-items: center; gap: 8px;">
+                                    <span>⚠️</span> Danh sách học viên cần can thiệp hỗ trợ sớm (Early Warning)
+                                </h3>
+                                <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 4px 0 0;">
+                                    Học viên có điểm số dưới trung bình hoặc gặp nhiều lỗi biên dịch liên tiếp cần giảng viên hướng dẫn phụ đạo.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="admin-table-container">
+                            <table class="admin-table" id="tableAtRiskStudents">
+                                <thead>
+                                    <tr>
+                                        <th>Học viên</th>
+                                        <th>Email</th>
+                                        <th>Lượt nộp</th>
+                                        <th>Số bài sai / lỗi</th>
+                                        <th>Điểm trung bình</th>
+                                        <th>Đánh giá &amp; Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableAtRiskStudentsBody">
+                                    <!-- Rendered by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- ================= TAB 1: BÀI GIẢNG (LESSONS) ================= -->
-            <div id="tab-lessons" class="admin-tab-pane active">
+            <div id="tab-lessons" class="admin-tab-pane">
                 <div class="admin-layout">
 
 
