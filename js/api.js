@@ -364,6 +364,31 @@
                 });
             },
 
+            async getExerciseTestCases(exerciseId, lessonId = "") {
+                const q = lessonId ? `?lessonId=${encodeURIComponent(lessonId)}` : "";
+                return request(`/admin/exercises/${encodeURIComponent(exerciseId)}/testcases${q}`);
+            },
+
+            async createTestCase(exerciseId, data) {
+                return request(`/admin/exercises/${encodeURIComponent(exerciseId)}/testcases`, {
+                    method: "POST",
+                    body: JSON.stringify(data)
+                });
+            },
+
+            async updateTestCase(testCaseId, data) {
+                return request(`/admin/testcases/${encodeURIComponent(testCaseId)}`, {
+                    method: "PUT",
+                    body: JSON.stringify(data)
+                });
+            },
+
+            async deleteTestCase(testCaseId) {
+                return request(`/admin/testcases/${encodeURIComponent(testCaseId)}`, {
+                    method: "DELETE"
+                });
+            },
+
             async getSubmissions(limit = 50) {
                 return request(`/admin/submissions?limit=${limit}`);
             },

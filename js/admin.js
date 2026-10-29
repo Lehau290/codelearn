@@ -484,6 +484,7 @@ function renderExerciseList(exercises) {
 }
 
 function setupExerciseManagement() {
+    setupTestCasesModule();
     const filterSelect = document.getElementById("exerciseLessonFilter");
     if (filterSelect) {
         filterSelect.addEventListener("change", () => {
@@ -616,10 +617,195 @@ function editExercise(exId, lessonId) {
     setInputValue("exerciseTestKeywords", kwStr);
 
     setText("adminExerciseFormTitle", `Chỉnh sửa: ${ex.title}`);
+    loadExerciseTestCases(ex.id, ex.lessonId);
 
     const formSec = document.getElementById("adminExerciseFormSection");
     if (formSec) formSec.scrollIntoView({ behavior: "smooth" });
 }
+
+let _currentExerciseTestCases = [];
+
+async function loadExerciseTestCases(exerciseId, lessonId) {
+    const container = document.getElementById("testCasesContainer");
+    const badge = document.getElementById("tcCountBadge");
+    if (!container) return;
+
+    container.innerHTML = `<div style="padding:10px; text-align:center; color:var(--text-secondary); font-size:12px;">Đang nạp bộ test cases...</div>`;
+
+    try {
+        const res = await CodeLearnApi.admin.getExerciseTestCases(exerciseId, lessonId);
+        _currentExerciseTestCases = res.testcases || [];
+        if (badge) badge.textContent = `${_currentExerciseTestCases.length} Test Cases`;
+        renderTestCasesList();
+    } catch (err) {
+        container.innerHTML = `<div style="color:#ef4444; font-size:12px; padding:8px;">Lỗi nạp test cases: ${escapeHtml(err.message)}</div>`;
+    }
+}
+
+function renderTestCasesList() {
+    const container = document.getElementById("testCasesContainer");
+    const badge = document.getElementById("tcCountBadge");
+    if (!container) return;
+
+    if (badge) badge.textContent = `${_currentExerciseTestCases.length} Test Cases`;
+
+    if (!_currentExerciseTestCases.length) {
+        container.innerHTML = `
+            <div style="font-size:12px; color:var(--text-secondary); font-style:italic; text-align:center; padding:12px; background:var(--bg-tertiary); border-radius:8px;">
+                Chưa có Test Case nào cho bài tập này. Hãy thêm mới bên dưới để Sandbox g++ tự động chấm điểm.
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = _currentExerciseTestCases.map((tc, idx) => {
+        const isHidden = tc.is_hidden === 1;
+        const inputDisplay = tc.input_data ? escapeHtml(tc.input_data) : '<em style="color:var(--text-secondary); font-size:11px;">(không có stdin)</em>';
+        const outputDisplay = escapeHtml(tc.expected_output || "");
+
+        return `
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; padding:10px 14px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card); ${isHidden ? 'border-left: 3px solid #8b5cf6;' : 'border-left: 3px solid #10b981;'}">
+                <div style="flex:1; min-width:0;">
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                        <span style="font-weight:700; font-size:12px; color:var(--text-primary);">Test Case #${idx + 1}</span>
+                        ${isHidden ? '<span class="status-tag warning" style="font-size:10px; padding:2px 6px;">🔒 Ẩn (Chống gian lận)</span>' : '<span class="status-tag success" style="font-size:10px; padding:2px 6px;">🟢 Công khai</span>'}
+                        <span style="font-size:11px; color:#10b981; font-weight:600;">+${tc.weight_points || 50} điểm</span>
+                    </div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; font-size:11px; font-family:monospace; margin-top:4px;">
+                        <div style="background:var(--bg-tertiary); padding:6px 8px; border-radius:4px; max-height:60px; overflow-y:auto;">
+                            <span style="color:var(--text-secondary); font-weight:600; display:block;">Input (stdin):</span>
+                            ${inputDisplay}
+                        </div>
+                        <div style="background:var(--bg-tertiary); padding:6px 8px; border-radius:4px; max-height:60px; overflow-y:auto;">
+                            <span style="color:var(--text-secondary); font-weight:600; display:block;">Expected Output:</span>
+                            <span style="color:#0ea5e9;">${outputDisplay}</span>
+                        </div>
+                    </div>
+                </div>
+                <div style="display:flex; gap:6px; flex-shrink:0;">
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="editTestCaseItem('${tc.id}')" style="padding:4px 8px; font-size:11px;" title="Sửa Test Case">
+                        Sửa
+                    </button>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="deleteTestCaseItem('${tc.id}')" style="padding:4px 8px; font-size:11px;" title="Xóa Test Case">
+                        🗑️
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join("");
+}
+
+function resetTestCaseForm() {
+    const editId = document.getElementById("tcEditId");
+    const inputData = document.getElementById("tcInputData");
+    const outputData = document.getElementById("tcExpectedOutput");
+    const isHidden = document.getElementById("tcIsHidden");
+    const weightPoints = document.getElementById("tcWeightPoints");
+    const boxTitle = document.getElementById("tcBoxTitle");
+    const cancelBtn = document.getElementById("btnCancelTestCase");
+
+    if (editId) editId.value = "";
+    if (inputData) inputData.value = "";
+    if (outputData) outputData.value = "";
+    if (isHidden) isHidden.checked = false;
+    if (weightPoints) weightPoints.value = "50";
+    if (boxTitle) boxTitle.textContent = "➕ Thêm Test Case mới cho bài tập";
+    if (cancelBtn) cancelBtn.hidden = true;
+}
+
+function editTestCaseItem(tcId) {
+    const tc = _currentExerciseTestCases.find(t => t.id === tcId);
+    if (!tc) return;
+
+    setInputValue("tcEditId", tc.id);
+    setInputValue("tcInputData", tc.input_data || "");
+    setInputValue("tcExpectedOutput", tc.expected_output || "");
+    const isHidden = document.getElementById("tcIsHidden");
+    if (isHidden) isHidden.checked = (tc.is_hidden === 1);
+    setInputValue("tcWeightPoints", tc.weight_points || 50);
+
+    setText("tcBoxTitle", `✏️ Chỉnh sửa Test Case (${tc.id})`);
+    const cancelBtn = document.getElementById("btnCancelTestCase");
+    if (cancelBtn) cancelBtn.hidden = false;
+
+    const box = document.getElementById("addTestCaseBox");
+    if (box) box.scrollIntoView({ behavior: "smooth" });
+}
+
+async function deleteTestCaseItem(tcId) {
+    if (!confirm("Bạn có chắc chắn muốn xóa Test Case này khỏi bài tập?")) return;
+    try {
+        await CodeLearnApi.admin.deleteTestCase(tcId);
+        _currentExerciseTestCases = _currentExerciseTestCases.filter(t => t.id !== tcId);
+        renderTestCasesList();
+    } catch (err) {
+        alert("Lỗi xóa Test Case: " + err.message);
+    }
+}
+
+function setupTestCasesModule() {
+    const saveBtn = document.getElementById("btnSaveTestCase");
+    const cancelBtn = document.getElementById("btnCancelTestCase");
+
+    if (cancelBtn) {
+        cancelBtn.addEventListener("click", resetTestCaseForm);
+    }
+
+    if (saveBtn) {
+        saveBtn.addEventListener("click", async () => {
+            const exerciseId = document.getElementById("editExerciseId")?.value;
+            const lessonId = document.getElementById("exerciseTargetLesson")?.value;
+            if (!exerciseId) {
+                alert("Vui lòng chọn hoặc lưu bài tập trước khi tạo Test Case!");
+                return;
+            }
+
+            const tcId = document.getElementById("tcEditId")?.value;
+            const inputData = document.getElementById("tcInputData")?.value || "";
+            const expectedOutput = document.getElementById("tcExpectedOutput")?.value.trim();
+            const isHidden = document.getElementById("tcIsHidden")?.checked ? 1 : 0;
+            const weightPoints = parseInt(document.getElementById("tcWeightPoints")?.value || "50", 10);
+
+            if (!expectedOutput) {
+                alert("Vui lòng nhập kết quả mong đợi (Expected Output) của Test Case!");
+                return;
+            }
+
+            saveBtn.disabled = true;
+            saveBtn.textContent = "Đang lưu...";
+
+            try {
+                if (tcId) {
+                    await CodeLearnApi.admin.updateTestCase(tcId, {
+                        inputData,
+                        expectedOutput,
+                        isHidden,
+                        weightPoints
+                    });
+                } else {
+                    await CodeLearnApi.admin.createTestCase(exerciseId, {
+                        lessonId,
+                        inputData,
+                        expectedOutput,
+                        isHidden,
+                        weightPoints,
+                        orderNum: _currentExerciseTestCases.length + 1
+                    });
+                }
+                resetTestCaseForm();
+                await loadExerciseTestCases(exerciseId, lessonId);
+            } catch (err) {
+                alert("Lỗi lưu Test Case: " + err.message);
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = "Lưu Test Case";
+            }
+        });
+    }
+}
+
+window.editTestCaseItem = editTestCaseItem;
+window.deleteTestCaseItem = deleteTestCaseItem;
 
 async function deleteExercise(exId, lessonId) {
     if (!confirm(`Bạn có chắc chắn muốn xóa bài tập '${exId}' thuộc bài '${lessonId}' không?`)) {
@@ -650,6 +836,13 @@ function resetExerciseForm() {
     setInputValue("exerciseHint", "");
     setInputValue("exerciseTestKeywords", "");
     setText("adminExerciseFormTitle", "Thêm bài tập mới");
+    resetTestCaseForm();
+    const tcContainer = document.getElementById("testCasesContainer");
+    if (tcContainer) {
+        tcContainer.innerHTML = `<div style="font-size:13px; color:var(--text-secondary); font-style:italic; text-align:center; padding:12px; background:var(--bg-tertiary); border-radius:8px;">Vui lòng chọn bài tập trong danh sách để quản lý các Test Cases.</div>`;
+    }
+    const badge = document.getElementById("tcCountBadge");
+    if (badge) badge.textContent = "0 Test Cases";
 }
 
 // ============================================================

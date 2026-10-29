@@ -750,6 +750,33 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
             conn.close()
             return self.send_json(200, {"exercises": exercises_list})
 
+        # 9b2. Admin Get Exercise Test Cases (/api/admin/exercises/<id>/testcases)
+        if path.startswith("/api/admin/exercises/") and path.endswith("/testcases"):
+            if not user or user["role"] != "admin":
+                return self.send_json(403, {"error": "Chỉ dành cho Quản trị viên."})
+            parts = path.split("/")
+            ex_id = parts[4]
+            lesson_id = query.get("lessonId", [""])[0].strip()
+            conn = get_connection()
+            cursor = conn.cursor()
+            if lesson_id:
+                cursor.execute("""
+                    SELECT id, lesson_id, exercise_id, input_data, expected_output, is_hidden, weight_points, order_num
+                    FROM test_cases
+                    WHERE exercise_id = ? AND lesson_id = ?
+                    ORDER BY order_num ASC
+                """, (ex_id, lesson_id))
+            else:
+                cursor.execute("""
+                    SELECT id, lesson_id, exercise_id, input_data, expected_output, is_hidden, weight_points, order_num
+                    FROM test_cases
+                    WHERE exercise_id = ?
+                    ORDER BY order_num ASC
+                """, (ex_id,))
+            testcases = [dict(r) for r in cursor.fetchall()]
+            conn.close()
+            return self.send_json(200, {"testcases": testcases, "total": len(testcases)})
+
         # 9c. Admin Submissions log (/api/admin/submissions?limit=50)
         if path == "/api/admin/submissions":
             if not user or user["role"] != "admin":
@@ -1471,6 +1498,33 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
             conn.close()
             return self.send_json(201, {"message": "Đã phát thông báo thành công!", "announcementId": aid})
 
+        # 10c2. Admin Create Exercise Test Case (/api/admin/exercises/<id>/testcases)
+        if path.startswith("/api/admin/exercises/") and path.endswith("/testcases"):
+            if not user or user["role"] != "admin":
+                return self.send_json(403, {"error": "Chỉ Quản trị viên mới có quyền thêm test case."})
+            parts = path.split("/")
+            ex_id = parts[4]
+            lesson_id = body.get("lessonId", "").strip()
+            input_data = body.get("inputData", "")
+            expected_output = body.get("expectedOutput", "").strip()
+            is_hidden = 1 if body.get("isHidden") else 0
+            weight_points = int(body.get("weightPoints", 50))
+            order_num = int(body.get("orderNum", 1))
+
+            if not lesson_id:
+                return self.send_json(400, {"error": "Thiếu mã chuyên đề bài học (lessonId)."})
+
+            tcid = f"tc-{lesson_id}-{ex_id}-{int(datetime.now().timestamp() * 1000) % 100000}"
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("""
+                INSERT INTO test_cases (id, lesson_id, exercise_id, input_data, expected_output, is_hidden, weight_points, order_num)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, (tcid, lesson_id, ex_id, input_data, expected_output, is_hidden, weight_points, order_num))
+            conn.commit()
+            conn.close()
+            return self.send_json(201, {"message": "Đã thêm Test Case thành công!", "testCaseId": tcid})
+
         # 10c. Admin Create Exercise (/api/admin/exercises)
         if path == "/api/admin/exercises":
             if not user or user["role"] != "admin":
@@ -2107,6 +2161,49 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
                 "gradedAt": now
             })
 
+        # 4e. Admin Update Test Case (/api/admin/testcases/<id>)
+        if path.startswith("/api/admin/testcases/"):
+            if not user or user["role"] != "admin":
+                return self.send_json(403, {"error": "Chỉ Quản trị viên mới có quyền sửa test case."})
+            tcid = path[len("/api/admin/testcases/"):].strip()
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT id FROM test_cases WHERE id = ?", (tcid,))
+            if not cursor.fetchone():
+                conn.close()
+                return self.send_json(404, {"error": "Không tìm thấy Test Case."})
+
+            input_data = body.get("inputData")
+            expected_output = body.get("expectedOutput")
+            is_hidden = body.get("isHidden")
+            weight_points = body.get("weightPoints")
+            order_num = body.get("orderNum")
+
+            fields = []
+            params = []
+            if input_data is not None:
+                fields.append("input_data = ?")
+                params.append(input_data)
+            if expected_output is not None:
+                fields.append("expected_output = ?")
+                params.append(expected_output.strip())
+            if is_hidden is not None:
+                fields.append("is_hidden = ?")
+                params.append(1 if is_hidden else 0)
+            if weight_points is not None:
+                fields.append("weight_points = ?")
+                params.append(int(weight_points))
+            if order_num is not None:
+                fields.append("order_num = ?")
+                params.append(int(order_num))
+
+            if fields:
+                params.append(tcid)
+                cursor.execute(f"UPDATE test_cases SET {', '.join(fields)} WHERE id = ?", tuple(params))
+                conn.commit()
+            conn.close()
+            return self.send_json(200, {"message": "Đã cập nhật Test Case thành công!"})
+
         # 5. Admin Update Exercise (/api/admin/exercises/<id>)
         if path.startswith("/api/admin/exercises/"):
             if not user or user["role"] != "admin":
@@ -2240,6 +2337,18 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
             conn.commit()
             conn.close()
             return self.send_json(200, {"message": "Đã xóa thông báo thành công."})
+
+        # Admin Delete Test Case (/api/admin/testcases/<id>)
+        if path.startswith("/api/admin/testcases/"):
+            if not user or user["role"] != "admin":
+                return self.send_json(403, {"error": "Chỉ Quản trị viên mới có quyền xóa test case."})
+            tcid = path[len("/api/admin/testcases/"):].strip()
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM test_cases WHERE id = ?", (tcid,))
+            conn.commit()
+            conn.close()
+            return self.send_json(200, {"message": "Đã xóa Test Case thành công."})
 
         # Admin delete exercise (/api/admin/exercises/<id>?lessonId=...)
         if path.startswith("/api/admin/exercises/"):

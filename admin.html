@@ -906,6 +906,56 @@ int main() {
                                 </div>
                             </div>
 
+                            <!-- Section 4: Bộ Test Cases -->
+                            <div class="admin-form-section" id="exerciseTestCasesSection" style="margin-top: 24px; padding-top: 20px; border-top: 1px dashed var(--border-color);">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                    <h3>4. Bộ Test Cases (Công khai &amp; Ẩn)</h3>
+                                    <span id="tcCountBadge" class="status-tag info" style="font-size: 11px;">0 Test Cases</span>
+                                </div>
+                                <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 14px;">
+                                    Hệ thống chấm điểm tự động Sandbox g++ sẽ chạy code của sinh viên qua từng Test Case và tính điểm theo trọng số. Test case ẩn giúp phòng chống hardcode gian lận.
+                                </p>
+
+                                <div id="testCasesContainer" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px;">
+                                    <!-- Rendered by JS -->
+                                    <div style="font-size: 13px; color: var(--text-secondary); font-style: italic; text-align: center; padding: 12px; background: var(--bg-tertiary); border-radius: 8px;">
+                                        Vui lòng chọn bài tập trong danh sách để quản lý các Test Cases.
+                                    </div>
+                                </div>
+
+                                <!-- Add / Edit Testcase Mini Form -->
+                                <div id="addTestCaseBox" style="background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px; margin-top: 8px;">
+                                    <h4 style="font-size: 13px; font-weight: 600; margin-bottom: 10px; color: var(--text-primary);" id="tcBoxTitle">➕ Thêm Test Case mới cho bài tập</h4>
+                                    <input type="hidden" id="tcEditId" value="">
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                                        <div>
+                                            <label style="font-size: 11px; font-weight: 600; color: var(--text-secondary); display:block; margin-bottom: 4px;">Dữ liệu đầu vào (stdin):</label>
+                                            <textarea id="tcInputData" rows="2" class="profile-input code-textarea" placeholder="Dữ liệu nhập từ bàn phím (nếu có)..." style="font-size: 12px;"></textarea>
+                                        </div>
+                                        <div>
+                                            <label style="font-size: 11px; font-weight: 600; color: var(--text-secondary); display:block; margin-bottom: 4px;">Kết quả mong đợi (stdout) <span style="color:red;">*</span>:</label>
+                                            <textarea id="tcExpectedOutput" rows="2" class="profile-input code-textarea" placeholder="Kết quả cout mong đợi..." style="font-size: 12px;"></textarea>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                                        <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer; color: var(--text-primary);">
+                                            <input type="checkbox" id="tcIsHidden" style="cursor: pointer;">
+                                            <span>🔒 Đặt làm Test Case ẩn (Sinh viên không xem được output trước)</span>
+                                        </label>
+                                        <div style="display: flex; align-items: center; gap: 6px; margin-left: auto;">
+                                            <label style="font-size: 12px; color: var(--text-secondary);">Trọng số điểm:</label>
+                                            <input type="number" id="tcWeightPoints" class="profile-input" value="50" min="1" max="100" style="width: 70px; padding: 4px 8px; font-size: 12px;">
+                                            <button type="button" class="btn btn-primary btn-sm" id="btnSaveTestCase" style="padding: 6px 14px;">
+                                                Lưu Test Case
+                                            </button>
+                                            <button type="button" class="btn btn-secondary btn-sm" id="btnCancelTestCase" style="padding: 6px 12px;" hidden>
+                                                Hủy
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="profile-form-actions">
                                 <button type="submit" id="saveExerciseButton" class="btn btn-primary">Lưu bài tập</button>
                                 <button type="button" id="cancelExerciseEdit" class="btn btn-secondary">Hủy</button>
