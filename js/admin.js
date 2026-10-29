@@ -78,6 +78,8 @@ function setupAdminTabs() {
                 loadAdminComments();
             } else if (targetTab === "tab-database") {
                 if (typeof window.loadDbStats === "function") window.loadDbStats();
+                loadDatabaseBackups();
+                loadAdminAuditLogs();
                 loadAiKnowledge();
             }
         });
@@ -1247,6 +1249,125 @@ async function loadAiKnowledge() {
     }
 }
 
+async function loadDatabaseBackups() {
+    const tbody = document.getElementById("dbBackupsTableBody");
+    if (!tbody) return;
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:16px; color:var(--text-secondary);">Đang nạp danh sách bản sao lưu...</td></tr>`;
+
+    try {
+        const res = await CodeLearnApi.admin.database.getBackups();
+        const backups = res.backups || [];
+        if (!backups.length) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:16px; color:var(--text-secondary);">Chưa có tệp sao lưu nào trong backend/backups/. Hãy nhấn nút "Sao lưu Database" để tạo snapshot đầu tiên.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = backups.map(b => {
+            const timeStr = b.created_at ? new Date(b.created_at).toLocaleString("vi-VN") : "---";
+            return `
+                <tr>
+                    <td>
+                        <strong style="color:var(--text-primary); font-family:monospace; font-size:12px;">📁 ${escapeHtml(b.filename)}</strong>
+                    </td>
+                    <td style="color:var(--text-secondary); font-size:12px;">${b.size_kb} KB</td>
+                    <td style="color:var(--text-secondary); font-size:12px;">${timeStr}</td>
+                    <td style="text-align:center; white-space:nowrap;">
+                        <button type="button" class="btn btn-sm btn-primary" onclick="restoreDatabaseBackup('${escapeHtml(b.filename)}')" title="Phục hồi CSDL về thời điểm này" style="padding:4px 10px; font-size:12px; display:inline-flex; align-items:center; gap:4px;">
+                            <span>↺</span> Phục hồi (Restore)
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join("");
+    } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:16px; color:#ef4444;">Lỗi: ${escapeHtml(err.message)}</td></tr>`;
+    }
+}
+
+async function restoreDatabaseBackup(filename) {
+    if (!confirm(`CẢNH BÁO: Bạn có chắc chắn muốn phục hồi (rollback) cơ sở dữ liệu về bản sao lưu '${filename}' không?\n\nHệ thống sẽ tự động tạo thêm một snapshot dự phòng trước khi khôi phục.`)) {
+        return;
+    }
+
+    try {
+        if (typeof window.showToast === "function") {
+            window.showToast("Đang thực hiện phục hồi CSDL...", "info");
+        }
+        const res = await CodeLearnApi.admin.database.restore(filename);
+        if (typeof window.showToast === "function") {
+            window.showToast(res.message || "Phục hồi CSDL thành công!", "success");
+        } else {
+            alert(res.message || "Phục hồi CSDL thành công!");
+        }
+
+        window.loadDbStats();
+        loadDatabaseBackups();
+        loadAdminAuditLogs();
+        renderAdminStats();
+        renderAdminLessons();
+        loadAdminExercises();
+    } catch (err) {
+        alert("Lỗi phục hồi CSDL: " + err.message);
+    }
+}
+
+async function loadAdminAuditLogs() {
+    const tbody = document.getElementById("adminAuditLogsTableBody");
+    if (!tbody) return;
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:16px; color:var(--text-secondary);">Đang tải nhật ký kiểm toán...</td></tr>`;
+
+    try {
+        const res = await CodeLearnApi.admin.database.getAuditLogs();
+        const logs = res.logs || [];
+        if (!logs.length) {
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:16px; color:var(--text-secondary);">Chưa có nhật ký hoạt động nào được ghi lại.</td></tr>`;
+            return;
+        }
+
+        const actionBadges = {
+            login: { text: "Đăng nhập", class: "status-tag info" },
+            register: { text: "Đăng ký", class: "status-tag success" },
+            grade_submission: { text: "Chấm điểm GV", class: "status-tag primary" },
+            update_user_role: { text: "Cấp quyền", class: "status-tag warning" },
+            update_user_status: { text: "Khóa/Mở TK", class: "status-tag error" },
+            reset_password: { text: "Đổi MK", class: "status-tag warning" },
+            batch_import_users: { text: "Nhập CSV", class: "status-tag success" },
+            backup_database: { text: "Sao lưu DB", class: "status-tag success" },
+            restore_database: { text: "Phục hồi DB", class: "status-tag error" },
+            create_announcement: { text: "Phát thông báo", class: "status-tag info" },
+            post_comment: { text: "Đăng bình luận", class: "status-tag primary" }
+        };
+
+        tbody.innerHTML = logs.map(l => {
+            const timeStr = l.created_at ? new Date(l.created_at).toLocaleString("vi-VN") : "---";
+            const meta = actionBadges[l.action] || { text: l.action, class: "status-tag secondary" };
+            const userName = l.full_name || l.username || (l.user_id ? l.user_id.slice(0, 8) : "Hệ thống");
+
+            return `
+                <tr>
+                    <td style="font-size:11px; color:var(--text-secondary); white-space:nowrap;">${timeStr}</td>
+                    <td style="font-size:12px; font-weight:600; color:var(--text-primary);">${escapeHtml(userName)}</td>
+                    <td>
+                        <span class="${meta.class}" style="font-size:11px; padding:2px 6px;">
+                            ${escapeHtml(meta.text)}
+                        </span>
+                    </td>
+                    <td style="font-family:monospace; font-size:11px; color:var(--text-secondary);">${escapeHtml(l.ip_address || "127.0.0.1")}</td>
+                    <td style="font-size:12px; color:var(--text-secondary); max-width:280px; word-break:break-word;">
+                        ${escapeHtml(l.details || "")}
+                    </td>
+                </tr>
+            `;
+        }).join("");
+    } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:16px; color:#ef4444;">Lỗi: ${escapeHtml(err.message)}</td></tr>`;
+    }
+}
+
+window.restoreDatabaseBackup = restoreDatabaseBackup;
+window.loadDatabaseBackups = loadDatabaseBackups;
+window.loadAdminAuditLogs = loadAdminAuditLogs;
+
 function setupDatabaseAndKnowledgeSection() {
     // 1. Sao lưu & Xuất DB
     const btnBackup = document.getElementById("btnDbBackup");
@@ -1282,6 +1403,18 @@ function setupDatabaseAndKnowledgeSection() {
     };
 
     window.loadDbStats();
+    loadDatabaseBackups();
+    loadAdminAuditLogs();
+
+    const btnRefBackups = document.getElementById("btnRefreshBackups");
+    if (btnRefBackups) {
+        btnRefBackups.addEventListener("click", loadDatabaseBackups);
+    }
+
+    const btnRefAudit = document.getElementById("btnRefreshAuditLogs");
+    if (btnRefAudit) {
+        btnRefAudit.addEventListener("click", loadAdminAuditLogs);
+    }
 
     if (btnBackup) {
         btnBackup.addEventListener("click", async () => {
@@ -1291,6 +1424,8 @@ function setupDatabaseAndKnowledgeSection() {
                 const res = await CodeLearnApi.admin.database.backup();
                 showDbMsg(`Đã tạo bản sao lưu thành công: ${res.filename} (${res.size_kb} KB)`, "success");
                 window.loadDbStats();
+                loadDatabaseBackups();
+                loadAdminAuditLogs();
             } catch (err) {
                 showDbMsg(`Lỗi khi tạo sao lưu: ${err.message}`, "error");
             } finally {

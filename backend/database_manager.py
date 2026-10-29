@@ -152,6 +152,15 @@ def restore_database(backup_filename_or_path):
     # Trước khi restore, tạo 1 bản backup an toàn cho hiện tại
     backup_database()
 
+    # Xóa file wal và shm nếu có trước khi ghi đè
+    for ext in ["-wal", "-shm"]:
+        p = DB_PATH + ext
+        if os.path.exists(p):
+            try:
+                os.remove(p)
+            except Exception:
+                pass
+
     # Restore
     shutil.copy2(target_path, DB_PATH)
     print(f"✓ Phục hồi cơ sở dữ liệu thành công từ: {os.path.basename(target_path)}")

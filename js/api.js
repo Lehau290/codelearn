@@ -484,6 +484,21 @@
 
                 async export() {
                     return request("/admin/database/export", { method: "POST" });
+                },
+
+                async getBackups() {
+                    return request("/admin/database/backups");
+                },
+
+                async restore(filename) {
+                    return request("/admin/database/restore", {
+                        method: "POST",
+                        body: JSON.stringify({ filename })
+                    });
+                },
+
+                async getAuditLogs() {
+                    return request("/admin/audit-logs");
                 }
             }
         },

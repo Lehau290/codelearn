@@ -1256,6 +1256,73 @@ int main() {
                     <div id="dbActionMessage" class="form-message" hidden></div>
                 </section>
 
+                <!-- Database Backups & Restore Section -->
+                <section class="profile-content-card" style="margin-bottom: 24px;">
+                    <div class="profile-content-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <span class="section-label">RESTORE &amp; ROLLBACK POINT</span>
+                            <h2>Bản sao lưu CSDL &amp; Điểm khôi phục</h2>
+                        </div>
+                        <button type="button" id="btnRefreshBackups" class="btn btn-secondary btn-sm" title="Làm mới danh sách sao lưu">
+                            <span>🔄</span> Làm mới danh sách
+                        </button>
+                    </div>
+
+                    <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 0.95rem;">
+                        Khôi phục trạng thái toàn vẹn của CSDL SQLite từ bất kỳ điểm sao lưu nào trong thư mục <code>backend/backups/</code>. Quá trình phục hồi đảm bảo an toàn ACID và tự động tạo snapshot dự phòng trước khi ghi đè.
+                    </p>
+
+                    <div class="table-responsive" style="max-height: 260px; overflow-y: auto;">
+                        <table class="data-table" id="dbBackupsTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 35%;">Tệp bản sao lưu (.db)</th>
+                                    <th style="width: 20%;">Dung lượng</th>
+                                    <th style="width: 25%;">Thời điểm sao lưu</th>
+                                    <th style="width: 20%; text-align: center;">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dbBackupsTableBody">
+                                <!-- Rendered by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Admin Audit Trail Section -->
+                <section class="profile-content-card" style="margin-bottom: 24px;">
+                    <div class="profile-content-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <span class="section-label">AUDIT TRAIL &amp; SECURITY LOGS</span>
+                            <h2>Nhật ký Thao tác Quản trị (Admin Activity Logs)</h2>
+                        </div>
+                        <button type="button" id="btnRefreshAuditLogs" class="btn btn-secondary btn-sm" title="Tải lại nhật ký">
+                            <span>🔄</span> Tải lại nhật ký
+                        </button>
+                    </div>
+
+                    <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 0.95rem;">
+                        Toàn bộ hành vi quản trị (chấm lại điểm, khóa/mở tài khoản, sao lưu/phục hồi database, đăng bài) đều được ghi nhận minh bạch vào bảng <code>activity_logs</code>.
+                    </p>
+
+                    <div class="table-responsive" style="max-height: 320px; overflow-y: auto;">
+                        <table class="data-table" id="adminAuditLogsTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 18%;">Thời gian</th>
+                                    <th style="width: 20%;">Người thực hiện</th>
+                                    <th style="width: 20%;">Hành động (Action)</th>
+                                    <th style="width: 14%;">Địa chỉ IP</th>
+                                    <th>Chi tiết thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminAuditLogsTableBody">
+                                <!-- Rendered by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
                 <!-- AI Real Knowledge Base Section -->
                 <section class="profile-content-card">
                     <div class="profile-content-header">

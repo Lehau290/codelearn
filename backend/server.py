@@ -903,6 +903,36 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
             conn.close()
             return self.send_json(200, {"announcements": announcements, "total": len(announcements)})
 
+        # 9h. Admin Database Backups list (/api/admin/database/backups)
+        if path == "/api/admin/database/backups":
+            if not user or user["role"] != "admin":
+                return self.send_json(403, {"error": "Chỉ dành cho Quản trị viên."})
+            import backend.database_manager as dbm
+            stats = dbm.get_stats()
+            return self.send_json(200, {
+                "backups": stats.get("backups", []),
+                "count": stats.get("backups_count", 0),
+                "size_kb": stats.get("size_kb", 0)
+            })
+
+        # 9i. Admin Audit Logs (/api/admin/audit-logs)
+        if path == "/api/admin/audit-logs":
+            if not user or user["role"] != "admin":
+                return self.send_json(403, {"error": "Chỉ dành cho Quản trị viên."})
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT l.id, l.user_id, l.action, l.ip_address, l.details, l.created_at,
+                       u.username, u.full_name, u.role
+                FROM activity_logs l
+                LEFT JOIN users u ON l.user_id = u.id
+                ORDER BY l.created_at DESC
+                LIMIT 150
+            """)
+            logs = [dict(r) for r in cursor.fetchall()]
+            conn.close()
+            return self.send_json(200, {"logs": logs, "total": len(logs)})
+
         # 9e. Admin AI Knowledge summary (/api/admin/ai-knowledge)
         if path == "/api/admin/ai-knowledge":
             if not user or user["role"] != "admin":
@@ -1443,7 +1473,41 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
                 return self.send_json(403, {"error": "Chỉ dành cho Quản trị viên."})
             import backend.database_manager as dbm
             result = dbm.backup_database()
+            # Log audit
+            now = datetime.now().isoformat()
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("""
+                INSERT INTO activity_logs (id, user_id, action, ip_address, details, created_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (str(uuid.uuid4()), user["id"], "backup_database", client_ip, f"Created backup: {result.get('filename')}", now))
+            conn.commit()
+            conn.close()
             return self.send_json(200, result)
+
+        # 9b. Admin Database Restore (/api/admin/database/restore)
+        if path == "/api/admin/database/restore":
+            if not user or user["role"] != "admin":
+                return self.send_json(403, {"error": "Chỉ dành cho Quản trị viên."})
+            filename = body.get("filename", "").strip()
+            if not filename:
+                return self.send_json(400, {"error": "Vui lòng chỉ định tệp bản sao lưu cần phục hồi."})
+            clean_filename = os.path.basename(filename)
+            import backend.database_manager as dbm
+            try:
+                dbm.restore_database(clean_filename)
+                now = datetime.now().isoformat()
+                conn = get_connection()
+                cursor = conn.cursor()
+                cursor.execute("""
+                    INSERT INTO activity_logs (id, user_id, action, ip_address, details, created_at)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                """, (str(uuid.uuid4()), user["id"], "restore_database", client_ip, f"Restored DB from: {clean_filename}", now))
+                conn.commit()
+                conn.close()
+                return self.send_json(200, {"message": f"Phục hồi cơ sở dữ liệu thành công từ bản sao lưu {clean_filename}!"})
+            except Exception as e:
+                return self.send_json(500, {"error": f"Lỗi phục hồi: {str(e)}"})
 
         # 10. Admin Database Export (/api/admin/database/export)
         if path == "/api/admin/database/export":
