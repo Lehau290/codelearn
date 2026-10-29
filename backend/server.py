@@ -671,7 +671,7 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
                 return self.send_json(403, {"error": "Chỉ dành cho Quản trị viên."})
             conn = get_connection()
             cursor = conn.cursor()
-            cursor.execute("SELECT id, username, email, full_name, role, avatar, created_at FROM users ORDER BY created_at DESC")
+            cursor.execute("SELECT id, username, email, full_name, role, avatar, status, created_at FROM users ORDER BY created_at DESC")
             rows = cursor.fetchall()
             users_list = []
             for r in rows:
@@ -682,6 +682,7 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
                     "fullName": r["full_name"],
                     "role": r["role"],
                     "avatar": r["avatar"] or "",
+                    "status": r["status"] or "active",
                     "createdAt": r["created_at"]
                 })
             conn.close()
@@ -1461,6 +1462,83 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
                 }
             })
 
+        # 10e. Admin Reset User Password (/api/admin/users/<id>/reset-password)
+        if path.startswith("/api/admin/users/") and path.endswith("/reset-password"):
+            if not user or user["role"] != "admin":
+                return self.send_json(403, {"error": "Chỉ Quản trị viên mới có quyền cấp lại mật khẩu."})
+
+            parts = path.split("/")
+            target_uid = parts[4].strip() if len(parts) >= 6 else ""
+            new_pass = body.get("newPassword", "").strip() or "Cpp@123456"
+
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT id, username FROM users WHERE id = ?", (target_uid,))
+            target_user = cursor.fetchone()
+            if not target_user:
+                conn.close()
+                return self.send_json(404, {"error": "Không tìm thấy người dùng."})
+
+            hashed = hash_password(new_pass)
+            now = datetime.now().isoformat()
+            cursor.execute("UPDATE users SET password_hash = ?, updated_at = ? WHERE id = ?", (hashed, now, target_uid))
+            conn.commit()
+            conn.close()
+            return self.send_json(200, {
+                "message": f"Đã cấp lại mật khẩu cho tài khoản '{target_user['username']}' thành công.",
+                "userId": target_uid,
+                "newPassword": new_pass
+            })
+
+        # 10f. Admin Batch Import Users (/api/admin/users/batch-import)
+        if path == "/api/admin/users/batch-import":
+            if not user or user["role"] != "admin":
+                return self.send_json(403, {"error": "Chỉ Quản trị viên mới có quyền nhập danh sách học viên."})
+
+            students = body.get("students", [])
+            if not students or not isinstance(students, list):
+                return self.send_json(400, {"error": "Danh sách học viên trống hoặc không đúng định dạng."})
+
+            conn = get_connection()
+            cursor = conn.cursor()
+            imported_count = 0
+            skipped_count = 0
+            now = datetime.now().isoformat()
+
+            for st in students:
+                username = str(st.get("username", "")).strip().lower()
+                full_name = str(st.get("fullName", "")).strip() or username
+                email = str(st.get("email", "")).strip().lower()
+                raw_pass = str(st.get("password", "")).strip() or "Cpp@123456"
+
+                if not username:
+                    skipped_count += 1
+                    continue
+
+                if not email:
+                    email = f"{username}@student.codelearn.io"
+
+                cursor.execute("SELECT id FROM users WHERE username = ? OR email = ?", (username, email))
+                if cursor.fetchone():
+                    skipped_count += 1
+                    continue
+
+                uid = f"user-{uuid.uuid4().hex[:8]}"
+                hashed = hash_password(raw_pass)
+                cursor.execute("""
+                    INSERT INTO users (id, username, email, password_hash, full_name, role, avatar, status, created_at, updated_at)
+                    VALUES (?, ?, ?, ?, ?, 'student', '', 'active', ?, ?)
+                """, (uid, username, email, hashed, full_name, now, now))
+                imported_count += 1
+
+            conn.commit()
+            conn.close()
+            return self.send_json(200, {
+                "message": f"Đã nhập thành công {imported_count} học viên mới (bỏ qua {skipped_count} bản ghi trùng).",
+                "imported": imported_count,
+                "skipped": skipped_count
+            })
+
         # 10d. Admin Sync AI Knowledge (/api/admin/ai-knowledge/sync)
         if path == "/api/admin/ai-knowledge/sync":
             if not user or user["role"] != "admin":
@@ -1795,6 +1873,40 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
                 "message": f"Đã cập nhật quyền thành viên '{target_user['username']}' thành: {new_role}.",
                 "userId": target_uid,
                 "role": new_role
+            })
+
+        # 4b. Admin Update User Status (/api/admin/users/<id>/status)
+        if path.startswith("/api/admin/users/") and path.endswith("/status"):
+            if not user or user["role"] != "admin":
+                return self.send_json(403, {"error": "Chỉ Quản trị viên mới có quyền khóa/mở khóa tài khoản."})
+
+            parts = path.split("/")
+            target_uid = parts[4].strip() if len(parts) >= 6 else ""
+            new_status = body.get("status", "").strip().lower()
+
+            if new_status not in ["active", "suspended"]:
+                return self.send_json(400, {"error": "Trạng thái không hợp lệ. Chỉ chấp nhận: 'active', 'suspended'."})
+
+            if target_uid == user["id"] and new_status == "suspended":
+                return self.send_json(400, {"error": "Bạn không thể tự khóa tài khoản Admin của chính mình."})
+
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT id, username, status FROM users WHERE id = ?", (target_uid,))
+            target_user = cursor.fetchone()
+            if not target_user:
+                conn.close()
+                return self.send_json(404, {"error": "Không tìm thấy người dùng."})
+
+            now = datetime.now().isoformat()
+            cursor.execute("UPDATE users SET status = ?, updated_at = ? WHERE id = ?", (new_status, now, target_uid))
+            conn.commit()
+            conn.close()
+            action_text = "Mở khóa" if new_status == "active" else "Khóa tạm thời"
+            return self.send_json(200, {
+                "message": f"Đã {action_text.lower()} tài khoản '{target_user['username']}' thành công.",
+                "userId": target_uid,
+                "status": new_status
             })
 
         # 5. Admin Update Exercise (/api/admin/exercises/<id>)

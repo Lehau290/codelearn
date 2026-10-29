@@ -311,6 +311,27 @@
                 });
             },
 
+            async changeUserStatus(userId, status) {
+                return request(`/admin/users/${encodeURIComponent(userId)}/status`, {
+                    method: "PUT",
+                    body: JSON.stringify({ status })
+                });
+            },
+
+            async resetUserPassword(userId, newPassword = "") {
+                return request(`/admin/users/${encodeURIComponent(userId)}/reset-password`, {
+                    method: "POST",
+                    body: JSON.stringify({ newPassword })
+                });
+            },
+
+            async batchImportUsers(students) {
+                return request("/admin/users/batch-import", {
+                    method: "POST",
+                    body: JSON.stringify({ students })
+                });
+            },
+
             async deleteUser(userId) {
                 return request(`/admin/users/${encodeURIComponent(userId)}`, {
                     method: "DELETE"

@@ -920,9 +920,14 @@ int main() {
                             <span class="section-label">MEMBERSHIP &amp; ROLES</span>
                             <h2>Quản lý Thành viên &amp; Cấp quyền</h2>
                         </div>
-                        <button type="button" id="btnRefreshUsers" class="btn btn-secondary" title="Làm mới danh sách">
-                            🔄 Làm mới
-                        </button>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button type="button" id="btnOpenBatchImport" class="btn btn-primary" title="Nhập danh sách học viên hàng loạt từ CSV">
+                                📥 + Nhập học viên (CSV / Excel)
+                            </button>
+                            <button type="button" id="btnRefreshUsers" class="btn btn-secondary" title="Làm mới danh sách">
+                                🔄 Làm mới
+                            </button>
+                        </div>
                     </div>
 
                     <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 0.95rem;">
@@ -1268,6 +1273,35 @@ int main() {
 <script src="js/storage.js"></script>
 <script src="js/layout.js"></script>
 <script src="js/admin.js"></script>
+
+
+    <!-- ================= MODAL NHẬP HỌC VIÊN HÀNG LOẠT (BATCH CSV IMPORT) ================= -->
+    <div id="modalBatchImport" class="admin-modal-backdrop" style="display: none;">
+        <div class="admin-modal-card" style="max-width: 650px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="margin: 0; font-size: 1.25rem;">📥 Nhập danh sách học viên hàng loạt (CSV / Text)</h3>
+                <button type="button" id="btnCloseBatchImport" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;">✕ Đóng</button>
+            </div>
+            <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 12px;">
+                Mỗi dòng là một học viên theo định dạng: <code>username, Họ và tên, email, mật khẩu</code>. (Mật khẩu để trống sẽ tự lấy mặc định là <code>Cpp@123456</code>).
+            </p>
+            <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                <button type="button" id="btnSampleCsvData" class="btn btn-secondary" style="font-size: 0.8rem; padding: 4px 10px;">
+                    📝 Chèn dữ liệu mẫu (5 sinh viên)
+                </button>
+                <input type="file" id="inputCsvFile" accept=".csv,.txt" style="display: none;">
+                <button type="button" id="btnUploadCsvFile" class="btn btn-secondary" style="font-size: 0.8rem; padding: 4px 10px;">
+                    📂 Chọn tệp .CSV từ máy tính
+                </button>
+            </div>
+            <textarea id="txtBatchImportData" class="profile-input code-textarea" rows="9" placeholder="sv01, Nguyễn Văn An, an.nv@student.edu.vn, Cpp@123456&#10;sv02, Trần Thị Bình, binh.tt@student.edu.vn, Cpp@123456&#10;sv03, Lê Hoàng Cường, cuong.lh@student.edu.vn, Cpp@123456"></textarea>
+            <div id="batchImportMessage" class="form-message" style="margin-top: 10px;" hidden></div>
+            <div class="profile-form-actions" style="margin-top: 14px;">
+                <button type="button" id="btnSubmitBatchImport" class="btn btn-primary">Xác nhận nhập học viên</button>
+                <button type="button" id="btnCancelBatchImport" class="btn btn-secondary">Hủy</button>
+            </div>
+        </div>
+    </div>
 
 </body>
 </html>

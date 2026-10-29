@@ -125,7 +125,7 @@ def authenticate_user(login_identity: str, password: str) -> tuple[bool, str, di
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("""
-        SELECT id, username, email, password_hash, full_name, role, avatar, created_at
+        SELECT id, username, email, password_hash, full_name, role, avatar, status, created_at
         FROM users
         WHERE username = ? OR email = ?
     """, (identity, identity))
@@ -138,6 +138,9 @@ def authenticate_user(login_identity: str, password: str) -> tuple[bool, str, di
         
     if not verify_password(password, user["password_hash"]):
         return False, "Tài khoản hoặc mật khẩu không chính xác.", None
+
+    if user["status"] == "suspended":
+        return False, "Tài khoản của bạn đã bị khóa / tạm ngưng bởi Quản trị viên.", None
         
     token = create_session(user["id"])
     user_data = {

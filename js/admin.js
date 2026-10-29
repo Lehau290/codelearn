@@ -717,9 +717,13 @@ function renderUsersTable(users) {
             : `<span class="badge-role badge-role-student">Học viên</span>`;
 
         const isMe = curUser && curUser.id === user.id;
+        const isSuspended = user.status === "suspended";
+        const statusBadge = isSuspended 
+            ? `<span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); padding: 3px 8px; border-radius: 999px; font-size: 0.75rem; font-weight: 700;">Đã khóa</span>` 
+            : `<span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 3px 8px; border-radius: 999px; font-size: 0.75rem; font-weight: 700;">Hoạt động</span>`;
 
         return `
-            <tr>
+            <tr style="${isSuspended ? 'opacity: 0.75; background: rgba(239, 68, 68, 0.04);' : ''}">
                 <td>
                     <div class="table-user-cell">
                         <div class="table-user-avatar">
@@ -733,20 +737,27 @@ function renderUsersTable(users) {
                 </td>
                 <td>${escapeHtml(user.email || 'N/A')}</td>
                 <td>${roleBadge}</td>
+                <td>${statusBadge}</td>
                 <td style="font-size: 0.82rem; color: var(--text-secondary);">${user.createdAt ? user.createdAt.split('T')[0] : '2026-01-01'}</td>
                 <td>
-                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                        <select class="profile-input select-user-role" data-id="${escapeHtml(user.id)}" style="padding: 4px 8px; font-size: 0.8rem; width: auto;" ${isMe ? 'disabled title="Không thể tự hạ quyền của bạn"' : ''}>
+                    <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                        <select class="profile-input select-user-role" data-id="${escapeHtml(user.id)}" style="padding: 4px 6px; font-size: 0.78rem; width: auto;" ${isMe ? 'disabled title="Không thể tự hạ quyền của bạn"' : ''}>
                             <option value="student" ${user.role === 'student' ? 'selected' : ''}>Học viên</option>
                             <option value="moderator" ${user.role === 'moderator' ? 'selected' : ''}>Trợ giảng</option>
-                            <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Quản trị viên</option>
+                            <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Quản trị</option>
                         </select>
-                        <button type="button" class="btn btn-primary btn-sm btn-save-role" data-id="${escapeHtml(user.id)}" style="padding: 5px 10px; font-size: 0.78rem;" ${isMe ? 'disabled' : ''}>
+                        <button type="button" class="btn btn-primary btn-sm btn-save-role" data-id="${escapeHtml(user.id)}" style="padding: 5px 8px; font-size: 0.78rem;" ${isMe ? 'disabled' : ''}>
                             Cấp quyền
                         </button>
                         ${!isMe ? `
-                            <button type="button" class="btn btn-sm btn-delete-user" data-id="${escapeHtml(user.id)}" data-name="${escapeHtml(user.username)}" style="padding: 5px 10px; font-size: 0.78rem; background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.25);">
-                                Xóa
+                            <button type="button" class="btn btn-sm btn-toggle-status" data-id="${escapeHtml(user.id)}" data-status="${escapeHtml(user.status || 'active')}" data-name="${escapeHtml(user.username)}" style="padding: 5px 8px; font-size: 0.78rem; background: ${isSuspended ? 'rgba(16, 185, 129, 0.12); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.25);' : 'rgba(245, 158, 11, 0.12); color: #d97706; border: 1px solid rgba(245, 158, 11, 0.25);'}" title="${isSuspended ? 'Mở khóa tài khoản' : 'Tạm khóa tài khoản'}">
+                                ${isSuspended ? '🔓 Mở' : '🔒 Khóa'}
+                            </button>
+                            <button type="button" class="btn btn-sm btn-reset-password" data-id="${escapeHtml(user.id)}" data-name="${escapeHtml(user.username)}" style="padding: 5px 8px; font-size: 0.78rem; background: rgba(99, 102, 241, 0.12); color: #6366f1; border: 1px solid rgba(99, 102, 241, 0.25);" title="Cấp lại mật khẩu">
+                                🔑 Đổi MK
+                            </button>
+                            <button type="button" class="btn btn-sm btn-delete-user" data-id="${escapeHtml(user.id)}" data-name="${escapeHtml(user.username)}" style="padding: 5px 8px; font-size: 0.78rem; background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.25);" title="Xóa tài khoản">
+                                ✕
                             </button>
                         ` : ''}
                     </div>
@@ -777,6 +788,52 @@ function renderUsersTable(users) {
             } finally {
                 btn.disabled = false;
                 btn.textContent = "Cấp quyền";
+            }
+        });
+    });
+
+    // Sự kiện khóa / mở khóa tài khoản
+    tbody.querySelectorAll(".btn-toggle-status").forEach(btn => {
+        btn.addEventListener("click", async () => {
+            const uid = btn.getAttribute("data-id");
+            const curStatus = btn.getAttribute("data-status") || "active";
+            const uname = btn.getAttribute("data-name");
+            const newStatus = curStatus === "active" ? "suspended" : "active";
+            const actionText = newStatus === "suspended" ? "khóa tạm thời" : "mở khóa";
+
+            if (!confirm(`Bạn có chắc chắn muốn ${actionText} tài khoản '${uname}' không?`)) {
+                return;
+            }
+
+            try {
+                if (window.CodeLearnApi && typeof CodeLearnApi.admin?.changeUserStatus === "function") {
+                    await CodeLearnApi.admin.changeUserStatus(uid, newStatus);
+                }
+                showFormMessage("adminUserMessage", `Đã ${actionText} tài khoản '${uname}' thành công!`, "success");
+                loadAdminUsers();
+            } catch (err) {
+                showFormMessage("adminUserMessage", `Lỗi cập nhật trạng thái: ${err.message}`, "error");
+            }
+        });
+    });
+
+    // Sự kiện cấp lại mật khẩu
+    tbody.querySelectorAll(".btn-reset-password").forEach(btn => {
+        btn.addEventListener("click", async () => {
+            const uid = btn.getAttribute("data-id");
+            const uname = btn.getAttribute("data-name");
+            const newPass = prompt(`Nhập mật khẩu mới cho tài khoản '${uname}':`, "Cpp@123456");
+            if (!newPass) return;
+
+            try {
+                if (window.CodeLearnApi && typeof CodeLearnApi.admin?.resetUserPassword === "function") {
+                    await CodeLearnApi.admin.resetUserPassword(uid, newPass);
+                }
+                alert(`Đã cấp lại mật khẩu cho '${uname}' thành công!
+Mật khẩu mới: ${newPass}`);
+                showFormMessage("adminUserMessage", `Đã cấp lại mật khẩu cho '${uname}'.`, "success");
+            } catch (err) {
+                showFormMessage("adminUserMessage", `Lỗi cấp lại mật khẩu: ${err.message}`, "error");
             }
         });
     });
