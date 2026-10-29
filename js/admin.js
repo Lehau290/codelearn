@@ -909,7 +909,9 @@ async function loadAdminSubmissions() {
         }
 
         tbody.innerHTML = subs.map(s => {
-            const scoreColor = s.score >= 80 ? "#10b981" : s.score >= 50 ? "#f59e0b" : "#ef4444";
+            const isOverridden = s.teacherScore !== null && s.teacherScore !== undefined;
+            const finalScore = isOverridden ? s.teacherScore : s.score;
+            const scoreColor = finalScore >= 80 ? "#10b981" : finalScore >= 50 ? "#f59e0b" : "#ef4444";
             const statusBadge = s.passed
                 ? `<span class="badge-role" style="background: rgba(16, 185, 129, 0.12); color: #10b981;">Đạt</span>`
                 : `<span class="badge-role" style="background: rgba(239, 68, 68, 0.12); color: #ef4444;">Chưa đạt</span>`;
@@ -928,7 +930,8 @@ async function loadAdminSubmissions() {
                         <div style="font-size: 0.75rem; color: var(--text-secondary);">${escapeHtml(s.exerciseTitle || s.exerciseId)}</div>
                     </td>
                     <td>
-                        <strong style="color: ${scoreColor}; font-size: 1rem;">${s.score}/100</strong>
+                        <strong style="color: ${scoreColor}; font-size: 1rem;">${finalScore}/100</strong>
+                        ${isOverridden ? '<div style="font-size: 0.72rem; color: #10b981; font-weight: 700;">✍️ GV đã chấm</div>' : '<div style="font-size: 0.72rem; color: var(--text-secondary);">🤖 AI chấm</div>'}
                     </td>
                     <td>${statusBadge}</td>
                     <td style="font-size: 0.82rem;">${s.executionTimeMs ? `${s.executionTimeMs}ms` : '0ms'}</td>
@@ -1236,9 +1239,81 @@ function showSubmissionDetailModal(item) {
                 ${escapeHtml(item.aiFeedback)}
             </div>
         ` : ''}
+
+        <!-- Teacher Grading & Feedback Form -->
+        <div style="margin-top: 18px; padding: 16px; border-radius: 12px; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.3);">
+            <h4 style="margin: 0 0 10px 0; color: #10b981; display: flex; align-items: center; gap: 8px;">
+                <span>✍️</span> Can thiệp Chấm điểm &amp; Lời phê của Giảng viên (Teacher Override)
+            </h4>
+            <div style="display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 140px;">
+                    <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px;">Điểm số (0 - 100):</label>
+                    <input type="number" id="teacherOverrideScore" class="profile-input" min="0" max="100" value="${item.teacherScore !== null && item.teacherScore !== undefined ? item.teacherScore : item.score}">
+                </div>
+                <div style="flex: 1; min-width: 140px;">
+                    <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px;">Trạng thái bài nộp:</label>
+                    <select id="teacherOverridePassed" class="profile-input">
+                        <option value="1" ${item.passed ? 'selected' : ''}>Đạt (Passed)</option>
+                        <option value="0" ${!item.passed ? 'selected' : ''}>Chưa đạt (Failed)</option>
+                    </select>
+                </div>
+            </div>
+            <div style="margin-bottom: 12px;">
+                <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px;">Lời phê / Nhận xét của Giảng viên:</label>
+                <textarea id="teacherOverrideFeedback" class="profile-input" rows="3" placeholder="Nhập lời phê chuyên môn hoặc góp ý tối ưu thuật toán...">${escapeHtml(item.teacherFeedback || '')}</textarea>
+            </div>
+            ${item.gradedBy ? `
+                <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 10px;">
+                    <em>Đã được chấm lại bởi <strong>${escapeHtml(item.gradedBy)}</strong> lúc ${item.gradedAt ? item.gradedAt.replace('T', ' ').slice(0, 19) : ''}</em>
+                </div>
+            ` : ''}
+            <div style="display: flex; gap: 8px;">
+                <button type="button" id="btnSaveTeacherGrade" class="btn btn-primary" style="padding: 7px 14px; font-size: 0.85rem;">
+                    💾 Lưu điểm &amp; Gửi lời phê
+                </button>
+            </div>
+        </div>
     `;
 
     modal.style.display = "flex";
+
+    const btnSaveGrade = document.getElementById("btnSaveTeacherGrade");
+    if (btnSaveGrade) {
+        btnSaveGrade.addEventListener("click", async () => {
+            const scoreVal = parseInt(document.getElementById("teacherOverrideScore")?.value || "100", 10);
+            const passedVal = document.getElementById("teacherOverridePassed")?.value === "1";
+            const feedbackVal = document.getElementById("teacherOverrideFeedback")?.value || "";
+
+            btnSaveGrade.disabled = true;
+            btnSaveGrade.textContent = "Đang lưu...";
+            try {
+                if (window.CodeLearnApi && typeof CodeLearnApi.admin?.gradeSubmission === "function") {
+                    const res = await CodeLearnApi.admin.gradeSubmission(item.id, {
+                        score: scoreVal,
+                        passed: passedVal,
+                        feedback: feedbackVal
+                    });
+                    alert(res.message || "Đã lưu điểm và gửi lời phê thành công!");
+                    modal.style.display = "none";
+                    loadAdminSubmissions();
+                    if (typeof loadAdminAnalytics === "function") loadAdminAnalytics();
+                } else {
+                    item.score = scoreVal;
+                    item.passed = passedVal;
+                    item.teacherScore = scoreVal;
+                    item.teacherFeedback = feedbackVal;
+                    alert("Đã cập nhật điểm số bài nộp!");
+                    modal.style.display = "none";
+                    loadAdminSubmissions();
+                }
+            } catch (err) {
+                alert(`Lỗi khi lưu điểm: ${err.message}`);
+            } finally {
+                btnSaveGrade.disabled = false;
+                btnSaveGrade.textContent = "💾 Lưu điểm & Gửi lời phê";
+            }
+        });
+    }
 }
 
 // ============================================================

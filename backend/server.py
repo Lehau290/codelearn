@@ -753,7 +753,7 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
             cursor = conn.cursor()
             cursor.execute("""
                 SELECT s.id, s.user_id, s.lesson_id, s.exercise_id, s.code, s.output, s.passed, 
-                       s.score, s.execution_time_ms, s.ai_feedback, s.submitted_at,
+                       s.score, s.execution_time_ms, s.ai_feedback, s.teacher_score, s.teacher_feedback, s.graded_by, s.graded_at, s.submitted_at,
                        u.username, u.full_name, u.role as user_role, u.avatar,
                        l.title as lesson_title,
                        e.title as exercise_title
@@ -785,6 +785,11 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
                     "score": r["score"],
                     "executionTimeMs": r["execution_time_ms"],
                     "aiFeedback": r["ai_feedback"] or "",
+                    "teacherScore": r["teacher_score"],
+                    "teacherFeedback": r["teacher_feedback"] or "",
+                    "gradedBy": r["graded_by"] or "",
+                    "gradedAt": r["graded_at"] or "",
+                    "finalScore": r["teacher_score"] if r["teacher_score"] is not None else r["score"],
                     "submittedAt": r["submitted_at"]
                 })
             return self.send_json(200, {"submissions": subs_list})
@@ -1907,6 +1912,68 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
                 "message": f"Đã {action_text.lower()} tài khoản '{target_user['username']}' thành công.",
                 "userId": target_uid,
                 "status": new_status
+            })
+
+        # 4d. Admin Grade / Override Submission (/api/admin/submissions/<id>/grade)
+        if path.startswith("/api/admin/submissions/") and path.endswith("/grade"):
+            if not user or user["role"] not in ["admin", "moderator"]:
+                return self.send_json(403, {"error": "Chỉ Quản trị viên và Trợ giảng mới có quyền chấm điểm/phúc khảo."})
+
+            parts = path.split("/")
+            sub_id = parts[4].strip() if len(parts) >= 6 else ""
+            try:
+                new_score = int(body.get("score", 100))
+            except Exception:
+                new_score = 100
+            new_score = min(100, max(0, new_score))
+            teacher_fb = body.get("feedback", "").strip()
+            new_passed = 1 if (body.get("passed", True) and new_score >= 50) else 0
+
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT id, user_id, lesson_id, score, passed FROM submissions WHERE id = ?", (sub_id,))
+            sub = cursor.fetchone()
+            if not sub:
+                conn.close()
+                return self.send_json(404, {"error": "Không tìm thấy bài nộp."})
+
+            now = datetime.now().isoformat()
+            grader_name = user.get("fullName") or user.get("username") or "Giảng viên"
+
+            cursor.execute("""
+                UPDATE submissions 
+                SET teacher_score = ?, teacher_feedback = ?, graded_by = ?, graded_at = ?, passed = ?
+                WHERE id = ?
+            """, (new_score, teacher_fb, grader_name, now, new_passed, sub_id))
+
+            user_id = sub["user_id"]
+            lesson_id = sub["lesson_id"]
+            cursor.execute("SELECT score, status FROM progress WHERE user_id = ? AND lesson_id = ?", (user_id, lesson_id))
+            prog = cursor.fetchone()
+            if prog:
+                if new_score >= prog["score"]:
+                    new_prog_status = "completed" if new_passed else prog["status"]
+                    cursor.execute("""
+                        UPDATE progress 
+                        SET score = ?, status = ?, updated_at = ?
+                        WHERE user_id = ? AND lesson_id = ?
+                    """, (new_score, new_prog_status, now, user_id, lesson_id))
+            else:
+                prog_status = "completed" if new_passed else "in_progress"
+                cursor.execute("""
+                    INSERT INTO progress (id, user_id, lesson_id, status, score, updated_at)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                """, (f"prog-{uuid.uuid4().hex[:8]}", user_id, lesson_id, prog_status, new_score, now))
+
+            conn.commit()
+            conn.close()
+            return self.send_json(200, {
+                "message": f"Đã ghi đè điểm ({new_score}đ) và cập nhật nhận xét của Giảng viên thành công!",
+                "submissionId": sub_id,
+                "teacherScore": new_score,
+                "teacherFeedback": teacher_fb,
+                "gradedBy": grader_name,
+                "gradedAt": now
             })
 
         # 5. Admin Update Exercise (/api/admin/exercises/<id>)

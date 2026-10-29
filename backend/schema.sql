@@ -125,6 +125,10 @@ CREATE TABLE IF NOT EXISTS submissions (
     score             INTEGER DEFAULT 0,             -- Thang điểm 0 - 100
     execution_time_ms REAL DEFAULT 0,                -- Thời gian chạy (mili-giây)
     ai_feedback       TEXT DEFAULT '',               -- Nhận xét phân tích điểm mạnh & góp ý của AI
+    teacher_score     INTEGER DEFAULT NULL,          -- Điểm do Giảng viên ghi đè/chấm lại
+    teacher_feedback  TEXT DEFAULT '',               -- Lời phê/nhận xét của Giảng viên
+    graded_by         TEXT DEFAULT '',               -- Tên/ID Giảng viên đã chấm
+    graded_at         TEXT DEFAULT '',               -- Thời điểm chấm điểm
     submitted_at      TEXT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );

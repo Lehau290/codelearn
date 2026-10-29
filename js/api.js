@@ -368,6 +368,13 @@
                 return request(`/admin/submissions?limit=${limit}`);
             },
 
+            async gradeSubmission(submissionId, data) {
+                return request(`/admin/submissions/${encodeURIComponent(submissionId)}/grade`, {
+                    method: "PUT",
+                    body: JSON.stringify(data)
+                });
+            },
+
             async getAiChats(limit = 50) {
                 return request(`/admin/ai-chats?limit=${limit}`);
             },
