@@ -2445,7 +2445,7 @@ function setupFocusMode(lesson, user) {
     const codeEditor = document.getElementById("codeEditor");
     const submitBtn = document.getElementById("submitCodeButton");
 
-    let isFocusMode = false;
+    let isFocusMode = true; // TỰ ĐỘNG BẬT MẶC ĐỊNH NGAY KHI VÀO TRANG
     let violationCount = 0;
     const MAX_VIOLATIONS = 3;
     let focusTimerInterval = null;
@@ -2527,16 +2527,16 @@ function setupFocusMode(lesson, user) {
         playWarningBeep();
 
         if (focusViolationCountElem) {
-            focusViolationCountElem.textContent = violationCount;
+            focusViolationCountElem.textContent = String(violationCount);
         }
         if (focusViolationPill) {
             focusViolationPill.classList.add("danger");
         }
         if (violationAlertCount) {
-            violationAlertCount.textContent = violationCount;
+            violationAlertCount.textContent = String(violationCount);
         }
         if (focusViolationMsg) {
-            focusViolationMsg.textContent = `Hệ thống phát hiện: ${reason}. Mọi hành vi rời khỏi màn hình làm bài đều được ghi nhận!`;
+            focusViolationMsg.textContent = `Hệ thống phát hiện: ${reason}. Mọi hành vi rời khỏi màn hình làm bài đều được ghi nhận tự động!`;
         }
 
         if (focusViolationSubtext) {
@@ -2565,10 +2565,8 @@ function setupFocusMode(lesson, user) {
         }
     }
 
-    function startFocusMode() {
+    function startFocusMode(isAuto = false) {
         isFocusMode = true;
-        violationCount = 0;
-        focusSeconds = 0;
         isViolationModalOpen = false;
 
         document.body.classList.add("focus-mode-active");
@@ -2576,47 +2574,47 @@ function setupFocusMode(lesson, user) {
         if (focusModeBar) {
             focusModeBar.hidden = false;
             focusModeBar.removeAttribute("hidden");
+            focusModeBar.style.display = "flex";
         }
 
-        if (focusViolationCountElem) focusViolationCountElem.textContent = "0";
-        if (focusViolationPill) focusViolationPill.classList.remove("danger");
-        if (focusTimerDisplay) focusTimerDisplay.textContent = "00:00";
+        if (focusViolationCountElem) focusViolationCountElem.textContent = String(violationCount);
+        if (focusViolationPill && violationCount === 0) focusViolationPill.classList.remove("danger");
 
         if (btnToggleFocusMode) {
             btnToggleFocusMode.classList.add("active");
-            btnToggleFocusMode.textContent = "Đang khóa làm bài";
+            btnToggleFocusMode.textContent = "Tự động khóa: Bật";
         }
         if (btnEditorFocusMode) {
-            btnEditorFocusMode.textContent = "Đang khóa làm bài";
+            btnEditorFocusMode.textContent = "Tự động khóa: Bật";
         }
 
-        // Bắt đầu đếm giờ
-        clearInterval(focusTimerInterval);
-        focusTimerInterval = setInterval(() => {
-            focusSeconds++;
-            const mins = String(Math.floor(focusSeconds / 60)).padStart(2, "0");
-            const secs = String(focusSeconds % 60).padStart(2, "0");
-            if (focusTimerDisplay) focusTimerDisplay.textContent = `${mins}:${secs}`;
-        }, 1000);
+        // Bắt đầu đếm giờ nếu chưa chạy
+        if (!focusTimerInterval) {
+            focusTimerInterval = setInterval(() => {
+                focusSeconds++;
+                const mins = String(Math.floor(focusSeconds / 60)).padStart(2, "0");
+                const secs = String(focusSeconds % 60).padStart(2, "0");
+                if (focusTimerDisplay) focusTimerDisplay.textContent = `${mins}:${secs}`;
+            }, 1000);
+        }
 
         closeModal(focusStartModal);
-        requestFullscreenSafe();
 
-        // Cuộn mượt xuống phần làm bài
-        const exSec = document.querySelector(".exercise-description") || document.querySelector(".code-editor-container");
-        if (exSec) {
-            exSec.scrollIntoView({ behavior: "smooth", block: "start" });
+        if (!isAuto) {
+            requestFullscreenSafe();
         }
     }
 
     function exitFocusMode() {
         isFocusMode = false;
         clearInterval(focusTimerInterval);
+        focusTimerInterval = null;
 
         document.body.classList.remove("focus-mode-active");
 
         if (focusModeBar) {
             focusModeBar.hidden = true;
+            focusModeBar.style.display = "none";
         }
 
         closeModal(focusExitModal);
@@ -2626,10 +2624,10 @@ function setupFocusMode(lesson, user) {
 
         if (btnToggleFocusMode) {
             btnToggleFocusMode.classList.remove("active");
-            btnToggleFocusMode.textContent = "Khóa làm bài";
+            btnToggleFocusMode.textContent = "Tự động khóa: Tắt";
         }
         if (btnEditorFocusMode) {
-            btnEditorFocusMode.textContent = "Khóa làm bài";
+            btnEditorFocusMode.textContent = "Tự động khóa: Tắt";
         }
 
         if (submitBtn && violationCount < MAX_VIOLATIONS) {
@@ -2640,14 +2638,9 @@ function setupFocusMode(lesson, user) {
         exitFullscreenSafe();
     }
 
-    // Sự kiện mở modal kích hoạt
+    // Sự kiện mở modal xem quy chế hoặc tạm dừng
     const triggerStart = () => {
-        if (isFocusMode) {
-            isConfirmModalOpen = true;
-            openModal(focusExitModal);
-        } else {
-            openModal(focusStartModal);
-        }
+        openModal(focusStartModal);
     };
 
     if (btnToggleFocusMode) btnToggleFocusMode.addEventListener("click", triggerStart);
@@ -2655,7 +2648,8 @@ function setupFocusMode(lesson, user) {
 
     if (btnConfirmStartFocus) {
         btnConfirmStartFocus.addEventListener("click", () => {
-            startFocusMode();
+            closeModal(focusStartModal);
+            requestFullscreenSafe();
         });
     }
 
@@ -2667,8 +2661,7 @@ function setupFocusMode(lesson, user) {
 
     if (btnExitFocusMode) {
         btnExitFocusMode.addEventListener("click", () => {
-            isConfirmModalOpen = true;
-            openModal(focusExitModal);
+            openModal(focusStartModal);
         });
     }
 
@@ -2729,7 +2722,7 @@ function setupFocusMode(lesson, user) {
             if (isFocusMode) {
                 e.preventDefault();
                 playWarningBeep();
-                alert("Chế độ khóa màn hình không cho phép dán mã nguồn từ bên ngoài! Vui lòng tự tay gõ từng dòng lệnh.");
+                alert("Chế độ khóa màn hình tự động không cho phép dán mã nguồn từ bên ngoài! Vui lòng tự tay gõ từng dòng lệnh.");
             }
         });
     }
@@ -2753,4 +2746,16 @@ function setupFocusMode(lesson, user) {
             e.stopPropagation();
         }
     });
+
+    // TỰ ĐỘNG KÍCH HOẠT CHẾ ĐỘ GIÁM SÁT NGAY LẬP TỨC
+    startFocusMode(true);
+
+    // Tự động mở toàn màn hình (Fullscreen) ngay khi học viên click chuột hoặc gõ phím lần đầu
+    const triggerAutoFullscreen = () => {
+        if (isFocusMode && !document.fullscreenElement) {
+            requestFullscreenSafe();
+        }
+    };
+    window.addEventListener("click", triggerAutoFullscreen, { once: true });
+    window.addEventListener("keydown", triggerAutoFullscreen, { once: true });
 }
