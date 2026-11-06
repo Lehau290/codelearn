@@ -56,6 +56,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         };
     }
 
+    // Tự động khởi chạy Chế độ Khóa màn hình NGAY KHI VÀO BÀI HỌC
+    setupFocusMode(null, currentUser);
+
     // --------------------------------------------------------
     // Lấy lesson ID từ URL
     // Ví dụ:
@@ -238,13 +241,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         currentUser
     );
 
-    // --------------------------------------------------------
-    // Chế độ Khóa màn hình (Chống tra cứu & Rời trang)
-    // --------------------------------------------------------
-    setupFocusMode(
-        lesson,
-        currentUser
-    );
+// Chế độ khóa màn hình đã được tự động kích hoạt ngay từ đầu trang
 });
 
 
@@ -2638,18 +2635,7 @@ function setupFocusMode(lesson, user) {
     if (btnToggleFocusMode) btnToggleFocusMode.addEventListener("click", triggerStart);
     if (btnEditorFocusMode) btnEditorFocusMode.addEventListener("click", triggerStart);
 
-    if (btnConfirmStartFocus) {
-        btnConfirmStartFocus.addEventListener("click", () => {
-            closeModal(focusStartModal);
-            requestFullscreenSafe();
-        });
-    }
 
-    if (btnCancelStartFocus) {
-        btnCancelStartFocus.addEventListener("click", () => {
-            closeModal(focusStartModal);
-        });
-    }
 
     if (btnExitFocusMode) {
         btnExitFocusMode.addEventListener("click", () => {
@@ -2745,15 +2731,23 @@ function setupFocusMode(lesson, user) {
         }
     });
 
-    // TỰ ĐỘNG KÍCH HOẠT CHẾ ĐỘ GIÁM SÁT NGAY LẬP TỨC
-    startFocusMode(true);
+    // TỰ ĐỘNG BẬT BẢNG KHÓA MÀN HÌNH BẮT BUỘC NGAY KHI VÀO TRANG
+    isFocusMode = true;
+    openModal(focusStartModal);
 
-    // Tự động mở toàn màn hình (Fullscreen) ngay khi học viên click chuột hoặc gõ phím lần đầu
-    const triggerAutoFullscreen = () => {
-        if (isFocusMode && !document.fullscreenElement) {
-            requestFullscreenSafe();
-        }
-    };
-    window.addEventListener("click", triggerAutoFullscreen, { once: true });
-    window.addEventListener("keydown", triggerAutoFullscreen, { once: true });
+    // Nếu bấm hủy/từ chối ở bảng khóa -> tự động đẩy về Trang chủ
+    if (btnCancelStartFocus) {
+        btnCancelStartFocus.addEventListener("click", () => {
+            exitFullscreenSafe();
+            window.location.href = "home.html";
+        });
+    }
+
+    // Khi bấm "Vào học và làm bài ngay (Khóa toàn màn hình)"
+    if (btnConfirmStartFocus) {
+        btnConfirmStartFocus.addEventListener("click", () => {
+            closeModal(focusStartModal);
+            startFocusMode(false); // Kích hoạt Toàn màn hình & bắt đầu đếm giờ
+        });
+    }
 }
