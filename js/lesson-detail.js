@@ -237,6 +237,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         lesson,
         currentUser
     );
+
+    // --------------------------------------------------------
+    // Chế độ Khóa màn hình (Chống tra cứu & Rời trang)
+    // --------------------------------------------------------
+    setupFocusMode(
+        lesson,
+        currentUser
+    );
 });
 
 
@@ -1514,6 +1522,31 @@ function showGradingResult(
             }
         };
     }
+
+    // Ghi nhận chứng chỉ Chế độ Khóa màn hình (nếu có kích hoạt)
+    if (window._getFocusModeStatus) {
+        const fStatus = window._getFocusModeStatus();
+        const existingCert = document.getElementById("focusGradingCertBadge");
+        if (existingCert) existingCert.remove();
+
+        if (fStatus && fStatus.isFocusMode) {
+            const certDiv = document.createElement("div");
+            certDiv.id = "focusGradingCertBadge";
+            certDiv.style.cssText = "margin-top: 14px; padding: 12px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px;";
+            if (fStatus.violationCount === 0) {
+                certDiv.style.background = "#ecfdf5";
+                certDiv.style.border = "1px solid #a7f3d0";
+                certDiv.style.color = "#065f46";
+                certDiv.innerHTML = "<span>✓</span> <strong>CHỨNG NHẬN TẬP TRUNG:</strong> Hoàn thành bài làm trong Chế độ Khóa màn hình đạt chuẩn trung thực (0 lần vi phạm rời trang).";
+            } else {
+                certDiv.style.background = "#fff1f2";
+                certDiv.style.border = "1px solid #fecdd3";
+                certDiv.style.color = "#9f1239";
+                certDiv.innerHTML = `<span>⚠</span> <strong>CẢNH BÁO GIÁM SÁT:</strong> Trong phiên làm bài ghi nhận <strong>${fStatus.violationCount} lần rời khỏi màn hình</strong>.`;
+            }
+            feedbackBox.appendChild(certDiv);
+        }
+    }
 }
 
 
@@ -2379,5 +2412,345 @@ function setupAiMentorWidget(lesson, user) {
             openPanel();
             sendPrompt(prompt);
         });
+    });
+}
+
+// ============================================================
+// CHẾ ĐỘ KHÓA MÀN HÌNH (ANTI-CHEAT FOCUS LOCK MODE)
+// ============================================================
+
+function setupFocusMode(lesson, user) {
+    const btnToggleFocusMode = document.getElementById("btnToggleFocusMode");
+    const btnEditorFocusMode = document.getElementById("btnEditorFocusMode");
+    const focusModeBar = document.getElementById("focusModeBar");
+    const focusViolationPill = document.getElementById("focusViolationPill");
+    const focusViolationCountElem = document.getElementById("focusViolationCount");
+    const focusTimerDisplay = document.getElementById("focusTimerDisplay");
+    const btnExitFocusMode = document.getElementById("btnExitFocusMode");
+    
+    const focusStartModal = document.getElementById("focusStartModal");
+    const btnConfirmStartFocus = document.getElementById("btnConfirmStartFocus");
+    const btnCancelStartFocus = document.getElementById("btnCancelStartFocus");
+
+    const focusViolationModal = document.getElementById("focusViolationModal");
+    const focusViolationMsg = document.getElementById("focusViolationMsg");
+    const violationAlertCount = document.getElementById("violationAlertCount");
+    const focusViolationSubtext = document.getElementById("focusViolationSubtext");
+    const btnResumeFocus = document.getElementById("btnResumeFocus");
+
+    const focusExitModal = document.getElementById("focusExitModal");
+    const btnConfirmExitFocus = document.getElementById("btnConfirmExitFocus");
+    const btnCancelExitFocus = document.getElementById("btnCancelExitFocus");
+
+    const codeEditor = document.getElementById("codeEditor");
+    const submitBtn = document.getElementById("submitCodeButton");
+
+    let isFocusMode = false;
+    let violationCount = 0;
+    const MAX_VIOLATIONS = 3;
+    let focusTimerInterval = null;
+    let focusSeconds = 0;
+    let isViolationModalOpen = false;
+    let isConfirmModalOpen = false;
+
+    window._getFocusModeStatus = () => ({
+        isFocusMode,
+        violationCount,
+        maxViolations: MAX_VIOLATIONS
+    });
+
+    // Web Audio API Alarm Beep (Không phụ thuộc tệp âm thanh bên ngoài)
+    function playWarningBeep() {
+        try {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return;
+            const ctx = new AudioCtx();
+            if (ctx.state === "suspended") ctx.resume();
+            
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = "sawtooth";
+            osc.frequency.setValueAtTime(480, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(960, ctx.currentTime + 0.2);
+            gain.gain.setValueAtTime(0.3, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.4);
+        } catch (e) {
+            // Trình duyệt có thể hạn chế audio nếu chưa có tương tác
+        }
+    }
+
+    function openModal(modal) {
+        if (!modal) return;
+        modal.hidden = false;
+        modal.removeAttribute("hidden");
+        modal.style.display = "flex";
+    }
+
+    function closeModal(modal) {
+        if (!modal) return;
+        modal.hidden = true;
+        modal.style.display = "none";
+    }
+
+    function requestFullscreenSafe() {
+        const docEl = document.documentElement;
+        if (docEl.requestFullscreen) {
+            docEl.requestFullscreen().catch(() => {});
+        } else if (docEl.webkitRequestFullscreen) {
+            docEl.webkitRequestFullscreen();
+        } else if (docEl.msRequestFullscreen) {
+            docEl.msRequestFullscreen();
+        }
+    }
+
+    function exitFullscreenSafe() {
+        if (document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement) {
+            if (document.exitFullscreen) {
+                document.exitFullscreen().catch(() => {});
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
+    }
+
+    function recordViolation(reason) {
+        if (!isFocusMode) return;
+        if (isViolationModalOpen || isConfirmModalOpen) return;
+
+        violationCount++;
+        playWarningBeep();
+
+        if (focusViolationCountElem) {
+            focusViolationCountElem.textContent = violationCount;
+        }
+        if (focusViolationPill) {
+            focusViolationPill.classList.add("danger");
+        }
+        if (violationAlertCount) {
+            violationAlertCount.textContent = violationCount;
+        }
+        if (focusViolationMsg) {
+            focusViolationMsg.textContent = `Hệ thống phát hiện: ${reason}. Mọi hành vi rời khỏi màn hình làm bài đều được ghi nhận!`;
+        }
+
+        if (focusViolationSubtext) {
+            if (violationCount >= MAX_VIOLATIONS) {
+                focusViolationSubtext.innerHTML = `<strong>BẠN ĐÃ VI PHẠM ${violationCount}/${MAX_VIOLATIONS} LẦN!</strong> Bài làm đã bị đình chỉ do vi phạm quy chế tập trung. Nút nộp bài đã bị khóa.`;
+            } else {
+                const remaining = MAX_VIOLATIONS - violationCount;
+                focusViolationSubtext.innerHTML = `Vui lòng tập trung và không rời khỏi trang. Bạn còn <strong>${remaining} lần cảnh cáo</strong> trước khi bài làm bị đình chỉ hoàn toàn!`;
+            }
+        }
+
+        if (btnResumeFocus) {
+            if (violationCount >= MAX_VIOLATIONS) {
+                btnResumeFocus.textContent = "Đã bị đình chỉ (Nhấn để tiếp tục xem bài)";
+            } else {
+                btnResumeFocus.textContent = "Quay lại làm bài & Khôi phục toàn màn hình";
+            }
+        }
+
+        isViolationModalOpen = true;
+        openModal(focusViolationModal);
+
+        if (violationCount >= MAX_VIOLATIONS && submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.title = "Bài làm bị đình chỉ do vi phạm quy chế làm bài tập trung (3/3 lần rời màn hình).";
+        }
+    }
+
+    function startFocusMode() {
+        isFocusMode = true;
+        violationCount = 0;
+        focusSeconds = 0;
+        isViolationModalOpen = false;
+
+        document.body.classList.add("focus-mode-active");
+
+        if (focusModeBar) {
+            focusModeBar.hidden = false;
+            focusModeBar.removeAttribute("hidden");
+        }
+
+        if (focusViolationCountElem) focusViolationCountElem.textContent = "0";
+        if (focusViolationPill) focusViolationPill.classList.remove("danger");
+        if (focusTimerDisplay) focusTimerDisplay.textContent = "00:00";
+
+        if (btnToggleFocusMode) {
+            btnToggleFocusMode.classList.add("active");
+            btnToggleFocusMode.textContent = "Đang khóa làm bài";
+        }
+        if (btnEditorFocusMode) {
+            btnEditorFocusMode.textContent = "Đang khóa làm bài";
+        }
+
+        // Bắt đầu đếm giờ
+        clearInterval(focusTimerInterval);
+        focusTimerInterval = setInterval(() => {
+            focusSeconds++;
+            const mins = String(Math.floor(focusSeconds / 60)).padStart(2, "0");
+            const secs = String(focusSeconds % 60).padStart(2, "0");
+            if (focusTimerDisplay) focusTimerDisplay.textContent = `${mins}:${secs}`;
+        }, 1000);
+
+        closeModal(focusStartModal);
+        requestFullscreenSafe();
+
+        // Cuộn mượt xuống phần làm bài
+        const exSec = document.querySelector(".exercise-description") || document.querySelector(".code-editor-container");
+        if (exSec) {
+            exSec.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+    }
+
+    function exitFocusMode() {
+        isFocusMode = false;
+        clearInterval(focusTimerInterval);
+
+        document.body.classList.remove("focus-mode-active");
+
+        if (focusModeBar) {
+            focusModeBar.hidden = true;
+        }
+
+        closeModal(focusExitModal);
+        closeModal(focusViolationModal);
+        isViolationModalOpen = false;
+        isConfirmModalOpen = false;
+
+        if (btnToggleFocusMode) {
+            btnToggleFocusMode.classList.remove("active");
+            btnToggleFocusMode.textContent = "Khóa làm bài";
+        }
+        if (btnEditorFocusMode) {
+            btnEditorFocusMode.textContent = "Khóa làm bài";
+        }
+
+        if (submitBtn && violationCount < MAX_VIOLATIONS) {
+            submitBtn.disabled = false;
+            submitBtn.title = "";
+        }
+
+        exitFullscreenSafe();
+    }
+
+    // Sự kiện mở modal kích hoạt
+    const triggerStart = () => {
+        if (isFocusMode) {
+            isConfirmModalOpen = true;
+            openModal(focusExitModal);
+        } else {
+            openModal(focusStartModal);
+        }
+    };
+
+    if (btnToggleFocusMode) btnToggleFocusMode.addEventListener("click", triggerStart);
+    if (btnEditorFocusMode) btnEditorFocusMode.addEventListener("click", triggerStart);
+
+    if (btnConfirmStartFocus) {
+        btnConfirmStartFocus.addEventListener("click", () => {
+            startFocusMode();
+        });
+    }
+
+    if (btnCancelStartFocus) {
+        btnCancelStartFocus.addEventListener("click", () => {
+            closeModal(focusStartModal);
+        });
+    }
+
+    if (btnExitFocusMode) {
+        btnExitFocusMode.addEventListener("click", () => {
+            isConfirmModalOpen = true;
+            openModal(focusExitModal);
+        });
+    }
+
+    if (btnConfirmExitFocus) {
+        btnConfirmExitFocus.addEventListener("click", () => {
+            exitFocusMode();
+        });
+    }
+
+    if (btnCancelExitFocus) {
+        btnCancelExitFocus.addEventListener("click", () => {
+            isConfirmModalOpen = false;
+            closeModal(focusExitModal);
+            if (isFocusMode) requestFullscreenSafe();
+        });
+    }
+
+    if (btnResumeFocus) {
+        btnResumeFocus.addEventListener("click", () => {
+            closeModal(focusViolationModal);
+            isViolationModalOpen = false;
+            if (isFocusMode && violationCount < MAX_VIOLATIONS) {
+                requestFullscreenSafe();
+            }
+        });
+    }
+
+    // 1. Giám sát Page Visibility (Chuyển tab hoặc thu nhỏ trình duyệt)
+    document.addEventListener("visibilitychange", () => {
+        if (isFocusMode && document.visibilityState === "hidden") {
+            recordViolation("Chuyển tab hoặc thu nhỏ cửa sổ trình duyệt");
+        }
+    });
+
+    // 2. Giám sát Window Blur (Alt + Tab hoặc click sang phần mềm khác)
+    window.addEventListener("blur", () => {
+        if (isFocusMode) {
+            if (document.visibilityState !== "hidden") {
+                recordViolation("Chuyển sang ứng dụng khác (Alt+Tab hoặc click ra ngoài)");
+            }
+        }
+    });
+
+    // 3. Giám sát Fullscreen Change (Nhấn Esc hoặc F11 để thoát toàn màn hình)
+    const handleFullscreenChange = () => {
+        const isFull = !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
+        if (isFocusMode && !isFull && !isViolationModalOpen && !isConfirmModalOpen) {
+            recordViolation("Thoát chế độ toàn màn hình (nhấn Esc hoặc F11)");
+        }
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
+    document.addEventListener("msfullscreenchange", handleFullscreenChange);
+
+    // 4. Chống dán mã (Anti-Paste) từ bên ngoài vào Editor
+    if (codeEditor) {
+        codeEditor.addEventListener("paste", (e) => {
+            if (isFocusMode) {
+                e.preventDefault();
+                playWarningBeep();
+                alert("Chế độ khóa màn hình không cho phép dán mã nguồn từ bên ngoài! Vui lòng tự tay gõ từng dòng lệnh.");
+            }
+        });
+    }
+
+    // 5. Chống chuột phải (Context Menu)
+    window.addEventListener("contextmenu", (e) => {
+        if (isFocusMode) {
+            e.preventDefault();
+        }
+    });
+
+    // 6. Chặn các phím tắt mở DevTools (F12, Ctrl+Shift+I/J/C, Ctrl+U)
+    window.addEventListener("keydown", (e) => {
+        if (!isFocusMode) return;
+        if (
+            e.key === "F12" ||
+            (e.ctrlKey && e.shiftKey && ["I", "i", "J", "j", "C", "c"].includes(e.key)) ||
+            (e.ctrlKey && (e.key === "u" || e.key === "U"))
+        ) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
     });
 }

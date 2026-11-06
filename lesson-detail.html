@@ -29,6 +29,34 @@
 <body>
 
     <!-- =========================================
+         FOCUS / EXAM LOCK MODE BAR
+    ========================================== -->
+    <div id="focusModeBar" class="focus-mode-bar" hidden>
+        <div class="focus-mode-inner">
+            <div class="focus-mode-brand">
+                <span class="focus-pulse-dot" aria-hidden="true"></span>
+                <strong>CHẾ ĐỘ KHÓA MÀN HÌNH</strong>
+                <span class="focus-mode-sub">Chống chuyển tab & tra cứu</span>
+            </div>
+            <div class="focus-mode-metrics">
+                <div class="focus-metric-pill" id="focusViolationPill">
+                    <span>Vi phạm:</span>
+                    <strong id="focusViolationCount">0</strong>/3
+                </div>
+                <div class="focus-metric-pill">
+                    <span>Thời gian:</span>
+                    <strong id="focusTimerDisplay">00:00</strong>
+                </div>
+            </div>
+            <div class="focus-mode-actions">
+                <button type="button" id="btnExitFocusMode" class="btn-exit-focus">
+                    Thoát khóa màn hình
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================
          HEADER
     ========================================== -->
 
@@ -427,6 +455,9 @@
                                         <button type="button" class="btn-hint-toggle" id="btnHintToggle">
                                             Gợi ý AI
                                         </button>
+                                        <button type="button" class="btn-focus-mode" id="btnToggleFocusMode" title="Bật chế độ khóa toàn màn hình chống tra cứu và chuyển ứng dụng">
+                                            Khóa làm bài
+                                        </button>
                                     </div>
 
                                     <h3 id="exerciseTitle">
@@ -472,6 +503,7 @@
 
                                     <div class="editor-actions">
 
+                                        <button type="button" id="btnEditorFocusMode" class="editor-button editor-focus-btn" title="Bật chế độ khóa toàn màn hình chống tra cứu">Khóa làm bài</button>
                                         <button
                                             type="button"
                                             id="formatCodeButton"
@@ -1042,6 +1074,101 @@
                 <div style="display: flex; justify-content: flex-end; gap: 8px;">
                     <button type="button" id="btnCancelAiSettings" class="btn btn-outline" style="padding: 7px 14px; font-size: 0.85rem;">Hủy</button>
                     <button type="button" id="btnSaveAiSettings" class="btn btn-primary" style="padding: 7px 16px; font-size: 0.85rem;">Lưu Cấu hình</button>
+                </div>
+            </div>
+        </div>
+
+            <!-- =========================================
+             FOCUS MODE MODALS
+        ========================================== -->
+        <!-- Start Focus Modal -->
+        <div id="focusStartModal" class="focus-modal-overlay" hidden>
+            <div class="focus-modal-card">
+                <div class="focus-modal-header">
+                    <span class="focus-modal-badge">GIÁM SÁT THI CỬ & RÈN LUYỆN</span>
+                    <h3>Chế độ Khóa màn hình (Chống tra cứu)</h3>
+                </div>
+                <div class="focus-modal-body">
+                    <p class="focus-modal-lead">
+                        Khi kích hoạt, hệ thống sẽ thiết lập môi trường làm bài tập trung cao độ để kiểm tra năng lực độc lập:
+                    </p>
+                    <ul class="focus-rules-list">
+                        <li>
+                            <strong>Toàn màn hình bắt buộc:</strong>
+                            Trình duyệt sẽ tự động phóng to toàn màn hình. Không nhấn Esc hoặc F11 để thoát.
+                        </li>
+                        <li>
+                            <strong>Chống chuyển tab & ứng dụng:</strong>
+                            Nghiêm cấm <code>Alt + Tab</code>, thu nhỏ cửa sổ hoặc mở ứng dụng khác (trình duyệt, AI, mạng xã hội). Mọi hành vi rời màn hình đều được tính là <strong>1 lần vi phạm</strong>.
+                        </li>
+                        <li>
+                            <strong>Chặn chuột phải & dán mã:</strong>
+                            Vô hiệu hóa chuột phải và chặn dán code từ bên ngoài. Bạn phải tự tay gõ từng dòng lệnh.
+                        </li>
+                        <li>
+                            <strong>Cảnh báo & Xử lý:</strong>
+                            Nếu vi phạm rời màn hình quá <strong>3 lần</strong>, bài thi sẽ bị đình chỉ và gắn cờ vi phạm.
+                        </li>
+                    </ul>
+                </div>
+                <div class="focus-modal-actions">
+                    <button type="button" id="btnConfirmStartFocus" class="btn btn-primary focus-btn-confirm">
+                        Bắt đầu làm bài tập trung
+                    </button>
+                    <button type="button" id="btnCancelStartFocus" class="btn btn-outline">
+                        Hủy bỏ
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Violation Alert Modal -->
+        <div id="focusViolationModal" class="focus-modal-overlay focus-violation-overlay" hidden>
+            <div class="focus-modal-card focus-violation-card">
+                <div class="focus-violation-header">
+                    <span class="focus-violation-badge">CẢNH BÁO VI PHẠM</span>
+                    <h3 class="focus-violation-title">BẠN ĐÃ RỜI KHỎI MÀN HÌNH LÀM BÀI!</h3>
+                </div>
+                <div class="focus-violation-body">
+                    <p class="focus-violation-msg" id="focusViolationMsg">
+                        Hệ thống phát hiện bạn vừa chuyển tab hoặc rời sang ứng dụng khác.
+                    </p>
+                    <div class="focus-violation-meter">
+                        <div class="violation-count-box">
+                            <span>Số lần vi phạm:</span>
+                            <strong id="violationAlertCount">1</strong> / 3
+                        </div>
+                    </div>
+                    <p class="focus-violation-subtext" id="focusViolationSubtext">
+                        Vui lòng quay lại làm bài ngay. Nếu vi phạm quá 3 lần, bài nộp sẽ bị đình chỉ hoặc hủy kết quả!
+                    </p>
+                </div>
+                <div class="focus-violation-actions">
+                    <button type="button" id="btnResumeFocus" class="btn btn-danger-resume">
+                        Quay lại làm bài & Khôi phục toàn màn hình
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exit Confirmation Modal -->
+        <div id="focusExitModal" class="focus-modal-overlay" hidden>
+            <div class="focus-modal-card">
+                <div class="focus-modal-header">
+                    <h3>Xác nhận thoát Chế độ Khóa</h3>
+                </div>
+                <div class="focus-modal-body">
+                    <p>
+                        Bạn có chắc chắn muốn dừng chế độ khóa màn hình? Bài làm hiện tại vẫn được giữ lại nhưng phiên này sẽ không được chứng nhận đạt chuẩn tập trung không tra cứu.
+                    </p>
+                </div>
+                <div class="focus-modal-actions">
+                    <button type="button" id="btnConfirmExitFocus" class="btn btn-danger">
+                        Xác nhận thoát
+                    </button>
+                    <button type="button" id="btnCancelExitFocus" class="btn btn-outline">
+                        Tiếp tục làm bài
+                    </button>
                 </div>
             </div>
         </div>
