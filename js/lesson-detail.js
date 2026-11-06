@@ -2731,6 +2731,13 @@ function setupFocusMode(lesson, user) {
         }
     });
 
+    // Bất cứ click nào trên trang khi chưa ở Fullscreen sẽ kích hoạt Toàn màn hình
+    document.addEventListener("click", () => {
+        if (isFocusMode && !document.fullscreenElement && !isViolationModalOpen && !isConfirmModalOpen) {
+            requestFullscreenSafe();
+        }
+    });
+
     // TỰ ĐỘNG BẬT BẢNG KHÓA MÀN HÌNH BẮT BUỘC NGAY KHI VÀO TRANG
     isFocusMode = true;
     openModal(focusStartModal);

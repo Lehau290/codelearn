@@ -1081,42 +1081,25 @@
             <!-- =========================================
              FOCUS MODE MODALS
         ========================================== -->
-        <!-- Start Focus Modal -->
-        <div id="focusStartModal" class="focus-modal-overlay" hidden>
-            <div class="focus-modal-card">
-                <div class="focus-modal-header">
-                    <span class="focus-modal-badge">GIÁM SÁT THI CỬ & RÈN LUYỆN</span>
-                    <h3>Chế độ Khóa màn hình Tự động (Chống tra cứu)</h3>
+        <!-- Start Focus Modal (Khóa Full Màn Hình) -->
+        <div id="focusStartModal" class="fullscreen-lock-curtain">
+            <div class="fullscreen-lock-card">
+                <span class="lock-shield-badge">BẮT BUỘC KHÓA TOÀN MÀN HÌNH</span>
+                <h2>CHẾ ĐỘ KHÓA BÀI LÀM TỰ ĐỘNG</h2>
+                <p class="lock-desc">
+                    Để đảm bảo môi trường học tập và làm bài tập trung cao độ 100%, trang bài học yêu cầu <strong>khóa toàn màn hình</strong> và kích hoạt cơ chế giám sát:
+                </p>
+                <div class="lock-rules-box">
+                    <div class="lock-rule-item">● Không chuyển tab hoặc mở ứng dụng khác (Alt + Tab).</div>
+                    <div class="lock-rule-item">● Tự động chặn chuột phải và dán mã nguồn từ bên ngoài.</div>
+                    <div class="lock-rule-item">● Cố tình thoát ra hoặc vi phạm quá 3 lần sẽ tự động bị đưa về Trang chủ.</div>
                 </div>
-                <div class="focus-modal-body">
-                    <p class="focus-modal-lead">
-                        Hệ thống đã tự động kích hoạt Chế độ Khóa màn hình cho bài học và bài tập này:
-                    </p>
-                    <ul class="focus-rules-list">
-                        <li>
-                            <strong>Toàn màn hình bắt buộc:</strong>
-                            Trình duyệt sẽ tự động phóng to toàn màn hình. Không nhấn Esc hoặc F11 để thoát.
-                        </li>
-                        <li>
-                            <strong>Chống chuyển tab & ứng dụng:</strong>
-                            Nghiêm cấm <code>Alt + Tab</code>, thu nhỏ cửa sổ hoặc mở ứng dụng khác (trình duyệt, AI, mạng xã hội). Mọi hành vi rời màn hình đều được tính là <strong>1 lần vi phạm</strong>.
-                        </li>
-                        <li>
-                            <strong>Chặn chuột phải & dán mã:</strong>
-                            Vô hiệu hóa chuột phải và chặn dán code từ bên ngoài. Bạn phải tự tay gõ từng dòng lệnh.
-                        </li>
-                        <li>
-                            <strong>Cảnh báo & Xử lý:</strong>
-                            Nếu cố tình vi phạm rời màn hình quá <strong>3 lần</strong> hoặc bấm thoát, hệ thống sẽ <strong>hủy bài làm và tự động đưa bạn quay về Trang chủ</strong>.
-                        </li>
-                    </ul>
-                </div>
-                <div class="focus-modal-actions">
-                    <button type="button" id="btnConfirmStartFocus" class="btn btn-primary focus-btn-confirm">
-                        Vào học và làm bài ngay (Khóa toàn màn hình)
+                <div class="focus-modal-actions" style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
+                    <button type="button" id="btnConfirmStartFocus" class="btn btn-primary btn-lock-enter">
+                        Khóa Toàn Màn Hình &amp; Bắt Đầu Làm Bài
                     </button>
-                    <button type="button" id="btnCancelStartFocus" class="btn btn-outline">
-                        Về Trang chủ
+                    <button type="button" id="btnCancelStartFocus" class="btn btn-outline" style="width: 100%;">
+                        Quay về Trang chủ
                     </button>
                 </div>
             </div>
