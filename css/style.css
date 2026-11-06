@@ -89,23 +89,23 @@ ol {
    ========================================================= */
 
 :root {
-    /* Clean, Professional Minimalist Modern Theme */
-    --primary: #4f46e5;
-    --primary-dark: #4338ca;
-    --primary-light: #eef2ff;
-    --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
-    --primary-glow: rgba(79, 70, 229, 0.15);
+    /* Dreamy Pastel Lavender & Starry Lilac Theme */
+    --primary: #7364f2;
+    --primary-dark: #5d4de4;
+    --primary-light: #f2f0fe;
+    --primary-gradient: linear-gradient(135deg, #8b7cf8 0%, #6351e8 100%);
+    --primary-glow: rgba(115, 100, 242, 0.35);
 
-    --secondary: #64748b;
-    --secondary-dark: #475569;
-    --secondary-light: #f8fafc;
-    --secondary-gradient: linear-gradient(135deg, #64748b 0%, #475569 100%);
+    --secondary: #b3a8f8;
+    --secondary-dark: #9688f2;
+    --secondary-light: #f8f6fe;
+    --secondary-gradient: linear-gradient(135deg, #cfc6fd 0%, #9e91f5 100%);
 
-    --accent-orchid: #64748b;
-    --accent-orchid-light: #f8fafc;
+    --accent-orchid: #cb8ef8;
+    --accent-orchid-light: #faf4ff;
 
-    --accent-emerald: #10b981;
-    --accent-emerald-light: #ecfdf5;
+    --accent-emerald: #7364f2;
+    --accent-emerald-light: #f2f0fe;
 
     --success: #10b981;
     --success-light: #ecfdf5;
@@ -114,21 +114,21 @@ ol {
     --danger: #ef4444;
     --danger-light: #fef2f2;
 
-    --text: #0f172a;
-    --text-secondary: #475569;
-    --text-light: #64748b;
+    --text: #19162e;
+    --text-secondary: #58537a;
+    --text-light: #8a84a6;
 
-    --background: #f8fafc;
-    --background-alt: #f1f5f9;
+    --background: #f8f7fd;
+    --background-alt: #eeeaf8;
     --white: #ffffff;
 
-    --border: #e2e8f0;
-    --border-light: #f1f5f9;
-    --border-focus: #4f46e5;
+    --border: #ded7f6;
+    --border-light: #ebe6f8;
+    --border-focus: #7364f2;
 
-    --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
-    --card-shadow-hover: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-    --card-shadow-elevated: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+    --card-shadow: 0 6px 20px -3px rgba(115, 100, 242, 0.08), 0 2px 6px -1px rgba(25, 22, 46, 0.03);
+    --card-shadow-hover: 0 16px 36px -4px rgba(115, 100, 242, 0.2), 0 4px 12px rgba(25, 22, 46, 0.04);
+    --card-shadow-elevated: 0 24px 48px -6px rgba(115, 100, 242, 0.22);
 
     --radius-sm: 12px;
     --radius-md: 18px;
@@ -12282,180 +12282,4 @@ body.dark-theme .pitfall-box h4 {
 html.dark-theme .pitfall-box li,
 body.dark-theme .pitfall-box li {
     color: #e2e8f0;
-}
-
-
-/* =========================================================
-   CLEAN, REFINED MINIMALIST DESIGN OVERRIDES
-   (Bớt màu mè, hướng tới phong cách giao diện chuẩn mực, thanh lịch)
-   ========================================================= */
-
-/* Hide floating aurora orbs */
-.home-aurora-orb,
-.lessons-aurora-orb,
-.p-aurora-orb {
-    display: none !important;
-}
-
-/* Neutralize multi-color text gradients to clean, legible white / dark */
-.lessons-hero-gradient-text,
-.hero-gradient-text,
-.badge-cpp-text,
-.profile-greeting-heading .greeting-highlight,
-.intro-content h2 span {
-    background: none !important;
-    -webkit-background-clip: unset !important;
-    -webkit-text-fill-color: #ffffff !important;
-    color: #ffffff !important;
-    filter: none !important;
-}
-
-/* Neutralize primary CTA buttons (no hot-pink multi-gradient) */
-.home-cta-primary,
-.lessons-hero-primary-btn {
-    background: #4f46e5 !important;
-    border: none !important;
-    color: #ffffff !important;
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.22) !important;
-}
-
-.home-cta-primary:hover,
-.lessons-hero-primary-btn:hover {
-    background: #4338ca !important;
-    box-shadow: 0 6px 16px rgba(79, 70, 229, 0.3) !important;
-    transform: translateY(-2px) !important;
-}
-
-/* Harmonize all chapter box accents (no 7-color carnival) */
-.curriculum-chapter-box {
-    --chap-accent: #475569 !important;
-    --chap-accent-soft: rgba(71, 85, 105, 0.08) !important;
-    border-top: 3px solid #64748b !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
-}
-
-.curriculum-chapter-box:hover {
-    transform: translateY(-3px) !important;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08) !important;
-}
-
-.curr-chap-num {
-    background: #334155 !important;
-    color: #ffffff !important;
-    box-shadow: none !important;
-}
-
-.curr-chap-lessons-range {
-    background: #f1f5f9 !important;
-    color: #475569 !important;
-    border: 1px solid #e2e8f0 !important;
-}
-
-/* Harmonize Chapter Sections & Cards */
-.chapter-group-section {
-    --sec-accent: #475569 !important;
-}
-
-.lesson-list-card {
-    border-left: 3px solid #cbd5e1 !important;
-    border-radius: 12px !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
-}
-
-.lesson-list-card.completed {
-    border-left-color: #10b981 !important;
-}
-
-.lesson-list-card:hover {
-    border-left-color: #4f46e5 !important;
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.07) !important;
-}
-
-/* Harmonize Stat & Feature Cards */
-.home-stats-upgraded .stat-card {
-    border: 1px solid #e2e8f0 !important;
-    border-top: 3px solid #64748b !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
-}
-
-.home-feature-grid-upgraded .feature-card {
-    border: 1px solid #e2e8f0 !important;
-    border-top: 3px solid #4f46e5 !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
-}
-
-.feature-tag-pill {
-    background: #f1f5f9 !important;
-    color: #475569 !important;
-    border: 1px solid #e2e8f0 !important;
-}
-
-.home-chap-card,
-.p-chapter-card {
-    --h-chap-accent: #475569 !important;
-    --h-chap-soft: rgba(71, 85, 105, 0.08) !important;
-    --p-chap-color: #475569 !important;
-    --p-chap-soft: rgba(71, 85, 105, 0.08) !important;
-    border: 1px solid #e2e8f0 !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
-}
-
-.profile-stats-bento .profile-stat-card {
-    border: 1px solid #e2e8f0 !important;
-    border-top: 3px solid #64748b !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
-}
-
-/* Harmonize Roadmap pills */
-.roadmap-step-pill {
-    background: #f1f5f9 !important;
-    color: #475569 !important;
-    border: 1px solid #e2e8f0 !important;
-}
-
-/* Harmonize Tabs & Chapter Pills */
-.home-chap-tab,
-.chapter-pill {
-    background: #ffffff !important;
-    color: #475569 !important;
-    border: 1px solid #e2e8f0 !important;
-    transition: all 0.2s ease !important;
-}
-
-.home-chap-tab:hover,
-.chapter-pill:hover {
-    background: #f8fafc !important;
-    color: #0f172a !important;
-    border-color: #cbd5e1 !important;
-}
-
-.home-chap-tab.active,
-.chapter-pill.active {
-    background: #4f46e5 !important;
-    color: #ffffff !important;
-    border-color: #4f46e5 !important;
-    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25) !important;
-}
-
-.filter-pill {
-    background: #ffffff !important;
-    color: #475569 !important;
-    border: 1px solid #e2e8f0 !important;
-}
-
-.filter-pill.active {
-    background: #4f46e5 !important;
-    color: #ffffff !important;
-    border-color: #4f46e5 !important;
-}
-
-/* Harmonize Leaderboard */
-.podium-crown {
-    display: none !important;
-}
-
-.streak-pill {
-    background: #f1f5f9 !important;
-    color: #475569 !important;
-    border: 1px solid #e2e8f0 !important;
 }
