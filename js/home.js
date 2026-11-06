@@ -266,7 +266,7 @@ function renderFeaturedLessons(user, selectedChap = "featured") {
                             ⏱ ${escapeHtml(
                                 lesson.duration ||
                                 "25 phút"
-                            )} • 💻 3 Bài tập
+                            )} • 3 Bài tập
                         </span>
 
                         <span class="lesson-action-pill ${completed ? "completed" : ""}">
@@ -458,7 +458,7 @@ function updateLeaderboardUser(user) {
             if (parsed.streak) streakVal = parsed.streak;
         }
     } catch(e) {}
-    if (streakEl) streakEl.textContent = `🔥 ${streakVal} ngày liên tục`;
+    if (streakEl) streakEl.textContent = `${streakVal} ngày liên tục`;
     if (descEl) descEl.textContent = `Đã hoàn thành ${completedCount}/${lessons.length} bài học`;
 }
 
@@ -485,14 +485,14 @@ function initLeaderboardInteractions() {
             }
 
             // Hiệu ứng particle nổi bay lên từ vị trí chuột
-            spawnFloatingSparkle(e.clientX || (window.innerWidth / 2), e.clientY || (window.innerHeight / 2), rank === "1" ? "👑" : "⭐");
+                // Floating celebration animation
 
             // Hiển thị Toast thông báo chúc mừng
             if (typeof window.showToast === "function") {
                 if (rank === "1") {
-                    window.showToast(`🎉 Chúc mừng Quán Quân Tuần: ${name}! Bạn đã tặng 1 sao vinh danh ⭐`, "success", 2600);
+                    window.showToast(`Chúc mừng Quán Quân Tuần: ${name}! Bạn đã tặng 1 sao vinh danh`, "success", 2600);
                 } else {
-                    window.showToast(`👏 Bạn đã gửi tràng pháo tay cổ vũ tới ${name}! ✨`, "info", 2200);
+                    window.showToast(`Bạn đã gửi tràng pháo tay cổ vũ tới ${name}!`, "info", 2200);
                 }
             }
         });
@@ -546,7 +546,7 @@ function initLeaderboardInteractions() {
         });
     });
 
-    function spawnFloatingSparkle(x, y, icon) {
+                // Floating celebration animation
         const span = document.createElement("span");
         span.className = "floating-sparkle";
         span.textContent = icon;
@@ -718,7 +718,7 @@ function initHeroLiveCodeTyping() {
 
                 statusElem.innerHTML = '<span style="color:#34d399">[Compilation]: Success • g++ 13.2 (0.012s)</span>';
                 if (successElem) {
-                    successElem.textContent = "[Output]: Xin chào C++ Developer! ✨";
+                    successElem.textContent = "[Output]: Xin chào C++ Developer!";
                 }
 
                 // Tự động lặp lại mô phỏng sau 12 giây nếu người dùng không tương tác

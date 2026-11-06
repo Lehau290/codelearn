@@ -441,7 +441,7 @@ function showToast(message, type = "info", duration = 3200) {
     const icons = {
         success: "✓",
         error: "✕",
-        warning: "⚠️",
+        warning: "!",
         info: "ℹ️"
     };
 
@@ -587,4 +587,4 @@ function setupCodeCopyButtons() {
 // Khởi chạy khi DOM sẵn sàng
 document.addEventListener("DOMContentLoaded", () => {
     setupCodeCopyButtons();
-});
+});

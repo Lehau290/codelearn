@@ -441,10 +441,10 @@ function updateExerciseTabStatuses(user, lesson) {
         } catch (e) {}
 
         if (savedResult && savedResult.score >= 60) {
-            statusIcon.textContent = "✅";
+            statusIcon.textContent = "✓";
             statusIcon.title = `Đã hoàn thành (${savedResult.score}/100)`;
         } else if (savedResult && savedResult.score > 0) {
-            statusIcon.textContent = "📝";
+            statusIcon.textContent = "●";
             statusIcon.title = `Đã làm (${savedResult.score}/100)`;
         } else {
             statusIcon.textContent = "⏳";
@@ -470,7 +470,7 @@ function setupExerciseTabs(lesson, user) {
         btnHint.addEventListener("click", () => {
             const isHidden = hintBox.hidden;
             hintBox.hidden = !isHidden;
-            btnHint.textContent = isHidden ? "💡 Ẩn gợi ý" : "💡 Gợi ý AI";
+            btnHint.textContent = isHidden ? "Ẩn gợi ý" : "Gợi ý AI";
             btnHint.classList.toggle("active", isHidden);
         });
     }
@@ -543,7 +543,7 @@ function switchExercise(index, user, lesson) {
     const btnHint = document.getElementById("btnHintToggle");
     if (hintBox) hintBox.hidden = true;
     if (btnHint) {
-        btnHint.textContent = "💡 Gợi ý AI";
+        btnHint.textContent = "Gợi ý AI";
         btnHint.classList.remove("active");
     }
     if (hintText) {
@@ -876,7 +876,7 @@ function setupRunButton(
 
             if (!code) {
                 output.textContent =
-                    "⚠️ Bạn chưa nhập code.";
+                    "Bạn chưa nhập code.";
 
                 return;
             }
@@ -946,14 +946,14 @@ function simulateCppExecution(
     if (!code || !code.trim()) {
         return {
             success: false,
-            output: "⚠️ Bạn chưa nhập code để chạy."
+            output: "Bạn chưa nhập code để chạy."
         };
     }
 
     if (!code.includes("#include") && !code.includes("main")) {
         return {
             success: false,
-            output: "⚠️ Cảnh báo: Thiếu cấu trúc chương trình C++ cơ bản (#include <iostream>, int main)."
+            output: "Cảnh báo: Thiếu cấu trúc chương trình C++ cơ bản (#include <iostream>, int main)."
         };
     }
 
@@ -973,7 +973,7 @@ function simulateCppExecution(
     if (missingSemicolon) {
         return {
             success: false,
-            output: "❌ Lỗi biên dịch (Compile Error):\nerror: expected ';' before end of statement"
+            output: "Lỗi biên dịch (Compile Error):\nerror: expected ';' before end of statement"
         };
     }
 
@@ -1093,7 +1093,7 @@ function setupSubmitButton(
                 editor.value.trim();
 
             if (!code) {
-                alert("⚠️ Bạn cần viết mã nguồn C++ trước khi nộp bài để AI chấm điểm!");
+                alert("Bạn cần viết mã nguồn C++ trước khi nộp bài để AI chấm điểm!");
                 return;
             }
 
@@ -1306,7 +1306,7 @@ function gradeCode(
         advice = `Học viên hiểu rõ bản chất bài học và áp dụng tốt vào code thực tế. Chỉ cần chú ý thêm chi tiết định dạng xuất hoặc các trường hợp biên nhỏ để đạt 100 điểm tuyệt đối.`;
     } else if (score >= 50) {
         comprehensionLevel = "Mức độ cơ bản";
-        advice = `Học viên đã nắm được khung cơ bản của bài tập. Hãy bấm nút "💡 Gợi ý AI" ở phía trên và rà soát lại các điểm cần cải thiện để nâng cao điểm số nhé.`;
+        advice = `Học viên đã nắm được khung cơ bản của bài tập. Hãy bấm nút "Gợi ý AI" ở phía trên và rà soát lại các điểm cần cải thiện để nâng cao điểm số nhé.`;
     } else {
         comprehensionLevel = "Cần ôn luyện thêm";
         advice = `Bạn đang còn đôi chút bỡ ngỡ với bài toán này. Hãy kéo lên xem lại phần lý thuyết ở Mục 01 và tham khảo Code mẫu ở Mục 02, sau đó bấm "↻ Đặt lại" để thực hành lại nhé!`;
@@ -1404,15 +1404,15 @@ function showGradingResult(
             window.triggerConfetti();
         }
         if (typeof window.showToast === "function") {
-            window.showToast(`🎉 Xuất sắc! Bạn đạt ${result.score}/100 điểm cho bài tập này!`, "success");
+            window.showToast(`Xuất sắc! Bạn đạt ${result.score}/100 điểm cho bài tập này!`, "success");
         }
     } else if (result.score >= 60) {
         if (typeof window.showToast === "function") {
-            window.showToast(`👍 Đạt yêu cầu (${result.score}/100 điểm). Hãy xem gợi ý AI để đạt điểm tuyệt đối nhé!`, "info");
+            window.showToast(`Đạt yêu cầu (${result.score}/100 điểm). Hãy xem gợi ý AI để đạt điểm tuyệt đối nhé!`, "info");
         }
     } else {
         if (typeof window.showToast === "function") {
-            window.showToast(`⚠️ Điểm số: ${result.score}/100. Hãy rà soát lại lỗi cú pháp và gợi ý của AI nhé!`, "warning");
+            window.showToast(`Điểm số: ${result.score}/100. Hãy rà soát lại lỗi cú pháp và gợi ý của AI nhé!`, "warning");
         }
     }
 
@@ -1461,7 +1461,7 @@ function showGradingResult(
             realLink.textContent = "Xem bài viết gốc ↗";
         }
         if (realDesc) {
-            realDesc.innerHTML = `<strong>${escapeHtml(result.vnoiBenchmark.title)}</strong> (✍️ Tác giả: <em>${escapeHtml(result.vnoiBenchmark.author || 'VNOI')}</em>): ${escapeHtml(result.vnoiBenchmark.summary)}`;
+            realDesc.innerHTML = `<strong>${escapeHtml(result.vnoiBenchmark.title)}</strong> (Tác giả: <em>${escapeHtml(result.vnoiBenchmark.author || 'VNOI')}</em>): ${escapeHtml(result.vnoiBenchmark.summary)}`;
         }
     } else if (realBox) {
         realBox.style.display = "none";
@@ -1812,7 +1812,7 @@ function setupLessonNavigation(
 
         } else {
             nextButton.href = "profile.html";
-            nextButton.textContent = "🎓 Nhận Chứng Chỉ Tốt Nghiệp →";
+            nextButton.textContent = "Nhận Chứng Chỉ Tốt Nghiệp →";
         }
     }
 }
@@ -1838,7 +1838,7 @@ function showLessonError(
         <section class="empty-state">
 
             <div class="empty-state-icon">
-                ⚠️
+                
             </div>
 
             <h2>
@@ -2070,7 +2070,7 @@ function setupAiMentorWidget(lesson, user) {
                 if (msgContainer) {
                     msgContainer.innerHTML = `
                         <div class="ai-msg ai-msg-bot">
-                            👋 Cuộc trò chuyện đã được làm mới! Hãy hỏi mình bất kỳ câu hỏi nào về C++, thuật toán hoặc nhờ kiểm tra code nhé!
+                            Cuộc trò chuyện đã được làm mới! Hãy hỏi mình bất kỳ câu hỏi nào về C++, thuật toán hoặc nhờ kiểm tra code nhé!
                         </div>
                     `;
                 }
@@ -2202,14 +2202,14 @@ function setupAiMentorWidget(lesson, user) {
                 const actionsRow = document.createElement("div");
                 actionsRow.className = "ai-msg-actions";
                 actionsRow.innerHTML = `
-                    <button type="button" class="ai-msg-action-btn btn-copy-reply">📋 Sao chép</button>
-                    <button type="button" class="ai-msg-action-btn btn-regenerate-reply">🔄 Tạo lại</button>
+                    <button type="button" class="ai-msg-action-btn btn-copy-reply">Sao chép</button>
+                    <button type="button" class="ai-msg-action-btn btn-regenerate-reply">Tạo lại</button>
                 `;
                 actionsRow.querySelector(".btn-copy-reply").addEventListener("click", () => {
                     if (navigator.clipboard) {
                         navigator.clipboard.writeText(text).then(() => {
                             actionsRow.querySelector(".btn-copy-reply").textContent = "✓ Đã chép!";
-                            setTimeout(() => { actionsRow.querySelector(".btn-copy-reply").textContent = "📋 Sao chép"; }, 2000);
+                            setTimeout(() => { actionsRow.querySelector(".btn-copy-reply").textContent = "Sao chép"; }, 2000);
                         });
                     }
                 });
@@ -2243,10 +2243,10 @@ function setupAiMentorWidget(lesson, user) {
                         <span>${langName}</span>
                         <div class="ai-code-actions">
                             <button type="button" class="ai-code-btn btn-copy-code" data-code="${encodeURIComponent(rawClean)}">
-                                📋 Sao chép
+                                Sao chép
                             </button>
                             <button type="button" class="ai-code-btn btn-apply-editor" data-code="${encodeURIComponent(rawClean)}">
-                                💻 Vào Editor
+                                Vào Editor
                             </button>
                         </div>
                     </div>
@@ -2317,7 +2317,7 @@ function setupAiMentorWidget(lesson, user) {
                     editor.dispatchEvent(new Event("input"));
                     btn.innerHTML = "✓ Đã đưa vào Editor!";
                     setTimeout(() => {
-                        btn.innerHTML = "💻 Vào Editor";
+                        btn.innerHTML = "Vào Editor";
                     }, 2000);
                     editor.scrollIntoView({ behavior: "smooth", block: "center" });
                 }
@@ -2336,7 +2336,7 @@ function setupAiMentorWidget(lesson, user) {
             chatHistory.push({ role: "user", content: userMsg });
         }
 
-        const typingElem = appendMessage("🤖 *AI đang suy nghĩ và phân tích...*", false, false);
+        const typingElem = appendMessage("*AI đang suy nghĩ và phân tích...*", false, false);
 
         const editorElem = document.getElementById("codeEditor");
         const currentCode = (isCodeAttached || userMsg.toLowerCase().includes("code") || userMsg.toLowerCase().includes("lỗi")) && editorElem ? editorElem.value : "";
@@ -2351,11 +2351,11 @@ function setupAiMentorWidget(lesson, user) {
                 chatHistory.push({ role: "assistant", content: replyText });
             } else {
                 if (typingElem) typingElem.remove();
-                appendMessage("💡 Hãy kiểm tra lại các từ khóa, cú pháp và dòng lệnh in `cout` theo đúng yêu cầu đề bài nhé!", false, true);
+                appendMessage("Hãy kiểm tra lại các từ khóa, cú pháp và dòng lệnh in `cout` theo đúng yêu cầu đề bài nhé!", false, true);
             }
         } catch (err) {
             if (typingElem) typingElem.remove();
-            appendMessage(`⚠️ Không thể kết nối với AI Trợ giảng: ${err.message || "Lỗi mạng"}`, false, false);
+            appendMessage(`Không thể kết nối với AI Trợ giảng: ${err.message || "Lỗi mạng"}`, false, false);
         }
     }
 

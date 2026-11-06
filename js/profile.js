@@ -38,7 +38,7 @@ const PRESET_AVATARS = [
     {
         id: "preset-astronaut",
         name: "Phi hành gia",
-        icon: "🚀",
+        icon: "",
         svg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="50" fill="%231e1b4b"/><circle cx="50" cy="44" r="25" fill="%23e0e7ff" stroke="%23818cf8" stroke-width="2"/><rect x="33" y="35" width="34" height="20" rx="10" fill="%234338ca" stroke="%23c084fc" stroke-width="2"/><ellipse cx="44" cy="41" rx="4" ry="2" fill="%23a5b4fc" opacity="0.6"/><path d="M 20 95 Q 50 72 80 95 Z" fill="%23c7d2fe"/><circle cx="28" cy="22" r="1.5" fill="%23ffffff"/><circle cx="76" cy="20" r="1" fill="%23ffffff"/><circle cx="72" cy="74" r="1.5" fill="%23ffffff"/></svg>`
     }
 ];
@@ -341,28 +341,28 @@ function renderProfile(user) {
 function updateContextAwareGreeting(user) {
     const hour = new Date().getHours();
     let period = "Chào buổi sáng";
-    let icon = "🌅";
+    let icon = "";
     let sub = "Khởi đầu ngày mới với những bài tập thuật toán C++ đỉnh cao nhé!";
 
     if (hour >= 5 && hour < 11) {
         period = "Chào buổi sáng";
-        icon = "🌅";
+        icon = "";
         sub = "Khởi đầu ngày mới với những bài tập thuật toán C++ đỉnh cao nhé!";
     } else if (hour >= 11 && hour < 13) {
         period = "Chào buổi trưa";
-        icon = "☀️";
+        icon = "";
         sub = "Nghỉ ngơi và nạp năng lượng để tiếp tục hành trình bứt phá C++ bạn nhé!";
     } else if (hour >= 13 && hour < 18) {
         period = "Chào buổi chiều";
-        icon = "🌇";
+        icon = "";
         sub = "Buổi chiều tập trung cao độ để nâng cao điểm số và thứ hạng CodeLearn C++ nào!";
     } else if (hour >= 18 && hour < 22) {
         period = "Chào buổi tối";
-        icon = "🌆";
+        icon = "";
         sub = "Thời điểm vàng để ôn luyện kiến thức và thực hành code C++ chuyên sâu!";
     } else {
         period = "Chào đêm khuya";
-        icon = "🌙";
+        icon = "";
         sub = "Cú đêm chăm chỉ! Hãy nhớ nghỉ ngơi điều độ để giữ gìn sức khỏe nhé!";
     }
 
@@ -715,7 +715,7 @@ const PROFILE_CHAPTERS_STRUCTURE = [
         rangeText: "Bài 1, 2, 3, 4",
         lessonOrders: [1, 2, 3, 4],
         accent: "indigo",
-        icon: "🚀"
+        icon: ""
     },
     {
         chapterId: 2,
@@ -724,7 +724,7 @@ const PROFILE_CHAPTERS_STRUCTURE = [
         rangeText: "Bài 5, 6",
         lessonOrders: [5, 6],
         accent: "cyan",
-        icon: "⚡"
+        icon: ""
     },
     {
         chapterId: 3,
@@ -733,7 +733,7 @@ const PROFILE_CHAPTERS_STRUCTURE = [
         rangeText: "Bài 7, 8, 9",
         lessonOrders: [7, 8, 9],
         accent: "emerald",
-        icon: "🔀"
+        icon: ""
     },
     {
         chapterId: 4,
@@ -742,7 +742,7 @@ const PROFILE_CHAPTERS_STRUCTURE = [
         rangeText: "Bài 10, 11",
         lessonOrders: [10, 11],
         accent: "amber",
-        icon: "🔄"
+        icon: ""
     },
     {
         chapterId: 5,
@@ -751,7 +751,7 @@ const PROFILE_CHAPTERS_STRUCTURE = [
         rangeText: "Bài 12, 13, 14, 15",
         lessonOrders: [12, 13, 14, 15],
         accent: "violet",
-        icon: "🧩"
+        icon: ""
     },
     {
         chapterId: 6,
@@ -760,7 +760,7 @@ const PROFILE_CHAPTERS_STRUCTURE = [
         rangeText: "Bài 16, 17",
         lessonOrders: [16, 17],
         accent: "rose",
-        icon: "🎯"
+        icon: ""
     },
     {
         chapterId: 7,
@@ -769,7 +769,7 @@ const PROFILE_CHAPTERS_STRUCTURE = [
         rangeText: "Bài 18, 19, 20",
         lessonOrders: [18, 19, 20],
         accent: "fuchsia",
-        icon: "🏆"
+        icon: ""
     }
 ];
 
@@ -855,7 +855,7 @@ function renderProfileChapterBreakdown(user) {
                 </div>
                 <div class="p-chap-footer">
                     <span class="p-chap-status-text">
-                        ${doneInChap === totalInChap ? '🌟 Đã hoàn thành chương' : (doneInChap > 0 ? '⚡ Đang học dở' : '🔓 Sẵn sàng học')}
+                        ${doneInChap === totalInChap ? 'Đã hoàn thành chương' : (doneInChap > 0 ? 'Đang học dở' : 'Sẵn sàng học')}
                     </span>
                     <a href="${nextUrl}" class="p-chap-action-btn">
                         ${doneInChap === totalInChap ? 'Ôn tập →' : (doneInChap > 0 ? `Học tiếp Bài ${nextTarget.order} →` : `Học Bài ${chap.lessonOrders[0]} →`)}
@@ -901,7 +901,7 @@ function setupProfileChapterToggles() {
             btnToggleSection.classList.toggle("is-collapsed-state", isHidden);
         }
         if (toggleIcon) {
-            toggleIcon.textContent = isHidden ? "🔽" : "🔼";
+            toggleIcon.textContent = isHidden ? "▼" : "▲";
         }
         if (toggleText) {
             toggleText.textContent = isHidden ? "Hiện tất cả các chương" : "Ẩn tất cả các chương";
@@ -995,7 +995,7 @@ async function renderAchievements(user) {
     const container = document.getElementById("achievementsList");
     if (!container) return;
 
-    const badgeIcons = ["🚀", "⚡", "🔥", "🎯", "💎", "👑"];
+    const badgeIcons = ["", "", "", "", "", ""];
 
     // Check if backend achievements are available
     if (window.CodeLearnApi && CodeLearnApi.achievements) {
@@ -1008,7 +1008,7 @@ async function renderAchievements(user) {
                         <div class="achievement-info">
                             <strong>${escapeHtml(ach.title)}</strong>
                             <p>${escapeHtml(ach.description)}</p>
-                            <small>${ach.unlocked ? '✨ Đã mở khóa' : '🔒 Chưa mở khóa'}</small>
+                            <small>${ach.unlocked ? 'Đã mở khóa' : 'Chưa mở khóa'}</small>
                         </div>
                     </div>
                 `).join("");
@@ -1032,42 +1032,42 @@ async function renderAchievements(user) {
     const achievements = [
         {
             id: "first-lesson",
-            icon: "🚀",
+            icon: "",
             title: "Bắt đầu hành trình",
             description: "Hoàn thành bài học C++ đầu tiên (Chương 1).",
             unlocked: completed >= 1
         },
         {
             id: "three-lessons",
-            icon: "⚡",
+            icon: "",
             title: "Chinh phục Chương 1",
             description: "Hoàn thành 4 bài học nền tảng đầu tiên.",
             unlocked: completed >= 4
         },
         {
             id: "five-lessons",
-            icon: "🔥",
+            icon: "",
             title: "Chăm chỉ rèn luyện",
             description: "Hoàn thành ít nhất 6 bài học C++.",
             unlocked: completed >= 6
         },
         {
             id: "high-score",
-            icon: "🎯",
+            icon: "",
             title: "Thiện xạ C++",
             description: "Đạt từ 90 điểm trở lên trong một bài tập.",
             unlocked: hasHighScore
         },
         {
             id: "half-way",
-            icon: "💎",
+            icon: "",
             title: "Vượt qua nửa chặng",
             description: `Hoàn thành ít nhất ${Math.ceil(lessons.length / 2)}/20 bài học.`,
             unlocked: completed >= Math.ceil(lessons.length / 2) && lessons.length > 0
         },
         {
             id: "all-lessons",
-            icon: "👑",
+            icon: "",
             title: "C++ Master Tinh anh",
             description: "Hoàn thành xuất sắc toàn bộ 7 Chương (20 bài học).",
             unlocked: completed >= lessons.length && lessons.length > 0
@@ -1080,7 +1080,7 @@ async function renderAchievements(user) {
             <div class="achievement-info">
                 <strong>${escapeHtml(ach.title)}</strong>
                 <p>${escapeHtml(ach.description)}</p>
-                <small>${ach.unlocked ? '✨ Đã mở khóa' : '🔒 Chưa mở khóa'}</small>
+                <small>${ach.unlocked ? 'Đã mở khóa' : 'Chưa mở khóa'}</small>
             </div>
         </div>
     `).join("");
@@ -1378,7 +1378,7 @@ function updateCertificatePromoStatus(user, completed, total) {
         }
         if (badge) {
             badge.className = "cert-status-badge badge-unlocked";
-            badge.innerHTML = "🎓 ĐÃ HOÀN THÀNH 100% • SẴN SÀNG NHẬN CHỨNG CHỈ";
+            badge.innerHTML = "ĐÃ HOÀN THÀNH 100% • SẴN SÀNG NHẬN CHỨNG CHỈ";
         }
         if (promoTitle) {
             promoTitle.textContent = "Chứng chỉ Tốt nghiệp C++ Master Danh Giá";
@@ -1392,7 +1392,7 @@ function updateCertificatePromoStatus(user, completed, total) {
             btn.style.color = "#ffffff";
             btn.style.fontWeight = "800";
             btn.style.boxShadow = "0 4px 18px rgba(212, 175, 55, 0.45)";
-            btn.innerHTML = "🎓 Nhận &amp; Xem Chứng Chỉ Tốt Nghiệp";
+            btn.innerHTML = "Nhận &amp; Xem Chứng Chỉ Tốt Nghiệp";
         }
     } else {
         if (promoCard) {
@@ -1401,7 +1401,7 @@ function updateCertificatePromoStatus(user, completed, total) {
         }
         if (badge) {
             badge.className = "cert-status-badge badge-locked";
-            badge.innerHTML = `🔒 CHƯA ĐỦ ĐIỀU KIỆN (${completed}/${total} BÀI HỌC)`;
+            badge.innerHTML = `CHƯA ĐỦ ĐIỀU KIỆN (${completed}/${total} BÀI HỌC)`;
         }
         if (promoTitle) {
             promoTitle.textContent = "Chứng chỉ Tốt nghiệp C++ Master";
@@ -1414,7 +1414,7 @@ function updateCertificatePromoStatus(user, completed, total) {
             btn.style.background = "";
             btn.style.color = "";
             btn.style.boxShadow = "";
-            btn.innerHTML = `🔒 Xem Điều Kiện (Còn ${total - completed} bài)`;
+            btn.innerHTML = `Xem Điều Kiện (Còn ${total - completed} bài)`;
         }
     }
 }
@@ -1757,7 +1757,7 @@ function initProfileHeroEffects(user) {
 
     // Streak
     const streakData = getOrUpdateLearningStreak(user);
-    if (streakVal) streakVal.textContent = `🔥 ${streakData.streak || 1} Ngày`;
+    if (streakVal) streakVal.textContent = `${streakData.streak || 1} Ngày`;
 
     // Cấp bậc
     if (rankEl) {

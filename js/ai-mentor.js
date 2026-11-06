@@ -26,7 +26,7 @@
         widget.innerHTML = `
             <!-- Floating toggle button -->
             <button type="button" id="btnToggleAiMentor" class="ai-mentor-toggle-btn" title="Hỏi Trợ lý AI C++ (ChatGPT)" aria-label="Mở Trợ lý AI">
-                <span class="ai-icon-bubble">🤖</span>
+                <span class="ai-icon-bubble">AI</span>
                 <span class="ai-toggle-text">AI Trợ lý</span>
                 <span class="ai-pulse-dot"></span>
             </button>
@@ -35,7 +35,7 @@
             <aside id="aiMentorPanel" class="ai-mentor-panel" hidden>
                 <div class="ai-mentor-header">
                     <div class="ai-mentor-brand">
-                        <div class="ai-avatar-circle">🤖</div>
+                        <div class="ai-avatar-circle">AI</div>
                         <div>
                             <div style="display: flex; align-items: center; gap: 6px;">
                                 <strong>CodeLearn AI</strong>
@@ -53,17 +53,17 @@
 
                 <!-- Persona / Role Selector -->
                 <div class="ai-persona-bar">
-                    <span style="color: var(--text-muted); font-size: 0.73rem;">🎭 Vai trò AI:</span>
+                    <span style="color: var(--text-muted); font-size: 0.73rem;">Vai trò AI:</span>
                     <select id="aiPersonaSelect" class="ai-persona-select" title="Chọn phong cách phản hồi của AI">
-                        <option value="tutor" selected>🧑‍🏫 Gia sư kiên nhẫn</option>
-                        <option value="interviewer">💼 Phỏng vấn FAANG</option>
-                        <option value="professor">🎓 Giáo sư Đại học</option>
+                        <option value="tutor" selected>Gia sư kiên nhẫn</option>
+                        <option value="interviewer">Phỏng vấn FAANG</option>
+                        <option value="professor">Giáo sư Đại học</option>
                     </select>
                 </div>
 
                 <div class="ai-mentor-body" id="aiMentorMessages">
                     <div class="ai-msg ai-msg-bot">
-                        👋 Chào bạn! Mình là <strong>CodeLearn AI (ChatGPT C++ Tutor)</strong>.<br>
+                        Chào bạn! Mình là <strong>CodeLearn AI (ChatGPT C++ Tutor)</strong>.<br>
                         Mình có thể trả lời mọi câu hỏi về C++, cấu trúc dữ liệu, thuật toán, phân tích code và gợi ý cách học hiệu quả như ChatGPT. Hãy hỏi mình bất kỳ điều gì nhé!
                     </div>
                 </div>
@@ -71,10 +71,10 @@
                 <!-- Quick prompt chips -->
                 <div class="ai-quick-chips">
                     <button type="button" class="ai-chip" data-prompt="Giải thích lập trình hướng đối tượng OOP trong C++ là gì?">🏛️ Giải thích OOP</button>
-                    <button type="button" class="ai-chip" data-prompt="Con trỏ thông minh unique_ptr và shared_ptr khác nhau thế nào?">🧠 Con trỏ thông minh</button>
+                    <button type="button" class="ai-chip" data-prompt="Con trỏ thông minh unique_ptr và shared_ptr khác nhau thế nào?">Con trỏ thông minh</button>
                     <button type="button" class="ai-chip" data-prompt="Sự khác nhau giữa struct và class trong C++?">⚖️ Struct vs Class</button>
                     <button type="button" class="ai-chip" data-prompt="Giải thích thuật toán sắp xếp nhanh QuickSort">⚡ Thuật toán QuickSort</button>
-                    <button type="button" class="ai-chip" data-prompt="Viết code C++ kiểm tra số nguyên tố tối ưu">📝 Code số nguyên tố</button>
+                    <button type="button" class="ai-chip" data-prompt="Viết code C++ kiểm tra số nguyên tố tối ưu">Code số nguyên tố</button>
                     <button type="button" class="ai-chip" data-prompt="Lỗi Segmentation fault là gì và cách phòng ngừa?">💥 Sửa lỗi Segfault</button>
                 </div>
 
@@ -91,7 +91,7 @@
             <div id="aiSettingsModal" class="ai-settings-modal" hidden>
                 <div class="ai-settings-dialog">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                        <h3 style="margin: 0; font-size: 1.15rem; font-weight: 700;">⚙️ Cấu hình Bộ não AI</h3>
+                        <h3 style="margin: 0; font-size: 1.15rem; font-weight: 700;">Cấu hình Bộ não AI</h3>
                         <button type="button" id="btnCloseAiSettings" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-muted);">✕</button>
                     </div>
                     <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px; line-height: 1.5;">
@@ -200,7 +200,7 @@
                     if (msgContainer) {
                         msgContainer.innerHTML = `
                             <div class="ai-msg ai-msg-bot">
-                                👋 Cuộc trò chuyện đã được làm mới! Hãy hỏi mình bất kỳ câu hỏi nào về C++ hoặc thuật toán nhé!
+                                Cuộc trò chuyện đã được làm mới! Hãy hỏi mình bất kỳ câu hỏi nào về C++ hoặc thuật toán nhé!
                             </div>
                         `;
                     }
@@ -318,7 +318,7 @@
                             <span>${langName}</span>
                             <div class="ai-code-actions">
                                 <button type="button" class="ai-code-btn btn-copy-code" data-code="${encodeURIComponent(rawClean)}">
-                                    📋 Sao chép
+                                    Sao chép
                                 </button>
                             </div>
                         </div>
@@ -391,14 +391,14 @@
                     const actionsRow = document.createElement("div");
                     actionsRow.className = "ai-msg-actions";
                     actionsRow.innerHTML = `
-                        <button type="button" class="ai-msg-action-btn btn-copy-reply">📋 Sao chép</button>
-                        <button type="button" class="ai-msg-action-btn btn-regenerate-reply">🔄 Tạo lại</button>
+                        <button type="button" class="ai-msg-action-btn btn-copy-reply">Sao chép</button>
+                        <button type="button" class="ai-msg-action-btn btn-regenerate-reply">Tạo lại</button>
                     `;
                     actionsRow.querySelector(".btn-copy-reply").addEventListener("click", () => {
                         if (navigator.clipboard) {
                             navigator.clipboard.writeText(text).then(() => {
                                 actionsRow.querySelector(".btn-copy-reply").textContent = "✓ Đã chép!";
-                                setTimeout(() => { actionsRow.querySelector(".btn-copy-reply").textContent = "📋 Sao chép"; }, 2000);
+                                setTimeout(() => { actionsRow.querySelector(".btn-copy-reply").textContent = "Sao chép"; }, 2000);
                             });
                         }
                     });
@@ -429,7 +429,7 @@
                 chatHistory.push({ role: "user", content: userMsg });
             }
 
-            const typingElem = appendMessage("🤖 *AI đang suy nghĩ và tổng hợp kiến thức...*", false, false);
+            const typingElem = appendMessage("*AI đang suy nghĩ và tổng hợp kiến thức...*", false, false);
             const persona = personaSelect ? personaSelect.value : "tutor";
 
             try {
@@ -441,11 +441,11 @@
                     chatHistory.push({ role: "assistant", content: replyText });
                 } else {
                     if (typingElem) typingElem.remove();
-                    appendMessage("💡 Hãy đặt câu hỏi về các chuyên đề C++ hoặc cấu trúc dữ liệu nhé!", false, true);
+                    appendMessage("Hãy đặt câu hỏi về các chuyên đề C++ hoặc cấu trúc dữ liệu nhé!", false, true);
                 }
             } catch (err) {
                 if (typingElem) typingElem.remove();
-                appendMessage(`⚠️ Không thể kết nối với AI Trợ lý: ${err.message || "Lỗi mạng"}`, false, false);
+                appendMessage(`Không thể kết nối với AI Trợ lý: ${err.message || "Lỗi mạng"}`, false, false);
             }
         }
 

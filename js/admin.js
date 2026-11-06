@@ -670,7 +670,7 @@ function renderTestCasesList() {
                 <div style="flex:1; min-width:0;">
                     <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
                         <span style="font-weight:700; font-size:12px; color:var(--text-primary);">Test Case #${idx + 1}</span>
-                        ${isHidden ? '<span class="status-tag warning" style="font-size:10px; padding:2px 6px;">🔒 Ẩn (Chống gian lận)</span>' : '<span class="status-tag success" style="font-size:10px; padding:2px 6px;">🟢 Công khai</span>'}
+                        ${isHidden ? '<span class="status-tag warning" style="font-size:10px; padding:2px 6px;">Ẩn (Chống gian lận)</span>' : '<span class="status-tag success" style="font-size:10px; padding:2px 6px;">Công khai</span>'}
                         <span style="font-size:11px; color:#10b981; font-weight:600;">+${tc.weight_points || 50} điểm</span>
                     </div>
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; font-size:11px; font-family:monospace; margin-top:4px;">
@@ -689,7 +689,7 @@ function renderTestCasesList() {
                         Sửa
                     </button>
                     <button type="button" class="btn btn-danger btn-sm" onclick="deleteTestCaseItem('${tc.id}')" style="padding:4px 8px; font-size:11px;" title="Xóa Test Case">
-                        🗑️
+                        Xóa
                     </button>
                 </div>
             </div>
@@ -711,7 +711,7 @@ function resetTestCaseForm() {
     if (outputData) outputData.value = "";
     if (isHidden) isHidden.checked = false;
     if (weightPoints) weightPoints.value = "50";
-    if (boxTitle) boxTitle.textContent = "➕ Thêm Test Case mới cho bài tập";
+    if (boxTitle) boxTitle.textContent = "Thêm Test Case mới cho bài tập";
     if (cancelBtn) cancelBtn.hidden = true;
 }
 
@@ -726,7 +726,7 @@ function editTestCaseItem(tcId) {
     if (isHidden) isHidden.checked = (tc.is_hidden === 1);
     setInputValue("tcWeightPoints", tc.weight_points || 50);
 
-    setText("tcBoxTitle", `✏️ Chỉnh sửa Test Case (${tc.id})`);
+    setText("tcBoxTitle", `Chỉnh sửa Test Case (${tc.id})`);
     const cancelBtn = document.getElementById("btnCancelTestCase");
     if (cancelBtn) cancelBtn.hidden = false;
 
@@ -950,10 +950,10 @@ function renderUsersTable(users) {
                         </button>
                         ${!isMe ? `
                             <button type="button" class="btn btn-sm btn-toggle-status" data-id="${escapeHtml(user.id)}" data-status="${escapeHtml(user.status || 'active')}" data-name="${escapeHtml(user.username)}" style="padding: 5px 8px; font-size: 0.78rem; background: ${isSuspended ? 'rgba(16, 185, 129, 0.12); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.25);' : 'rgba(245, 158, 11, 0.12); color: #d97706; border: 1px solid rgba(245, 158, 11, 0.25);'}" title="${isSuspended ? 'Mở khóa tài khoản' : 'Tạm khóa tài khoản'}">
-                                ${isSuspended ? '🔓 Mở' : '🔒 Khóa'}
+                                ${isSuspended ? 'Mở' : 'Khóa'}
                             </button>
                             <button type="button" class="btn btn-sm btn-reset-password" data-id="${escapeHtml(user.id)}" data-name="${escapeHtml(user.username)}" style="padding: 5px 8px; font-size: 0.78rem; background: rgba(99, 102, 241, 0.12); color: #6366f1; border: 1px solid rgba(99, 102, 241, 0.25);" title="Cấp lại mật khẩu">
-                                🔑 Đổi MK
+                                Đổi MK
                             </button>
                             <button type="button" class="btn btn-sm btn-delete-user" data-id="${escapeHtml(user.id)}" data-name="${escapeHtml(user.username)}" style="padding: 5px 8px; font-size: 0.78rem; background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.25);" title="Xóa tài khoản">
                                 ✕
@@ -1130,7 +1130,7 @@ async function loadAdminSubmissions() {
                     </td>
                     <td>
                         <strong style="color: ${scoreColor}; font-size: 1rem;">${finalScore}/100</strong>
-                        ${isOverridden ? '<div style="font-size: 0.72rem; color: #10b981; font-weight: 700;">✍️ GV đã chấm</div>' : '<div style="font-size: 0.72rem; color: var(--text-secondary);">🤖 AI chấm</div>'}
+                        ${isOverridden ? '<div style="font-size: 0.72rem; color: #10b981; font-weight: 700;">GV đã chấm</div>' : '<div style="font-size: 0.72rem; color: var(--text-secondary);">AI chấm</div>'}
                     </td>
                     <td>${statusBadge}</td>
                     <td style="font-size: 0.82rem;">${s.executionTimeMs ? `${s.executionTimeMs}ms` : '0ms'}</td>
@@ -1267,13 +1267,13 @@ async function loadDatabaseBackups() {
             return `
                 <tr>
                     <td>
-                        <strong style="color:var(--text-primary); font-family:monospace; font-size:12px;">📁 ${escapeHtml(b.filename)}</strong>
+                        <strong style="color:var(--text-primary); font-family:monospace; font-size:12px;">${escapeHtml(b.filename)}</strong>
                     </td>
                     <td style="color:var(--text-secondary); font-size:12px;">${b.size_kb} KB</td>
                     <td style="color:var(--text-secondary); font-size:12px;">${timeStr}</td>
                     <td style="text-align:center; white-space:nowrap;">
                         <button type="button" class="btn btn-sm btn-primary" onclick="restoreDatabaseBackup('${escapeHtml(b.filename)}')" title="Phục hồi CSDL về thời điểm này" style="padding:4px 10px; font-size:12px; display:inline-flex; align-items:center; gap:4px;">
-                            <span>↺</span> Phục hồi (Restore)
+                            Phục hồi (Restore)
                         </button>
                     </td>
                 </tr>
@@ -1465,7 +1465,7 @@ function setupDatabaseAndKnowledgeSection() {
                 showFormMessage("aiKnowledgeMessage", `Lỗi đồng bộ tri thức: ${err.message}`, "error");
             } finally {
                 btnSyncAi.disabled = false;
-                btnSyncAi.textContent = "⚡ Đồng bộ tri thức vào AI";
+                btnSyncAi.textContent = "Đồng bộ tri thức vào AI";
             }
         });
     }
@@ -1575,7 +1575,7 @@ function showSubmissionDetailModal(item) {
         <!-- Teacher Grading & Feedback Form -->
         <div style="margin-top: 18px; padding: 16px; border-radius: 12px; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.3);">
             <h4 style="margin: 0 0 10px 0; color: #10b981; display: flex; align-items: center; gap: 8px;">
-                <span>✍️</span> Can thiệp Chấm điểm &amp; Lời phê của Giảng viên (Teacher Override)
+                Can thiệp Chấm điểm &amp; Lời phê của Giảng viên (Teacher Override)
             </h4>
             <div style="display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap;">
                 <div style="flex: 1; min-width: 140px;">
@@ -1601,7 +1601,7 @@ function showSubmissionDetailModal(item) {
             ` : ''}
             <div style="display: flex; gap: 8px;">
                 <button type="button" id="btnSaveTeacherGrade" class="btn btn-primary" style="padding: 7px 14px; font-size: 0.85rem;">
-                    💾 Lưu điểm &amp; Gửi lời phê
+                    Lưu điểm &amp; Gửi lời phê
                 </button>
             </div>
         </div>
@@ -1642,7 +1642,7 @@ function showSubmissionDetailModal(item) {
                 alert(`Lỗi khi lưu điểm: ${err.message}`);
             } finally {
                 btnSaveGrade.disabled = false;
-                btnSaveGrade.textContent = "💾 Lưu điểm & Gửi lời phê";
+                btnSaveGrade.textContent = "Lưu điểm & Gửi lời phê";
             }
         });
     }
@@ -1693,7 +1693,7 @@ function setupCommunitySection() {
                 alert("Đã xảy ra lỗi khi tạo thông báo: " + err.message);
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = `<span>🚀</span> Phát thông báo ngay`;
+                submitBtn.innerHTML = `Phát thông báo ngay`;
             }
         });
     }
@@ -1727,10 +1727,10 @@ async function loadAdminAnnouncements() {
         }
 
         const typeLabels = {
-            info: { text: "Thông tin", class: "status-tag info", icon: "ℹ️" },
-            warning: { text: "Lưu ý", class: "status-tag warning", icon: "⚠️" },
-            success: { text: "Sự kiện", class: "status-tag success", icon: "🎉" },
-            urgent: { text: "Khẩn cấp", class: "status-tag error", icon: "🚨" }
+            info: { text: "Thông tin", class: "status-tag info", icon: "" },
+            warning: { text: "Lưu ý", class: "status-tag warning", icon: "" },
+            success: { text: "Sự kiện", class: "status-tag success", icon: "" },
+            urgent: { text: "Khẩn cấp", class: "status-tag error", icon: "" }
         };
 
         tbody.innerHTML = announcements.map(ann => {
@@ -1744,13 +1744,13 @@ async function loadAdminAnnouncements() {
                     <td style="color:var(--text-secondary); max-width:280px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${escapeHtml(ann.content)}">${escapeHtml(ann.content)}</td>
                     <td>
                         <span class="${meta.class}" style="font-size:12px; padding:3px 8px; border-radius:6px;">
-                            ${meta.icon} ${meta.text}
+                            ${meta.text}
                         </span>
                     </td>
                     <td style="font-size:12px; color:var(--text-secondary);">${timeStr}</td>
                     <td>
                         <span class="status-tag ${isActive ? "success" : "warning"}" style="font-size:12px;">
-                            ${isActive ? "🟢 Đang phát" : "⚪ Đã ẩn"}
+                            ${isActive ? "Đang phát" : "Đã ẩn"}
                         </span>
                     </td>
                     <td style="text-align:center; white-space:nowrap;">
@@ -1758,7 +1758,7 @@ async function loadAdminAnnouncements() {
                             ${isActive ? "Tắt" : "Bật"}
                         </button>
                         <button type="button" class="btn btn-sm btn-danger" onclick="deleteAnnouncement('${ann.id}')" title="Xóa thông báo" style="margin-left:4px;">
-                            🗑️
+                            Xóa
                         </button>
                     </td>
                 </tr>
@@ -1835,7 +1835,7 @@ function renderCommentsTable() {
             <tr style="${isHidden ? 'opacity: 0.65; background: rgba(239, 68, 68, 0.05);' : ''}">
                 <td>
                     <div style="display:flex; align-items:center; gap:8px;">
-                        <span style="font-size:16px;">👤</span>
+                        
                         <div>
                             <div style="font-weight:600; font-size:13px; color:var(--text-primary);">${escapeHtml(authorName)} ${roleLabel}</div>
                             <div style="font-size:11px; color:var(--text-secondary);">@${escapeHtml(c.username || "")}</div>
@@ -1847,22 +1847,22 @@ function renderCommentsTable() {
                     <div style="font-size:11px; color:var(--text-secondary);">${escapeHtml(c.lesson_id)}</div>
                 </td>
                 <td style="color:var(--text-primary); font-size:13px; max-width:320px; word-break:break-word;">
-                    ${isPinned ? '<span style="color:#f59e0b; font-weight:700; margin-right:4px;">📌 [Đã Ghim]</span>' : ''}
+                    ${isPinned ? '<span style="color:#f59e0b; font-weight:700; margin-right:4px;">[Đã Ghim]</span>' : ''}
                     ${escapeHtml(c.content)}
                 </td>
                 <td style="font-size:12px; color:var(--text-secondary);">${timeStr}</td>
                 <td>
-                    ${isHidden ? '<span class="status-tag error" style="font-size:12px;">🚫 Đã ẩn</span>' : '<span class="status-tag success" style="font-size:12px;">✅ Hiển thị</span>'}
+                    ${isHidden ? '<span class="status-tag error" style="font-size:12px;">Đã ẩn</span>' : '<span class="status-tag success" style="font-size:12px;">Hiển thị</span>'}
                 </td>
                 <td style="text-align:center; white-space:nowrap;">
                     <button type="button" class="btn btn-sm ${isPinned ? 'btn-secondary' : 'btn-outline'}" onclick="toggleCommentPin('${c.id}', ${isPinned ? 0 : 1})" title="${isPinned ? 'Bỏ ghim' : 'Ghim bình luận lên đầu'}" style="margin-right:4px;">
-                        ${isPinned ? '📍 Bỏ ghim' : '📌 Ghim'}
+                        ${isPinned ? 'Bỏ ghim' : 'Ghim'}
                     </button>
                     <button type="button" class="btn btn-sm ${isHidden ? 'btn-primary' : 'btn-secondary'}" onclick="toggleCommentHidden('${c.id}', '${isHidden ? 'approved' : 'hidden'}')" title="${isHidden ? 'Hiện lại bình luận' : 'Ẩn bình luận khỏi học viên'}" style="margin-right:4px;">
-                        ${isHidden ? '👁️ Hiện' : '🚫 Ẩn'}
+                        ${isHidden ? 'Hiện' : 'Ẩn'}
                     </button>
                     <button type="button" class="btn btn-sm btn-danger" onclick="deleteComment('${c.id}')" title="Xóa vĩnh viễn">
-                        🗑️
+                        Xóa
                     </button>
                 </td>
             </tr>

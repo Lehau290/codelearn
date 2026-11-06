@@ -382,7 +382,7 @@ function setupCurriculumOverviewToggle() {
             btnToggle.classList.toggle("is-collapsed-state", isHidden);
         }
         if (iconEl) {
-            iconEl.textContent = isHidden ? "🔽" : "🔼";
+            iconEl.textContent = isHidden ? "▼" : "▲";
         }
         if (textEl) {
             textEl.textContent = isHidden ? "Hiện tất cả các chương" : "Ẩn tất cả các chương";
@@ -424,7 +424,7 @@ const CURRICULUM_CHAPTERS_META = [
         summary: "Làm quen ngôn ngữ C++, biến, kiểu dữ liệu, nhập xuất cin/cout và các toán tử cơ bản",
         orders: [1, 2, 3, 4],
         accent: "indigo",
-        icon: "🚀"
+        icon: ""
     },
     {
         key: "Chương 2",
@@ -433,7 +433,7 @@ const CURRICULUM_CHAPTERS_META = [
         summary: "Điều khiển luồng thực thi chương trình với cấu trúc điều kiện if - else và switch - case",
         orders: [5, 6],
         accent: "cyan",
-        icon: "🔀"
+        icon: ""
     },
     {
         key: "Chương 3",
@@ -442,7 +442,7 @@ const CURRICULUM_CHAPTERS_META = [
         summary: "Tự động hóa các thao tác lặp với vòng lặp for, while, do-while và lệnh break, continue",
         orders: [7, 8, 9],
         accent: "emerald",
-        icon: "🔁"
+        icon: ""
     },
     {
         key: "Chương 4",
@@ -451,7 +451,7 @@ const CURRICULUM_CHAPTERS_META = [
         summary: "Chia nhỏ chương trình thành hàm (Functions), truyền tham số, nạp chồng hàm và đệ quy",
         orders: [10, 11],
         accent: "amber",
-        icon: "🧩"
+        icon: ""
     },
     {
         key: "Chương 5",
@@ -460,7 +460,7 @@ const CURRICULUM_CHAPTERS_META = [
         summary: "Mảng một chiều, các thuật toán mảng cơ bản, chuỗi ký tự std::string và mảng hai chiều (Ma trận)",
         orders: [12, 13, 14, 15],
         accent: "violet",
-        icon: "📦"
+        icon: ""
     },
     {
         key: "Chương 6",
@@ -469,7 +469,7 @@ const CURRICULUM_CHAPTERS_META = [
         summary: "Làm chủ địa chỉ bộ nhớ, con trỏ (Pointers) và cấp phát bộ nhớ động với new & delete",
         orders: [16, 17],
         accent: "rose",
-        icon: "🎯"
+        icon: ""
     },
     {
         key: "Chương 7",
@@ -478,7 +478,7 @@ const CURRICULUM_CHAPTERS_META = [
         summary: "Kiểu dữ liệu cấu trúc (struct), Lớp (Class) & Đối tượng (Object), Constructor, Destructor và Kế thừa",
         orders: [18, 19, 20],
         accent: "fuchsia",
-        icon: "👑"
+        icon: ""
     }
 ];
 
@@ -723,7 +723,7 @@ function renderLessons(
                 <div class="chapter-group-header">
                     <div class="chapter-group-title-wrap">
                         <div class="chapter-orb-badge">
-                            <span class="orb-icon">${chapMeta.icon}</span>
+                            
                             <span class="orb-label">CHƯƠNG 0${chapIdx + 1}</span>
                         </div>
                         <div class="chapter-title-text">
@@ -768,7 +768,7 @@ function renderLessons(
                 <div class="chapter-group-header">
                     <div class="chapter-group-title-wrap">
                         <div class="chapter-orb-badge">
-                            <span class="orb-icon">✨</span>
+                            
                             <span class="orb-label">MỞ RỘNG</span>
                         </div>
                         <div class="chapter-title-text">
@@ -863,9 +863,9 @@ function createLessonCard(
                 </p>
 
                 <div class="lesson-card-info">
-                    <span class="info-pill">⏱ ${escapeHtml(duration)}</span>
-                    <span class="info-pill">💻 3 Bài tập g++</span>
-                    <span class="info-pill xp-pill">${completed ? '🏆 Đạt ' + (lessonProgress.score || 100) + '/100 điểm' : '✨ +100 XP'}</span>
+                    <span class="info-pill">${escapeHtml(duration)}</span>
+                    <span class="info-pill">3 Bài tập g++</span>
+                    <span class="info-pill xp-pill">${completed ? 'Đạt ' + (lessonProgress.score || 100) + '/100 điểm' : '+100 XP'}</span>
                 </div>
             </div>
 

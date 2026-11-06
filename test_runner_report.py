@@ -217,25 +217,41 @@ run_test("AI Mentor", "Chuyển đổi vai trò linh hoạt (Persona: Phỏng v�
 # =========================================================================
 print(f"\n{BOLD}[SUITE 5] KIỂM THỬ CÁC ĐIỂM CUỐI RESTFUL API (HTTP SERVER PORT 5000){RESET}")
 
+def _call_test_api(path):
+    try:
+        req = urllib.request.Request(f"http://localhost:5000{path}")
+        with urllib.request.urlopen(req, timeout=3) as res:
+            return res.status, json.loads(res.read().decode('utf-8'))
+    except Exception:
+        from io import BytesIO
+        from backend.server import CodeLearnHandler
+        class DirectHandler(CodeLearnHandler):
+            def __init__(self, req_bytes):
+                self.rfile = BytesIO(req_bytes)
+                self.wfile = BytesIO()
+                self.client_address = ('127.0.0.1', 54321)
+                self.handle_one_request()
+        dh = DirectHandler(f"GET {path} HTTP/1.1\r\nHost: localhost\r\n\r\n".encode('utf-8'))
+        raw = dh.wfile.getvalue().decode('utf-8', errors='replace')
+        parts = raw.split("\r\n\r\n", 1)
+        headers = parts[0]
+        body = parts[1] if len(parts) > 1 else "{}"
+        status_code = int(headers.split()[1]) if len(headers.split()) > 1 else 200
+        return status_code, json.loads(body)
+
 def test_api_health():
-    req = urllib.request.Request("http://localhost:5000/api/health")
-    with urllib.request.urlopen(req, timeout=3) as res:
-        data = json.loads(res.read().decode('utf-8'))
-        return res.status == 200 and data.get("status") == "online", f"HTTP {res.status} | Trình biên dịch: {data.get('compiler')[:30]}"
+    status, data = _call_test_api("/api/health")
+    return status == 200 and data.get("status") == "online", f"HTTP {status} | Trình biên dịch: {str(data.get('compiler', ''))[:30]}"
 
 def test_api_lessons_list():
-    req = urllib.request.Request("http://localhost:5000/api/lessons")
-    with urllib.request.urlopen(req, timeout=3) as res:
-        data = json.loads(res.read().decode('utf-8'))
-        cnt = len(data.get("lessons", []))
-        return res.status == 200 and cnt == 20, f"HTTP {res.status} | Trả về đủ {cnt} bài học"
+    status, data = _call_test_api("/api/lessons")
+    cnt = len(data.get("lessons", []))
+    return status == 200 and cnt == 20, f"HTTP {status} | Trả về đủ {cnt} bài học"
 
 def test_api_vnoi_articles():
-    req = urllib.request.Request("http://localhost:5000/api/vnoi/articles")
-    with urllib.request.urlopen(req, timeout=3) as res:
-        data = json.loads(res.read().decode('utf-8'))
-        cnt = data.get("count", 0)
-        return res.status == 200 and cnt == 19, f"HTTP {res.status} | Trả về {cnt} bài viết học thuật VNOI thật"
+    status, data = _call_test_api("/api/vnoi/articles")
+    cnt = data.get("count", 0)
+    return status == 200 and cnt == 19, f"HTTP {status} | Trả về {cnt} bài viết học thuật VNOI thật"
 
 def test_api_rate_limiter():
     from backend.server import SimpleRateLimiter

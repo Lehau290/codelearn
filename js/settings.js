@@ -290,7 +290,7 @@ function handleSaveSettings(user) {
             btnSave.disabled = false;
             btnSave.textContent = "Lưu toàn bộ thay đổi";
         }
-        showSettingsToast("✅ Đã lưu toàn bộ cài đặt thành công!", "success", 2600);
+        showSettingsToast("Đã lưu toàn bộ cài đặt thành công!", "success", 2600);
         if (typeof window.triggerConfetti === "function") {
             window.triggerConfetti();
         }

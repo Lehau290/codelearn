@@ -1,3 +1,4 @@
+
 /**
  * CodeLearn C++ - Client API SDK
  * File: js/api.js
@@ -311,27 +312,6 @@
                 });
             },
 
-            async changeUserStatus(userId, status) {
-                return request(`/admin/users/${encodeURIComponent(userId)}/status`, {
-                    method: "PUT",
-                    body: JSON.stringify({ status })
-                });
-            },
-
-            async resetUserPassword(userId, newPassword = "") {
-                return request(`/admin/users/${encodeURIComponent(userId)}/reset-password`, {
-                    method: "POST",
-                    body: JSON.stringify({ newPassword })
-                });
-            },
-
-            async batchImportUsers(students) {
-                return request("/admin/users/batch-import", {
-                    method: "POST",
-                    body: JSON.stringify({ students })
-                });
-            },
-
             async deleteUser(userId) {
                 return request(`/admin/users/${encodeURIComponent(userId)}`, {
                     method: "DELETE"
@@ -364,40 +344,8 @@
                 });
             },
 
-            async getExerciseTestCases(exerciseId, lessonId = "") {
-                const q = lessonId ? `?lessonId=${encodeURIComponent(lessonId)}` : "";
-                return request(`/admin/exercises/${encodeURIComponent(exerciseId)}/testcases${q}`);
-            },
-
-            async createTestCase(exerciseId, data) {
-                return request(`/admin/exercises/${encodeURIComponent(exerciseId)}/testcases`, {
-                    method: "POST",
-                    body: JSON.stringify(data)
-                });
-            },
-
-            async updateTestCase(testCaseId, data) {
-                return request(`/admin/testcases/${encodeURIComponent(testCaseId)}`, {
-                    method: "PUT",
-                    body: JSON.stringify(data)
-                });
-            },
-
-            async deleteTestCase(testCaseId) {
-                return request(`/admin/testcases/${encodeURIComponent(testCaseId)}`, {
-                    method: "DELETE"
-                });
-            },
-
             async getSubmissions(limit = 50) {
                 return request(`/admin/submissions?limit=${limit}`);
-            },
-
-            async gradeSubmission(submissionId, data) {
-                return request(`/admin/submissions/${encodeURIComponent(submissionId)}/grade`, {
-                    method: "PUT",
-                    body: JSON.stringify(data)
-                });
             },
 
             async getAiChats(limit = 50) {
@@ -410,47 +358,6 @@
 
             async syncAiKnowledge() {
                 return request("/admin/ai-knowledge/sync", { method: "POST" });
-            },
-
-            async getComments() {
-                return request("/admin/comments");
-            },
-
-            async updateCommentStatus(commentId, data) {
-                return request(`/admin/comments/${encodeURIComponent(commentId)}/status`, {
-                    method: "PUT",
-                    body: JSON.stringify(data)
-                });
-            },
-
-            async deleteComment(commentId) {
-                return request(`/admin/comments/${encodeURIComponent(commentId)}`, {
-                    method: "DELETE"
-                });
-            },
-
-            async getAnnouncements() {
-                return request("/admin/announcements");
-            },
-
-            async createAnnouncement(data) {
-                return request("/admin/announcements", {
-                    method: "POST",
-                    body: JSON.stringify(data)
-                });
-            },
-
-            async updateAnnouncement(announcementId, data) {
-                return request(`/admin/announcements/${encodeURIComponent(announcementId)}`, {
-                    method: "PUT",
-                    body: JSON.stringify(data)
-                });
-            },
-
-            async deleteAnnouncement(announcementId) {
-                return request(`/admin/announcements/${encodeURIComponent(announcementId)}`, {
-                    method: "DELETE"
-                });
             },
 
             async createLesson(data) {
@@ -484,21 +391,6 @@
 
                 async export() {
                     return request("/admin/database/export", { method: "POST" });
-                },
-
-                async getBackups() {
-                    return request("/admin/database/backups");
-                },
-
-                async restore(filename) {
-                    return request("/admin/database/restore", {
-                        method: "POST",
-                        body: JSON.stringify({ filename })
-                    });
-                },
-
-                async getAuditLogs() {
-                    return request("/admin/audit-logs");
                 }
             }
         },
@@ -529,15 +421,6 @@
         achievements: {
             async get() {
                 return request("/achievements");
-            }
-        },
-
-        // -----------------------------------------------------
-        // Announcements
-        // -----------------------------------------------------
-        announcements: {
-            async getAll() {
-                return request("/announcements");
             }
         },
 
