@@ -2541,16 +2541,17 @@ function setupFocusMode(lesson, user) {
 
         if (focusViolationSubtext) {
             if (violationCount >= MAX_VIOLATIONS) {
-                focusViolationSubtext.innerHTML = `<strong>BẠN ĐÃ VI PHẠM ${violationCount}/${MAX_VIOLATIONS} LẦN!</strong> Bài làm đã bị đình chỉ do vi phạm quy chế tập trung. Nút nộp bài đã bị khóa.`;
+                focusViolationSubtext.innerHTML = `<strong>BẠN ĐÃ CỐ TÌNH RỜI MÀN HÌNH (${violationCount}/${MAX_VIOLATIONS} LẦN)!</strong><br>Bạn đã vi phạm quy chế làm bài tập trung. Hệ thống sẽ tự động hủy phiên và <strong>đưa bạn quay về Trang chủ trong <span id="redirectCountdown">3</span>s...</strong>`;
             } else {
                 const remaining = MAX_VIOLATIONS - violationCount;
-                focusViolationSubtext.innerHTML = `Vui lòng tập trung và không rời khỏi trang. Bạn còn <strong>${remaining} lần cảnh cáo</strong> trước khi bài làm bị đình chỉ hoàn toàn!`;
+                focusViolationSubtext.innerHTML = `Vui lòng tập trung cao độ và không chuyển qua tab hay ứng dụng khác. Bạn còn <strong>${remaining} lần cảnh cáo</strong> trước khi bị hủy bài và đưa về Trang chủ!`;
             }
         }
 
         if (btnResumeFocus) {
             if (violationCount >= MAX_VIOLATIONS) {
-                btnResumeFocus.textContent = "Đã bị đình chỉ (Nhấn để tiếp tục xem bài)";
+                btnResumeFocus.textContent = "Quay về Trang chủ ngay";
+                btnResumeFocus.className = "btn btn-danger-resume";
             } else {
                 btnResumeFocus.textContent = "Quay lại làm bài & Khôi phục toàn màn hình";
             }
@@ -2559,9 +2560,23 @@ function setupFocusMode(lesson, user) {
         isViolationModalOpen = true;
         openModal(focusViolationModal);
 
-        if (violationCount >= MAX_VIOLATIONS && submitBtn) {
-            submitBtn.disabled = true;
-            submitBtn.title = "Bài làm bị đình chỉ do vi phạm quy chế làm bài tập trung (3/3 lần rời màn hình).";
+        if (violationCount >= MAX_VIOLATIONS) {
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.title = "Bài làm bị hủy do cố tình vi phạm quy chế tập trung.";
+            }
+            // Đếm ngược 3 giây tự động chuyển về trang chủ
+            let countdown = 3;
+            const cdTimer = setInterval(() => {
+                countdown--;
+                const cdElem = document.getElementById("redirectCountdown");
+                if (cdElem) cdElem.textContent = String(countdown);
+                if (countdown <= 0) {
+                    clearInterval(cdTimer);
+                    exitFullscreenSafe();
+                    window.location.href = "home.html";
+                }
+            }, 1000);
         }
     }
 
@@ -2610,32 +2625,9 @@ function setupFocusMode(lesson, user) {
         clearInterval(focusTimerInterval);
         focusTimerInterval = null;
 
-        document.body.classList.remove("focus-mode-active");
-
-        if (focusModeBar) {
-            focusModeBar.hidden = true;
-            focusModeBar.style.display = "none";
-        }
-
-        closeModal(focusExitModal);
-        closeModal(focusViolationModal);
-        isViolationModalOpen = false;
-        isConfirmModalOpen = false;
-
-        if (btnToggleFocusMode) {
-            btnToggleFocusMode.classList.remove("active");
-            btnToggleFocusMode.textContent = "Tự động khóa: Tắt";
-        }
-        if (btnEditorFocusMode) {
-            btnEditorFocusMode.textContent = "Tự động khóa: Tắt";
-        }
-
-        if (submitBtn && violationCount < MAX_VIOLATIONS) {
-            submitBtn.disabled = false;
-            submitBtn.title = "";
-        }
-
         exitFullscreenSafe();
+        // Cố tình thoát ra -> Quay về trang chủ ngay lập tức
+        window.location.href = "home.html";
     }
 
     // Sự kiện mở modal xem quy chế hoặc tạm dừng
@@ -2661,7 +2653,8 @@ function setupFocusMode(lesson, user) {
 
     if (btnExitFocusMode) {
         btnExitFocusMode.addEventListener("click", () => {
-            openModal(focusStartModal);
+            isConfirmModalOpen = true;
+            openModal(focusExitModal);
         });
     }
 
@@ -2681,6 +2674,11 @@ function setupFocusMode(lesson, user) {
 
     if (btnResumeFocus) {
         btnResumeFocus.addEventListener("click", () => {
+            if (violationCount >= MAX_VIOLATIONS) {
+                exitFullscreenSafe();
+                window.location.href = "home.html";
+                return;
+            }
             closeModal(focusViolationModal);
             isViolationModalOpen = false;
             if (isFocusMode && violationCount < MAX_VIOLATIONS) {
