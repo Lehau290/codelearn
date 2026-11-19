@@ -420,49 +420,43 @@ def seed_achievements(conn):
 def seed_test_cases(conn):
     """Nạp test cases (công khai và ẩn) cho toàn bộ 60 bài tập vào bảng test_cases."""
     cursor = conn.cursor()
-    cursor.execute("SELECT COUNT(*) as count FROM test_cases")
-    if cursor.fetchone()["count"] > 0:
+    cursor.execute("SELECT COUNT(*) as count FROM test_cases WHERE input_data != ''")
+    if cursor.fetchone()["count"] >= 90:
         return
 
-    cursor.execute("SELECT lesson_id, id, expected_output, points FROM exercises ORDER BY lesson_id, order_num")
-    exercises = cursor.fetchall()
+    try:
+        try:
+            from seed_complete_testcases import ALL_TEST_CASES
+        except ImportError:
+            import sys
+            sys.path.insert(0, BASE_DIR)
+            from seed_complete_testcases import ALL_TEST_CASES
 
-    tc_records = []
-    for ex in exercises:
-        lid = ex["lesson_id"]
-        eid = ex["id"]
-        expected = ex["expected_output"] or ""
+        records = []
+        for (lid, eid), tcs in ALL_TEST_CASES.items():
+            for order_idx, tc in enumerate(tcs):
+                t_id = f"tc-{lid}-{eid}-{order_idx + 1}"
+                records.append((
+                    t_id,
+                    lid,
+                    eid,
+                    tc["input"],
+                    tc["output"],
+                    tc["hidden"],
+                    tc["points"],
+                    order_idx + 1
+                ))
+                if order_idx == 0:
+                    cursor.execute("UPDATE exercises SET expected_output = ? WHERE lesson_id = ? AND id = ?", (tc["output"], lid, eid))
 
-        # Test case 1: Công khai (is_hidden = 0, weight_points = 50, order_num = 1)
-        tc_records.append((
-            f"tc-{lid}-{eid}-1",
-            lid,
-            eid,
-            "",
-            expected,
-            0,
-            50,
-            1
-        ))
-
-        # Test case 2: Ẩn kiểm thử đối chiếu (is_hidden = 1, weight_points = 50, order_num = 2)
-        tc_records.append((
-            f"tc-{lid}-{eid}-2",
-            lid,
-            eid,
-            "",
-            expected,
-            1,
-            50,
-            2
-        ))
-
-    cursor.executemany("""
-        INSERT OR REPLACE INTO test_cases (id, lesson_id, exercise_id, input_data, expected_output, is_hidden, weight_points, order_num)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    """, tc_records)
-    conn.commit()
-    print(f"✓ Đã nạp {len(tc_records)} test cases vào bảng test_cases thành công.")
+        cursor.executemany("""
+            INSERT OR REPLACE INTO test_cases (id, lesson_id, exercise_id, input_data, expected_output, is_hidden, weight_points, order_num)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """, records)
+        conn.commit()
+        print(f"✓ Đã nạp {len(records)} test cases với đầy đủ dữ liệu stdin vào bảng test_cases thành công.")
+    except Exception as ex:
+        print(f"Lỗi nạp test cases: {ex}")
 
 def seed_comments(conn):
     """Nạp bình luận thảo luận bài học mẫu vào bảng comments."""

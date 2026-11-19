@@ -206,7 +206,69 @@ def normalize_text(text: str) -> str:
     if not text:
         return ""
     lines = [line.strip() for line in text.replace("\r\n", "\n").replace("\r", "\n").split("\n")]
+    while lines and not lines[0]:
+        lines.pop(0)
+    while lines and not lines[-1]:
+        lines.pop()
     return "\n".join(lines).strip()
+
+def check_output_match(actual: str, expected: str) -> bool:
+    """
+    So khớp kết quả đầu ra thực tế và kỳ vọng một cách thông minh, chính xác:
+    - Loại trừ các lỗi so khớp con sai lệch (ví dụ 0 trong 10, 5 trong 15).
+    - Hỗ trợ so khớp chính xác từng ký tự và không phân biệt hoa thường.
+    - Hỗ trợ so khớp từng dòng và loại bỏ dấu phân cách nhãn (: = ,).
+    - Hỗ trợ học viên in kèm nhãn (ví dụ 'Tong = 15' khớp với kỳ vọng '15' hoặc 'Tong = 15').
+    """
+    if not expected:
+        return True
+    norm_act = normalize_text(actual)
+    norm_exp = normalize_text(expected)
+    if not norm_act:
+        return False
+    
+    # 1. Khớp chính xác tuyệt đối
+    if norm_act == norm_exp:
+        return True
+    
+    # 2. Khớp không phân biệt hoa thường
+    if norm_act.lower() == norm_exp.lower():
+        return True
+    
+    # 3. Chuẩn hóa token loại bỏ dấu phân cách nhãn (: = ,)
+    clean_act = re.sub(r'[:=,]', ' ', norm_act).lower().split()
+    clean_exp = re.sub(r'[:=,]', ' ', norm_exp).lower().split()
+    if clean_act == clean_exp:
+        return True
+
+    # 4. Kiểm tra từng dòng: Nếu có dòng nào khớp hoàn toàn với kỳ vọng
+    for line in norm_act.split("\n"):
+        line_clean = re.sub(r'[:=,]', ' ', line.strip()).lower().split()
+        if line_clean == clean_exp:
+            return True
+
+    # 5. Nếu chuỗi kỳ vọng là cụm từ (>= 2 từ như 'Tong = 15' hoặc 'Hello C++ Academy!')
+    if len(clean_exp) >= 2:
+        if re.search(r'(?:\b|^)' + re.escape(norm_exp) + r'(?:\b|$)', norm_act, re.IGNORECASE):
+            return True
+
+    # 6. So khớp số học logic (khi bài toán yêu cầu kết quả số cụ thể)
+    exp_numbers = re.findall(r'-?\d+(?:\.\d+)?', norm_exp)
+    act_numbers = re.findall(r'-?\d+(?:\.\d+)?', norm_act)
+    if exp_numbers and act_numbers and exp_numbers == act_numbers:
+        exp_words = [w for w in clean_exp if not re.match(r'^-?\d+(?:\.\d+)?$', w)]
+        act_words = [w for w in clean_act if not re.match(r'^-?\d+(?:\.\d+)?$', w)]
+        # Học viên chỉ in số mà không in nhãn (ví dụ in '15' thay vì 'Tong = 15')
+        if not act_words and exp_words:
+            return True
+        # Học viên in nhãn + số trong khi kỳ vọng chỉ yêu cầu số
+        if not exp_words and act_words:
+            return True
+        # Nếu cả 2 đều có chữ thì các chữ phải trùng khớp
+        if exp_words == act_words:
+            return True
+
+    return False
 
 def analyze_code_quality(code: str) -> dict:
     """
@@ -441,6 +503,10 @@ def evaluate_exercise(
 
             for idx, tc in enumerate(test_cases):
                 tc_in = tc.get("input_data", "") or ""
+                # Nếu test case chưa có input_data nhưng học viên nhập trên giao diện, dùng cho test case đầu tiên
+                if not tc_in and stdin_input and idx == 0:
+                    tc_in = stdin_input
+
                 tc_expected = tc.get("expected_output", "") or ""
                 is_hidden = bool(tc.get("is_hidden", 0))
 
@@ -459,19 +525,23 @@ def evaluate_exercise(
                     if idx == 0:
                         first_output = tc_out
 
-                    norm_out = normalize_text(tc_out)
-                    norm_exp = normalize_text(tc_expected)
-                    is_match = (norm_out == norm_exp) or (norm_exp != "" and norm_exp in norm_out)
+                    is_match = check_output_match(tc_out, tc_expected)
 
                     if is_match:
                         passed_count += 1
+
+                    act_display = ""
+                    if is_hidden:
+                        act_display = "[Khớp]" if is_match else "[Sai lệch kết quả]"
+                    else:
+                        act_display = tc_out.strip() if tc_out.strip() else "[Không có đầu ra / Output rỗng]"
 
                     test_results.append({
                         "order": idx + 1,
                         "passed": is_match,
                         "input": "[Ẩn / Hidden testcase]" if is_hidden else tc_in,
                         "expected": "[Ẩn / Hidden testcase]" if is_hidden else tc_expected,
-                        "actual": ("[Khớp]" if is_match else "[Sai lệch kết quả]") if is_hidden else tc_out,
+                        "actual": act_display,
                         "executionTimeMs": round(t_exec, 2),
                         "isHidden": is_hidden
                     })
@@ -479,9 +549,9 @@ def evaluate_exercise(
                     test_results.append({
                         "order": idx + 1,
                         "passed": False,
-                        "input": "[Ẩn]" if is_hidden else tc_in,
-                        "expected": "[Ẩn]" if is_hidden else tc_expected,
-                        "actual": "Lỗi chạy quá 5s (Timeout)",
+                        "input": "[Ẩn / Hidden testcase]" if is_hidden else tc_in,
+                        "expected": "[Ẩn / Hidden testcase]" if is_hidden else tc_expected,
+                        "actual": "Lỗi quá thời gian thực thi (>5s Timeout)",
                         "executionTimeMs": 5000,
                         "isHidden": is_hidden
                     })
@@ -489,38 +559,52 @@ def evaluate_exercise(
                     test_results.append({
                         "order": idx + 1,
                         "passed": False,
-                        "input": "[Ẩn]" if is_hidden else tc_in,
-                        "expected": "[Ẩn]" if is_hidden else tc_expected,
-                        "actual": f"Lỗi: {str(ex)}",
+                        "input": "[Ẩn / Hidden testcase]" if is_hidden else tc_in,
+                        "expected": "[Ẩn / Hidden testcase]" if is_hidden else tc_expected,
+                        "actual": f"Lỗi ngoại lệ: {str(ex)}",
                         "executionTimeMs": 0,
                         "isHidden": is_hidden
                     })
 
             total_tc = len(test_cases)
-            tc_ratio = (passed_count / total_tc) if total_tc > 0 else 1.0
-            score = 30 + int(tc_ratio * 50)
+            code_lower = code.lower()
+            matched_kw = []
+            missing_kw = []
+            if test_keywords:
+                matched_kw = [kw for kw in test_keywords if kw.lower() in code_lower]
+                kw_ratio = len(matched_kw) / len(test_keywords)
+                missing_kw = [kw for kw in test_keywords if kw.lower() not in code_lower]
+            else:
+                kw_ratio = 1.0
 
             strengths = ["Mã nguồn biên dịch thành công không có lỗi cú pháp."]
             improvements = []
 
             if passed_count == total_tc:
+                base_score = 80
+                kw_pts = int(kw_ratio * 15)
+                clean_pts = 5 if ("return 0;" in code) else 0
+                score = min(100, base_score + kw_pts + clean_pts)
+                passed = True
                 strengths.append(f"Vượt qua xuất sắc toàn bộ {total_tc}/{total_tc} bộ test kiểm thử.")
+            elif passed_count > 0:
+                tc_ratio = passed_count / total_tc
+                base_score = 30 + int(tc_ratio * 35)
+                kw_pts = int(kw_ratio * 8)
+                score = max(35, min(73, base_score + kw_pts))
+                passed = False
+                improvements.append(f"Chỉ vượt qua {passed_count}/{total_tc} bộ test. Cần kiểm tra lại các trường hợp biên hoặc định dạng xuất.")
             else:
-                improvements.append(f"Vượt qua {passed_count}/{total_tc} bộ test. Cần kiểm tra lại các trường hợp biên hoặc định dạng xuất.")
+                score = min(30, 25 + int(kw_ratio * 5))
+                passed = False
+                improvements.append(f"Chưa vượt qua bộ test nào (0/{total_tc}). Vui lòng kiểm tra lại thuật toán tính toán và định dạng in ấn.")
 
-            code_lower = code.lower()
             if test_keywords:
-                matched_kw = [kw for kw in test_keywords if kw.lower() in code_lower]
-                kw_ratio = len(matched_kw) / len(test_keywords) if test_keywords else 1.0
-                score += int(kw_ratio * 20)
                 if kw_ratio >= 0.8:
                     strengths.append(f"Vận dụng tốt các từ khóa trọng tâm: {', '.join(matched_kw)}.")
                 else:
-                    missing_kw = [kw for kw in test_keywords if kw.lower() not in code_lower]
                     if missing_kw:
                         improvements.append(f"Cần áp dụng thêm các cú pháp trọng tâm của bài: {', '.join(missing_kw)}.")
-            else:
-                score += 20
 
             if "return 0;" in code:
                 strengths.append("Có lệnh `return 0;` chuẩn mực kết thúc hàm main().")
@@ -533,7 +617,6 @@ def evaluate_exercise(
                     strengths.append(bp)
 
             score = max(20, min(100, score))
-            passed = (passed_count == total_tc) and (score >= 75)
 
             if score >= 90:
                 comprehension_level = "Hiểu bài xuất sắc (90%+)"
@@ -548,8 +631,8 @@ def evaluate_exercise(
                 summary = f"Chương trình chạy được nhưng chỉ vượt qua {passed_count}/{total_tc} test case ({score}/100)."
                 advice = "Đọc kỹ lại yêu cầu đề bài, xem các test case bị trượt để điều chỉnh logic rẽ nhánh hoặc vòng lặp."
             else:
-                comprehension_level = "Cần ôn luyện kỹ lại lý thuyết"
-                summary = f"Bài làm chưa đạt yêu cầu kiểm thử ({score}/100)."
+                comprehension_level = "Chưa đạt yêu cầu kiểm thử"
+                summary = f"Bài làm chưa đạt yêu cầu kiểm thử ({score}/100). Chỉ vượt qua {passed_count}/{total_tc} test case."
                 advice = "Hãy ôn lại lý thuyết bài học, xem code mẫu và thử chạy từng bước với dữ liệu nhỏ."
 
             if vnoi_benchmark:
@@ -624,12 +707,12 @@ def evaluate_exercise(
             output_matched = True
             score += 40
             strengths.append(f"Kết quả đầu ra chính xác 100% khớp với đề bài: \"{norm_expected}\".")
-        elif norm_expected.lower() in norm_actual.lower():
-            score += 30
-            strengths.append("Kết quả đầu ra chứa nội dung yêu cầu.")
-            improvements.append("Định dạng xuất chưa hoàn toàn khớp từng ký tự với đề bài mẫu.")
+        elif check_output_match(actual_out, expected_output):
+            output_matched = True
+            score += 38
+            strengths.append(f"Kết quả đầu ra khớp logic với kết quả mong đợi của bài toán: \"{norm_expected}\".")
         else:
-            score += 15
+            score += 10
             improvements.append(f"Kết quả xuất ({norm_actual or 'rỗng'}) chưa khớp với kết quả mong đợi ({norm_expected}).")
     else:
         score += 35

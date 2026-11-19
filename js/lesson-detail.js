@@ -1487,16 +1487,43 @@ function showGradingResult(
         }
         testCasesList.innerHTML = result.testCases.map(tc => {
             const isPass = tc.passed;
+            let detailsHtml = "";
+            if (!tc.isHidden) {
+                if (isPass) {
+                    detailsHtml = `
+                        <div style="margin-top: 4px; font-size: 0.8rem; color: var(--text-muted);">
+                            Kết quả: <code style="color: #10b981; background: rgba(16,185,129,0.1); padding: 2px 6px; border-radius: 4px;">${escapeHtml(tc.actual || tc.expected || '')}</code>
+                        </div>
+                    `;
+                } else {
+                    detailsHtml = `
+                        <div style="margin-top: 4px; font-size: 0.8rem; color: var(--text-muted); display: flex; flex-wrap: wrap; gap: 8px;">
+                            <span>Kỳ vọng: <code style="color: #10b981; background: rgba(16,185,129,0.1); padding: 2px 6px; border-radius: 4px;">${escapeHtml(tc.expected || '')}</code></span>
+                            <span>Thực tế: <code style="color: #ef4444; background: rgba(239,68,68,0.1); padding: 2px 6px; border-radius: 4px;">${escapeHtml(tc.actual || '')}</code></span>
+                        </div>
+                    `;
+                }
+            } else {
+                detailsHtml = `
+                    <div style="margin-top: 4px; font-size: 0.78rem; color: var(--text-muted);">
+                        ${isPass ? '<span style="color: #10b981;">✓ Dữ liệu kiểm thử ẩn đối chiếu thành công</span>' : '<span style="color: #ef4444;">✕ Sai lệch kết quả trên bộ dữ liệu kiểm thử ẩn</span>'}
+                    </div>
+                `;
+            }
+
             return `
-                <div class="testcase-item" style="border-left: 3px solid ${isPass ? '#10b981' : '#ef4444'};">
-                    <div>
-                        <strong>Test #${tc.order}:</strong>
-                        <span style="color: var(--text-muted); margin-left: 6px;">${tc.isHidden ? '(Test ẩn kiểm thử)' : `Input: <code>${escapeHtml(tc.input || 'None')}</code>`}</span>
+                <div class="testcase-item" style="border-left: 3px solid ${isPass ? '#10b981' : '#ef4444'}; margin-bottom: 8px; padding: 8px 12px; background: rgba(255,255,255,0.02); border-radius: 6px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong style="color: var(--text-primary);">Test #${tc.order}:</strong>
+                            <span style="color: var(--text-muted); margin-left: 6px; font-size: 0.85rem;">${tc.isHidden ? '(Test ẩn kiểm thử)' : `Input: <code style="background: rgba(255,255,255,0.06); padding: 1px 5px; border-radius: 3px;">${escapeHtml(tc.input || 'None')}</code>`}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 0.75rem; color: var(--text-muted);">${tc.executionTimeMs || 0}ms</span>
+                            <span class="testcase-badge ${isPass ? 'pass' : 'fail'}">${isPass ? '✓ Đạt' : '✕ Sai kết quả'}</span>
+                        </div>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 0.75rem; color: var(--text-muted);">${tc.executionTimeMs || 0}ms</span>
-                        <span class="testcase-badge ${isPass ? 'pass' : 'fail'}">${isPass ? '✓ Đạt' : '✕ Sai kết quả'}</span>
-                    </div>
+                    ${detailsHtml}
                 </div>
             `;
         }).join("");
