@@ -6,30 +6,39 @@
 
 document.addEventListener("DOMContentLoaded", () => {
     // Lấy người dùng hiện tại (nếu có)
-    const currentUser = CppStorage.getCurrentUser();
+    let currentUser = null;
+    try {
+        currentUser = CppStorage.getCurrentUser();
+    } catch (e) {
+        console.warn("Storage user load warning:", e);
+    }
 
     // 1. Hiển thị lời chào
-    updateGreeting(currentUser);
+    try { updateGreeting(currentUser); } catch (e) { console.warn("Greeting warning:", e); }
 
     // 2. Hiển thị thống kê học tập
-    updateLearningStats(currentUser);
+    try { updateLearningStats(currentUser); } catch (e) { console.warn("Stats warning:", e); }
 
     // 3. Hiển thị danh sách bài học tiêu biểu & gắn sự kiện chọn Chương 1..7 ngay trên Trang chủ
-    renderFeaturedLessons(currentUser, "featured");
-    initHomeChapterTabs(currentUser);
+    try {
+        renderFeaturedLessons(currentUser, "featured");
+        initHomeChapterTabs(currentUser);
+    } catch (e) { console.warn("Featured lessons warning:", e); }
 
     // 4. Nút tiếp tục học
-    setupContinueLearning(currentUser);
+    try { setupContinueLearning(currentUser); } catch (e) { console.warn("Continue learning warning:", e); }
 
     // 5. Cập nhật bảng xếp hạng thi đua
-    updateLeaderboardUser(currentUser);
-    initLeaderboardInteractions();
+    try {
+        updateLeaderboardUser(currentUser);
+        initLeaderboardInteractions();
+    } catch (e) { console.warn("Leaderboard warning:", e); }
 
     // 6. Hiệu ứng Vầng sáng công nghệ lướt theo chuột (Mouse Spotlight Glow)
-    initHeroSpotlight();
+    try { initHeroSpotlight(); } catch (e) { console.warn("Spotlight warning:", e); }
 
     // 7. Hiệu ứng Terminal giả lập gõ code C++ tự động (Live Code Typing Showcase)
-    initHeroLiveCodeTyping();
+    try { initHeroLiveCodeTyping(); } catch (e) { console.warn("Hero typing warning:", e); }
 });
 
 
@@ -485,7 +494,7 @@ function initLeaderboardInteractions() {
             }
 
             // Hiệu ứng particle nổi bay lên từ vị trí chuột
-                // Floating celebration animation
+            spawnFloatingSparkle(e.clientX || (window.innerWidth / 2), e.clientY || (window.innerHeight / 2), rank === "1" ? "+100" : "+50");
 
             // Hiển thị Toast thông báo chúc mừng
             if (typeof window.showToast === "function") {
@@ -546,10 +555,10 @@ function initLeaderboardInteractions() {
         });
     });
 
-                // Floating celebration animation
+    function spawnFloatingSparkle(x, y, text = "+50") {
         const span = document.createElement("span");
         span.className = "floating-sparkle";
-        span.textContent = icon;
+        span.textContent = text;
         span.style.left = `${x}px`;
         span.style.top = `${y}px`;
         document.body.appendChild(span);
