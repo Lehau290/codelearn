@@ -90,7 +90,7 @@ def compile_and_run(code: str, stdin_input: str = "", timeout_sec: int = 5) -> d
             "compiler": get_compiler_version()
         }
 
-    with tempfile.TemporaryDirectory() as tmpdir:
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmpdir:
         src_path = os.path.join(tmpdir, "solution.cpp")
         exe_path = os.path.join(tmpdir, "solution.exe")
 
@@ -406,7 +406,7 @@ def evaluate_exercise(
                 "aiReview": code_quality
             }
 
-        with tempfile.TemporaryDirectory() as tmpdir:
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmpdir:
             src_path = os.path.join(tmpdir, "solution.cpp")
             exe_path = os.path.join(tmpdir, "solution.exe")
 
@@ -823,24 +823,32 @@ def query_gemini_api(prompt: str, api_key: str) -> str | None:
     """Gọi Gemini API (Google Generative AI)."""
     if not api_key:
         return None
-    # Thử qua gemini-1.5-flash
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
+    
+    models = ["gemini-1.5-flash", "gemini-2.0-flash", "gemini-1.5-pro"]
     payload = {
         "contents": [{"parts": [{"text": prompt}]}],
         "generationConfig": {"temperature": 0.5, "maxOutputTokens": 1200}
     }
     data = json.dumps(payload).encode("utf-8")
-    req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"})
-    try:
-        with urllib.request.urlopen(req, timeout=12) as res:
-            res_data = json.loads(res.read().decode("utf-8"))
-            candidates = res_data.get("candidates", [])
-            if candidates:
-                parts = candidates[0].get("content", {}).get("parts", [])
-                if parts:
-                    return parts[0].get("text", "")
-    except Exception as e:
-        print(f"[Gemini Notice] Không thể kết nối Gemini API ({e}).", file=sys.stderr)
+
+    for model in models:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={urllib.parse.quote(api_key)}"
+        headers = {
+            "Content-Type": "application/json",
+            "x-goog-api-key": api_key
+        }
+        req = urllib.request.Request(url, data=data, headers=headers)
+        try:
+            with urllib.request.urlopen(req, timeout=12) as res:
+                res_data = json.loads(res.read().decode("utf-8"))
+                candidates = res_data.get("candidates", [])
+                if candidates:
+                    parts = candidates[0].get("content", {}).get("parts", [])
+                    if parts and "text" in parts[0]:
+                        return parts[0].get("text", "")
+        except Exception as e:
+            continue
+
     return None
 
 def query_openai_or_groq_api(provider: str, prompt: str, api_key: str, history: list = None) -> str | None:

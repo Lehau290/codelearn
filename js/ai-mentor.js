@@ -257,9 +257,24 @@
 
         // Settings modal
         if (settingsBtn && settingsModal) {
-            settingsBtn.addEventListener("click", () => {
+            settingsBtn.addEventListener("click", async () => {
                 settingsModal.hidden = false;
+                const savedGemini = localStorage.getItem("codelearn_gemini_key") || "";
+                const savedOpenAi = localStorage.getItem("codelearn_openai_key") || "";
+                if (inputGeminiKey && !inputGeminiKey.value) inputGeminiKey.value = savedGemini;
+                if (inputOpenAiKey && !inputOpenAiKey.value) inputOpenAiKey.value = savedOpenAi;
+                try {
+                    if (window.CodeLearnApi && typeof CodeLearnApi.ai?.getConfig === "function") {
+                        const cfg = await CodeLearnApi.ai.getConfig();
+                        if (cfg && cfg.hasApiKey) {
+                            if (inputGeminiKey && !inputGeminiKey.value && cfg.provider === "gemini") {
+                                inputGeminiKey.placeholder = "Đã kích hoạt trên máy chủ (" + (cfg.model || "Gemini") + ")";
+                            }
+                        }
+                    }
+                } catch (_) {}
             });
+
             const closeSettings = () => { settingsModal.hidden = true; };
             if (closeSettingsBtn) closeSettingsBtn.addEventListener("click", closeSettings);
             if (cancelSettingsBtn) cancelSettingsBtn.addEventListener("click", closeSettings);
@@ -268,28 +283,40 @@
                 saveSettingsBtn.addEventListener("click", async () => {
                     const geminiKey = inputGeminiKey ? inputGeminiKey.value.trim() : "";
                     const openaiKey = inputOpenAiKey ? inputOpenAiKey.value.trim() : "";
+
+                    // 1. Luôn lưu vào LocalStorage trước (Bảo toàn key 100% trên trình duyệt)
+                    if (geminiKey) localStorage.setItem("codelearn_gemini_key", geminiKey);
+                    else localStorage.removeItem("codelearn_gemini_key");
+
+                    if (openaiKey) localStorage.setItem("codelearn_openai_key", openaiKey);
+                    else localStorage.removeItem("codelearn_openai_key");
+
+                    saveSettingsBtn.disabled = true;
+                    saveSettingsBtn.textContent = "Đang lưu...";
+
+                    let backendSynced = false;
                     try {
-                        saveSettingsBtn.disabled = true;
-                        saveSettingsBtn.textContent = "Đang lưu...";
                         if (window.CodeLearnApi && typeof CodeLearnApi.ai?.setConfig === "function") {
                             await CodeLearnApi.ai.setConfig({ geminiKey, openaiKey });
+                            backendSynced = true;
                         }
-                        if (typeof window.showToast === "function") {
-                            window.showToast("Đã lưu cấu hình AI thành công!", "success");
-                        } else {
-                            alert("✓ Đã lưu cấu hình AI thành công!");
-                        }
-                        closeSettings();
-                    } catch (err) {
-                        if (typeof window.showToast === "function") {
-                            window.showToast("Lỗi khi lưu cấu hình: " + (err.message || "Lỗi mạng"), "error");
-                        } else {
-                            alert("Lỗi khi lưu cấu hình: " + (err.message || "Lỗi mạng"));
-                        }
-                    } finally {
-                        saveSettingsBtn.disabled = false;
-                        saveSettingsBtn.textContent = "Lưu Cấu hình";
+                    } catch (netErr) {
+                        console.warn("[AI Mentor] Backend chưa khả dụng, đã lưu cấu hình thành công trên Client:", netErr);
                     }
+
+                    const successMsg = backendSynced 
+                        ? "Đã lưu cấu hình AI thành công vào Máy chủ & Trình duyệt!" 
+                        : "Đã lưu khóa API AI thành công trên trình duyệt (Chế độ Client-side)!";
+
+                    if (typeof window.showToast === "function") {
+                        window.showToast(successMsg, "success");
+                    } else {
+                        alert("✓ " + successMsg);
+                    }
+
+                    closeSettings();
+                    saveSettingsBtn.disabled = false;
+                    saveSettingsBtn.textContent = "Lưu Cấu hình";
                 });
             }
         }
@@ -418,6 +445,68 @@
             return bubble;
         }
 
+        async function queryDirectGemini(prompt, apiKey, history = []) {
+            const models = ["gemini-1.5-flash", "gemini-2.0-flash", "gemini-1.5-pro"];
+            const systemInstruction = "Bạn là CodeLearn AI - Người bạn đồng hành và Thầy giáo Lập trình C++ kiên nhẫn, thấu hiểu. Hãy trả lời bằng tiếng Việt, định dạng Markdown đẹp, code C++ chuẩn C++17 có chú thích rõ ràng.";
+            
+            const contents = [];
+            if (history && history.length > 0) {
+                history.slice(-4).forEach(h => {
+                    contents.push({
+                        role: h.role === "assistant" ? "model" : "user",
+                        parts: [{ text: h.content }]
+                    });
+                });
+            }
+            contents.push({
+                role: "user",
+                parts: [{ text: `${systemInstruction}\n\nCâu hỏi của học viên: ${prompt}` }]
+            });
+
+            for (const model of models) {
+                try {
+                    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+                    const res = await fetch(url, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            contents,
+                            generationConfig: { temperature: 0.6, maxOutputTokens: 1200 }
+                        })
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                        if (text) return text;
+                    }
+                } catch (_) {}
+            }
+            return null;
+        }
+
+        function generateClientHeuristicResponse(q) {
+            const low = q.toLowerCase();
+            if (low.includes("chào") || low.includes("hello") || low.includes("hi")) {
+                return "Chào bạn! Mình là **CodeLearn AI** - Trợ lý & Gia sư C++ đồng hành cùng bạn. Bạn đang cần giải đáp lý thuyết hay hỗ trợ bài tập nào hôm nay?";
+            }
+            if (low.includes("con trỏ") || low.includes("pointer")) {
+                return "📚 **Con trỏ (Pointers) trong C++:**\n\nCon trỏ là một biến đặc biệt dùng để lưu trữ **địa chỉ ô nhớ** của một biến khác.\n\n- Khai báo: `int *ptr = &x;` (`&` lấy địa chỉ ô nhớ của `x`)\n- Toán tử giải tham chiếu: `*ptr` để truy xuất hoặc thay đổi giá trị tại ô nhớ đó.\n\n```cpp\n#include <iostream>\nusing namespace std;\n\nint main() {\n    int a = 100;\n    int *ptr = &a;\n    cout << \"Gia tri a: \" << *ptr << endl;\n    cout << \"Dia chi o nho: \" << ptr << endl;\n    return 0;\n}\n```";
+            }
+            if (low.includes("vòng lặp") || low.includes("for") || low.includes("while")) {
+                return "🔄 **Vòng lặp trong C++:**\n\n- `for`: Thích hợp khi biết trước số lần lặp (ví dụ duyệt từ 1 đến N).\n- `while`: Lặp khi một điều kiện còn đúng, kiểm tra điều kiện trước khi thực thi thân vòng lặp.\n- `do-while`: Thực thi thân vòng lặp ít nhất 1 lần trước khi kiểm tra điều kiện.\n\n```cpp\nfor (int i = 1; i <= 5; i++) {\n    cout << i << \" \";\n}\n```";
+            }
+            if (low.includes("mảng") || low.includes("array") || low.includes("vector")) {
+                return "📦 **Mảng (Array) & Vector trong C++:**\n\n- Mảng tĩnh: `int a[100];` cấp phát cố định trên Stack.\n- Vector động: `#include <vector>` và `vector<int> v;` tự động co giãn kích thước.\n\n```cpp\n#include <iostream>\n#include <vector>\nusing namespace std;\n\nint main() {\n    vector<int> a = {1, 2, 3, 4, 5};\n    a.push_back(6);\n    for (int x : a) cout << x << \" \";\n    return 0;\n}\n```";
+            }
+            if (low.includes("hàm") || low.includes("function") || low.includes("tham chiếu")) {
+                return "⚙️ **Hàm & Tham chiếu trong C++:**\n\n- Truyền tham trị (`int x`): Hàm nhận bản sao, biến gốc bên ngoài không thay đổi.\n- Truyền tham chiếu (`int &x`): Hàm thao tác trực tiếp trên biến gốc, giúp tiết kiệm bộ nhớ và cập nhật giá trị ra ngoài hàm.\n\n```cpp\nvoid hoanDoi(int &a, int &b) {\n    int temp = a;\n    a = b;\n    b = temp;\n}\n```";
+            }
+            if (low.includes("class") || low.includes("struct") || low.includes("oop") || low.includes("đối tượng")) {
+                return "🏛️ **Lập trình hướng đối tượng (OOP) trong C++:**\n\n- `class`: Đóng gói thuộc tính (private) và phương thức (public).\n- Constructor: Tự động gọi khi khởi tạo đối tượng.\n- Kế thừa: `class Con : public Cha { ... };` tái sử dụng và mở rộng tính năng.";
+            }
+            return "Cảm ơn bạn đã đặt câu hỏi! Để mình hướng dẫn chính xác và tối ưu nhất cho bạn, bạn có thể dán đoạn code C++ đang làm hoặc nêu rõ yêu cầu bài tập của bài học hiện tại nhé! Mình sẽ phân tích từng dòng và gợi ý thuật toán ngay cho bạn!";
+        }
+
         async function sendPrompt(userMsg, isRegenerate = false) {
             if (!userMsg || !userMsg.trim()) return;
 
@@ -432,20 +521,43 @@
             const typingElem = appendMessage("*AI đang suy nghĩ và tổng hợp kiến thức...*", false, false);
             const persona = personaSelect ? personaSelect.value : "tutor";
 
+            let replyText = "";
             try {
+                // 1. Gửi qua Backend Server nếu khả dụng
                 if (window.CodeLearnApi && typeof CodeLearnApi.ai?.ask === "function") {
-                    const res = await CodeLearnApi.ai.ask(userMsg, "", "", chatHistory, persona);
-                    if (typingElem) typingElem.remove();
-                    const replyText = res.reply || "AI chưa có phản hồi phù hợp, bạn hãy thử diễn đạt lại nhé.";
-                    appendMessage(replyText, false, true);
-                    chatHistory.push({ role: "assistant", content: replyText });
-                } else {
-                    if (typingElem) typingElem.remove();
-                    appendMessage("Hãy đặt câu hỏi về các chuyên đề C++ hoặc cấu trúc dữ liệu nhé!", false, true);
+                    try {
+                        const res = await CodeLearnApi.ai.ask(userMsg, "", "", chatHistory, persona);
+                        if (res && res.reply) replyText = res.reply;
+                    } catch (netErr) {
+                        console.warn("[AI Mentor] Backend server chưa phản hồi, chuyển sang fallback:", netErr);
+                    }
                 }
+
+                // 2. Gọi trực tiếp Gemini API nếu có API key trong localStorage
+                if (!replyText) {
+                    const localGeminiKey = localStorage.getItem("codelearn_gemini_key") || "";
+                    if (localGeminiKey) {
+                        try {
+                            replyText = await queryDirectGemini(userMsg, localGeminiKey, chatHistory);
+                        } catch (gemErr) {
+                            console.warn("[AI Mentor] Gọi trực tiếp Gemini thất bại:", gemErr);
+                        }
+                    }
+                }
+
+                // 3. Sử dụng Bộ tri thức Heuristic C++ dự phòng
+                if (!replyText) {
+                    replyText = generateClientHeuristicResponse(userMsg);
+                }
+
+                if (typingElem) typingElem.remove();
+                appendMessage(replyText, false, true);
+                chatHistory.push({ role: "assistant", content: replyText });
             } catch (err) {
                 if (typingElem) typingElem.remove();
-                appendMessage(`Không thể kết nối với AI Trợ lý: ${err.message || "Lỗi mạng"}`, false, false);
+                const fallback = generateClientHeuristicResponse(userMsg);
+                appendMessage(fallback, false, true);
+                chatHistory.push({ role: "assistant", content: fallback });
             }
         }
 

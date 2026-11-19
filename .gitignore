@@ -6,4 +6,5 @@ __pycache__/
 Thumbs.db
 backend/backups/*.db
 backend/backups/*.bak
+backend/config.json
 

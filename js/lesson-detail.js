@@ -2238,6 +2238,10 @@ function setupAiMentorWidget(lesson, user) {
     if (settingsBtn && settingsModal) {
         settingsBtn.addEventListener("click", async () => {
             settingsModal.hidden = false;
+            const savedGemini = localStorage.getItem("codelearn_gemini_key") || "";
+            const savedOpenAi = localStorage.getItem("codelearn_openai_key") || "";
+            if (inputGeminiKey && !inputGeminiKey.value) inputGeminiKey.value = savedGemini;
+            if (inputOpenAiKey && !inputOpenAiKey.value) inputOpenAiKey.value = savedOpenAi;
             try {
                 if (window.CodeLearnApi && typeof CodeLearnApi.ai?.getConfig === "function") {
                     const cfg = await CodeLearnApi.ai.getConfig();
@@ -2257,20 +2261,35 @@ function setupAiMentorWidget(lesson, user) {
             saveSettingsBtn.addEventListener("click", async () => {
                 const geminiKey = inputGeminiKey ? inputGeminiKey.value.trim() : "";
                 const openaiKey = inputOpenAiKey ? inputOpenAiKey.value.trim() : "";
+
+                if (geminiKey) localStorage.setItem("codelearn_gemini_key", geminiKey);
+                else localStorage.removeItem("codelearn_gemini_key");
+
+                if (openaiKey) localStorage.setItem("codelearn_openai_key", openaiKey);
+                else localStorage.removeItem("codelearn_openai_key");
+
+                saveSettingsBtn.disabled = true;
+                saveSettingsBtn.textContent = "Đang lưu...";
+
+                let backendSynced = false;
                 try {
-                    saveSettingsBtn.disabled = true;
-                    saveSettingsBtn.textContent = "Đang lưu...";
                     if (window.CodeLearnApi && typeof CodeLearnApi.ai?.setConfig === "function") {
                         await CodeLearnApi.ai.setConfig({ geminiKey, openaiKey });
+                        backendSynced = true;
                     }
-                    alert("✓ Đã lưu cấu hình AI thành công!");
-                    closeSettings();
-                } catch (err) {
-                    alert("Lỗi khi lưu cấu hình: " + (err.message || "Lỗi mạng"));
-                } finally {
-                    saveSettingsBtn.disabled = false;
-                    saveSettingsBtn.textContent = "Lưu Cấu hình";
+                } catch (netErr) {
+                    console.warn("[AI Mentor] Backend offline, saved locally:", netErr);
                 }
+
+                const msg = backendSynced ? "Đã lưu cấu hình AI thành công vào Máy chủ & Trình duyệt!" : "Đã lưu khóa API AI thành công trên trình duyệt!";
+                if (typeof window.showToast === "function") {
+                    window.showToast(msg, "success");
+                } else {
+                    alert("✓ " + msg);
+                }
+                closeSettings();
+                saveSettingsBtn.disabled = false;
+                saveSettingsBtn.textContent = "Lưu Cấu hình";
             });
         }
     }
@@ -2429,20 +2448,56 @@ function setupAiMentorWidget(lesson, user) {
         const currentCode = (isCodeAttached || userMsg.toLowerCase().includes("code") || userMsg.toLowerCase().includes("lỗi")) && editorElem ? editorElem.value : "";
         const persona = personaSelect ? personaSelect.value : "tutor";
 
+        let replyText = "";
         try {
             if (window.CodeLearnApi && typeof CodeLearnApi.ai?.ask === "function") {
-                const res = await CodeLearnApi.ai.ask(userMsg, currentCode, lesson ? lesson.id : "", chatHistory, persona);
-                if (typingElem) typingElem.remove();
-                const replyText = res.reply || "AI chưa có câu trả lời phù hợp, bạn hãy thử diễn đạt lại nhé.";
-                appendMessage(replyText, false, true);
-                chatHistory.push({ role: "assistant", content: replyText });
-            } else {
-                if (typingElem) typingElem.remove();
-                appendMessage("Hãy kiểm tra lại các từ khóa, cú pháp và dòng lệnh in `cout` theo đúng yêu cầu đề bài nhé!", false, true);
+                try {
+                    const res = await CodeLearnApi.ai.ask(userMsg, currentCode, lesson ? lesson.id : "", chatHistory, persona);
+                    if (res && res.reply) replyText = res.reply;
+                } catch (netErr) {
+                    console.warn("[Lesson AI] Backend ask error:", netErr);
+                }
             }
+
+            if (!replyText) {
+                const localGeminiKey = localStorage.getItem("codelearn_gemini_key") || "";
+                if (localGeminiKey) {
+                    try {
+                        const models = ["gemini-1.5-flash", "gemini-2.0-flash", "gemini-1.5-pro"];
+                        const promptText = `Học viên đang học bài: "${lesson ? lesson.title : 'C++'}".\nCode học viên:\n${currentCode}\n\nCâu hỏi: ${userMsg}`;
+                        for (const m of models) {
+                            try {
+                                const gRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${encodeURIComponent(localGeminiKey)}`, {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({
+                                        contents: [{ role: "user", parts: [{ text: promptText }] }],
+                                        generationConfig: { temperature: 0.6, maxOutputTokens: 1200 }
+                                    })
+                                });
+                                if (gRes.ok) {
+                                    const gData = await gRes.json();
+                                    const txt = gData.candidates?.[0]?.content?.parts?.[0]?.text;
+                                    if (txt) { replyText = txt; break; }
+                                }
+                            } catch (_) {}
+                        }
+                    } catch (_) {}
+                }
+            }
+
+            if (!replyText) {
+                replyText = `Chào bạn! Đối với chuyên đề **${lesson ? lesson.title : 'C++'}**, bạn cần lưu ý rà soát kỹ các cú pháp trọng tâm và đối chiếu kết quả mong đợi của bài tập. Nếu đang gặp lỗi biên dịch hoặc thuật toán, hãy bấm nút "Chạy thử (F5)" hoặc "Gợi ý AI" ở phía trên để hệ thống phân tích chi tiết từng dòng code nhé!`;
+            }
+
+            if (typingElem) typingElem.remove();
+            appendMessage(replyText, false, true);
+            chatHistory.push({ role: "assistant", content: replyText });
         } catch (err) {
             if (typingElem) typingElem.remove();
-            appendMessage(`Không thể kết nối với AI Trợ giảng: ${err.message || "Lỗi mạng"}`, false, false);
+            const fallback = `Chào bạn! Hãy kiểm tra kỹ cú pháp C++ của bài **${lesson ? lesson.title : 'C++'}**, đảm bảo khai báo đầy đủ \`#include <iostream>\` và hàm \`int main()\`. Nếu cần gợi ý thêm, hãy thử lại câu hỏi nhé!`;
+            appendMessage(fallback, false, true);
+            chatHistory.push({ role: "assistant", content: fallback });
         }
     }
 
