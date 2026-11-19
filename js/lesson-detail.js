@@ -1284,37 +1284,67 @@ function gradeCode(
     }
 
     // --------------------------------------------------------
-    // 4. Mô phỏng chạy code & Kiểm tra kết quả (15 điểm)
+    // 4. Mô phỏng chạy code & Kiểm tra kết quả theo đề bài (15 điểm)
     // --------------------------------------------------------
-    const sim = simulateCppExecution(code, lesson);
-    if (sim && sim.success) {
-        score += 15;
-        strengths.push("Mã nguồn biên dịch thành công, dòng lệnh xuất kết quả rõ ràng.");
+    const expectedOutput = (ex.expectedOutput || "").trim();
+    let isOutputCorrect = false;
+
+    // Lấy input từ ô textarea #inputData nếu có
+    const inputElem = document.getElementById("inputData");
+    const inputVal = inputElem ? inputElem.value : "";
+    const sim = simulateCppExecution(code, lesson, inputVal);
+
+    if (expectedOutput) {
+        if (sim && sim.success) {
+            const actualOut = (sim.output || "").trim();
+            const normAct = actualOut.toLowerCase().replace(/\s+/g, " ");
+            const normExp = expectedOutput.toLowerCase().replace(/\s+/g, " ");
+            if (normAct === normExp || (normExp && normAct.includes(normExp))) {
+                isOutputCorrect = true;
+            } else {
+                const expNums = normExp.match(/-?\d+(?:\.\d+)?/g);
+                const actNums = normAct.match(/-?\d+(?:\.\d+)?/g);
+                if (expNums && actNums && JSON.stringify(expNums) === JSON.stringify(actNums)) {
+                    isOutputCorrect = true;
+                }
+            }
+        }
     } else {
-        improvements.push("Kiểm tra lại cú pháp dấu chấm phẩy ';' hoặc toán tử xuất << để chạy trơn tru.");
+        isOutputCorrect = sim && sim.success;
     }
 
-    // Giới hạn điểm 0 - 100
-    score = Math.max(10, Math.min(100, score));
+    if (isOutputCorrect) {
+        score += 15;
+        strengths.push("Mã nguồn biên dịch thành công, kết quả đầu ra khớp với yêu cầu đề bài.");
+    } else {
+        improvements.unshift(`Kết quả đầu ra '${sim ? sim.output : 'rỗng'}' KHÔNG đúng theo yêu cầu đề bài (Kỳ vọng: '${expectedOutput}').`);
+    }
 
     // --------------------------------------------------------
-    // 5. Đánh giá Mức độ hiểu bài (Comprehension Evaluation)
+    // 5. Đánh giá Mức độ hiểu bài & Tính điểm nghiêm ngặt
     // --------------------------------------------------------
     let comprehensionLevel = "";
     let advice = "";
+    let completed = false;
 
-    if (score >= 90) {
-        comprehensionLevel = "Thấu hiểu xuất sắc";
-        advice = `Học viên làm chủ tuyệt đối kiến thức chuyên đề "${lesson.title}". Cú pháp gãy gọn, tư duy giải quyết vấn đề mạch lạc. Bạn đã sẵn sàng chinh phục các bài tập thử thách cao hơn!`;
-    } else if (score >= 75) {
-        comprehensionLevel = "Nắm chắc kiến thức";
-        advice = `Học viên hiểu rõ bản chất bài học và áp dụng tốt vào code thực tế. Chỉ cần chú ý thêm chi tiết định dạng xuất hoặc các trường hợp biên nhỏ để đạt 100 điểm tuyệt đối.`;
-    } else if (score >= 50) {
-        comprehensionLevel = "Mức độ cơ bản";
-        advice = `Học viên đã nắm được khung cơ bản của bài tập. Hãy bấm nút "Gợi ý AI" ở phía trên và rà soát lại các điểm cần cải thiện để nâng cao điểm số nhé.`;
+    if (!isOutputCorrect) {
+        // NẾU LÀM SAI VÀ CHẠY KHÔNG ĐÚNG ĐỀ BÀI -> CHO SAI!
+        completed = false;
+        score = 20; // Điểm khuyến khích cú pháp tối đa 20 điểm
+        comprehensionLevel = "Bài làm SAI - Chưa đạt yêu cầu";
+        summary = `Bài làm SAI KẾT QUẢ (${score}/100): Chương trình chạy ra kết quả không khớp với yêu cầu của đề bài.`;
+        advice = `Vui lòng đọc lại đề bài và xem kết quả mẫu ở trên. Hãy kiểm tra các câu lệnh tính toán và câu lệnh xuất cout << để đưa ra kết quả chính xác.`;
     } else {
-        comprehensionLevel = "Cần ôn luyện thêm";
-        advice = `Bạn đang còn đôi chút bỡ ngỡ với bài toán này. Hãy kéo lên xem lại phần lý thuyết ở Mục 01 và tham khảo Code mẫu ở Mục 02, sau đó bấm "↻ Đặt lại" để thực hành lại nhé!`;
+        completed = true;
+        score = Math.max(80, Math.min(100, score + 15));
+        if (score >= 90) {
+            comprehensionLevel = "Thấu hiểu xuất sắc (90%+)";
+            advice = `Học viên làm chủ tuyệt đối kiến thức chuyên đề "${lesson.title}". Cú pháp gãy gọn, tư duy giải quyết vấn đề mạch lạc. Bạn đã sẵn sàng chinh phục các bài tập thử thách cao hơn!`;
+        } else {
+            comprehensionLevel = "Đạt yêu cầu vững vàng (75%+)";
+            advice = `Học viên hiểu rõ bản chất bài học và áp dụng tốt vào code thực tế. Chỉ cần chú ý thêm chi tiết định dạng xuất hoặc các trường hợp biên nhỏ để đạt 100 điểm tuyệt đối.`;
+        }
+        summary = `Hệ thống AI đánh giá học viên đạt ${score}/100 điểm với mức độ "${comprehensionLevel}" cho bài tập này.`;
     }
 
     if (strengths.length === 0) {
@@ -1326,13 +1356,13 @@ function gradeCode(
 
     return {
         score,
-        completed: score >= 60,
+        completed,
         comprehensionLevel,
         comprehensionPercent: score,
         strengths: strengths.join(" "),
         improvements: improvements.join(" "),
         advice,
-        summary: `Hệ thống AI đánh giá học viên đạt ${score}/100 điểm với mức độ "${comprehensionLevel}" cho bài tập này.`
+        summary
     };
 }
 
@@ -1363,18 +1393,20 @@ function showGradingResult(
         scoreElem.textContent = result.score;
     }
 
+    const isCompleted = Boolean(result.completed);
+
     // Mức độ hiểu bài & màu sắc
     const resultElem = document.getElementById("aiResult");
     if (resultElem) {
-        resultElem.textContent = result.comprehensionLevel || (result.score >= 60 ? "Đạt yêu cầu" : "Cần ôn luyện");
-        if (result.score >= 90) {
+        if (!isCompleted) {
+            resultElem.textContent = result.comprehensionLevel || "Bài làm SAI - Chưa đạt yêu cầu";
+            resultElem.style.color = "#ef4444"; // ĐỎ RỰC - BÁO SAI
+        } else if (result.score >= 90) {
+            resultElem.textContent = result.comprehensionLevel || "Hiểu bài xuất sắc (90%+)";
             resultElem.style.color = "#10b981"; // xanh ngọc
-        } else if (result.score >= 75) {
-            resultElem.style.color = "#7364f2"; // tím jewel starry lilac
-        } else if (result.score >= 50) {
-            resultElem.style.color = "#f59e0b"; // cam
         } else {
-            resultElem.style.color = "#ef4444"; // đỏ
+            resultElem.textContent = result.comprehensionLevel || "Đạt yêu cầu (75%+)";
+            resultElem.style.color = "#7364f2"; // tím jewel starry lilac
         }
     }
 
@@ -1382,14 +1414,12 @@ function showGradingResult(
     const meterFill = document.getElementById("aiComprehensionFill");
     if (meterFill) {
         meterFill.style.width = "0%";
-        if (result.score >= 90) {
-            meterFill.style.background = "linear-gradient(90deg, #10b981, #059669)";
-        } else if (result.score >= 75) {
-            meterFill.style.background = "linear-gradient(90deg, #b3a8f8, #7364f2)";
-        } else if (result.score >= 50) {
-            meterFill.style.background = "linear-gradient(90deg, #f59e0b, #d97706)";
-        } else {
+        if (!isCompleted) {
             meterFill.style.background = "linear-gradient(90deg, #ef4444, #dc2626)";
+        } else if (result.score >= 90) {
+            meterFill.style.background = "linear-gradient(90deg, #10b981, #059669)";
+        } else {
+            meterFill.style.background = "linear-gradient(90deg, #b3a8f8, #7364f2)";
         }
 
         setTimeout(() => {
@@ -1404,20 +1434,20 @@ function showGradingResult(
     }
 
     // Hiệu ứng ăn mừng và thông báo tương tác
-    if (result.score >= 80) {
+    if (!isCompleted) {
+        if (typeof window.showToast === "function") {
+            window.showToast(`Bài làm SAI KẾT QUẢ hoặc chưa đạt yêu cầu (${result.score}/100 điểm)!`, "error");
+        }
+    } else if (result.score >= 90) {
         if (typeof window.triggerConfetti === "function") {
             window.triggerConfetti();
         }
         if (typeof window.showToast === "function") {
             window.showToast(`Xuất sắc! Bạn đạt ${result.score}/100 điểm cho bài tập này!`, "success");
         }
-    } else if (result.score >= 60) {
-        if (typeof window.showToast === "function") {
-            window.showToast(`Đạt yêu cầu (${result.score}/100 điểm). Hãy xem gợi ý AI để đạt điểm tuyệt đối nhé!`, "info");
-        }
     } else {
         if (typeof window.showToast === "function") {
-            window.showToast(`Điểm số: ${result.score}/100. Hãy rà soát lại lỗi cú pháp và gợi ý của AI nhé!`, "warning");
+            window.showToast(`Đạt yêu cầu (${result.score}/100 điểm)! Hãy hoàn thiện thêm để đạt 100 điểm nhé!`, "info");
         }
     }
 

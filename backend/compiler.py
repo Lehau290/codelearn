@@ -581,23 +581,34 @@ def evaluate_exercise(
             improvements = []
 
             if passed_count == total_tc:
-                base_score = 80
-                kw_pts = int(kw_ratio * 15)
+                base_score = 85
+                kw_pts = int(kw_ratio * 10)
                 clean_pts = 5 if ("return 0;" in code) else 0
                 score = min(100, base_score + kw_pts + clean_pts)
                 passed = True
                 strengths.append(f"Vượt qua xuất sắc toàn bộ {total_tc}/{total_tc} bộ test kiểm thử.")
+                if score >= 90:
+                    comprehension_level = "Hiểu bài xuất sắc (90%+)"
+                else:
+                    comprehension_level = "Đạt yêu cầu vững vàng (75%+)"
+                summary = f"Tuyệt vời! Bạn đã vượt qua toàn bộ {total_tc}/{total_tc} test case với điểm số xuất sắc ({score}/100). Thuật toán tối ưu ({code_quality['timeComplexity']}) và phong cách code sạch sẽ."
+                advice = "Bạn đã nắm vững trọn vẹn kiến thức của bài học này. Hãy tiếp tục thử thách với các bài nâng cao hoặc tối ưu hóa thêm bộ nhớ!"
             elif passed_count > 0:
-                tc_ratio = passed_count / total_tc
-                base_score = 30 + int(tc_ratio * 35)
-                kw_pts = int(kw_ratio * 8)
-                score = max(35, min(73, base_score + kw_pts))
+                # Làm sai một phần -> CHO SAI (passed = False)
+                score = max(30, min(65, 30 + int((passed_count / total_tc) * 30)))
                 passed = False
+                comprehension_level = f"Chưa đạt yêu cầu ({passed_count}/{total_tc} tests)"
+                summary = f"Bài làm CHƯA ĐẠT ({score}/100): Chỉ vượt qua {passed_count}/{total_tc} test case. Chương trình chưa thỏa mãn mọi trường hợp kiểm thử của đề bài."
+                advice = "Đọc kỹ lại yêu cầu đề bài, xem các test case bị sai kết quả để điều chỉnh thuật toán cho toàn diện."
                 improvements.append(f"Chỉ vượt qua {passed_count}/{total_tc} bộ test. Cần kiểm tra lại các trường hợp biên hoặc định dạng xuất.")
             else:
-                score = min(30, 25 + int(kw_ratio * 5))
+                # Làm sai hoàn toàn hoặc không khớp kết quả -> CHO SAI (passed = False, 20 điểm)
+                score = 20
                 passed = False
-                improvements.append(f"Chưa vượt qua bộ test nào (0/{total_tc}). Vui lòng kiểm tra lại thuật toán tính toán và định dạng in ấn.")
+                comprehension_level = "Bài làm SAI - Không đạt yêu cầu"
+                summary = f"Bài làm SAI KẾT QUẢ ({score}/100): Không vượt qua test case nào (0/{total_tc}). Chương trình chạy không đúng theo yêu cầu của đề bài."
+                advice = "Thuật toán hoặc định dạng xuất của bạn không chính xác. Hãy xem kỹ yêu cầu đề bài, đối chiếu kết quả kỳ vọng ở các test case để sửa lại logic."
+                improvements.append(f"Chưa vượt qua bộ test nào (0/{total_tc}). Vui lòng kiểm tra lại thuật toán tính toán và định dạng in ấn theo đề bài.")
 
             if test_keywords:
                 if kw_ratio >= 0.8:
@@ -615,25 +626,6 @@ def evaluate_exercise(
                     improvements.append(bp)
                 else:
                     strengths.append(bp)
-
-            score = max(20, min(100, score))
-
-            if score >= 90:
-                comprehension_level = "Hiểu bài xuất sắc (90%+)"
-                summary = f"Tuyệt vời! Bạn đã vượt qua toàn bộ {total_tc}/{total_tc} test case với điểm số xuất sắc ({score}/100). Thuật toán tối ưu ({code_quality['timeComplexity']}) và phong cách code sạch sẽ."
-                advice = "Bạn đã nắm vững trọn vẹn kiến thức của bài học này. Hãy tiếp tục thử thách với các bài nâng cao hoặc tối ưu hóa thêm bộ nhớ!"
-            elif score >= 75:
-                comprehension_level = "Đạt yêu cầu vững vàng (75%+)"
-                summary = f"Khá tốt! Bạn đã vượt qua {passed_count}/{total_tc} test case và hoàn thành bài tập đạt chuẩn ({score}/100)."
-                advice = "Nên chú ý định dạng in ấn (`endl`, khoảng trắng) và kiểm tra lại những trường hợp biên đặc biệt để đạt điểm tuyệt đối."
-            elif score >= 50:
-                comprehension_level = "Cần cải thiện (50%+)"
-                summary = f"Chương trình chạy được nhưng chỉ vượt qua {passed_count}/{total_tc} test case ({score}/100)."
-                advice = "Đọc kỹ lại yêu cầu đề bài, xem các test case bị trượt để điều chỉnh logic rẽ nhánh hoặc vòng lặp."
-            else:
-                comprehension_level = "Chưa đạt yêu cầu kiểm thử"
-                summary = f"Bài làm chưa đạt yêu cầu kiểm thử ({score}/100). Chỉ vượt qua {passed_count}/{total_tc} test case."
-                advice = "Hãy ôn lại lý thuyết bài học, xem code mẫu và thử chạy từng bước với dữ liệu nhỏ."
 
             if vnoi_benchmark:
                 if passed:
@@ -705,25 +697,24 @@ def evaluate_exercise(
     if norm_expected:
         if norm_actual == norm_expected:
             output_matched = True
-            score += 40
             strengths.append(f"Kết quả đầu ra chính xác 100% khớp với đề bài: \"{norm_expected}\".")
         elif check_output_match(actual_out, expected_output):
             output_matched = True
-            score += 38
             strengths.append(f"Kết quả đầu ra khớp logic với kết quả mong đợi của bài toán: \"{norm_expected}\".")
         else:
-            score += 10
-            improvements.append(f"Kết quả xuất ({norm_actual or 'rỗng'}) chưa khớp với kết quả mong đợi ({norm_expected}).")
+            output_matched = False
+            improvements.append(f"Kết quả xuất ({norm_actual or 'rỗng'}) KHÔNG khớp với kết quả mong đợi ({norm_expected}).")
     else:
-        score += 35
+        output_matched = True
         strengths.append("Chương trình thực thi trơn tru và trả về mã kết thúc 0.")
 
     code_lower = code.lower()
+    matched_kw = []
+    missing_kw = []
     if test_keywords:
         matched_kw = [kw for kw in test_keywords if kw.lower() in code_lower]
         kw_ratio = len(matched_kw) / len(test_keywords) if test_keywords else 1.0
-        kw_pts = int(kw_ratio * 20)
-        score += kw_pts
+        kw_pts = int(kw_ratio * 10)
         if kw_ratio >= 0.8:
             strengths.append(f"Vận dụng tốt các từ khóa và cú pháp cốt lõi: {', '.join(matched_kw)}.")
         else:
@@ -731,12 +722,10 @@ def evaluate_exercise(
             if missing_kw:
                 improvements.append(f"Cần áp dụng thêm các cú pháp trọng tâm của bài: {', '.join(missing_kw)}.")
     else:
-        score += 20
+        kw_pts = 10
 
     if "return 0;" in code:
         strengths.append("Có lệnh 'return 0;' chuẩn mực kết thúc hàm main().")
-    else:
-        improvements.append("Nên thêm 'return 0;' ở cuối hàm main() để báo hiệu chương trình kết thúc thành công.")
 
     if run_res.get("execution_time_ms", 0) < 50:
         strengths.append(f"Tốc độ thực thi tối ưu cực nhanh ({run_res.get('execution_time_ms')}ms).")
@@ -747,25 +736,26 @@ def evaluate_exercise(
         else:
             strengths.append(bp)
 
-    score = max(20, min(100, score))
-    passed = score >= 75
-
-    if score >= 90:
-        comprehension_level = "Hiểu bài xuất sắc (90%+)"
-        summary = f"Rất xuất sắc! Chương trình C++ của bạn chạy chuẩn xác ({score}/100), tốc độ thực thi nhanh và phong cách lập trình sạch."
-        advice = "Bạn nắm rất vững chuyên đề này. Hãy sẵn sàng cho bài học tiếp theo!"
-    elif score >= 75:
-        comprehension_level = "Đạt yêu cầu (75%+)"
-        summary = f"Đạt chuẩn ({score}/100). Chương trình chạy đúng yêu cầu cơ bản."
-        advice = "Hãy hoàn thiện các chi tiết nhỏ trong phần gợi ý cải thiện để đạt mức điểm tối đa."
-    elif score >= 50:
-        comprehension_level = "Cần cải thiện (50%+)"
-        summary = f"Chương trình chạy được nhưng chưa hoàn toàn khớp với đề bài ({score}/100)."
-        advice = "Kiểm tra lại định dạng xuất và các câu lệnh điều kiện."
+    # Đánh giá độ chính xác tuyệt đối: Nếu làm sai hoặc không đúng đề bài -> CHO SAI!
+    if not output_matched:
+        passed = False
+        score = 20
+        comprehension_level = "Bài làm SAI - Không đạt yêu cầu"
+        summary = f"Bài làm SAI KẾT QUẢ ({score}/100): Kết quả đầu ra '{norm_actual or 'rỗng'}' không đúng theo yêu cầu đề bài (Kỳ vọng: '{norm_expected}')."
+        advice = "Hãy đọc kỹ yêu cầu đề bài, kiểm tra lại biến và câu lệnh cout để in đúng kết quả mong đợi."
     else:
-        comprehension_level = "Cần ôn luyện kỹ lại lý thuyết"
-        summary = f"Bài tập chưa đạt chuẩn ({score}/100)."
-        advice = "Hãy xem lại lý thuyết bài học và thử chạy từng lệnh nhỏ để hiểu rõ bài toán."
+        passed = True
+        base_score = 85
+        clean_pts = 5 if ("return 0;" in code) else 0
+        score = min(100, base_score + kw_pts + clean_pts)
+        if score >= 90:
+            comprehension_level = "Hiểu bài xuất sắc (90%+)"
+            summary = f"Rất xuất sắc! Chương trình C++ của bạn chạy chuẩn xác ({score}/100), tốc độ thực thi nhanh và phong cách lập trình sạch."
+            advice = "Bạn nắm rất vững chuyên đề này. Hãy sẵn sàng cho bài học tiếp theo!"
+        else:
+            comprehension_level = "Đạt yêu cầu (75%+)"
+            summary = f"Đạt chuẩn ({score}/100). Chương trình chạy đúng theo yêu cầu đề bài."
+            advice = "Hãy hoàn thiện các chi tiết nhỏ trong phần gợi ý cải thiện để đạt mức điểm tối đa."
 
     if vnoi_benchmark:
         if passed:
