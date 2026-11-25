@@ -240,16 +240,12 @@ function renderFeaturedLessons(user, selectedChap = "featured") {
                         </span>
 
                         <span class="lesson-status ${completed ? "completed" : ""}">
-                            ${completed ? "✓ Đã hoàn thành" : `○ ${escapeHtml(level)}`}
+                            ${completed ? "Đã hoàn thành" : escapeHtml(level)}
                         </span>
                     </div>
 
                     <div class="lesson-card-header">
-                        <div class="lesson-card-icon">
-                            ${getLessonIcon(orderNum - 1)}
-                        </div>
-
-                        <span class="lesson-chapter">
+                                                <span class="lesson-chapter">
                             ${escapeHtml(
                                 lesson.chapter ||
                                 "Chương 1: Bắt đầu với C++"
@@ -272,7 +268,7 @@ function renderFeaturedLessons(user, selectedChap = "featured") {
 
                     <div class="lesson-card-footer">
                         <span class="lesson-duration">
-                            ⏱ ${escapeHtml(
+                            ${escapeHtml(
                                 lesson.duration ||
                                 "25 phút"
                             )} • 3 Bài tập
@@ -365,31 +361,7 @@ function setupContinueLearning(user) {
 // ============================================================
 
 function getLessonIcon(index) {
-    const icons = [
-        "🚀",
-        "📦",
-        "⌨️",
-        "➗",
-        "🔀",
-        "🔁",
-        "🧩",
-        "📝"
-    ];
-
-    return icons[index % icons.length];
-}
-
-
-// ============================================================
-// SET TEXT AN TOÀN
-// ============================================================
-
-function setText(id, value) {
-    const element = document.getElementById(id);
-
-    if (element) {
-        element.textContent = value;
-    }
+    return "";
 }
 
 
@@ -714,7 +686,7 @@ function initHeroLiveCodeTyping() {
 
             setTimeout(() => {
                 if (badgeElem) {
-                    badgeElem.textContent = "Đã biên dịch ✓";
+                    badgeElem.textContent = "Đã biên dịch";
                     badgeElem.style.background = "rgba(16, 185, 129, 0.2)";
                     badgeElem.style.color = "#34d399";
                     badgeElem.style.borderColor = "rgba(16, 185, 129, 0.35)";

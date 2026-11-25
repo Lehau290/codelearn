@@ -45,8 +45,8 @@
                         </div>
                     </div>
                     <div style="display: flex; align-items: center; gap: 4px;">
-                        <button type="button" id="btnAiSettings" class="ai-reset-btn" title="Cài đặt AI & API Key" aria-label="Cài đặt AI">⚙️</button>
-                        <button type="button" id="btnResetAiMentor" class="ai-reset-btn" title="Làm mới hội thoại" aria-label="Làm mới hội thoại">🔄</button>
+                        <button type="button" id="btnAiSettings" class="ai-reset-btn" title="Cài đặt AI & API Key" aria-label="Cài đặt AI"></button>
+                        <button type="button" id="btnResetAiMentor" class="ai-reset-btn" title="Làm mới hội thoại" aria-label="Làm mới hội thoại"></button>
                         <button type="button" id="btnCloseAiMentor" class="ai-close-btn" aria-label="Đóng Trợ lý AI">✕</button>
                     </div>
                 </div>
@@ -70,17 +70,17 @@
 
                 <!-- Quick prompt chips -->
                 <div class="ai-quick-chips">
-                    <button type="button" class="ai-chip" data-prompt="Giải thích lập trình hướng đối tượng OOP trong C++ là gì?">🏛️ Giải thích OOP</button>
+                    <button type="button" class="ai-chip" data-prompt="Giải thích lập trình hướng đối tượng OOP trong C++ là gì?">Giải thích OOP</button>
                     <button type="button" class="ai-chip" data-prompt="Con trỏ thông minh unique_ptr và shared_ptr khác nhau thế nào?">Con trỏ thông minh</button>
-                    <button type="button" class="ai-chip" data-prompt="Sự khác nhau giữa struct và class trong C++?">⚖️ Struct vs Class</button>
-                    <button type="button" class="ai-chip" data-prompt="Giải thích thuật toán sắp xếp nhanh QuickSort">⚡ Thuật toán QuickSort</button>
+                    <button type="button" class="ai-chip" data-prompt="Sự khác nhau giữa struct và class trong C++?">Struct vs Class</button>
+                    <button type="button" class="ai-chip" data-prompt="Giải thích thuật toán sắp xếp nhanh QuickSort">Thuật toán QuickSort</button>
                     <button type="button" class="ai-chip" data-prompt="Viết code C++ kiểm tra số nguyên tố tối ưu">Code số nguyên tố</button>
-                    <button type="button" class="ai-chip" data-prompt="Lỗi Segmentation fault là gì và cách phòng ngừa?">💥 Sửa lỗi Segfault</button>
+                    <button type="button" class="ai-chip" data-prompt="Lỗi Segmentation fault là gì và cách phòng ngừa?">Sửa lỗi Segfault</button>
                 </div>
 
                 <form id="aiMentorForm" class="ai-mentor-input-row">
                     <div class="ai-input-tools">
-                        <button type="button" id="btnAiVoice" class="ai-tool-btn" title="Nhập liệu bằng giọng nói" aria-label="Nói vào micro">🎙️</button>
+                        <button type="button" id="btnAiVoice" class="ai-tool-btn" title="Nhập liệu bằng giọng nói" aria-label="Nói vào micro"></button>
                     </div>
                     <input type="text" id="aiMentorInput" placeholder="Hỏi AI về bất kỳ điều gì trong C++..." autocomplete="off">
                     <button type="submit" id="btnSendAiMentor" class="btn btn-primary" title="Gửi câu hỏi">Gửi</button>
@@ -311,7 +311,7 @@
                     if (typeof window.showToast === "function") {
                         window.showToast(successMsg, "success");
                     } else {
-                        alert("✓ " + successMsg);
+                        alert(successMsg);
                     }
 
                     closeSettings();
@@ -403,7 +403,7 @@
                         if (navigator.clipboard) {
                             navigator.clipboard.writeText(raw).then(() => {
                                 const oldText = btn.innerHTML;
-                                btn.innerHTML = "✓ Đã chép!";
+                                btn.innerHTML = "Đã chép!";
                                 btn.style.color = "#10b981";
                                 setTimeout(() => {
                                     btn.innerHTML = oldText;
@@ -424,7 +424,7 @@
                     actionsRow.querySelector(".btn-copy-reply").addEventListener("click", () => {
                         if (navigator.clipboard) {
                             navigator.clipboard.writeText(text).then(() => {
-                                actionsRow.querySelector(".btn-copy-reply").textContent = "✓ Đã chép!";
+                                actionsRow.querySelector(".btn-copy-reply").textContent = "Đã chép!";
                                 setTimeout(() => { actionsRow.querySelector(".btn-copy-reply").textContent = "Sao chép"; }, 2000);
                             });
                         }
@@ -490,19 +490,19 @@
                 return "Chào bạn! Mình là **CodeLearn AI** - Trợ lý & Gia sư C++ đồng hành cùng bạn. Bạn đang cần giải đáp lý thuyết hay hỗ trợ bài tập nào hôm nay?";
             }
             if (low.includes("con trỏ") || low.includes("pointer")) {
-                return "📚 **Con trỏ (Pointers) trong C++:**\n\nCon trỏ là một biến đặc biệt dùng để lưu trữ **địa chỉ ô nhớ** của một biến khác.\n\n- Khai báo: `int *ptr = &x;` (`&` lấy địa chỉ ô nhớ của `x`)\n- Toán tử giải tham chiếu: `*ptr` để truy xuất hoặc thay đổi giá trị tại ô nhớ đó.\n\n```cpp\n#include <iostream>\nusing namespace std;\n\nint main() {\n    int a = 100;\n    int *ptr = &a;\n    cout << \"Gia tri a: \" << *ptr << endl;\n    cout << \"Dia chi o nho: \" << ptr << endl;\n    return 0;\n}\n```";
+                return "**Con trỏ (Pointers) trong C++:**\n\nCon trỏ là một biến đặc biệt dùng để lưu trữ **địa chỉ ô nhớ** của một biến khác.\n\n- Khai báo: `int *ptr = &x;` (`&` lấy địa chỉ ô nhớ của `x`)\n- Toán tử giải tham chiếu: `*ptr` để truy xuất hoặc thay đổi giá trị tại ô nhớ đó.\n\n```cpp\n#include <iostream>\nusing namespace std;\n\nint main() {\n    int a = 100;\n    int *ptr = &a;\n    cout << \"Gia tri a: \" << *ptr << endl;\n    cout << \"Dia chi o nho: \" << ptr << endl;\n    return 0;\n}\n```";
             }
             if (low.includes("vòng lặp") || low.includes("for") || low.includes("while")) {
-                return "🔄 **Vòng lặp trong C++:**\n\n- `for`: Thích hợp khi biết trước số lần lặp (ví dụ duyệt từ 1 đến N).\n- `while`: Lặp khi một điều kiện còn đúng, kiểm tra điều kiện trước khi thực thi thân vòng lặp.\n- `do-while`: Thực thi thân vòng lặp ít nhất 1 lần trước khi kiểm tra điều kiện.\n\n```cpp\nfor (int i = 1; i <= 5; i++) {\n    cout << i << \" \";\n}\n```";
+                return "**Vòng lặp trong C++:**\n\n- `for`: Thích hợp khi biết trước số lần lặp (ví dụ duyệt từ 1 đến N).\n- `while`: Lặp khi một điều kiện còn đúng, kiểm tra điều kiện trước khi thực thi thân vòng lặp.\n- `do-while`: Thực thi thân vòng lặp ít nhất 1 lần trước khi kiểm tra điều kiện.\n\n```cpp\nfor (int i = 1; i <= 5; i++) {\n    cout << i << \" \";\n}\n```";
             }
             if (low.includes("mảng") || low.includes("array") || low.includes("vector")) {
-                return "📦 **Mảng (Array) & Vector trong C++:**\n\n- Mảng tĩnh: `int a[100];` cấp phát cố định trên Stack.\n- Vector động: `#include <vector>` và `vector<int> v;` tự động co giãn kích thước.\n\n```cpp\n#include <iostream>\n#include <vector>\nusing namespace std;\n\nint main() {\n    vector<int> a = {1, 2, 3, 4, 5};\n    a.push_back(6);\n    for (int x : a) cout << x << \" \";\n    return 0;\n}\n```";
+                return "**Mảng (Array) & Vector trong C++:**\n\n- Mảng tĩnh: `int a[100];` cấp phát cố định trên Stack.\n- Vector động: `#include <vector>` và `vector<int> v;` tự động co giãn kích thước.\n\n```cpp\n#include <iostream>\n#include <vector>\nusing namespace std;\n\nint main() {\n    vector<int> a = {1, 2, 3, 4, 5};\n    a.push_back(6);\n    for (int x : a) cout << x << \" \";\n    return 0;\n}\n```";
             }
             if (low.includes("hàm") || low.includes("function") || low.includes("tham chiếu")) {
-                return "⚙️ **Hàm & Tham chiếu trong C++:**\n\n- Truyền tham trị (`int x`): Hàm nhận bản sao, biến gốc bên ngoài không thay đổi.\n- Truyền tham chiếu (`int &x`): Hàm thao tác trực tiếp trên biến gốc, giúp tiết kiệm bộ nhớ và cập nhật giá trị ra ngoài hàm.\n\n```cpp\nvoid hoanDoi(int &a, int &b) {\n    int temp = a;\n    a = b;\n    b = temp;\n}\n```";
+                return "**Hàm & Tham chiếu trong C++:**\n\n- Truyền tham trị (`int x`): Hàm nhận bản sao, biến gốc bên ngoài không thay đổi.\n- Truyền tham chiếu (`int &x`): Hàm thao tác trực tiếp trên biến gốc, giúp tiết kiệm bộ nhớ và cập nhật giá trị ra ngoài hàm.\n\n```cpp\nvoid hoanDoi(int &a, int &b) {\n    int temp = a;\n    a = b;\n    b = temp;\n}\n```";
             }
             if (low.includes("class") || low.includes("struct") || low.includes("oop") || low.includes("đối tượng")) {
-                return "🏛️ **Lập trình hướng đối tượng (OOP) trong C++:**\n\n- `class`: Đóng gói thuộc tính (private) và phương thức (public).\n- Constructor: Tự động gọi khi khởi tạo đối tượng.\n- Kế thừa: `class Con : public Cha { ... };` tái sử dụng và mở rộng tính năng.";
+                return "**Lập trình hướng đối tượng (OOP) trong C++:**\n\n- `class`: Đóng gói thuộc tính (private) và phương thức (public).\n- Constructor: Tự động gọi khi khởi tạo đối tượng.\n- Kế thừa: `class Con : public Cha { ... };` tái sử dụng và mở rộng tính năng.";
             }
             return "Cảm ơn bạn đã đặt câu hỏi! Để mình hướng dẫn chính xác và tối ưu nhất cho bạn, bạn có thể dán đoạn code C++ đang làm hoặc nêu rõ yêu cầu bài tập của bài học hiện tại nhé! Mình sẽ phân tích từng dòng và gợi ý thuật toán ngay cho bạn!";
         }

@@ -382,7 +382,7 @@ function setupCurriculumOverviewToggle() {
             btnToggle.classList.toggle("is-collapsed-state", isHidden);
         }
         if (iconEl) {
-            iconEl.textContent = isHidden ? "▼" : "▲";
+            iconEl.textContent = "";
         }
         if (textEl) {
             textEl.textContent = isHidden ? "Hiện tất cả các chương" : "Ẩn tất cả các chương";
@@ -831,15 +831,11 @@ function createLessonCard(
                     ${String(lessonOrderNumber).padStart(2, "0")}
                 </span>
                 <span class="lesson-status ${completed ? 'completed' : ''}">
-                    ${completed ? "✓" : "●"}
+                    ${completed ? "Đã xong" : ""}
                 </span>
             </div>
 
-            <div class="lesson-card-icon">
-                ${getLessonIcon(index)}
-            </div>
-
-            <div class="lesson-card-content">
+                        <div class="lesson-card-content">
                 <div class="lesson-card-meta">
                     <span class="lesson-chapter">
                         ${escapeHtml(lesson.chapter || "C++ Cơ bản")}
@@ -984,36 +980,7 @@ function updateOverallProgress(
 // ============================================================
 
 function getLessonIcon(index) {
-    const icons = [
-        "🚀",
-        "📦",
-        "⌨️",
-        "➗",
-        "🔀",
-        "🔁",
-        "🧩",
-        "📝",
-        "⚙️",
-        "💡"
-    ];
-
-    return icons[
-        index % icons.length
-    ];
-}
-
-
-// ============================================================
-// SET TEXT
-// ============================================================
-
-function setText(id, value) {
-    const element =
-        document.getElementById(id);
-
-    if (element) {
-        element.textContent = value;
-    }
+    return "";
 }
 
 

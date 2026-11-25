@@ -439,8 +439,8 @@ function showToast(message, type = "info", duration = 3200) {
     toast.className = `toast-item toast-${type}`;
 
     const icons = {
-        success: "✓",
-        error: "✕",
+        success: "",
+        error: "",
         warning: "!",
         info: "ℹ️"
     };
@@ -567,7 +567,7 @@ function setupCodeCopyButtons() {
             const code = pre.querySelector("code") ? pre.querySelector("code").innerText : pre.innerText;
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(code).then(() => {
-                    btn.innerHTML = "Đã chép ✓";
+                    btn.innerHTML = "Đã chép";
                     btn.classList.add("copied");
                     showToast("Đã sao chép mã nguồn vào clipboard!", "success", 2000);
                     setTimeout(() => {

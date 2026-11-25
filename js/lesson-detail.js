@@ -446,13 +446,13 @@ function updateExerciseTabStatuses(user, lesson) {
         } catch (e) {}
 
         if (savedResult && savedResult.score >= 60) {
-            statusIcon.textContent = "✓";
+            statusIcon.textContent = "";
             statusIcon.title = `Đã hoàn thành (${savedResult.score}/100)`;
         } else if (savedResult && savedResult.score > 0) {
-            statusIcon.textContent = "●";
+            statusIcon.textContent = "";
             statusIcon.title = `Đã làm (${savedResult.score}/100)`;
         } else {
-            statusIcon.textContent = "⏳";
+            statusIcon.textContent = "";
             statusIcon.title = "Chưa làm";
         }
     }
@@ -530,7 +530,7 @@ function switchExercise(index, user, lesson) {
     // Cập nhật điểm
     const pointsTag = document.getElementById("exercisePointsTag");
     if (pointsTag) {
-        pointsTag.textContent = `⭐ ${ex.points || 100} điểm`;
+        pointsTag.textContent = `${ex.points || 100} điểm`;
     }
 
     // Cập nhật tiêu đề bài
@@ -699,7 +699,7 @@ function setupCodeEditor(
             updateLineNumbers();
             editor.dispatchEvent(new Event("input"));
             const orig = formatBtn.textContent;
-            formatBtn.textContent = "✓ Đã Format!";
+            formatBtn.textContent = "Đã Format!";
             setTimeout(() => { formatBtn.textContent = orig; }, 1500);
         });
     }
@@ -761,7 +761,7 @@ function setupCodeEditor(
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(editor.value).then(() => {
                     const originalText = copyBtn.textContent;
-                    copyBtn.textContent = "✓ Đã chép!";
+                    copyBtn.textContent = "Đã chép!";
                     setTimeout(() => {
                         copyBtn.textContent = originalText;
                     }, 1500);
@@ -789,7 +789,7 @@ function setupCodeEditor(
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(textToCopy).then(() => {
                     const originalText = copyExampleBtn.textContent;
-                    copyExampleBtn.textContent = "✓ Đã chép!";
+                    copyExampleBtn.textContent = "Đã chép!";
                     setTimeout(() => {
                         copyExampleBtn.textContent = originalText;
                     }, 1500);
@@ -893,14 +893,14 @@ function setupRunButton(
 
             button.disabled = true;
             button.textContent = "Đang biên dịch C++...";
-            output.textContent = "⏳ Đang kết nối trình biên dịch g++ và chạy chương trình...";
+            output.textContent = "Đang kết nối trình biên dịch g++ và chạy chương trình...";
 
             // Kiểm tra Backend API trước
             if (window.CodeLearnApi && typeof CodeLearnApi.compiler?.compile === "function") {
                 CodeLearnApi.compiler.compile(code, inputVal)
                     .then(res => {
                         button.disabled = false;
-                        button.textContent = "▶ Chạy thử";
+                        button.textContent = "Chạy thử";
 
                         if (res.success) {
                             const outText = res.output ? res.output : "(Chương trình chạy thành công không có output)";
@@ -918,14 +918,14 @@ function setupRunButton(
                         const result = simulateCppExecution(code, lesson, inputVal);
                         output.textContent = result.output;
                         button.disabled = false;
-                        button.textContent = "▶ Chạy thử";
+                        button.textContent = "Chạy thử";
                     });
             } else {
                 setTimeout(() => {
                     const result = simulateCppExecution(code, lesson, inputVal);
                     output.textContent = result.output;
                     button.disabled = false;
-                    button.textContent = "▶ Chạy thử";
+                    button.textContent = "Chạy thử";
                 }, 400);
             }
         }
@@ -1104,7 +1104,7 @@ function setupSubmitButton(
 
             button.disabled = true;
             const originalBtnHtml = button.innerHTML;
-            button.innerHTML = `<span>⏳</span> Đang chấm code & AI đánh giá...`;
+            button.innerHTML = `Đang chấm code & AI đánh giá...`;
 
             const ex = currentLessonExercises[activeExerciseIndex] || currentLessonExercises[0] || {};
 
@@ -1536,7 +1536,7 @@ function showGradingResult(
             } else {
                 detailsHtml = `
                     <div style="margin-top: 4px; font-size: 0.78rem; color: var(--text-muted);">
-                        ${isPass ? '<span style="color: #10b981;">✓ Dữ liệu kiểm thử ẩn đối chiếu thành công</span>' : '<span style="color: #ef4444;">✕ Sai lệch kết quả trên bộ dữ liệu kiểm thử ẩn</span>'}
+                        ${isPass ? '<span style="color: #10b981;">Dữ liệu kiểm thử ẩn đối chiếu thành công</span>' : '<span style="color: #ef4444;">Sai lệch kết quả trên bộ dữ liệu kiểm thử ẩn</span>'}
                     </div>
                 `;
             }
@@ -1550,7 +1550,7 @@ function showGradingResult(
                         </div>
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <span style="font-size: 0.75rem; color: var(--text-muted);">${tc.executionTimeMs || 0}ms</span>
-                            <span class="testcase-badge ${isPass ? 'pass' : 'fail'}">${isPass ? '✓ Đạt' : '✕ Sai kết quả'}</span>
+                            <span class="testcase-badge ${isPass ? 'pass' : 'fail'}">${isPass ? 'Đạt' : 'Sai kết quả'}</span>
                         </div>
                     </div>
                     ${detailsHtml}
@@ -1591,12 +1591,12 @@ function showGradingResult(
                 certDiv.style.background = "#ecfdf5";
                 certDiv.style.border = "1px solid #a7f3d0";
                 certDiv.style.color = "#065f46";
-                certDiv.innerHTML = "<span>✓</span> <strong>CHỨNG NHẬN TẬP TRUNG:</strong> Hoàn thành bài làm trong Chế độ Khóa màn hình đạt chuẩn trung thực (0 lần vi phạm rời trang).";
+                certDiv.innerHTML = "<strong>CHỨNG NHẬN TẬP TRUNG:</strong> Hoàn thành bài làm trong Chế độ Khóa màn hình đạt chuẩn trung thực (0 lần vi phạm rời trang).";
             } else {
                 certDiv.style.background = "#fff1f2";
                 certDiv.style.border = "1px solid #fecdd3";
                 certDiv.style.color = "#9f1239";
-                certDiv.innerHTML = `<span>⚠</span> <strong>CẢNH BÁO GIÁM SÁT:</strong> Trong phiên làm bài ghi nhận <strong>${fStatus.violationCount} lần rời khỏi màn hình</strong>.`;
+                certDiv.innerHTML = `<strong>CẢNH BÁO GIÁM SÁT:</strong> Trong phiên làm bài ghi nhận <strong>${fStatus.violationCount} lần rời khỏi màn hình</strong>.`;
             }
             feedbackBox.appendChild(certDiv);
         }
@@ -1627,7 +1627,7 @@ function updateLessonStatus(
         if (progress.completed) {
 
             statusElement.textContent =
-                "✓ Đã hoàn thành";
+                "Đã hoàn thành";
 
             statusElement.classList.add(
                 "completed"
@@ -1798,7 +1798,7 @@ function renderCourseNavigation(
                             <span class="course-nav-status sidebar-lesson-status">
                                 ${
                                     completed
-                                        ? "✓"
+                                        ? "Xong"
                                         : ""
                                 }
                             </span>
@@ -2285,7 +2285,7 @@ function setupAiMentorWidget(lesson, user) {
                 if (typeof window.showToast === "function") {
                     window.showToast(msg, "success");
                 } else {
-                    alert("✓ " + msg);
+                    alert(msg);
                 }
                 closeSettings();
                 saveSettingsBtn.disabled = false;
@@ -2314,7 +2314,7 @@ function setupAiMentorWidget(lesson, user) {
                 actionsRow.querySelector(".btn-copy-reply").addEventListener("click", () => {
                     if (navigator.clipboard) {
                         navigator.clipboard.writeText(text).then(() => {
-                            actionsRow.querySelector(".btn-copy-reply").textContent = "✓ Đã chép!";
+                            actionsRow.querySelector(".btn-copy-reply").textContent = "Đã chép!";
                             setTimeout(() => { actionsRow.querySelector(".btn-copy-reply").textContent = "Sao chép"; }, 2000);
                         });
                     }
@@ -2403,7 +2403,7 @@ function setupAiMentorWidget(lesson, user) {
                 if (navigator.clipboard) {
                     navigator.clipboard.writeText(raw).then(() => {
                         const oldText = btn.innerHTML;
-                        btn.innerHTML = "✓ Đã chép!";
+                        btn.innerHTML = "Đã chép!";
                         btn.style.color = "#10b981";
                         setTimeout(() => {
                             btn.innerHTML = oldText;
@@ -2421,7 +2421,7 @@ function setupAiMentorWidget(lesson, user) {
                 if (editor) {
                     editor.value = raw;
                     editor.dispatchEvent(new Event("input"));
-                    btn.innerHTML = "✓ Đã đưa vào Editor!";
+                    btn.innerHTML = "Đã đưa vào Editor!";
                     setTimeout(() => {
                         btn.innerHTML = "Vào Editor";
                     }, 2000);

@@ -8,31 +8,31 @@ const PRESET_AVATARS = [
     {
         id: "preset-coder-boy",
         name: "Coder Nam",
-        icon: "👨‍💻",
+        icon: "",
         svg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="50" fill="%238b5cf6"/><circle cx="50" cy="42" r="22" fill="%23fde047"/><rect x="32" y="38" width="14" height="8" rx="3" fill="%231e1b4b"/><rect x="54" y="38" width="14" height="8" rx="3" fill="%231e1b4b"/><rect x="46" y="41" width="8" height="2" fill="%231e1b4b"/><path d="M 24 95 Q 50 68 76 95 Z" fill="%236d28d9"/><path d="M 36 28 Q 50 14 64 28 Q 50 24 36 28 Z" fill="%23451a03"/></svg>`
     },
     {
         id: "preset-coder-girl",
         name: "Coder Nữ",
-        icon: "👩‍💻",
+        icon: "",
         svg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="50" fill="%23ec4899"/><circle cx="50" cy="42" r="21" fill="%23fed7aa"/><circle cx="42" cy="40" r="3" fill="%231f2937"/><circle cx="58" cy="40" r="3" fill="%231f2937"/><path d="M 44 48 Q 50 54 56 48" stroke="%23e11d48" stroke-width="2" fill="none"/><path d="M 28 32 C 28 14 72 14 72 32 C 76 46 68 56 70 64 C 66 58 66 40 66 38 C 50 28 34 38 34 38 C 34 40 34 58 30 64 C 32 56 24 46 28 32 Z" fill="%2378350f"/><rect x="22" y="36" width="6" height="14" rx="3" fill="%233b82f6"/><rect x="72" y="36" width="6" height="14" rx="3" fill="%233b82f6"/><path d="M 25 36 A 25 25 0 0 1 75 36" stroke="%233b82f6" stroke-width="4" fill="none"/><path d="M 22 96 Q 50 70 78 96 Z" fill="%23be185d"/></svg>`
     },
     {
         id: "preset-robot-ai",
         name: "Robot AI",
-        icon: "🤖",
+        icon: "",
         svg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="50" fill="%230f172a"/><circle cx="50" cy="18" r="4" fill="%2306b6d4"/><line x1="50" y1="22" x2="50" y2="30" stroke="%2306b6d4" stroke-width="3"/><rect x="26" y="30" width="48" height="38" rx="10" fill="%231e293b" stroke="%2306b6d4" stroke-width="2.5"/><rect x="33" y="38" width="13" height="10" rx="4" fill="%2306b6d4"/><rect x="54" y="38" width="13" height="10" rx="4" fill="%2306b6d4"/><circle cx="39" cy="43" r="2" fill="%23ffffff"/><circle cx="60" cy="43" r="2" fill="%23ffffff"/><line x1="38" y1="58" x2="62" y2="58" stroke="%2306b6d4" stroke-width="3" stroke-linecap="round"/><path d="M 24 95 Q 50 78 76 95 Z" fill="%23334155"/></svg>`
     },
     {
         id: "preset-terminal",
         name: "Terminal Guru",
-        icon: "💻",
+        icon: "",
         svg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="50" fill="%23022c22"/><rect x="18" y="24" width="64" height="52" rx="8" fill="%23064e3b" stroke="%2310b981" stroke-width="2"/><circle cx="26" cy="32" r="2.5" fill="%23ef4444"/><circle cx="33" cy="32" r="2.5" fill="%23f59e0b"/><circle cx="40" cy="32" r="2.5" fill="%2310b981"/><path d="M 26 46 L 36 53 L 26 60" stroke="%2334d399" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/><line x1="42" y1="60" x2="56" y2="60" stroke="%2334d399" stroke-width="3" stroke-linecap="round"/><path d="M 64 42 L 72 42 M 68 38 L 68 46" stroke="%236ee7b7" stroke-width="1.8" stroke-linecap="round"/><path d="M 74 42 L 82 42 M 78 38 L 78 46" stroke="%236ee7b7" stroke-width="1.8" stroke-linecap="round"/></svg>`
     },
     {
         id: "preset-ninja",
         name: "C++ Ninja",
-        icon: "🥷",
+        icon: "",
         svg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="50" fill="%2318181b"/><circle cx="50" cy="46" r="26" fill="%2327272a"/><rect x="30" y="32" width="40" height="10" fill="%23dc2626"/><circle cx="50" cy="37" r="3" fill="%23ffffff"/><rect x="32" y="44" width="36" height="12" rx="6" fill="%23fde047"/><circle cx="41" cy="50" r="2.5" fill="%23000000"/><circle cx="59" cy="50" r="2.5" fill="%23000000"/><path d="M 20 95 Q 50 74 80 95 Z" fill="%2309090b"/><path d="M 70 34 Q 82 30 86 38" stroke="%23dc2626" stroke-width="4" stroke-linecap="round" fill="none"/></svg>`
     },
     {
@@ -831,7 +831,7 @@ function renderProfileChapterBreakdown(user) {
             const url = `lesson-detail.html?id=${encodeURIComponent(l.id)}`;
             return `
                 <a href="${url}" class="p-chap-lesson-chip ${isDone ? 'done' : ''}" title="${escapeHtml(l.title)}">
-                    <span class="p-chip-num">${isDone ? '✓' : orderNum}</span>
+                    <span class="p-chip-num">${orderNum}</span>
                     <span class="p-chip-text">Bài ${orderNum}: ${escapeHtml(cleanTitle)}</span>
                 </a>
             `;
@@ -901,7 +901,7 @@ function setupProfileChapterToggles() {
             btnToggleSection.classList.toggle("is-collapsed-state", isHidden);
         }
         if (toggleIcon) {
-            toggleIcon.textContent = isHidden ? "▼" : "▲";
+            toggleIcon.textContent = "";
         }
         if (toggleText) {
             toggleText.textContent = isHidden ? "Hiện tất cả các chương" : "Ẩn tất cả các chương";

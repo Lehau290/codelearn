@@ -3,7 +3,7 @@
    MAIN STYLESHEET
    ========================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cinzel:wght@600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Alex+Brush&family=Cinzel:wght@600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600;1,700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 /* =========================================================
    1. RESET
@@ -21,7 +21,7 @@ html {
 
 body {
     min-height: 100vh;
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     color: #0f172a;
     background: #f8fafc;
     line-height: 1.6;
@@ -6907,7 +6907,7 @@ body.dark-theme .ai-settings-dialog {
 .cert-corner-br { bottom: 14px; right: 14px; border-bottom: 3px solid #d4af37; border-right: 3px solid #d4af37; }
 
 .cert-corner::after {
-    content: "❖";
+    content: "";
     position: absolute;
     color: #b45309;
     font-size: 10px;
@@ -6944,7 +6944,7 @@ body.dark-theme .ai-settings-dialog {
 }
 
 .cert-university-sub {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 0.72rem;
     font-weight: 700;
     color: #b45309;
@@ -6972,7 +6972,7 @@ body.dark-theme .ai-settings-dialog {
 }
 
 .cert-intro-text {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 0.85rem;
     color: #475569;
     font-style: italic;
@@ -7030,7 +7030,7 @@ body.dark-theme .ai-settings-dialog {
 }
 
 .cert-desc {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     color: #334155;
     font-size: 0.88rem;
     max-width: 740px;
@@ -7114,7 +7114,7 @@ body.dark-theme .ai-settings-dialog {
 }
 
 .cert-officer-title {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 0.72rem;
     color: #64748b;
     font-weight: 600;
@@ -12809,3 +12809,26 @@ body.dark-theme .btn-focus-mode:hover {
     transform: translateY(-1px);
     box-shadow: 0 6px 20px rgba(79, 70, 229, 0.55);
 }
+
+/* =========================================================
+   CLEAN MINIMALIST DESIGN - INTER FONT & NO ICONS
+   ========================================================= */
+:root {
+    --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.lesson-card-icon,
+.feature-icon,
+.input-icon,
+.tab-status-icon:empty,
+.lesson-status-icon:empty,
+.io-icon:empty,
+.feedback-item-icon:empty,
+.toggle-icon:empty {
+    display: none !important;
+}
+
+.input-wrapper input {
+    padding-left: 14px !important;
+}
+

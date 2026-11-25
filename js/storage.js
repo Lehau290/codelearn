@@ -54,7 +54,7 @@
 
 <div class="real-world-box">
     <div class="real-world-header">
-        <span class="real-world-badge">🌍 Ví dụ minh họa thực tế ngoài đời sống</span>
+        <span class="real-world-badge">Ví dụ minh họa thực tế ngoài đời sống</span>
         <h4>Quy trình mở quán Pha chế Cà phê buổi sáng</h4>
     </div>
     <p>Hãy tưởng tượng việc viết một chương trình C++ giống hệt như <strong>quy trình vận hành một quầy pha chế cà phê</strong>:</p>
@@ -67,7 +67,7 @@
 </div>
 
 <div class="pitfall-box">
-    <h4>⚠️ Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
+    <h4>Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
     <ul>
         <li><strong>Quên dấu chấm phẩy <code>;</code> cuối câu lệnh:</strong> Trong C++, dấu <code>;</code> giống như dấu chấm kết thúc câu văn tiếng Việt. Thiếu nó, trình biên dịch sẽ báo lỗi <code>expected ';' before...</code>.</li>
         <li><strong>Phân biệt chữ HOA và chữ thường:</strong> C++ cực kỳ nghiêm ngặt — viết <code>Main()</code> hay <code>COUT</code> đều sẽ báo lỗi vì chuẩn bắt buộc là chữ thường <code>main()</code> và <code>cout</code>.</li>
@@ -122,7 +122,7 @@ int main() {
 
 <div class="real-world-box">
     <div class="real-world-header">
-        <span class="real-world-badge">🌍 Ví dụ minh họa thực tế ngoài đời sống</span>
+        <span class="real-world-badge">Ví dụ minh họa thực tế ngoài đời sống</span>
         <h4>Hệ thống Hộp bảo quản trong Gian bếp &amp; Siêu thị</h4>
     </div>
     <p>Hãy hình dung bộ nhớ RAM của máy tính giống như <strong>kệ tủ trong căn bếp gia đình</strong>:</p>
@@ -134,7 +134,7 @@ int main() {
 </div>
 
 <div class="pitfall-box">
-    <h4>⚠️ Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
+    <h4>Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
     <ul>
         <li><strong>Lỗi tràn số (Integer Overflow):</strong> Nếu bạn lưu số tiền <code>5.000.000.000 VND</code> (5 tỷ đồng) vào biến <code>int</code> (giới hạn ~2.14 tỷ), số sẽ bị tràn và biến thành số âm sai lệch hoàn toàn! Hãy dùng <code>long long</code> cho tiền tệ lớn.</li>
         <li><strong>Biến chưa khởi tạo chứa "giác bộ nhớ":</strong> Khai báo <code>int x;</code> mà quên gán <code>= 0</code> sẽ khiến <code>x</code> mang một con số ngẫu nhiên vô nghĩa còn sót lại trong RAM.</li>
@@ -201,7 +201,7 @@ int main() {
 
 <div class="real-world-box">
     <div class="real-world-header">
-        <span class="real-world-badge">🌍 Ví dụ minh họa thực tế ngoài đời sống</span>
+        <span class="real-world-badge">Ví dụ minh họa thực tế ngoài đời sống</span>
         <h4>Máy bán nước tự động &amp; Cây rút tiền ATM</h4>
     </div>
     <p>Hãy quan sát cách bạn tương tác với một <strong>máy bán nước ngọt tự động ở sảnh tòa nhà</strong>:</p>
@@ -212,7 +212,7 @@ int main() {
 </div>
 
 <div class="pitfall-box">
-    <h4>⚠️ Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
+    <h4>Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
     <ul>
         <li><strong>Nhầm chiều mũi tên giữa <code>cout</code> và <code>cin</code>:</strong> Mẹo nhớ cực dễ: <code>cout &lt;&lt;</code> mũi tên hướng ra ngoài màn hình; <code>cin &gt;&gt;</code> mũi tên đẩy thẳng vào tên biến cần lưu.</li>
         <li><strong><code>cin &gt;&gt;</code> dừng lại khi gặp khoảng trắng:</strong> Nếu nhập họ tên có dấu cách như <code>"Nguyen Van A"</code> bằng <code>cin &gt;&gt; ten</code>, biến sẽ chỉ lấy được chữ <code>"Nguyen"</code>. (Ở Chương 5 bạn sẽ học hàm <code>getline</code> để đọc trọn vẹn cả dòng có dấu cách).</li>
@@ -283,7 +283,7 @@ int main() {
 
 <div class="real-world-box">
     <div class="real-world-header">
-        <span class="real-world-badge">🌍 Ví dụ minh họa thực tế ngoài đời sống</span>
+        <span class="real-world-badge">Ví dụ minh họa thực tế ngoài đời sống</span>
         <h4>Máy rút tiền ATM chia mệnh giá &amp; Xét duyệt Freeship sàn TMĐT</h4>
     </div>
     <p>Các toán tử C++ hiện diện khắp nơi trong đời sống hàng ngày:</p>
@@ -294,7 +294,7 @@ int main() {
 </div>
 
 <div class="pitfall-box">
-    <h4>⚠️ Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
+    <h4>Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
     <ul>
         <li><strong>Nhầm lẫn giữa dấu gán <code>=</code> và dấu so sánh bằng <code>==</code>:</strong> Một dấu <code>=</code> dùng để gán giá trị mới cho biến (<code>a = 5</code>), còn hai dấu <code>==</code> mới dùng để kiểm tra hai bên có bằng nhau hay không (<code>a == 5</code>).</li>
     </ul>
@@ -369,7 +369,7 @@ int main() {
 
 <div class="real-world-box">
     <div class="real-world-header">
-        <span class="real-world-badge">🌍 Ví dụ minh họa thực tế ngoài đời sống</span>
+        <span class="real-world-badge">Ví dụ minh họa thực tế ngoài đời sống</span>
         <h4>Trạm thu phí tự động &amp; Cách tính Hóa đơn Tiền điện bậc thang EVN</h4>
     </div>
     <p>Hãy liên tưởng cấu trúc <code>if - else if - else</code> với các quy tắc phân loại ngoài đời thực:</p>
@@ -386,7 +386,7 @@ int main() {
 </div>
 
 <div class="pitfall-box">
-    <h4>⚠️ Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
+    <h4>Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
     <ul>
         <li><strong>Sắp xếp thứ tự điều kiện từ chặt đến lỏng:</strong> Khi xếp loại điểm hoặc bậc lương, phải kiểm tra mốc cao nhất trước (<code>diem &gt;= 8.5</code> rồi mới tới <code>diem &gt;= 6.5</code>). Nếu đặt <code>if (diem &gt;= 5.0)</code> lên đầu, học sinh 9.0 điểm cũng sẽ lọt ngay vào nhánh Trung bình!</li>
         <li><strong>Lỗi gán nhầm trong <code>if (a = 5)</code>:</strong> Viết 1 dấu bằng sẽ gán <code>a</code> thành 5 và biểu thức luôn đúng! Hãy luôn kiểm tra kỹ <code>if (a == 5)</code>.</li>
@@ -466,7 +466,7 @@ int main() {
 
 <div class="real-world-box">
     <div class="real-world-header">
-        <span class="real-world-badge">🌍 Ví dụ minh họa thực tế ngoài đời sống</span>
+        <span class="real-world-badge">Ví dụ minh họa thực tế ngoài đời sống</span>
         <h4>Bảng nút bấm Thang máy tòa nhà &amp; Tổng đài Chăm sóc khách hàng</h4>
     </div>
     <p>Cấu trúc <code>switch - case</code> hoạt động giống hệt <strong>hệ thống tổng đài tự động hoặc thang máy</strong>:</p>
@@ -477,7 +477,7 @@ int main() {
 </div>
 
 <div class="pitfall-box">
-    <h4>⚠️ Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
+    <h4>Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
     <ul>
         <li><strong><code>switch</code> chỉ nhận số nguyên (<code>int</code>, <code>long</code>) hoặc ký tự (<code>char</code>):</strong> Bạn KHÔNG thể truyền số thực <code>double</code> hay chuỗi văn bản <code>string</code> vào <code>switch(...)</code> trong C++.</li>
         <li><strong>Giá trị sau từ khóa <code>case</code> bắt buộc phải là hằng số cố định:</strong> Không thể viết biểu thức biến động như <code>case x &gt; 5:</code> trong <code>switch</code>.</li>
@@ -558,7 +558,7 @@ int main() {
 
 <div class="real-world-box">
     <div class="real-world-header">
-        <span class="real-world-badge">🌍 Ví dụ minh họa thực tế ngoài đời sống</span>
+        <span class="real-world-badge">Ví dụ minh họa thực tế ngoài đời sống</span>
         <h4>Tính Lãi kép Sổ tiết kiệm Ngân hàng &amp; Chạy bộ quanh Sân vận động</h4>
     </div>
     <p>Hãy hình dung vòng lặp <code>for</code> qua hai tình huống quen thuộc:</p>
@@ -576,7 +576,7 @@ int main() {
 </div>
 
 <div class="pitfall-box">
-    <h4>⚠️ Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
+    <h4>Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
     <ul>
         <li><strong>Lỗi vòng lặp vô tận (Infinite Loop):</strong> Nếu điều kiện lặp không bao giờ sai (ví dụ: <code>for (int i = 1; i &gt; 0; i++)</code>), chương trình sẽ treo cứng máy hoặc bị quá thời gian thực thi (Time Limit Exceeded).</li>
         <li><strong>Dư dấu chấm phẩy ngay sau <code>for(...);</code>:</strong> Viết <code>for (int i = 1; i &lt;= 5; i++);</code> sẽ khiến vòng lặp chạy rỗng không làm gì cả!</li>
@@ -637,7 +637,7 @@ int main() {
 
 <div class="real-world-box">
     <div class="real-world-header">
-        <span class="real-world-badge">🌍 Ví dụ minh họa thực tế ngoài đời sống</span>
+        <span class="real-world-badge">Ví dụ minh họa thực tế ngoài đời sống</span>
         <h4>Cổng soát vé Tàu điện (while) vs Mở khóa Mã PIN Điện thoại (do-while)</h4>
     </div>
     <p>Sự khác biệt giữa <code>while</code> và <code>do-while</code> thể hiện rất rõ qua 2 thiết bị hàng ngày:</p>
@@ -648,7 +648,7 @@ int main() {
 </div>
 
 <div class="pitfall-box">
-    <h4>⚠️ Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
+    <h4>Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
     <ul>
         <li><strong>Quên thay đổi biến điều kiện bên trong <code>while</code>:</strong> Khác với <code>for</code> có sẵn ô bước nhảy, trong <code>while</code> bạn phải tự viết lệnh cập nhật biến (ví dụ <code>n /= 10;</code> hoặc <code>soLanThu++;</code>), nếu quên vòng lặp sẽ chạy mãi mãi.</li>
         <li><strong>Quên dấu chấm phẩy <code>;</code> cuối dòng <code>while (điều_kiện);</code> của cấu trúc <code>do-while</code>.</strong></li>
@@ -706,7 +706,7 @@ int main() {
 
 <div class="real-world-box">
     <div class="real-world-header">
-        <span class="real-world-badge">🌍 Ví dụ minh họa thực tế ngoài đời sống</span>
+        <span class="real-world-badge">Ví dụ minh họa thực tế ngoài đời sống</span>
         <h4>Dây chuyền Kiểm định chất lượng Sản phẩm trong Nhà máy</h4>
     </div>
     <p>Hãy tưởng tượng một <strong>băng chuyền đóng gói 100 chai nước ngọt trong nhà máy</strong>:</p>
@@ -717,7 +717,7 @@ int main() {
 </div>
 
 <div class="pitfall-box">
-    <h4>⚠️ Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
+    <h4>Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
     <ul>
         <li><strong>Trong vòng lặp lồng nhau:</strong> Lệnh <code>break</code> hoặc <code>continue</code> chỉ tác động lên <strong>vòng lặp gần nhất bao quanh nó</strong> chứ không thoát một lúc cả 2 vòng lặp trong và ngoài.</li>
         <li><strong>Cẩn thận khi dùng <code>continue</code> trong vòng lặp <code>while</code>:</strong> Hãy đảm bảo biến đếm đã được tăng trước khi gọi <code>continue</code>, nếu không chương trình sẽ lặp lại mãi một giá trị!</li>
@@ -784,7 +784,7 @@ int main() {
 
 <div class="real-world-box">
     <div class="real-world-header">
-        <span class="real-world-badge">🌍 Ví dụ minh họa thực tế ngoài đời sống</span>
+        <span class="real-world-badge">Ví dụ minh họa thực tế ngoài đời sống</span>
         <h4>Gửi Bản Photocopy (Tham trị) vs Chia sẻ File Google Docs gốc (Tham chiếu &amp;)</h4>
     </div>
     <p>Hãy hình dung sự khác nhau giữa Tham trị và Tham chiếu qua cách làm việc văn phòng:</p>
@@ -795,7 +795,7 @@ int main() {
 </div>
 
 <div class="pitfall-box">
-    <h4>⚠️ Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
+    <h4>Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
     <ul>
         <li><strong>Hàm phải được khai báo trước khi gọi:</strong> Trong C++, nếu bạn viết hàm ở phía dưới hàm <code>main()</code> mà không khai báo nguyên mẫu hàm (Function Prototype) ở trên đầu, trình biên dịch sẽ báo lỗi không nhận diện được tên hàm.</li>
         <li><strong>Quên dấu <code>&amp;</code> khi viết hàm hoán đổi (<code>swap</code>) hoặc hàm cập nhật số dư:</strong> Đây là lỗi kinh điển khiến hàm chạy xong mà dữ liệu không hề thay đổi!</li>
@@ -865,7 +865,7 @@ double tinhPhiShip(double khoiLuongKg, double soKmXa);   // Giao hàng liên t�
 
 <div class="real-world-box">
     <div class="real-world-header">
-        <span class="real-world-badge">🌍 Ví dụ minh họa thực tế ngoài đời sống</span>
+        <span class="real-world-badge">Ví dụ minh họa thực tế ngoài đời sống</span>
         <h4>Búp bê gỗ Nga Matryoshka (Đệ quy) &amp; Nút "Thanh toán" đa phương thức (Overloading)</h4>
     </div>
     <p>Hai kỹ thuật trong bài học này gắn liền với những hình ảnh rất gần gũi:</p>
@@ -876,7 +876,7 @@ double tinhPhiShip(double khoiLuongKg, double soKmXa);   // Giao hàng liên t�
 </div>
 
 <div class="pitfall-box">
-    <h4>⚠️ Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
+    <h4>Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
     <ul>
         <li><strong>Nạp chồng hàm KHÔNG phân biệt qua kiểu trả về:</strong> Hai hàm chỉ khác nhau mỗi kiểu trả về (ví dụ <code>int tong(int a)</code> và <code>double tong(int a)</code>) sẽ báo lỗi trùng lặp.</li>
         <li><strong>Đệ quy quá sâu gây tốn RAM:</strong> Mỗi lần gọi đệ quy sẽ tốn một khung nhớ trên Stack. Với <code>n</code> rất lớn (hàng triệu), nên ưu tiên dùng vòng lặp hoặc Quy hoạch động.</li>
@@ -948,7 +948,7 @@ double nhietDoTuan[7] = {28.5, 30.0, 31.2, 29.8, 27.5, 26.0, 29.0};</pre>
 
 <div class="real-world-box">
     <div class="real-world-header">
-        <span class="real-world-badge">🌍 Ví dụ minh họa thực tế ngoài đời sống</span>
+        <span class="real-world-badge">Ví dụ minh họa thực tế ngoài đời sống</span>
         <h4>Hộp chia thuốc 7 ngày trong tuần &amp; Tủ gửi đồ Siêu thị đánh số</h4>
     </div>
     <p>Mảng một chiều trong đời thực chính là những dãy ngăn chứa đồng nhất nằm liền kề nhau:</p>
@@ -959,7 +959,7 @@ double nhietDoTuan[7] = {28.5, 30.0, 31.2, 29.8, 27.5, 26.0, 29.0};</pre>
 </div>
 
 <div class="pitfall-box">
-    <h4>⚠️ Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
+    <h4>Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
     <ul>
         <li><strong>Lỗi tràn chỉ số mảng (Index Out of Bounds):</strong> Khi khai báo <code>int a[5];</code>, các vị trí hợp lệ chỉ từ <code>a[0]</code> đến <code>a[4]</code>. Nếu bạn cố tình truy cập <code>a[5]</code>, chương trình sẽ đọc/ghi đè vào vùng nhớ lạ gây lỗi sập chương trình (Segmentation Fault) hoặc sai kết quả ngầm!</li>
     </ul>
@@ -1024,7 +1024,7 @@ int main() {
 
 <div class="real-world-box">
     <div class="real-world-header">
-        <span class="real-world-badge">🌍 Ví dụ minh họa thực tế ngoài đời sống</span>
+        <span class="real-world-badge">Ví dụ minh họa thực tế ngoài đời sống</span>
         <h4>Bộ lọc "Giá từ Thấp đến Cao" trên Shopee/Tiki &amp; Xếp hàng Chào cờ</h4>
     </div>
     <p>Các thuật toán mảng bạn vừa học chính là bộ máy vận hành các tính năng quen thuộc hàng ngày:</p>
@@ -1036,7 +1036,7 @@ int main() {
 </div>
 
 <div class="pitfall-box">
-    <h4>⚠️ Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
+    <h4>Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
     <ul>
         <li><strong>Đừng khởi tạo <code>maxVal = 0</code> hoặc <code>minVal = 0</code>:</strong> Nếu cả mảng toàn số âm (ví dụ nhiệt độ mùa đông <code>{-5, -12, -3}</code>), khởi tạo <code>maxVal = 0</code> sẽ trả về kết quả sai là <code>0</code>! Hãy luôn khởi tạo <code>maxVal = a[0]</code>.</li>
     </ul>
@@ -1116,7 +1116,7 @@ int main() {
 
 <div class="real-world-box">
     <div class="real-world-header">
-        <span class="real-world-badge">🌍 Ví dụ minh họa thực tế ngoài đời sống</span>
+        <span class="real-world-badge">Ví dụ minh họa thực tế ngoài đời sống</span>
         <h4>Kiểm tra độ mạnh Mật khẩu Ngân hàng &amp; Tự động tạo Email Sinh viên</h4>
     </div>
     <p>Xử lý chuỗi <code>std::string</code> xuất hiện ở mọi biểu mẫu đăng ký tài khoản ngoài đời thực:</p>
@@ -1127,7 +1127,7 @@ int main() {
 </div>
 
 <div class="pitfall-box">
-    <h4>⚠️ Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
+    <h4>Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
     <ul>
         <li><strong>Lỗi trôi lệnh <code>getline()</code> sau <code>cin &gt;&gt;</code>:</strong> Khi bạn dùng <code>cin &gt;&gt; tuoi;</code> rồi gọi ngay <code>getline(cin, hoTen);</code>, phím Enter còn sót lại trong bộ đệm sẽ khiến <code>getline</code> đọc chuỗi rỗng! Cách khắc phục: Gọi <code>cin.ignore();</code> trước <code>getline</code>.</li>
     </ul>
@@ -1198,7 +1198,7 @@ int main() {
 
 <div class="real-world-box">
     <div class="real-world-header">
-        <span class="real-world-badge">🌍 Ví dụ minh họa thực tế ngoài đời sống</span>
+        <span class="real-world-badge">Ví dụ minh họa thực tế ngoài đời sống</span>
         <h4>Sơ đồ đặt ghế Rạp chiếu phim CGV &amp; Bảng tính Excel / Điểm ảnh màn hình</h4>
     </div>
     <p>Mảng hai chiều là cấu trúc dữ liệu nền tảng của rất nhiều ứng dụng trực quan:</p>
@@ -1209,7 +1209,7 @@ int main() {
 </div>
 
 <div class="pitfall-box">
-    <h4>⚠️ Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
+    <h4>Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
     <ul>
         <li><strong>Nhầm lẫn giữa chỉ số Hàng và Cột:</strong> Khi khai báo <code>int a[3][5];</code> (3 hàng, 5 cột), vòng lặp ngoài phải chạy đến <code>&lt; 3</code> và vòng lặp trong chạy đến <code>&lt; 5</code>. Đảo ngược hai con số này sẽ gây lỗi truy cập ngoài vùng nhớ!</li>
     </ul>
@@ -1279,7 +1279,7 @@ int main() {
 
 <div class="real-world-box">
     <div class="real-world-header">
-        <span class="real-world-badge">🌍 Ví dụ minh họa thực tế ngoài đời sống</span>
+        <span class="real-world-badge">Ví dụ minh họa thực tế ngoài đời sống</span>
         <h4>Tờ giấy ghi Địa chỉ Kho hàng &amp; Định vị GPS trên Google Maps</h4>
     </div>
     <p>Tại sao không bê nguyên cả kho hàng đi khắp nơi mà lại dùng Con trỏ?</p>
@@ -1292,7 +1292,7 @@ int main() {
 </div>
 
 <div class="pitfall-box">
-    <h4>⚠️ Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
+    <h4>Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
     <ul>
         <li><strong>Con trỏ hoang (Wild Pointer) &amp; <code>nullptr</code>:</strong> Khai báo <code>int* p;</code> mà chưa trỏ vào biến hợp lệ nào rồi dùng <code>*p = 10;</code> sẽ làm sập chương trình ngay lập tức! Nếu con trỏ chưa trỏ đi đâu, hãy luôn gán <code>int* p = nullptr;</code>.</li>
     </ul>
@@ -1354,7 +1354,7 @@ int main() {
 
 <div class="real-world-box">
     <div class="real-world-header">
-        <span class="real-world-badge">🌍 Ví dụ minh họa thực tế ngoài đời sống</span>
+        <span class="real-world-badge">Ví dụ minh họa thực tế ngoài đời sống</span>
         <h4>Đặt phòng Khách sạn theo Đoàn khách thực tế &amp; Trả phòng (Check-out)</h4>
     </div>
     <p>Cơ chế cấp phát động <code>new / delete</code> giống hệt quy trình <strong>thuê và trả phòng khách sạn</strong>:</p>
@@ -1366,7 +1366,7 @@ int main() {
 </div>
 
 <div class="pitfall-box">
-    <h4>⚠️ Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
+    <h4>Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
     <ul>
         <li><strong>Dùng nhầm <code>delete arr;</code> thay vì <code>delete[] arr;</code> cho mảng động:</strong> Với mảng cấp phát bằng <code>new[]</code>, bắt buộc phải có cặp ngoặc vuông <code>delete[]</code> để giải phóng toàn bộ dãy phần tử.</li>
         <li><strong>Sau khi <code>delete p;</code> nên gán <code>p = nullptr;</code></strong> để tránh lỗi con trỏ treo (Dangling Pointer).</li>
@@ -1441,7 +1441,7 @@ int main() {
 
 <div class="real-world-box">
     <div class="real-world-header">
-        <span class="real-world-badge">🌍 Ví dụ minh họa thực tế ngoài đời sống</span>
+        <span class="real-world-badge">Ví dụ minh họa thực tế ngoài đời sống</span>
         <h4>Thẻ Căn cước Công dân (CCCD) &amp; Hồ sơ Bệnh án Điện tử Bệnh viện</h4>
     </div>
     <p>Một <code>struct</code> trong C++ giống hệt <strong>một biểu mẫu hồ sơ hoặc tấm thẻ Căn cước công dân</strong>:</p>
@@ -1452,7 +1452,7 @@ int main() {
 </div>
 
 <div class="pitfall-box">
-    <h4>⚠️ Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
+    <h4>Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
     <ul>
         <li><strong>Quên dấu chấm phẩy <code>;</code> ngay sau dấu ngoặc nhọn đóng <code>};</code> của <code>struct</code>:</strong> Đây là lỗi cú pháp phổ biến nhất khi mới học <code>struct</code> và <code>class</code> trong C++.</li>
     </ul>
@@ -1519,7 +1519,7 @@ int main() {
 
 <div class="real-world-box">
     <div class="real-world-header">
-        <span class="real-world-badge">🌍 Ví dụ minh họa thực tế ngoài đời sống</span>
+        <span class="real-world-badge">Ví dụ minh họa thực tế ngoài đời sống</span>
         <h4>Bản vẽ Thiết kế Ô tô (Class) vs Chiếc xe ngoài đời &amp; Két sắt Ngân hàng (private/public)</h4>
     </div>
     <p>Hai khái niệm cốt lõi của bài học này cực kỳ dễ hiểu khi nhìn ra thế giới xung quanh:</p>
@@ -1530,7 +1530,7 @@ int main() {
 </div>
 
 <div class="pitfall-box">
-    <h4>⚠️ Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
+    <h4>Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
     <ul>
         <li><strong>Mặc định trong <code>class</code> là <code>private</code> (ngược với <code>struct</code> mặc định là <code>public</code>):</strong> Nếu bạn quên viết nhãn <code>public:</code> trước các phương thức trong <code>class</code>, hàm <code>main()</code> sẽ bị báo lỗi <code>is private within this context</code> khi gọi!</li>
     </ul>
@@ -1612,7 +1612,7 @@ int main() {
 
 <div class="real-world-box">
     <div class="real-world-header">
-        <span class="real-world-badge">🌍 Ví dụ minh họa thực tế ngoài đời sống</span>
+        <span class="real-world-badge">Ví dụ minh họa thực tế ngoài đời sống</span>
         <h4>Cài đặt gốc xuất xưởng Điện thoại (Constructor) &amp; Hệ thống Nhân sự Tập đoàn (Kế thừa)</h4>
     </div>
     <p>Hãy quan sát cách các tập đoàn công nghệ ứng dụng Constructor và Kế thừa:</p>
@@ -1623,7 +1623,7 @@ int main() {
 </div>
 
 <div class="pitfall-box">
-    <h4>⚠️ Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
+    <h4>Lưu ý quan trọng & Lỗi thường gặp ngoài thực tế</h4>
     <ul>
         <li><strong>Thứ tự gọi Constructor trong Kế thừa:</strong> Khi khởi tạo một đối tượng Lớp con, <strong>Constructor của Lớp cha luôn chạy trước</strong> để xây xong phần móng, rồi mới đến Constructor của Lớp con hoàn thiện phần riêng! (Khi hủy bằng Destructor thì ngược lại: Con hủy trước, Cha hủy sau).</li>
     </ul>
