@@ -2556,7 +2556,7 @@ function setupFocusMode(lesson, user) {
 
     let isFocusMode = true; // TỰ ĐỘNG BẬT MẶC ĐỊNH NGAY KHI VÀO TRANG
     let violationCount = 0;
-    const MAX_VIOLATIONS = 3;
+    const MAX_VIOLATIONS = 1; // THOÁT RA 1 LẦN DUY NHẤT LÀ ĐÁNH GIÁ KHÔNG ĐẠT VÀ VỀ TRANG CHỦ
     let focusTimerInterval = null;
     let focusSeconds = 0;
     let isViolationModalOpen = false;
@@ -2635,6 +2635,25 @@ function setupFocusMode(lesson, user) {
         violationCount++;
         playWarningBeep();
 
+        // ĐÁNH GIÁ KHÔNG ĐẠT NGAY LẬP TỨC KHI THOÁT RA 1 LẦN
+        if (user && lesson && window.CppStorage) {
+            CppStorage.saveUserProgress(user.id, lesson.id, {
+                completed: false,
+                score: 0,
+                comprehensionLevel: "Không đạt",
+                summary: "Bài học bị đánh giá KHÔNG ĐẠT (0 điểm) do vi phạm quy chế rời khỏi màn hình làm bài.",
+                violations: violationCount
+            });
+            if (window.CodeLearnApi && typeof CodeLearnApi.progress?.save === "function") {
+                CodeLearnApi.progress.save(user.id, lesson.id, {
+                    completed: false,
+                    score: 0,
+                    status: "failed",
+                    violations: violationCount
+                }).catch(() => {});
+            }
+        }
+
         if (focusViolationCountElem) {
             focusViolationCountElem.textContent = String(violationCount);
         }
@@ -2645,48 +2664,38 @@ function setupFocusMode(lesson, user) {
             violationAlertCount.textContent = String(violationCount);
         }
         if (focusViolationMsg) {
-            focusViolationMsg.textContent = `Hệ thống phát hiện: ${reason}. Mọi hành vi rời khỏi màn hình làm bài đều được ghi nhận tự động!`;
+            focusViolationMsg.textContent = `Hệ thống phát hiện: ${reason}. Rời màn hình làm bài là vi phạm quy chế nghiêm trọng!`;
         }
 
         if (focusViolationSubtext) {
-            if (violationCount >= MAX_VIOLATIONS) {
-                focusViolationSubtext.innerHTML = `<strong>BẠN ĐÃ CỐ TÌNH RỜI MÀN HÌNH (${violationCount}/${MAX_VIOLATIONS} LẦN)!</strong><br>Bạn đã vi phạm quy chế làm bài tập trung. Hệ thống sẽ tự động hủy phiên và <strong>đưa bạn quay về Trang chủ trong <span id="redirectCountdown">3</span>s...</strong>`;
-            } else {
-                const remaining = MAX_VIOLATIONS - violationCount;
-                focusViolationSubtext.innerHTML = `Vui lòng tập trung cao độ và không chuyển qua tab hay ứng dụng khác. Bạn còn <strong>${remaining} lần cảnh cáo</strong> trước khi bị hủy bài và đưa về Trang chủ!`;
-            }
+            focusViolationSubtext.innerHTML = `<strong>BẠN ĐÃ RỜI KHỎI MÀN HÌNH LÀM BÀI!</strong><br>Theo quy chế, thoát ra 1 lần sẽ lập tức bị đánh giá <strong>KHÔNG ĐẠT (0 điểm)</strong>.<br>Hệ thống đang tự động đưa bạn quay về Trang chủ trong <span id="redirectCountdown">3</span>s...`;
         }
 
         if (btnResumeFocus) {
-            if (violationCount >= MAX_VIOLATIONS) {
-                btnResumeFocus.textContent = "Quay về Trang chủ ngay";
-                btnResumeFocus.className = "btn btn-danger-resume";
-            } else {
-                btnResumeFocus.textContent = "Quay lại làm bài & Khôi phục toàn màn hình";
-            }
+            btnResumeFocus.textContent = "Quay về Trang chủ ngay";
+            btnResumeFocus.className = "btn btn-danger-resume";
+        }
+
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.title = "Bài làm bị đánh giá Không đạt do vi phạm quy chế tập trung.";
         }
 
         isViolationModalOpen = true;
         openModal(focusViolationModal);
 
-        if (violationCount >= MAX_VIOLATIONS) {
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.title = "Bài làm bị hủy do cố tình vi phạm quy chế tập trung.";
+        // Đếm ngược 3 giây tự động chuyển về trang chủ
+        let countdown = 3;
+        const cdTimer = setInterval(() => {
+            countdown--;
+            const cdElem = document.getElementById("redirectCountdown");
+            if (cdElem) cdElem.textContent = String(countdown);
+            if (countdown <= 0) {
+                clearInterval(cdTimer);
+                exitFullscreenSafe();
+                window.location.href = "home.html";
             }
-            // Đếm ngược 3 giây tự động chuyển về trang chủ
-            let countdown = 3;
-            const cdTimer = setInterval(() => {
-                countdown--;
-                const cdElem = document.getElementById("redirectCountdown");
-                if (cdElem) cdElem.textContent = String(countdown);
-                if (countdown <= 0) {
-                    clearInterval(cdTimer);
-                    exitFullscreenSafe();
-                    window.location.href = "home.html";
-                }
-            }, 1000);
-        }
+        }, 1000);
     }
 
     function startFocusMode(isAuto = false) {
@@ -2734,8 +2743,26 @@ function setupFocusMode(lesson, user) {
         clearInterval(focusTimerInterval);
         focusTimerInterval = null;
 
+        // Cố tình thoát ra -> Đánh giá KHÔNG ĐẠT (0 điểm) & Quay về trang chủ ngay lập tức
+        if (user && lesson && window.CppStorage) {
+            CppStorage.saveUserProgress(user.id, lesson.id, {
+                completed: false,
+                score: 0,
+                comprehensionLevel: "Không đạt",
+                summary: "Bài học bị đánh giá KHÔNG ĐẠT (0 điểm) do tự ý thoát khỏi màn hình làm bài.",
+                violations: 1
+            });
+            if (window.CodeLearnApi && typeof CodeLearnApi.progress?.save === "function") {
+                CodeLearnApi.progress.save(user.id, lesson.id, {
+                    completed: false,
+                    score: 0,
+                    status: "failed",
+                    violations: 1
+                }).catch(() => {});
+            }
+        }
+
         exitFullscreenSafe();
-        // Cố tình thoát ra -> Quay về trang chủ ngay lập tức
         window.location.href = "home.html";
     }
 
@@ -2772,16 +2799,8 @@ function setupFocusMode(lesson, user) {
 
     if (btnResumeFocus) {
         btnResumeFocus.addEventListener("click", () => {
-            if (violationCount >= MAX_VIOLATIONS) {
-                exitFullscreenSafe();
-                window.location.href = "home.html";
-                return;
-            }
-            closeModal(focusViolationModal);
-            isViolationModalOpen = false;
-            if (isFocusMode && violationCount < MAX_VIOLATIONS) {
-                requestFullscreenSafe();
-            }
+            exitFullscreenSafe();
+            window.location.href = "home.html";
         });
     }
 

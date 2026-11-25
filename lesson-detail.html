@@ -1081,7 +1081,7 @@
                 <div class="lock-rules-box">
                     <div class="lock-rule-item">- Không chuyển tab hoặc mở ứng dụng khác (Alt + Tab).</div>
                     <div class="lock-rule-item">- Tự động chặn chuột phải và dán mã nguồn từ bên ngoài.</div>
-                    <div class="lock-rule-item">- Cố tình thoát ra hoặc vi phạm quá 3 lần sẽ tự động bị đưa về Trang chủ.</div>
+                    <div class="lock-rule-item">- Cố tình thoát ra, chuyển tab hoặc rời ứng dụng 1 lần duy nhất sẽ lập tức bị đánh giá KHÔNG ĐẠT (0 điểm) và đưa về Trang chủ.</div>
                 </div>
                 <div class="focus-modal-actions" style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
                     <button type="button" id="btnConfirmStartFocus" class="btn btn-primary btn-lock-enter">
@@ -1108,16 +1108,16 @@
                     <div class="focus-violation-meter">
                         <div class="violation-count-box">
                             <span>Số lần vi phạm:</span>
-                            <strong id="violationAlertCount">1</strong> / 3
+                            <strong id="violationAlertCount">1</strong> / 1
                         </div>
                     </div>
                     <p class="focus-violation-subtext" id="focusViolationSubtext">
-                        Vui lòng quay lại làm bài ngay. Nếu vi phạm quá 3 lần, bài nộp sẽ bị đình chỉ hoặc hủy kết quả!
+                        Hệ thống tự động đánh giá bài học này KHÔNG ĐẠT (0 điểm) do vi phạm quy chế rời khỏi màn hình làm bài!
                     </p>
                 </div>
                 <div class="focus-violation-actions">
                     <button type="button" id="btnResumeFocus" class="btn btn-danger-resume">
-                        Quay lại làm bài & Khôi phục toàn màn hình
+                        Quay về Trang chủ ngay
                     </button>
                 </div>
             </div>
@@ -1131,7 +1131,7 @@
                 </div>
                 <div class="focus-modal-body">
                     <p>
-                        Bạn có chắc chắn muốn thoát khỏi màn hình làm bài? Thao tác này sẽ hủy phiên làm bài hiện tại và đưa bạn quay trở về Trang chủ.
+                        Bạn có chắc chắn muốn thoát khỏi màn hình làm bài? Thao tác này sẽ hủy phiên làm bài, đánh giá bài học KHÔNG ĐẠT (0 điểm) và đưa bạn quay trở về Trang chủ.
                     </p>
                 </div>
                 <div class="focus-modal-actions">

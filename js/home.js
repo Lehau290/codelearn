@@ -4,7 +4,7 @@
 // File: js/home.js
 // ============================================================
 
-document.addEventListener("DOMContentLoaded", () => {
+function initHomePage() {
     // Lấy người dùng hiện tại (nếu có)
     let currentUser = null;
     try {
@@ -39,7 +39,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 7. Hiệu ứng Terminal giả lập gõ code C++ tự động (Live Code Typing Showcase)
     try { initHeroLiveCodeTyping(); } catch (e) { console.warn("Hero typing warning:", e); }
-});
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initHomePage);
+} else {
+    initHomePage();
+}
 
 
 // ============================================================
@@ -719,8 +725,8 @@ function initHeroLiveCodeTyping() {
         });
     }
 
-    // Khởi chạy lần đầu sau 400ms
-    setTimeout(runTypingAnimation, 400);
+    // Khởi chạy lần đầu sau 100ms
+    setTimeout(runTypingAnimation, 100);
 }
 
 
