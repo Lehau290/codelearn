@@ -130,10 +130,10 @@ ol {
     --card-shadow-hover: 0 16px 36px -4px rgba(115, 100, 242, 0.2), 0 4px 12px rgba(25, 22, 46, 0.04);
     --card-shadow-elevated: 0 24px 48px -6px rgba(115, 100, 242, 0.22);
 
-    --radius-sm: 12px;
-    --radius-md: 18px;
-    --radius-lg: 24px;
-    --radius-xl: 32px;
+    --radius-sm: 8px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 18px;
     --radius-pill: 9999px;
 
     --container: 1220px;
@@ -200,11 +200,11 @@ main {
 }
 
 .header-inner {
-    min-height: 76px;
+    min-height: 58px;
 
     display: flex;
     align-items: center;
-    gap: 28px;
+    gap: 20px;
 }
 
 
@@ -213,7 +213,7 @@ main {
 .site-logo {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
 
     flex-shrink: 0;
     transition: transform var(--transition);
@@ -224,22 +224,22 @@ main {
 }
 
 .site-logo-mark {
-    width: 44px;
-    height: 44px;
+    width: 36px;
+    height: 36px;
 
     display: grid;
     place-items: center;
 
-    border-radius: 14px;
+    border-radius: 10px;
 
     color: #ffffff;
     background: var(--primary-gradient);
 
     font-family: var(--font-mono);
-    font-size: 0.95rem;
+    font-size: 0.88rem;
     font-weight: 800;
 
-    box-shadow: 0 8px 22px rgba(115, 100, 242, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    box-shadow: 0 4px 14px rgba(115, 100, 242, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 .site-logo-text {
@@ -250,7 +250,7 @@ main {
 }
 
 .site-logo-text strong {
-    font-size: 1.05rem;
+    font-size: 0.98rem;
     font-weight: 800;
     letter-spacing: -0.01em;
     color: var(--text);
@@ -258,7 +258,7 @@ main {
 
 .site-logo-text span {
     color: var(--text-secondary);
-    font-size: 0.74rem;
+    font-size: 0.68rem;
     font-weight: 600;
     letter-spacing: 0.04em;
     text-transform: uppercase;
@@ -278,13 +278,13 @@ main {
 .nav-link {
     position: relative;
 
-    padding: 8px 18px;
+    padding: 6px 14px;
 
     color: var(--text-secondary);
 
-    border-radius: 9999px;
+    border-radius: 8px;
 
-    font-size: 0.88rem;
+    font-size: 0.84rem;
     font-weight: 600;
 
     transition:
@@ -301,7 +301,7 @@ main {
 .nav-link.active {
     color: #ffffff;
     background: var(--primary-gradient);
-    box-shadow: 0 4px 16px rgba(115, 100, 242, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    box-shadow: 0 2px 10px rgba(115, 100, 242, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .admin-nav-link {
@@ -359,8 +359,8 @@ main {
 }
 
 .header-avatar {
-    width: 38px;
-    height: 38px;
+    width: 32px;
+    height: 32px;
 
     display: grid;
     place-items: center;
@@ -376,7 +376,7 @@ main {
         );
 
     font-weight: 800;
-    font-size: 0.85rem;
+    font-size: 0.78rem;
 }
 
 .logout-button {
@@ -425,16 +425,16 @@ main {
    ========================================================= */
 
 .btn {
-    min-height: 44px;
+    min-height: 38px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 10px 24px;
+    gap: 6px;
+    padding: 8px 18px;
     border: 1px solid transparent;
-    border-radius: 9999px;
-    font-size: 0.9rem;
-    font-weight: 700;
+    border-radius: 8px;
+    font-size: 0.86rem;
+    font-weight: 600;
     transition: all var(--transition);
     user-select: none;
     cursor: pointer;
@@ -504,7 +504,7 @@ main {
     position: relative;
     overflow: hidden;
 
-    padding: 68px 0 74px;
+    padding: 36px 0 40px;
 
     color: #ffffff;
 
@@ -2007,10 +2007,10 @@ main {
 
 .auth-container {
     width: 100%;
-    max-width: 960px;
+    max-width: 880px;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 40px;
+    gap: 28px;
     align-items: center;
     position: relative;
     z-index: 1;
@@ -2150,9 +2150,9 @@ main {
 
 .auth-card {
     background: #ffffff;
-    border-radius: var(--radius-xl);
-    padding: 32px 28px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+    border-radius: var(--radius-lg);
+    padding: 24px 26px;
+    box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.35);
     border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
@@ -2419,7 +2419,7 @@ main {
 .home-hero {
     --spotlight-x: 50%;
     --spotlight-y: 35%;
-    padding: 72px 0 84px;
+    padding: 44px 0 52px;
     background:
         radial-gradient(
             680px circle at var(--spotlight-x, 50%) var(--spotlight-y, 35%),
@@ -3216,16 +3216,16 @@ main {
 /* Horizontal Lesson Card on Lessons List page */
 .lesson-list-card {
     display: grid;
-    grid-template-columns: 50px 60px 1fr auto;
+    grid-template-columns: 46px minmax(0, 1fr) auto;
     align-items: center;
-    gap: 20px;
-    padding: 22px 28px;
-    border-radius: var(--radius-lg);
+    gap: 16px;
+    padding: 14px 20px;
+    border-radius: var(--radius-md);
 }
 
 .lesson-list-card .lesson-card-top {
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
     margin-bottom: 0;
 }
 
@@ -3237,11 +3237,25 @@ main {
     min-width: 0;
 }
 
+.lesson-list-card h3 {
+    font-size: 1.04rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    line-height: 1.35;
+}
+
+.lesson-list-card p {
+    font-size: 0.84rem;
+    margin-bottom: 6px;
+    min-height: unset;
+    line-height: 1.45;
+}
+
 .lesson-card-meta {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
 }
 
 .lesson-level {
@@ -3307,7 +3321,7 @@ main {
 
 /* Why Choose CodeLearn */
 .why-choose-section {
-    padding: 68px 0 52px;
+    padding: 40px 0 32px;
 }
 
 .feature-grid {
@@ -3379,7 +3393,7 @@ main {
 
 /* Learning Roadmap */
 .roadmap-section {
-    padding: 64px 0 72px;
+    padding: 40px 0 44px;
     background: rgba(164, 158, 242, 0.03);
     border-top: 1px solid var(--border-light);
     border-bottom: 1px solid var(--border-light);
@@ -3475,7 +3489,7 @@ main {
 
 /* Student Testimonials */
 .testimonials-section {
-    padding: 68px 0 76px;
+    padding: 40px 0 44px;
 }
 
 .testimonial-grid {
@@ -3557,7 +3571,7 @@ main {
 
 /* FAQ Section */
 .faq-section {
-    padding: 56px 0 72px;
+    padding: 38px 0 44px;
     background: rgba(164, 158, 242, 0.03);
     border-top: 1px solid var(--border-light);
 }
@@ -3565,14 +3579,14 @@ main {
 .faq-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    gap: 16px;
 }
 
 .faq-card {
     background: #ffffff;
     border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 24px 24px;
+    border-radius: var(--radius-md);
+    padding: 18px 20px;
     box-shadow: var(--card-shadow);
     transition: all var(--transition);
 }
@@ -3583,22 +3597,22 @@ main {
 }
 
 .faq-question {
-    font-size: 1.05rem;
-    font-weight: 800;
+    font-size: 0.98rem;
+    font-weight: 700;
     color: var(--text);
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     line-height: 1.4;
 }
 
 .faq-answer {
-    font-size: 0.9rem;
+    font-size: 0.86rem;
     color: var(--text-secondary);
-    line-height: 1.6;
+    line-height: 1.55;
 }
 
 /* Home CTA */
 .home-cta {
-    padding: 30px 0 80px;
+    padding: 24px 0 48px;
 }
 
 .cta-card {
@@ -3608,7 +3622,7 @@ main {
         linear-gradient(135deg, rgba(93, 77, 228, 0.92) 0%, rgba(125, 105, 245, 0.88) 50%, rgba(179, 150, 250, 0.84) 100%),
         url('../images/hero-star-bg.png') center/cover no-repeat;
     border: 1px solid rgba(210, 195, 255, 0.35);
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-lg);
     padding: 48px 44px;
     color: #ffffff;
     display: flex;
@@ -3662,7 +3676,7 @@ main {
         linear-gradient(180deg, rgba(12, 10, 26, 0.58) 0%, rgba(16, 12, 34, 0.8) 100%),
         url('../images/hero-star-bg.png') center/cover no-repeat;
     color: #ffffff;
-    padding: 64px 0 68px;
+    padding: 38px 0 42px;
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -3684,43 +3698,43 @@ main {
 }
 
 .page-hero h1 {
-    font-size: clamp(2.2rem, 4.5vw, 3.2rem);
-    font-weight: 900;
-    margin-bottom: 12px;
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    font-weight: 800;
+    margin-bottom: 8px;
     letter-spacing: -0.02em;
     color: #ffffff;
 }
 
 .page-hero p {
     color: #cbd5e1;
-    font-size: 1.05rem;
+    font-size: 0.94rem;
     max-width: 620px;
     margin: 0 auto;
-    line-height: 1.6;
+    line-height: 1.5;
 }
 
 .lesson-controls {
     display: flex;
-    gap: 16px;
+    gap: 12px;
     align-items: center;
     flex-wrap: wrap;
-    margin-bottom: 24px;
+    margin-bottom: 18px;
 }
 
 .lesson-search {
     flex: 1;
-    min-width: 260px;
+    min-width: 240px;
     position: relative;
 }
 
 .lesson-search input {
     width: 100%;
-    min-height: 48px;
-    padding: 12px 18px;
-    border: 1.5px solid var(--border);
+    min-height: 40px;
+    padding: 8px 14px;
+    border: 1px solid var(--border);
     border-radius: var(--radius-md);
     background: #ffffff;
-    font-size: 0.92rem;
+    font-size: 0.88rem;
     color: var(--text);
     transition: all var(--transition);
 }
@@ -3728,16 +3742,16 @@ main {
 .lesson-search input:focus {
     border-color: var(--primary);
     outline: none;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    box-shadow: 0 0 0 3px rgba(115, 100, 242, 0.15);
 }
 
 .lesson-filter select {
-    min-height: 48px;
-    padding: 12px 20px;
-    border: 1.5px solid var(--border);
+    min-height: 40px;
+    padding: 8px 16px;
+    border: 1px solid var(--border);
     border-radius: var(--radius-md);
     background: #ffffff;
-    font-size: 0.9rem;
+    font-size: 0.86rem;
     font-weight: 600;
     color: var(--text);
     cursor: pointer;
@@ -3753,9 +3767,9 @@ main {
 .lessons-summary {
     background: #ffffff;
     border: 1px solid var(--border-light);
-    border-radius: var(--radius-lg);
-    padding: 20px 24px;
-    margin-bottom: 28px;
+    border-radius: var(--radius-md);
+    padding: 14px 20px;
+    margin-bottom: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -3874,27 +3888,27 @@ main {
 }
 
 .lesson-detail-header {
-    padding: 30px 0 20px;
+    padding: 16px 0 12px;
 }
 
 .lesson-header-content h1 {
-    font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+    font-size: clamp(1.4rem, 2.5vw, 1.85rem);
     font-weight: 800;
     color: var(--text);
-    margin-bottom: 8px;
+    margin-bottom: 4px;
 }
 
 .lesson-header-content p {
     color: var(--text-secondary);
-    font-size: 0.95rem;
-    margin-bottom: 16px;
+    font-size: 0.88rem;
+    margin-bottom: 10px;
 }
 
 .lesson-meta {
     display: flex;
-    gap: 16px;
+    gap: 12px;
     align-items: center;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     color: var(--text-secondary);
     flex-wrap: wrap;
 }
@@ -3937,28 +3951,28 @@ main {
 }
 
 .lesson-content-section {
-    padding-bottom: 60px;
+    padding-bottom: 40px;
 }
 
 .lesson-layout {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 300px;
-    gap: 28px;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: 20px;
     align-items: start;
 }
 
 .lesson-content {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 16px;
     min-width: 0;
 }
 
 .lesson-block {
     background: #ffffff;
     border: 1px solid var(--border-light);
-    border-radius: var(--radius-lg);
-    padding: 28px;
+    border-radius: var(--radius-md);
+    padding: 20px 22px;
     box-shadow: var(--card-shadow);
 }
 
@@ -4088,31 +4102,31 @@ main {
 
 .exercise-tabs-bar {
     display: flex;
-    gap: 10px;
+    gap: 6px;
     background: #f1f5f9;
-    padding: 6px;
-    border-radius: var(--radius-lg);
+    padding: 4px;
+    border-radius: 10px;
     border: 1px solid var(--border-light);
     overflow-x: auto;
 }
 
 .exercise-tab-btn {
     flex: 1;
-    min-width: 140px;
+    min-width: 100px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 10px 14px;
+    gap: 6px;
+    padding: 7px 12px;
     background: transparent;
     border: none;
-    border-radius: var(--radius-md);
+    border-radius: 6px;
     cursor: pointer;
     font-family: inherit;
-    font-size: 0.86rem;
-    font-weight: 700;
+    font-size: 0.82rem;
+    font-weight: 600;
     color: var(--text-secondary);
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.2s ease;
     white-space: nowrap;
 }
 
@@ -4242,11 +4256,11 @@ main {
 .exercise-description {
     background: #ffffff;
     border: 1px solid var(--border-light);
-    border-radius: var(--radius-lg);
-    padding: 22px;
+    border-radius: var(--radius-md);
+    padding: 16px 18px;
     display: flex;
-    gap: 16px;
-    margin-bottom: 20px;
+    gap: 14px;
+    margin-bottom: 14px;
     box-shadow: var(--card-shadow);
 }
 
@@ -4425,16 +4439,16 @@ main {
 
 .exercise-actions {
     display: flex;
-    gap: 14px;
-    margin-top: 22px;
+    gap: 10px;
+    margin-top: 14px;
     flex-wrap: wrap;
 }
 
 .code-status {
-    margin-top: 14px;
-    padding: 12px 16px;
+    margin-top: 10px;
+    padding: 10px 14px;
     border-radius: var(--radius-md);
-    font-size: 0.88rem;
+    font-size: 0.85rem;
     font-weight: 600;
     border: 1px solid transparent;
 }
@@ -4442,8 +4456,9 @@ main {
 /* AI Feedback */
 .ai-feedback {
     background: #ffffff;
-    border: 1.5px solid #bfdbfe;
-    border-radius: var(--radius-xl);
+    border: 1px solid #bfdbfe;
+    border-radius: var(--radius-lg);
+    padding: 18px 20px;
     padding: 28px;
     margin-top: 24px;
     box-shadow: 0 14px 30px rgba(37, 99, 235, 0.10);
@@ -7459,7 +7474,7 @@ body.dark-theme .cert-mini-bar-track {
    LEADERBOARD & STUDY STREAK (BẢNG VÀNG THI ĐUA)
    ========================================================= */
 .leaderboard-section {
-    padding: 70px 0;
+    padding: 40px 0;
     position: relative;
     background: linear-gradient(180deg, rgba(132, 125, 232, 0.03) 0%, rgba(248, 250, 252, 0.5) 100%);
 }
@@ -7470,12 +7485,12 @@ body.dark-theme .leaderboard-section {
 
 .leaderboard-card-wrapper {
     max-width: 920px;
-    margin: 36px auto 0 auto;
+    margin: 24px auto 0 auto;
     background: var(--surface, #ffffff);
     border: 1px solid var(--border, #e2e8f0);
-    border-radius: 24px;
-    padding: 36px 32px;
-    box-shadow: 0 12px 35px -10px rgba(0, 0, 0, 0.06);
+    border-radius: 16px;
+    padding: 24px 24px;
+    box-shadow: 0 4px 20px -6px rgba(0, 0, 0, 0.05);
 }
 
 body.dark-theme .leaderboard-card-wrapper {
@@ -9663,14 +9678,14 @@ body.dark-theme .lesson-list-card.completed {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    font-size: 0.86rem;
-    font-weight: 700;
-    padding: 9px 18px;
-    border-radius: 12px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 7px 15px;
+    border-radius: 8px;
     text-decoration: none;
     color: #ffffff;
     background: var(--primary-gradient, linear-gradient(135deg, #6366f1, #8b5cf6));
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.22);
     transition: all 0.2s ease;
 }
 
@@ -10721,12 +10736,12 @@ body.dark-theme .curr-chap-go {
 /* 5. Nhóm Bài học theo từng Chương trong #lessonsContainer */
 .chapter-group-section {
     --sec-accent: #6366f1;
-    margin-bottom: 36px;
-    border-radius: 24px;
+    margin-bottom: 20px;
+    border-radius: 14px;
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.9) 100%);
-    border: 1px solid rgba(148, 163, 184, 0.24);
-    padding: 26px;
-    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.05);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    padding: 18px 20px;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
     scroll-margin-top: 90px;
 }
 
@@ -10749,10 +10764,10 @@ body.dark-theme .chapter-group-section {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 20px;
-    padding-bottom: 20px;
-    margin-bottom: 22px;
-    border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+    gap: 16px;
+    padding-bottom: 12px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.2);
     flex-wrap: wrap;
 }
 
@@ -12831,4 +12846,51 @@ body.dark-theme .btn-focus-mode:hover {
 .input-wrapper input {
     padding-left: 14px !important;
 }
+
+/* Compact & Clean Layout Refinements */
+.lesson-list-card {
+    grid-template-columns: 46px minmax(0, 1fr) auto !important;
+    gap: 16px !important;
+}
+
+#lessonsContainer.grid-view-mode .lesson-list-card {
+    grid-template-columns: 44px minmax(0, 1fr) !important;
+    gap: 12px !important;
+}
+
+.lesson-card-meta {
+    gap: 6px !important;
+}
+
+.lesson-card-info {
+    gap: 12px !important;
+}
+
+/* Compact Forms & Modals */
+.modal-dialog,
+.ai-settings-dialog,
+.focus-modal-card {
+    border-radius: 14px !important;
+    padding: 22px 24px !important;
+}
+
+/* Polished Subtle Scrollbars */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.35);
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.65);
+}
+
 
