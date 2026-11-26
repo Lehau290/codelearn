@@ -977,7 +977,10 @@ int main() {
                             <h2>Quản lý Thành viên &amp; Cấp quyền</h2>
                         </div>
                         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                            <button type="button" id="btnOpenBatchImport" class="btn btn-primary" title="Nhập danh sách học viên hàng loạt từ CSV">
+                            <button type="button" id="btnOpenCreateUser" class="btn btn-primary" title="Tạo một tài khoản người dùng mới">
+                                + Tạo tài khoản mới
+                            </button>
+                            <button type="button" id="btnOpenBatchImport" class="btn btn-secondary" title="Nhập danh sách học viên hàng loạt từ CSV">
                                 + Nhập học viên (CSV / Excel)
                             </button>
                             <button type="button" id="btnRefreshUsers" class="btn btn-secondary" title="Làm mới danh sách">
@@ -1011,6 +1014,7 @@ int main() {
                                     <th>Thành viên</th>
                                     <th>Email</th>
                                     <th>Vai trò</th>
+                                    <th>Trạng thái</th>
                                     <th>Ngày tham gia</th>
                                     <th>Cấp quyền &amp; Thao tác</th>
                                 </tr>
@@ -1520,6 +1524,57 @@ int main() {
                 <button type="button" id="btnSubmitBatchImport" class="btn btn-primary">Xác nhận nhập học viên</button>
                 <button type="button" id="btnCancelBatchImport" class="btn btn-secondary">Hủy</button>
             </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL TẠO / CHỈNH SỬA TÀI KHOẢN ================= -->
+    <div id="modalUserEditor" class="admin-modal-backdrop" style="display: none;">
+        <div class="admin-modal-card" style="max-width: 520px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 id="modalUserEditorTitle" style="margin: 0; font-size: 1.2rem;">Tạo tài khoản mới</h3>
+                <button type="button" id="btnCloseUserEditor" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;">✕ Đóng</button>
+            </div>
+            <form id="formUserEditor" style="display: flex; flex-direction: column; gap: 12px;">
+                <input type="hidden" id="editUserId">
+                <div>
+                    <label for="userEditorUsername" style="display: block; font-weight: 600; font-size: 0.88rem; margin-bottom: 4px;">Tên đăng nhập (Username) *</label>
+                    <input type="text" id="userEditorUsername" class="profile-input" placeholder="vd: nguyenvana" required>
+                </div>
+                <div>
+                    <label for="userEditorFullName" style="display: block; font-weight: 600; font-size: 0.88rem; margin-bottom: 4px;">Họ và tên</label>
+                    <input type="text" id="userEditorFullName" class="profile-input" placeholder="vd: Nguyễn Văn A">
+                </div>
+                <div>
+                    <label for="userEditorEmail" style="display: block; font-weight: 600; font-size: 0.88rem; margin-bottom: 4px;">Email</label>
+                    <input type="email" id="userEditorEmail" class="profile-input" placeholder="vd: nva@student.codelearn.io">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div>
+                        <label for="userEditorRole" style="display: block; font-weight: 600; font-size: 0.88rem; margin-bottom: 4px;">Vai trò</label>
+                        <select id="userEditorRole" class="profile-input">
+                            <option value="student">Học viên (student)</option>
+                            <option value="moderator">Trợ giảng (moderator)</option>
+                            <option value="admin">Quản trị viên (admin)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="userEditorStatus" style="display: block; font-weight: 600; font-size: 0.88rem; margin-bottom: 4px;">Trạng thái</label>
+                        <select id="userEditorStatus" class="profile-input">
+                            <option value="active">Hoạt động (active)</option>
+                            <option value="suspended">Đã khóa (suspended)</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label for="userEditorPassword" id="userEditorPasswordLabel" style="display: block; font-weight: 600; font-size: 0.88rem; margin-bottom: 4px;">Mật khẩu *</label>
+                    <input type="password" id="userEditorPassword" class="profile-input" placeholder="Nhập mật khẩu (tối thiểu 6 ký tự)">
+                </div>
+                <div id="userEditorMessage" class="form-message" hidden></div>
+                <div class="profile-form-actions" style="margin-top: 8px; display: flex; justify-content: flex-end; gap: 8px;">
+                    <button type="button" id="btnCancelUserEditor" class="btn btn-secondary">Hủy</button>
+                    <button type="submit" id="btnSaveUserEditor" class="btn btn-primary">Lưu tài khoản</button>
+                </div>
+            </form>
         </div>
     </div>
 

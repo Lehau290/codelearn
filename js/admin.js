@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setupAnalyticsSection();
     renderAdminStats();
     renderAdminLessons();
+    syncAdminLessonsFromApi();
     setupLessonSearch();
     setupLessonForm();
     setupCancelButton();
@@ -37,6 +38,22 @@ document.addEventListener("DOMContentLoaded", () => {
     setupDatabaseAndKnowledgeSection();
     setupModalDialog();
 });
+
+async function syncAdminLessonsFromApi() {
+    if (!window.CodeLearnApi || typeof CodeLearnApi.lessons?.getAll !== "function") return;
+    try {
+        const res = await CodeLearnApi.lessons.getAll();
+        const apiLessons = (res && Array.isArray(res.lessons)) ? res.lessons : (Array.isArray(res) ? res : null);
+        if (apiLessons && apiLessons.length > 0) {
+            CppStorage.saveLessons(apiLessons);
+            renderAdminLessons(document.getElementById("adminLessonSearch")?.value || "");
+            renderAdminStats();
+            loadLessonOptionsForExercises();
+        }
+    } catch (e) {
+        console.warn("Không thể đồng bộ danh sách bài học từ server:", e);
+    }
+}
 
 // ============================================================
 // 1. CHUYỂN ĐỔI TAB QUẢN TRỊ (ADMIN TABS NAVIGATION)
@@ -256,6 +273,7 @@ function setupLessonForm() {
             resetLessonForm();
             renderAdminLessons();
             renderAdminStats();
+            loadLessonOptionsForExercises();
         } catch (err) {
             showFormMessage("adminMessage", `Lỗi: ${err.message}`, "error");
         } finally {
@@ -304,6 +322,7 @@ async function deleteLesson(lessonId) {
         showFormMessage("adminMessage", `Đã xóa bài học '${lessonId}' thành công.`, "success");
         renderAdminLessons();
         renderAdminStats();
+        loadLessonOptionsForExercises();
     } catch (err) {
         showFormMessage("adminMessage", `Lỗi xóa bài học: ${err.message}`, "error");
     }
@@ -902,7 +921,7 @@ function renderUsersTable(users) {
     });
 
     if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 24px; color: var(--text-secondary);">Không tìm thấy người dùng nào phù hợp.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 24px; color: var(--text-secondary);">Không tìm thấy người dùng nào phù hợp.</td></tr>`;
         return;
     }
 
@@ -947,6 +966,9 @@ function renderUsersTable(users) {
                         </select>
                         <button type="button" class="btn btn-primary btn-sm btn-save-role" data-id="${escapeHtml(user.id)}" style="padding: 5px 8px; font-size: 0.78rem;" ${isMe ? 'disabled' : ''}>
                             Cấp quyền
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-sm btn-edit-user" data-id="${escapeHtml(user.id)}" style="padding: 5px 8px; font-size: 0.78rem;" title="Chỉnh sửa thông tin tài khoản">
+                            Sửa
                         </button>
                         ${!isMe ? `
                             <button type="button" class="btn btn-sm btn-toggle-status" data-id="${escapeHtml(user.id)}" data-status="${escapeHtml(user.status || 'active')}" data-name="${escapeHtml(user.username)}" style="padding: 5px 8px; font-size: 0.78rem; background: ${isSuspended ? 'rgba(16, 185, 129, 0.12); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.25);' : 'rgba(245, 158, 11, 0.12); color: #d97706; border: 1px solid rgba(245, 158, 11, 0.25);'}" title="${isSuspended ? 'Mở khóa tài khoản' : 'Tạm khóa tài khoản'}">
@@ -1037,6 +1059,17 @@ Mật khẩu mới: ${newPass}`);
         });
     });
 
+    // Sự kiện sửa thông tin tài khoản
+    tbody.querySelectorAll(".btn-edit-user").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const uid = btn.getAttribute("data-id");
+            const targetUser = _adminUsersCache.find(u => String(u.id) === String(uid));
+            if (targetUser) {
+                openUserEditorModal(targetUser);
+            }
+        });
+    });
+
     // Sự kiện xóa user
     tbody.querySelectorAll(".btn-delete-user").forEach(btn => {
         btn.addEventListener("click", async () => {
@@ -1080,6 +1113,127 @@ function setupUserManagement() {
             loadAdminUsers();
         });
     }
+
+    const btnOpenCreate = document.getElementById("btnOpenCreateUser");
+    if (btnOpenCreate) {
+        btnOpenCreate.addEventListener("click", () => {
+            openUserEditorModal(null);
+        });
+    }
+
+    const modal = document.getElementById("modalUserEditor");
+    const btnClose = document.getElementById("btnCloseUserEditor");
+    const btnCancel = document.getElementById("btnCancelUserEditor");
+    const form = document.getElementById("formUserEditor");
+
+    const closeModal = () => {
+        if (modal) modal.style.display = "none";
+    };
+    if (btnClose) btnClose.addEventListener("click", closeModal);
+    if (btnCancel) btnCancel.addEventListener("click", closeModal);
+    if (modal) {
+        modal.addEventListener("click", (e) => {
+            if (e.target === modal) closeModal();
+        });
+    }
+
+    if (form) {
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const editId = document.getElementById("editUserId")?.value.trim();
+            const username = document.getElementById("userEditorUsername")?.value.trim();
+            const fullName = document.getElementById("userEditorFullName")?.value.trim();
+            const email = document.getElementById("userEditorEmail")?.value.trim();
+            const role = document.getElementById("userEditorRole")?.value || "student";
+            const status = document.getElementById("userEditorStatus")?.value || "active";
+            const password = document.getElementById("userEditorPassword")?.value.trim();
+
+            if (!editId && (!username || username.length < 3)) {
+                showFormMessage("userEditorMessage", "Tên đăng nhập phải có ít nhất 3 ký tự.", "error");
+                return;
+            }
+            if (!editId && (!password || password.length < 6)) {
+                showFormMessage("userEditorMessage", "Mật khẩu phải có ít nhất 6 ký tự.", "error");
+                return;
+            }
+            if (editId && password && password.length < 6) {
+                showFormMessage("userEditorMessage", "Mật khẩu mới phải có ít nhất 6 ký tự.", "error");
+                return;
+            }
+
+            const btnSave = document.getElementById("btnSaveUserEditor");
+            if (btnSave) {
+                btnSave.disabled = true;
+                btnSave.textContent = "Đang lưu...";
+            }
+
+            try {
+                if (editId) {
+                    const payload = { fullName, email, role, status };
+                    if (password) payload.password = password;
+                    await CodeLearnApi.admin.updateUser(editId, payload);
+                    showFormMessage("adminUserMessage", `Đã cập nhật tài khoản '${username}' thành công!`, "success");
+                } else {
+                    await CodeLearnApi.admin.createUser({ username, fullName, email, role, status, password });
+                    showFormMessage("adminUserMessage", `Đã tạo tài khoản '${username}' thành công!`, "success");
+                }
+                closeModal();
+                loadAdminUsers();
+            } catch (err) {
+                showFormMessage("userEditorMessage", `Lỗi: ${err.message}`, "error");
+            } finally {
+                if (btnSave) {
+                    btnSave.disabled = false;
+                    btnSave.textContent = "Lưu tài khoản";
+                }
+            }
+        });
+    }
+}
+
+function openUserEditorModal(user = null) {
+    const modal = document.getElementById("modalUserEditor");
+    const titleEl = document.getElementById("modalUserEditorTitle");
+    const usernameInput = document.getElementById("userEditorUsername");
+    const passwordLabel = document.getElementById("userEditorPasswordLabel");
+    const passwordInput = document.getElementById("userEditorPassword");
+    const msgEl = document.getElementById("userEditorMessage");
+
+    if (msgEl) msgEl.hidden = true;
+
+    if (user) {
+        if (titleEl) titleEl.textContent = `Chỉnh sửa tài khoản: ${user.username}`;
+        setInputValue("editUserId", user.id);
+        setInputValue("userEditorUsername", user.username || "");
+        if (usernameInput) usernameInput.disabled = true;
+        setInputValue("userEditorFullName", user.fullName || "");
+        setInputValue("userEditorEmail", user.email || "");
+        setInputValue("userEditorRole", user.role || "student");
+        setInputValue("userEditorStatus", user.status || "active");
+        setInputValue("userEditorPassword", "");
+        if (passwordLabel) passwordLabel.textContent = "Mật khẩu mới (để trống nếu giữ nguyên)";
+        if (passwordInput) {
+            passwordInput.required = false;
+            passwordInput.placeholder = "Để trống nếu không đổi mật khẩu";
+        }
+    } else {
+        if (titleEl) titleEl.textContent = "Tạo tài khoản mới";
+        setInputValue("editUserId", "");
+        setInputValue("userEditorUsername", "");
+        if (usernameInput) usernameInput.disabled = false;
+        setInputValue("userEditorFullName", "");
+        setInputValue("userEditorEmail", "");
+        setInputValue("userEditorRole", "student");
+        setInputValue("userEditorStatus", "active");
+        setInputValue("userEditorPassword", "");
+        if (passwordLabel) passwordLabel.textContent = "Mật khẩu *";
+        if (passwordInput) {
+            passwordInput.required = true;
+            passwordInput.placeholder = "Nhập mật khẩu (tối thiểu 6 ký tự)";
+        }
+    }
+
+    if (modal) modal.style.display = "flex";
 }
 
 // ============================================================

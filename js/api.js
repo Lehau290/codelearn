@@ -305,6 +305,20 @@
                 return request("/admin/users");
             },
 
+            async createUser(data) {
+                return request("/admin/users", {
+                    method: "POST",
+                    body: JSON.stringify(data)
+                });
+            },
+
+            async updateUser(userId, data) {
+                return request(`/admin/users/${encodeURIComponent(userId)}`, {
+                    method: "PUT",
+                    body: JSON.stringify(data)
+                });
+            },
+
             async changeUserRole(userId, role) {
                 return request(`/admin/users/${encodeURIComponent(userId)}/role`, {
                     method: "PUT",
