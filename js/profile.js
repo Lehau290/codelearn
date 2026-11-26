@@ -893,8 +893,11 @@ function setupProfileChapterToggles() {
     function applySectionVisibility(isHidden) {
         if (!sectionBody) return;
         sectionBody.classList.toggle("is-collapsed", isHidden);
+        sectionBody.hidden = isHidden;
+        sectionBody.style.display = isHidden ? "none" : "";
         if (collapsedNotice) {
             collapsedNotice.hidden = !isHidden;
+            collapsedNotice.style.display = isHidden ? "flex" : "none";
         }
         if (btnToggleSection) {
             btnToggleSection.setAttribute("aria-expanded", String(!isHidden));
@@ -914,8 +917,9 @@ function setupProfileChapterToggles() {
 
     if (btnToggleSection && !btnToggleSection.dataset.bound) {
         btnToggleSection.dataset.bound = "true";
-        btnToggleSection.addEventListener("click", () => {
-            const currentlyHidden = sectionBody && sectionBody.classList.contains("is-collapsed");
+        btnToggleSection.addEventListener("click", (e) => {
+            e.preventDefault();
+            const currentlyHidden = sectionBody && (sectionBody.classList.contains("is-collapsed") || sectionBody.hidden);
             const nextHidden = !currentlyHidden;
             localStorage.setItem(STORAGE_KEY_SECTION, String(nextHidden));
             applySectionVisibility(nextHidden);
@@ -924,7 +928,8 @@ function setupProfileChapterToggles() {
 
     if (btnQuickExpand && !btnQuickExpand.dataset.bound) {
         btnQuickExpand.dataset.bound = "true";
-        btnQuickExpand.addEventListener("click", () => {
+        btnQuickExpand.addEventListener("click", (e) => {
+            e.preventDefault();
             localStorage.setItem(STORAGE_KEY_SECTION, "false");
             applySectionVisibility(false);
         });

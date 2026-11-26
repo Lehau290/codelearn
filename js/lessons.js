@@ -3,7 +3,10 @@
 // File: js/lessons.js
 // ============================================================
 
-document.addEventListener("DOMContentLoaded", async () => {
+async function initLessonsPage() {
+    // Khởi tạo nút Ẩn / Hiện 7 chương ngay lập tức (không bị block bởi API await)
+    try { setupCurriculumOverviewToggle(); } catch (e) { console.warn("Toggle init warning:", e); }
+
     const currentUser = CppStorage.getCurrentUser();
 
     // Lấy các thành phần trên trang
@@ -357,9 +360,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    // 9. Nút Ẩn / Hiện tất cả 7 chương trên khung Tổng quan Chương trình học
+    // 9. Đảm bảo nút Ẩn / Hiện tất cả 7 chương đã được gắn sự kiện
     setupCurriculumOverviewToggle();
-});
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initLessonsPage);
+} else {
+    initLessonsPage();
+}
 
 function setupCurriculumOverviewToggle() {
     const btnToggle = document.getElementById("btnToggleCurriculumChapters");
@@ -374,8 +383,11 @@ function setupCurriculumOverviewToggle() {
     function applyVisibility(isHidden) {
         if (!bodyEl) return;
         bodyEl.classList.toggle("is-collapsed", isHidden);
+        bodyEl.hidden = isHidden;
+        bodyEl.style.display = isHidden ? "none" : "";
         if (noticeEl) {
             noticeEl.hidden = !isHidden;
+            noticeEl.style.display = isHidden ? "flex" : "none";
         }
         if (btnToggle) {
             btnToggle.setAttribute("aria-expanded", String(!isHidden));
@@ -394,8 +406,9 @@ function setupCurriculumOverviewToggle() {
 
     if (btnToggle && !btnToggle.dataset.bound) {
         btnToggle.dataset.bound = "true";
-        btnToggle.addEventListener("click", () => {
-            const currentlyHidden = bodyEl && bodyEl.classList.contains("is-collapsed");
+        btnToggle.addEventListener("click", (e) => {
+            e.preventDefault();
+            const currentlyHidden = bodyEl && (bodyEl.classList.contains("is-collapsed") || bodyEl.hidden);
             const nextHidden = !currentlyHidden;
             localStorage.setItem(STORAGE_KEY, String(nextHidden));
             applyVisibility(nextHidden);
@@ -404,7 +417,8 @@ function setupCurriculumOverviewToggle() {
 
     if (btnQuickExpand && !btnQuickExpand.dataset.bound) {
         btnQuickExpand.dataset.bound = "true";
-        btnQuickExpand.addEventListener("click", () => {
+        btnQuickExpand.addEventListener("click", (e) => {
+            e.preventDefault();
             localStorage.setItem(STORAGE_KEY, "false");
             applyVisibility(false);
         });
