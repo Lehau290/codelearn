@@ -2654,10 +2654,8 @@ function setupFocusMode(lesson, user) {
             }
         }
 
-        if (focusViolationCountElem) {
-            focusViolationCountElem.textContent = String(violationCount);
-        }
         if (focusViolationPill) {
+            focusViolationPill.innerHTML = `<span>Vi phạm:</span> <strong id="focusViolationCount">${violationCount}</strong>/${MAX_VIOLATIONS}`;
             focusViolationPill.classList.add("danger");
         }
         if (violationAlertCount) {
@@ -2703,8 +2701,10 @@ function setupFocusMode(lesson, user) {
             focusModeBar.style.display = "flex";
         }
 
-        if (focusViolationCountElem) focusViolationCountElem.textContent = String(violationCount);
-        if (focusViolationPill && violationCount === 0) focusViolationPill.classList.remove("danger");
+        if (focusViolationPill) {
+            focusViolationPill.innerHTML = `<span>Vi phạm:</span> <strong id="focusViolationCount">${violationCount}</strong>/${MAX_VIOLATIONS}`;
+            if (violationCount === 0) focusViolationPill.classList.remove("danger");
+        }
 
         if (btnToggleFocusMode) {
             btnToggleFocusMode.classList.add("active");

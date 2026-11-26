@@ -72,6 +72,14 @@ class CodeLearnHandler(SimpleHTTPRequestHandler):
     # ---------------------------------------------------------
     # Helper Utilities
     # ---------------------------------------------------------
+    def end_headers(self):
+        """Adds no-cache headers for static assets so browser always receives latest code."""
+        if not getattr(self, "path", "").startswith("/api/"):
+            self.send_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+            self.send_header("Pragma", "no-cache")
+            self.send_header("Expires", "0")
+        super().end_headers()
+
     def send_cors_headers(self):
         """Sends permissive CORS headers."""
         self.send_header("Access-Control-Allow-Origin", "*")
