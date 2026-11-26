@@ -2668,7 +2668,7 @@ function setupFocusMode(lesson, user) {
         }
 
         if (focusViolationSubtext) {
-            focusViolationSubtext.innerHTML = `<strong>BẠN ĐÃ RỜI KHỎI MÀN HÌNH LÀM BÀI!</strong><br>Theo quy chế, thoát ra 1 lần sẽ lập tức bị đánh giá <strong>KHÔNG ĐẠT (0 điểm)</strong>.<br>Hệ thống đang tự động đưa bạn quay về Trang chủ trong <span id="redirectCountdown">3</span>s...`;
+            focusViolationSubtext.innerHTML = `<strong>BẠN ĐÃ RỜI KHỎI MÀN HÌNH LÀM BÀI!</strong><br>Theo quy chế, thoát ra 1 lần lập tức bị đánh giá <strong>KHÔNG ĐẠT (0 điểm)</strong> và quay về Trang chủ ngay!`;
         }
 
         if (btnResumeFocus) {
@@ -2684,18 +2684,11 @@ function setupFocusMode(lesson, user) {
         isViolationModalOpen = true;
         openModal(focusViolationModal);
 
-        // Đếm ngược 3 giây tự động chuyển về trang chủ
-        let countdown = 3;
-        const cdTimer = setInterval(() => {
-            countdown--;
-            const cdElem = document.getElementById("redirectCountdown");
-            if (cdElem) cdElem.textContent = String(countdown);
-            if (countdown <= 0) {
-                clearInterval(cdTimer);
-                exitFullscreenSafe();
-                window.location.href = "home.html";
-            }
-        }, 1000);
+        // Quay lại trang chủ ngay lập tức (sau 400ms để kịp lưu dữ liệu & thoát toàn màn hình)
+        setTimeout(() => {
+            exitFullscreenSafe();
+            window.location.href = "home.html";
+        }, 400);
     }
 
     function startFocusMode(isAuto = false) {
