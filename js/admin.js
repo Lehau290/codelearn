@@ -2098,3 +2098,318 @@ function escapeHtml(value) {
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
 }
+
+// ============================================================
+// 0. LEARNING ANALYTICS DASHBOARD (BÁO CÁO & THỐNG KÊ)
+// ============================================================
+let _analyticsCache = null;
+const _analyticsCharts = {};
+
+function setupAnalyticsSection() {
+    const refreshBtn = document.getElementById("btnRefreshAnalytics");
+    if (refreshBtn && !refreshBtn.dataset.bound) {
+        refreshBtn.dataset.bound = "true";
+        refreshBtn.addEventListener("click", async () => {
+            refreshBtn.disabled = true;
+            const prevText = refreshBtn.textContent;
+            refreshBtn.textContent = "Đang tải...";
+            try {
+                await loadAdminAnalytics();
+                if (typeof window.showToast === "function") {
+                    window.showToast("Đã cập nhật số liệu phân tích mới nhất!", "success");
+                }
+            } catch (err) {
+                if (typeof window.showToast === "function") {
+                    window.showToast("Lỗi tải số liệu: " + (err.message || "Không thể kết nối"), "error");
+                }
+            } finally {
+                refreshBtn.disabled = false;
+                refreshBtn.textContent = prevText;
+            }
+        });
+    }
+
+    const exportBtn = document.getElementById("btnExportAnalyticsReport");
+    if (exportBtn && !exportBtn.dataset.bound) {
+        exportBtn.dataset.bound = "true";
+        exportBtn.addEventListener("click", () => {
+            exportAnalyticsReport();
+        });
+    }
+
+    loadAdminAnalytics();
+}
+
+async function loadAdminAnalytics() {
+    if (!window.CodeLearnApi || typeof CodeLearnApi.admin?.getAnalytics !== "function") return;
+    try {
+        const data = await CodeLearnApi.admin.getAnalytics();
+        if (!data) return;
+        _analyticsCache = data;
+
+        const summary = data.summary || {};
+        setText("kpiAvgScore", summary.avgScore ?? 0);
+        setText("kpiPassRate", `${summary.passRate ?? 0}%`);
+        setText("kpiTotalSubmits", summary.totalSubmissions ?? 0);
+        setText("kpiAiQuestions", summary.totalAiChats ?? 0);
+        setText("kpiActiveStudents", summary.totalUsers ?? 0);
+
+        renderAnalyticsCharts(data);
+        renderAtRiskStudentsTable(data.atRiskStudents || []);
+    } catch (err) {
+        console.warn("Lỗi tải dữ liệu Analytics:", err);
+    }
+}
+
+function renderAnalyticsCharts(data) {
+    if (typeof window.Chart === "undefined") return;
+
+    const destroyChart = (key) => {
+        if (_analyticsCharts[key]) {
+            _analyticsCharts[key].destroy();
+            _analyticsCharts[key] = null;
+        }
+    };
+
+    // 1. Tỷ lệ hoàn thành theo 7 Chương học
+    const chapCtx = document.getElementById("chartChapterProgress");
+    if (chapCtx) {
+        destroyChart("chapter");
+        const chapters = data.chapters || [];
+        _analyticsCharts.chapter = new Chart(chapCtx, {
+            type: "bar",
+            data: {
+                labels: chapters.map(c => (c.chapter || "").split(":")[0] || c.chapter),
+                datasets: [{
+                    label: "Tỷ lệ hoàn thành (%)",
+                    data: chapters.map(c => c.completionRate || 0),
+                    backgroundColor: "rgba(99, 102, 241, 0.75)",
+                    borderColor: "#6366f1",
+                    borderWidth: 1,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { y: { beginAtZero: true, max: 100 } },
+                plugins: { legend: { display: false } }
+            }
+        });
+    }
+
+    // 2. Phân bổ Trạng thái & Lỗi biên dịch g++
+    const statusCtx = document.getElementById("chartStatusBreakdown");
+    if (statusCtx) {
+        destroyChart("status");
+        const sb = data.statusBreakdown || {};
+        _analyticsCharts.status = new Chart(statusCtx, {
+            type: "doughnut",
+            data: {
+                labels: ["Đạt (Passed)", "Lỗi cú pháp g++", "Sai kết quả", "Quá thời gian"],
+                datasets: [{
+                    data: [sb.passed || 0, sb.syntax_errors || 0, sb.wrong_answers || 0, sb.timeout_errors || 0],
+                    backgroundColor: ["#10b981", "#ef4444", "#f59e0b", "#8b5cf6"],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: "bottom" } }
+            }
+        });
+    }
+
+    // 3. Tần suất nộp bài & Hỏi AI (7 ngày gần nhất)
+    const trendCtx = document.getElementById("chartActivityTrend");
+    if (trendCtx) {
+        destroyChart("trend");
+        const act = data.activity || [];
+        _analyticsCharts.trend = new Chart(trendCtx, {
+            type: "line",
+            data: {
+                labels: act.map(a => a.date),
+                datasets: [
+                    {
+                        label: "Lượt nộp code",
+                        data: act.map(a => a.submissions || 0),
+                        borderColor: "#f59e0b",
+                        backgroundColor: "rgba(245, 158, 11, 0.15)",
+                        fill: true,
+                        tension: 0.35
+                    },
+                    {
+                        label: "Lượt hỏi AI",
+                        data: act.map(a => a.aiChats || 0),
+                        borderColor: "#8b5cf6",
+                        backgroundColor: "rgba(139, 92, 246, 0.12)",
+                        fill: true,
+                        tension: 0.35
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { y: { beginAtZero: true } },
+                plugins: { legend: { position: "bottom" } }
+            }
+        });
+    }
+
+    // 4. Phổ điểm đánh giá năng lực học viên
+    const scoreCtx = document.getElementById("chartScoreDistribution");
+    if (scoreCtx) {
+        destroyChart("score");
+        const sd = data.scoreDistribution || {};
+        _analyticsCharts.score = new Chart(scoreCtx, {
+            type: "bar",
+            data: {
+                labels: ["Dưới 50 điểm", "Từ 50 - 79 điểm", "Từ 80 - 100 điểm"],
+                datasets: [{
+                    label: "Số bài nộp",
+                    data: [sd.low || 0, sd.mid || 0, sd.high || 0],
+                    backgroundColor: ["#ef4444", "#f59e0b", "#10b981"],
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { y: { beginAtZero: true } },
+                plugins: { legend: { display: false } }
+            }
+        });
+    }
+}
+
+function renderAtRiskStudentsTable(students) {
+    const tbody = document.getElementById("tableAtRiskStudentsBody");
+    if (!tbody) return;
+
+    if (!students || students.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 20px; color: var(--text-secondary);">Chưa có học viên nào cần hỗ trợ sớm.</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = students.map(s => {
+        const avg = Number(s.avgScore || 0);
+        const badgeStyle = avg < 50
+            ? "background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.25);"
+            : "background: rgba(245, 158, 11, 0.12); color: #d97706; border: 1px solid rgba(245, 158, 11, 0.25);";
+        const riskText = avg < 50 ? "Cần hỗ trợ gấp" : "Cần theo dõi";
+        return `
+            <tr>
+                <td>
+                    <strong>${escapeHtml(s.fullName || s.username)}</strong>
+                    <div style="font-size: 0.78rem; color: var(--text-secondary);">@${escapeHtml(s.username)}</div>
+                </td>
+                <td>${escapeHtml(s.email || "N/A")}</td>
+                <td><strong>${s.totalSubmits || 0}</strong></td>
+                <td style="color: #ef4444; font-weight: 700;">${s.failSubmits || 0}</td>
+                <td><strong>${avg}/100</strong></td>
+                <td>
+                    <span class="badge" style="padding: 3px 10px; border-radius: 999px; font-size: 0.76rem; font-weight: 700; ${badgeStyle}">
+                        ${riskText}
+                    </span>
+                </td>
+            </tr>
+        `;
+    }).join("");
+}
+
+function exportAnalyticsReport() {
+    const data = _analyticsCache || {
+        summary: {
+            avgScore: document.getElementById("kpiAvgScore")?.textContent || "0",
+            passRate: document.getElementById("kpiPassRate")?.textContent || "0%",
+            totalSubmissions: document.getElementById("kpiTotalSubmits")?.textContent || "0",
+            totalAiChats: document.getElementById("kpiAiQuestions")?.textContent || "0",
+            totalUsers: document.getElementById("kpiActiveStudents")?.textContent || "0"
+        },
+        chapters: [],
+        atRiskStudents: []
+    };
+
+    const summary = data.summary || {};
+    const chaptersRows = (data.chapters || []).map(c => `
+        <tr>
+            <td>${escapeHtml(c.chapter)}</td>
+            <td>${c.totalLessons || 0}</td>
+            <td>${c.completedLessons || 0}</td>
+            <td><strong>${c.completionRate || 0}%</strong></td>
+        </tr>
+    `).join("");
+
+    const studentRows = (data.atRiskStudents || []).map(s => `
+        <tr>
+            <td>${escapeHtml(s.fullName || s.username)} (@${escapeHtml(s.username)})</td>
+            <td>${escapeHtml(s.email || "N/A")}</td>
+            <td>${s.totalSubmits || 0}</td>
+            <td>${s.failSubmits || 0}</td>
+            <td><strong>${s.avgScore || 0}/100</strong></td>
+        </tr>
+    `).join("");
+
+    const nowStr = new Date().toLocaleString("vi-VN");
+    const reportHtml = `<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Báo cáo Tiến độ & Đánh giá Năng lực - CodeLearn C++</title>
+    <style>
+        body { font-family: 'Inter', Arial, sans-serif; color: #1e293b; padding: 32px; line-height: 1.5; }
+        h1 { margin: 0 0 6px; font-size: 22px; color: #0f172a; }
+        .meta { color: #64748b; font-size: 13px; margin-bottom: 24px; }
+        .kpi-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px; }
+        .kpi-box { border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; text-align: center; }
+        .kpi-box strong { display: block; font-size: 20px; color: #4f46e5; }
+        .kpi-box span { font-size: 12px; color: #475569; }
+        h2 { font-size: 16px; margin: 24px 0 10px; border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px; }
+        th, td { border: 1px solid #cbd5e1; padding: 8px 10px; text-align: left; }
+        th { background: #f8fafc; font-weight: 700; }
+        @media print { .no-print { display: none; } }
+    </style>
+</head>
+<body>
+    <div class="no-print" style="margin-bottom: 16px;">
+        <button onclick="window.print()" style="padding: 8px 16px; background: #4f46e5; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">In / Lưu PDF ngay</button>
+    </div>
+    <h1>BÁO CÁO TIẾN ĐỘ & ĐÁNH GIÁ NĂNG LỰC HỌC VIÊN C++</h1>
+    <div class="meta">Thời gian xuất báo cáo: ${escapeHtml(nowStr)} | Hệ thống CodeLearn C++ Academy</div>
+
+    <div class="kpi-grid">
+        <div class="kpi-box"><strong>${escapeHtml(summary.avgScore ?? 0)}</strong><span>Điểm TB toàn khóa</span></div>
+        <div class="kpi-box"><strong>${escapeHtml(String(summary.passRate ?? 0).replace('%', ''))}%</strong><span>Tỷ lệ đạt bài tập</span></div>
+        <div class="kpi-box"><strong>${escapeHtml(summary.totalSubmissions ?? 0)}</strong><span>Tổng lượt nộp code</span></div>
+        <div class="kpi-box"><strong>${escapeHtml(summary.totalAiChats ?? 0)}</strong><span>Lượt hỏi đáp AI</span></div>
+        <div class="kpi-box"><strong>${escapeHtml(summary.totalUsers ?? 0)}</strong><span>Tổng học viên</span></div>
+    </div>
+
+    <h2>1. Tỷ lệ hoàn thành theo Chương học</h2>
+    <table>
+        <thead><tr><th>Chương học</th><th>Tổng bài học</th><th>Lượt hoàn thành</th><th>Tỷ lệ</th></tr></thead>
+        <tbody>${chaptersRows || '<tr><td colspan="4">Chưa có dữ liệu chương học</td></tr>'}</tbody>
+    </table>
+
+    <h2>2. Danh sách học viên cần hỗ trợ sớm</h2>
+    <table>
+        <thead><tr><th>Học viên</th><th>Email</th><th>Tổng lượt nộp</th><th>Số bài lỗi / sai</th><th>Điểm TB</th></tr></thead>
+        <tbody>${studentRows || '<tr><td colspan="5">Chưa có học viên nào cần hỗ trợ</td></tr>'}</tbody>
+    </table>
+
+    <script>window.onload = () => { setTimeout(() => window.print(), 300); };</script>
+</body>
+</html>`;
+
+    const win = window.open("", "_blank", "width=960,height=720");
+    if (win) {
+        win.document.open();
+        win.document.write(reportHtml);
+        win.document.close();
+    } else {
+        window.print();
+    }
+}
